@@ -3256,11 +3256,11 @@ input, select, textarea {
 		}
 
 		.wrapper.style3 {
-			background-color: #b74e91;
+			background-color: #3e4094;
 		}
 
 		.wrapper.style3-alt {
-			background-color: #953d75;
+			background-color: #3e4094;
 		}
 
 		.wrapper.fullscreen {
@@ -3874,7 +3874,7 @@ input, select, textarea {
 
 	#intro {
 		background-attachment: fixed;
-		background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.70)), url("images//milkyway.jpg");
+		background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.75)), url("images/milkyway.jpg");
 		background-color: rgb(0, 0, 0);
 		background-position: top right;
 		background-repeat: no-repeat;
