@@ -3908,3 +3908,9 @@ input, select, textarea {
 			}
 
 		}
+
+		.two-column-list {
+		  columns: 2;  /* Create two columns */
+		  -webkit-columns: 2; /* For older Safari versions */
+		  -moz-columns: 2; /* For older Firefox versions */
+		}
