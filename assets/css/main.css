@@ -3914,3 +3914,20 @@ input, select, textarea {
 		  -webkit-columns: 2; /* For older Safari versions */
 		  -moz-columns: 2; /* For older Firefox versions */
 		}
+
+		.entry-details-container {
+			margin-left: 20px;   /* Indentation */
+			font-size: 0.9em;    /* Smaller text size (adjust as needed) */
+		}
+		
+		.entry-details-container h4 {
+			font-size: 1.2em;     /* Adjust the font size as needed */
+			/* Add any other styles for the h4 elements here */
+		  }
+		
+		.bullet-point {
+			margin-right: 5px;  /* Adjust spacing between bullet and text */
+		}
+		
+		/* Add more styles if needed to match your design */
+		
