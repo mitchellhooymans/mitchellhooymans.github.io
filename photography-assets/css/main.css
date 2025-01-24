@@ -92,7 +92,7 @@ input, select, textarea {
 		background-attachment: fixed;
 		background-repeat: repeat, no-repeat, auto;
 		position: relative;
-		background-color: #150C07;
+		background-color: #000000f5;
 		line-height: 1.75em;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -401,7 +401,7 @@ input, select, textarea {
 			}
 
 			#main .item.intro {
-				background-color: #d64760;
+				background-color: #413764;
 				background-image: url("images/overlay.png");
 				display: -moz-flex;
 				display: -webkit-flex;
@@ -830,4 +830,49 @@ input, select, textarea {
 					display: none !important;
 				}
 
+		}
+
+/* Button formatting */
+		
+	.button {
+		display: inline-block;
+		padding: 0.75em 1.5em;
+		border-radius: 0.5em;
+		text-align: center;
+		text-decoration: none;
+		font-weight: 600;
+		line-height: 1;
+	}
+
+		.button.primary {
+			background-color: #d64760;
+			color: #fff;
+		}
+
+			.button.primary:hover {
+				background-color: #d64760;
+			}
+
+		.button.alt {
+			background-color: transparent;
+			border: solid 2px #d64760;
+			color: #d64760;
+		}
+
+			.button.alt:hover {
+				background-color: #d64760;
+				color: #fff;
+			}
+
+		.button.large {
+			padding: 1em 2em;
+		}
+
+		.button.small {
+			padding: 0.5em 1em;
+		}
+
+		.button.disabled {
+			pointer-events: none;
+			opacity: 0.25;
 		}
