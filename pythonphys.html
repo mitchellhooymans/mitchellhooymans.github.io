@@ -81,7 +81,6 @@
                 <a href="#file-io" class="nav-link block p-4 text-sm font-medium hover:bg-gray-700 whitespace-nowrap">8. Working with Files</a>
                 <a href="#modules" class="nav-link block p-4 text-sm font-medium hover:bg-gray-700 whitespace-nowrap">9. Modules & Packages</a>
                 <a href="#putting-it-all-together" class="nav-link block p-4 text-sm font-medium hover:bg-gray-700 whitespace-nowrap">10. Putting It All Together</a>
-                <a href="#next-steps" class="nav-link block p-4 text-sm font-medium hover:bg-gray-700 whitespace-nowrap">11. Next Steps</a>
             </nav>
         </aside>
 
@@ -159,7 +158,7 @@ print(f"Experiment: {experiment_name}")</code></pre>
                                 <strong class="font-semibold">Integer (<code>int</code>):</strong> Used for whole numbers. Perfect for discrete quantities like the number of particles, steps in a simulation, or quantum numbers.
                                 <div class="code-block mt-2" data-output="Number of trials: 5">
                                     <pre><code>number_of_trials = 5
-print(f"Number of trials: {number_of_trials}")</code></pre>
+print(f"Number of of trials: {number_of_trials}")</code></pre>
                                 </div>
                             </li>
                             <li>
@@ -287,24 +286,37 @@ else:
                         <div id="velocity-output" class="p-3 bg-gray-100 rounded-md h-10"></div>
 
                         <h3 class="text-xl font-semibold my-4">'for' Loops & Data Visualization</h3>
-                        <p class="mb-2">A <code>for</code> loop is great for running a simulation over a fixed number of time steps. Here we simulate the height of a projectile over 5 seconds and plot the trajectory.</p>
+                        <p class="mb-2">A <code>for</code> loop is great for running a simulation over a fixed number of time steps. This code calculates the height of a projectile for the first 5 seconds of its flight. The plot below visualizes the resulting trajectory.</p>
+                        <div class="code-block" data-output="t=0.0s, y=0.00m\nt=1.0s, y=15.09m\nt=2.0s, y=20.38m\nt=3.0s, y=15.86m\nt=4.0s, y=1.53m\nt=5.0s, y=-22.62m">
+                             <pre><code># Simulate projectile height over a fixed time
+v0y = 20 # initial vertical velocity in m/s
+g = 9.81 # gravity
+time_steps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+
+for t in time_steps:
+    y = (v0y * t) - (0.5 * g * t**2)
+    print(f"t={t:.1f}s, y={y:.2f}m")
+</code></pre>
+                        </div>
                         <div class="my-4 p-4 border rounded-lg bg-gray-50">
                             <div class="chart-container">
-                                <canvas id="projectileChart"></canvas>
+                                <canvas id="forLoopChart"></canvas>
                             </div>
                         </div>
 
-                        <h3 class="text-xl font-semibold my-4">'while' Loops</h3>
-                        <p class="mb-2">A <code>while</code> loop is perfect for simulations that must run until a condition is met, like a projectile returning to the ground.</p>
+                        <h3 class="text-xl font-semibold my-4">'while' Loops & Data Visualization</h3>
+                        <p class="mb-2">A <code>while</code> loop is perfect for simulations that must run until a condition is met. This code calculates the projectile's trajectory only until it hits the ground (i.e., while its height is greater than or equal to zero). The plot visualizes this specific part of the flight.</p>
                         <div class="code-block" data-output="Projectile landed after 4.1 seconds.">
-                             <pre><code># Simulate projectile until it hits the ground (y <= 0)
+                             <pre><code># Simulate projectile until it hits the ground
 v0y = 20 # initial vertical velocity in m/s
 g = 9.81 # gravity
 t = 0
 dt = 0.1 # time step
 y = 0
+trajectory = []
 
 while y >= 0:
+    trajectory.append(y)
     y = (v0y * t) - (0.5 * g * t**2)
     t += dt
 
@@ -312,6 +324,11 @@ while y >= 0:
 final_time = t - dt
 print(f"Projectile landed after {final_time:.1f} seconds.")
 </code></pre>
+                        </div>
+                        <div class="my-4 p-4 border rounded-lg bg-gray-50">
+                            <div class="chart-container">
+                                <canvas id="whileLoopChart"></canvas>
+                            </div>
                         </div>
                     `
                 },
@@ -427,31 +444,109 @@ print("\\nFile Content:\\n" + file_content)
                  'modules': {
                     title: '9. Modules & Packages',
                     body: `
-                        <h3 class="text-xl font-semibold mb-3">Using Modules</h3>
-                        <p class="mb-2">Python's power in physics comes from its modules. The <code>math</code> module is just the beginning.</p>
+                        <h3 class="text-2xl font-semibold mb-3">What are Modules and Packages?</h3>
+                        <p class="mb-2">A <strong>module</strong> is simply a Python file containing functions, variables, and other code that you can use in your own scripts. This allows you to organize code logically and reuse it across different projects. Python comes with a rich <a href="https://docs.python.org/3/library/" target="_blank" class="text-blue-600 hover:underline">Standard Library</a> full of useful modules, like the <code>math</code> module for mathematical functions.</p>
+                        <p class="mb-4">A <strong>package</strong> (or library) is a collection of related modules. The true power of Python for physics comes from its vast ecosystem of third-party packages developed by the scientific community. To use these, you first need to <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/" target="_blank" class="text-blue-600 hover:underline">install them in your Python environment.</a></p>
                         <div class="code-block" data-output="The sine of 45 degrees is 0.7071">
-                            <pre><code>import math
+                            <pre><code># We import the 'math' module to access its functions
+import math
 
 angle_degrees = 45
-# Trig functions in 'math' use radians
+# Trig functions in 'math' use radians, so we convert first
 angle_radians = math.radians(angle_degrees)
 
 sine_value = math.sin(angle_radians)
 print(f"The sine of {angle_degrees} degrees is {sine_value:.4f}")
 </code></pre>
                         </div>
+                        
+                        <h3 class="text-2xl font-semibold mt-6 mb-3">Exploring Key Scientific Libraries</h3>
+                        <p class="mb-4">The following examples all follow a common astrophysics workflow: simulating the orbit of a star around a supermassive black hole, organizing the data, plotting it, fitting a model to it, and using symbolic math to describe it.</p>
+                        
+                        <h4 class="text-xl font-semibold mb-3">NumPy: Numerical Data</h4>
+                        <p class="mb-2">We'll use NumPy to generate time steps and calculate the (x, y) coordinates of a star in an elliptical orbit using Kepler's laws.</p>
+                        <div class="code-block" data-output="Time (years): [ 0.    0.16  0.32 ...]\nX position (AU): [ 1.  0.98  0.92 ...]\nY position (AU): [ 0.    0.2   0.39 ...]">
+                            <pre><code># This is a simulation of the library's output
+# import numpy as np
+# time = np.linspace(0, 16, 100) # 16 year orbit, 100 steps
+# a = 1.0 # semi-major axis in AU
+# e = 0.88 # eccentricity for star S2
+# M = 4.31e6 # Mass of Sgr A* in solar masses
+# n = np.sqrt(M / a**3) # Mean motion
+# E = time * n # Simplified eccentric anomaly for demo
+# x = a * (np.cos(E) - e)
+# y = a * np.sqrt(1 - e**2) * np.sin(E)
+print("Time (years): [ 0.    0.16  0.32 ...]")
+print("X position (AU): [ 1.  0.98  0.92 ...]")
+print("Y position (AU): [ 0.    0.2   0.39 ...]")
+</code></pre>
+                        </div>
 
-                        <h3 class="text-xl font-semibold my-4">Essential Scientific Packages (pip)</h3>
-                        <p class="mb-2">For serious physics work, you'll need external packages. You can install them using the <code>pip</code> command in your terminal.</p>
-                        <pre><code># In your terminal or command prompt:
-pip install numpy
-pip install matplotlib
-pip install scipy</code></pre>
-                        <ul class="list-disc list-inside space-y-2 mt-4">
-                            <li><strong class="font-semibold">NumPy:</strong> The fundamental package for numerical computation. It provides powerful array objects for efficient calculations.</li>
-                            <li><strong class="font-semibold">Matplotlib:</strong> The most popular library for creating plots and data visualizations.</li>
-                            <li><strong class="font-semibold">SciPy:</strong> Builds on NumPy and provides a large collection of algorithms for optimization, integration, interpolation, and more.</li>
-                        </ul>
+                        <h4 class="text-xl font-semibold mt-6 mb-3">Pandas: Structured Data</h4>
+                        <p class="mb-2">Pandas is excellent for organizing this data into a labeled, table-like DataFrame, which is easy to inspect and use for further analysis.</p>
+                        <div class="code-block" data-output="   time         x         y\n0  0.00  1.000000  0.000000\n1  0.16  0.981881  0.201299\n2  0.32  0.928249  0.391932\n3  0.48  0.840745  0.561570">
+                            <pre><code># This is a simulation of the library's output
+# import pandas as pd
+# from previous step: time, x, y
+# orbit_data = {'time': time, 'x': x, 'y': y}
+# df = pd.DataFrame(orbit_data)
+# print(df.head().to_string(float_format="%.6f"))
+print("   time         x         y\\n0  0.00  1.000000  0.000000\\n1  0.16  0.981881  0.201299\\n2  0.32  0.928249  0.391932\\n3  0.48  0.840745  0.561570")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">Matplotlib: Visualization</h4>
+                        <p class="mb-2">Matplotlib allows us to visualize the orbit. Plotting the x and y positions clearly shows the elliptical path of the star.</p>
+                        <div class="code-block" data-output="This code would generate a plot showing the elliptical orbit of the star, with the central black hole at one of the foci.">
+                            <pre><code># import matplotlib.pyplot as plt
+# from previous step: df
+
+# plt.figure(figsize=(8, 6))
+# plt.plot(df['x'], df['y'], '-')
+# plt.plot(0, 0, 'o', color='black', markersize=10, label='Sgr A*')
+# plt.title('Simulated Orbit of Star S2')
+# plt.xlabel('X Position (AU)')
+# plt.ylabel('Y Position (AU)')
+# plt.axis('equal')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
+print("This code would generate a plot showing the elliptical orbit of the star, with the central black hole at one of the foci.")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">SciPy: Scientific Algorithms</h4>
+                        <p class="mb-2">SciPy can be used to fit a model to our simulated data. Here, we could use its optimization functions to find the mass of the central object that best fits the observed orbital period and semi-major axis.</p>
+                        <div class="code-block" data-output="Fitted Central Mass: 4.31e+06 Solar Masses">
+                            <pre><code># This is a simulation of the library's output
+# from scipy.optimize import curve_fit
+# P = 16 # years
+# a = 1.0 # AU
+# def kepler_period(semi_major_axis, mass):
+#     return np.sqrt(semi_major_axis**3 / mass)
+
+# popt, pcov = curve_fit(kepler_period, a, P)
+# fitted_mass = popt[0]
+print(f"Fitted Central Mass: {4.31e6:.2e} Solar Masses")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">SymPy: Symbolic Mathematics</h4>
+                        <p class="mb-2">SymPy allows us to work with equations symbolically. Here, we define the Vis-viva equation, which relates orbital speed to position for an orbiting body.</p>
+                        <div class="code-block" data-output="Vis-viva Equation: v = sqrt(G*M*(2/r - 1/a))">
+                            <pre><code># This is a simulation of the library's output
+# from sympy import symbols, Eq, sqrt
+
+# Define symbolic variables
+# v, G, M, r, a = symbols('v G M r a')
+
+# Define the Vis-viva equation
+# vis_viva_eq = Eq(v, sqrt(G*M*(2/r - 1/a)))
+
+# print(f"Vis-viva Equation: {vis_viva_eq}")
+print("Vis-viva Equation: v = sqrt(G*M*(2/r - 1/a))")
+</code></pre>
+                        </div>
                     `
                 },
                 'putting-it-all-together': {
@@ -513,117 +608,13 @@ print("Simulation Complete.")
 </code></pre>
                         </div>
                     `
-                },
-                'next-steps': {
-                    title: '11. Next Steps: Exploring Scientific Libraries',
-                    body: `
-                        <p class="mb-4">With the basics covered, you are ready to dive into the libraries that are essential for computational physics. The following examples all follow a common astrophysics workflow: simulating noisy data for an exoplanet transit, organizing it, plotting it, fitting a model to it, and using symbolic math to describe it.</p>
-                        
-                        <h3 class="text-2xl font-semibold mb-3">NumPy: Numerical Data</h3>
-                        <p class="mb-2">NumPy is the foundation of scientific computing. Its primary feature is the powerful N-dimensional array object. We'll use it to create our time data and simulate a star's light curve with a transit dip and some random noise.</p>
-                        <div class="code-block" data-output="Time array (first 5): [0. 1. 2. 3. 4.]\nFlux array (first 5): [1.002 1.008 0.992 0.998 1.011]">
-                            <pre><code># This is a simulation of the library's output
-# import numpy as np
-# np.random.seed(42) # for reproducible results
-
-# 1. Create time data
-# time = np.linspace(0, 100, 200)
-time_output = "[0. 1. 2. 3. 4.]"
-
-# 2. Create a clean light curve with a transit
-# flux = np.ones(200)
-# flux[80:120] -= 0.02 # 2% dip for the transit
-
-# 3. Add random noise
-# noise = np.random.normal(0, 0.005, 200)
-# flux += noise
-flux_output = "[1.002 1.008 0.992 0.998 1.011]"
-
-print(f"Time array (first 5): {time_output}")
-print(f"Flux array (first 5): {flux_output}")
-</code></pre>
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mt-6 mb-3">Pandas: Structured Data</h3>
-                        <p class="mb-2">Pandas is built on NumPy and is used for data manipulation and analysis. It introduces the DataFrame, a 2D table-like structure. We'll put our simulated data into a DataFrame and calculate a moving average to smooth out the noise.</p>
-                        <div class="code-block" data-output="   time      flux  smoothed_flux\n0   0.0  1.002484            NaN\n1   1.0  0.995771            NaN\n2   2.0  1.003882       0.999656\n3   3.0  1.008838       1.002830\n4   4.0  0.995468       1.002729">
-                            <pre><code># This is a simulation of the library's output
-# import pandas as pd
-# from previous step: time, flux
-# data = {'time': time, 'flux': flux}
-# df = pd.DataFrame(data)
-
-# Calculate a rolling average over a 5-point window
-# df['smoothed_flux'] = df['flux'].rolling(window=5, center=True).mean()
-
-# print(df.head().to_string(float_format="%.6f"))
-print("   time      flux  smoothed_flux\\n0   0.0  1.002484            NaN\\n1   1.0  0.995771            NaN\\n2   2.0  1.003882       0.999656\\n3   3.0  1.008838       1.002830\\n4   4.0  0.995468       1.002729")
-</code></pre>
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mt-6 mb-3">Matplotlib: Visualization</h3>
-                        <p class="mb-2">Matplotlib is the most widely used plotting library in Python. Here is the code you would use to plot the raw, noisy light curve and the smoothed version to visually identify the transit.</p>
-                        <div class="code-block" data-output="This code would generate a plot showing the noisy light curve in blue and the smoothed curve in red, clearly revealing the exoplanet transit dip.">
-                            <pre><code># import matplotlib.pyplot as plt
-# from previous step: df
-
-# plt.figure(figsize=(10, 6))
-# plt.plot(df['time'], df['flux'], '.', alpha=0.5, label='Simulated Data')
-# plt.plot(df['time'], df['smoothed_flux'], '-', color='red', label='Smoothed (Moving Average)')
-# plt.title('Exoplanet Transit Light Curve')
-# plt.xlabel('Time (days)')
-# plt.ylabel('Normalized Flux')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-print("This code would generate a plot showing the noisy light curve in blue and the smoothed curve in red, clearly revealing the exoplanet transit dip.")
-</code></pre>
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mt-6 mb-3">SciPy: Scientific Algorithms</h3>
-                        <p class="mb-2">SciPy provides a collection of algorithms for optimization, integration, signal processing, and more. We can use its <code>curve_fit</code> function to fit a mathematical model (like a Gaussian function) to our transit data to find its precise center and depth.</p>
-                        <div class="code-block" data-output="Optimal transit parameters (Amplitude, Center, StdDev):\n[-0.02, 100.0, 10.0]">
-                            <pre><code># This is a simulation of the library's output
-# from scipy.optimize import curve_fit
-# import numpy as np
-# from previous step: time, flux
-
-# def gaussian(x, amp, cen, wid):
-#     return 1.0 + amp * np.exp(-(x-cen)**2 / (2*wid**2))
-
-# Fit the model to the data
-# initial_guess = [-0.02, 100, 10]
-# popt, pcov = curve_fit(gaussian, time, flux, p0=initial_guess)
-
-print("Optimal transit parameters (Amplitude, Center, StdDev):")
-print("[-0.02, 100.0, 10.0]")
-</code></pre>
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mt-6 mb-3">SymPy: Symbolic Mathematics</h3>
-                        <p class="mb-2">SymPy is a library for symbolic mathematics. It allows you to work with mathematical expressions in a symbolic form, simplifying equations, and performing calculus. Here, we'll define Kepler's Third Law symbolically.</p>
-                        <div class="code-block" data-output="Kepler's Third Law: P**2 = (4*pi**2*a**3)/(G*(M + m))">
-                            <pre><code># This is a simulation of the library's output
-# from sympy import symbols, Eq, pi
-
-# Define symbolic variables
-# P, a, M, m, G = symbols('P a M m G')
-
-# Define Kepler's Third Law
-# kepler_eq = Eq(P**2, (4*pi**2 * a**3) / (G * (M + m)))
-
-# print(f"Kepler's Third Law: {kepler_eq}")
-print("Kepler's Third Law: P**2 = (4*pi**2*a**3)/(G*(M + m))")
-</code></pre>
-                        </div>
-                        <p class="mt-8 font-semibold">Happy coding!</p>
-                    `
                 }
             };
 
             const contentContainer = document.getElementById('content-container');
             const navigation = document.getElementById('navigation');
-            let projectileChartInstance = null;
+            let forLoopChartInstance = null;
+            let whileLoopChartInstance = null;
 
             function renderContent(hash) {
                 const key = hash.substring(1);
@@ -655,7 +646,8 @@ print("Kepler's Third Law: P**2 = (4*pi**2*a**3)/(G*(M + m))")
 
                 if (key === 'control-flow') {
                     document.getElementById('velocity-button').addEventListener('click', handleVelocityCheck);
-                    renderProjectileChart();
+                    renderForLoopChart();
+                    renderWhileLoopChart();
                 }
                 if (key === 'error-handling') {
                     document.getElementById('error-button').addEventListener('click', handleErrorCheck);
@@ -708,30 +700,28 @@ print("Kepler's Third Law: P**2 = (4*pi**2*a**3)/(G*(M + m))")
                 }
             }
 
-            function renderProjectileChart() {
-                const ctx = document.getElementById('projectileChart')?.getContext('2d');
+            function renderForLoopChart() {
+                const ctx = document.getElementById('forLoopChart')?.getContext('2d');
                 if (!ctx) return;
                 
-                const time_steps = [];
+                const time_steps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
                 const height_data = [];
                 const v0y = 20; // m/s
                 const g = 9.81;
-                
-                for (let i = 0; i <= 50; i++) {
-                    const t = i * 0.1; // time from 0 to 5 seconds
-                    time_steps.push(t.toFixed(1));
+
+                for (const t of time_steps) {
                     const y = (v0y * t) - (0.5 * g * t**2);
                     height_data.push(y);
                 }
 
-                if (projectileChartInstance) {
-                    projectileChartInstance.destroy();
+                if (forLoopChartInstance) {
+                    forLoopChartInstance.destroy();
                 }
 
-                projectileChartInstance = new Chart(ctx, {
+                forLoopChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: time_steps,
+                        labels: time_steps.map(t => t.toFixed(1)),
                         datasets: [{
                             label: 'Height (m)',
                             data: height_data,
@@ -745,12 +735,64 @@ print("Kepler's Third Law: P**2 = (4*pi**2*a**3)/(G*(M + m))")
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            x: {
-                                title: { display: true, text: 'Time (s)' }
-                            },
-                            y: {
-                                title: { display: true, text: 'Height (m)' }
+                            x: { title: { display: true, text: 'Time (s)' } },
+                            y: { title: { display: true, text: 'Height (m)' } }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Height: ${context.parsed.y.toFixed(2)} m`;
+                                    }
+                                }
                             }
+                        }
+                    }
+                });
+            }
+
+            function renderWhileLoopChart() {
+                const ctx = document.getElementById('whileLoopChart')?.getContext('2d');
+                if (!ctx) return;
+                
+                const time_steps = [];
+                const height_data = [];
+                const v0y = 20; // m/s
+                const g = 9.81;
+                let t = 0;
+                let y = 0;
+                const dt = 0.1;
+
+                while (y >= 0) {
+                    time_steps.push(t.toFixed(1));
+                    height_data.push(y);
+                    t += dt;
+                    y = (v0y * t) - (0.5 * g * t**2);
+                }
+
+                if (whileLoopChartInstance) {
+                    whileLoopChartInstance.destroy();
+                }
+
+                whileLoopChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: time_steps,
+                        datasets: [{
+                            label: 'Height (m) until landing',
+                            data: height_data,
+                            borderColor: 'rgb(239, 68, 68)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Time (s)' } },
+                            y: { title: { display: true, text: 'Height (m)' } }
                         },
                         plugins: {
                             tooltip: {
@@ -783,4 +825,3 @@ print("Kepler's Third Law: P**2 = (4*pi**2*a**3)/(G*(M + m))")
     </script>
 </body>
 </html>
-<!DOCTYPE html>
