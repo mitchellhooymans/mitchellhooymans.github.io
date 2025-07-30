@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Python Tutorial for Analyzing Pregnancy Data</title>
+    <!-- Chosen Palette: Calming Blue and Peach -->
+    <!-- Application Structure Plan: A single-page application with a fixed navigation sidebar for easy, non-linear access to Python programming concepts. All examples are themed around pregnancy and birth outcome data to provide a consistent, practical learning experience. Key interactions include 'Run Code' buttons for immediate feedback and Chart.js visualizations to demonstrate data analysis concepts. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Python fundamentals (variables, data types, control flow, functions). -> Goal: Teach programming concepts. -> Viz/Presentation Method: Interactive code blocks with "Run" buttons. -> Interaction: User clicks to see the output of code related to pregnancy data. -> Justification: Active, contextual learning is more effective. -> Library/Method: Vanilla JS.
+        - Report Info: Trimester classification. -> Goal: Demonstrate conditional logic. -> Viz/Presentation Method: Interactive input for gestational age. -> Interaction: User enters a week number to see the `if/elif/else` logic classify the trimester. -> Justification: Allows users to test the logic with different inputs. -> Library/Method: Vanilla JS.
+        - Report Info: Birth outcome statistics. -> Goal: Demonstrate data analysis and visualization. -> Viz/Presentation Method: Bar chart showing birth counts by day of the week. -> Interaction: Hovering over bars reveals tooltips with specific data. -> Justification: Visualizing data makes patterns easier to understand. -> Library/Method: Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFF7F0; /* Light Peach */
+            color: #4A5568;
+        }
+        h1, h2, h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #2D3748;
+        }
+        .nav-link.active {
+            background-color: #76A9FA; /* Soft Blue */
+            color: #1A202C;
+        }
+        pre {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        .code-output {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #e2e8f0;
+            color: #2d3748;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-[#FFDAB9] text-[#2D3748] flex-shrink-0">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold">Python for Health Data</h2>
+            </div>
+            <nav id="navigation" class="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto">
+                <a href="#introduction" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">1. Introduction</a>
+                <a href="#core-concepts" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">2. Core Concepts</a>
+                <a href="#data-structures" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">3. Data Structures</a>
+                <a href="#control-flow" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">4. Control Flow</a>
+                <a href="#functions" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">5. Functions</a>
+                <a href="#error-handling" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">6. Error Handling</a>
+                <a href="#file-io" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">7. Working with Files</a>
+                <a href="#modules" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">8. Modules & Packages</a>
+                <a href="#putting-it-all-together" class="nav-link block p-4 text-sm font-medium hover:bg-[#FBC490] whitespace-nowrap">9. Putting It All Together</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 bg-white">
+            <div id="content-container">
+                <!-- Content sections will be injected here by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = {
+                'introduction': {
+                    title: '1. Introduction to Python for Health Data',
+                    body: `
+                        <h3 class="text-2xl font-semibold mb-3">What is Python?</h3>
+                        <p class="mb-4">Python is a high-level, general-purpose programming language known for its simple, readable syntax. It's an excellent language for beginners because it allows you to write powerful programs with very few lines of code. It is "interpreted," meaning you can run your code line by line and see immediate results, which makes learning and debugging much faster.</p>
+                        
+                        <h3 class="text-2xl font-semibold my-4">Why Use Python for Pregnancy & Birth Data?</h3>
+                        <p class="mb-4">While pregnancy is a personal journey, understanding it on a larger scale involves analyzing data. Public health officials, researchers, and clinicians analyze data to find patterns, understand risks, and improve care for mothers and babies. Python is the leading language for data science because:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Powerful Data Tools:</strong> Libraries like Pandas and Matplotlib make it simple to clean, organize, analyze, and visualize large datasets.</li>
+                            <li><strong>Reproducibility:</strong> A Python script provides a clear, repeatable set of steps for an analysis, which is crucial for scientific validity.</li>
+                            <li><strong>Automation:</strong> You can write scripts to automate repetitive tasks, like processing patient records or generating weekly reports, saving time and reducing errors.</li>
+                        </ul>
+                        <p class="mt-4">This guide will teach you the fundamentals of Python using examples relevant to this important field.</p>
+
+                        <h3 class="text-2xl font-semibold my-4">Getting Started: Installation</h3>
+                        <p class="mb-4">To begin, you need to install Python on your computer. For data analysis, the easiest way is to use the <strong>Anaconda Distribution</strong>. It includes Python, a user-friendly code editor (Spyder), and all the essential scientific packages you'll need, pre-installed.</p>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li>Visit the <a href="https://www.anaconda.com/products/distribution" target="_blank" class="text-blue-600 hover:underline">Anaconda website</a> and download the installer for your operating system (Windows, macOS, or Linux).</li>
+                            <li>Run the installer, following the on-screen instructions. Using the default settings is recommended for beginners.</li>
+                            <li>Once installed, you can find and open the "Anaconda Navigator" application, from which you can launch tools like the Spyder code editor or a Jupyter Notebook to start coding.</li>
+                        </ol>
+                    `
+                },
+                'core-concepts': {
+                    title: '2. The Core: Variables, Data Types & Operators',
+                    body: `
+                        <h3 class="text-2xl font-semibold mb-3">Variables</h3>
+                        <p class="mb-2">A variable is a named storage location for data. In health data analysis, variables hold key pieces of information like patient age, test results, or dates.</p>
+                        <div class="code-block" data-output="Patient is 34 years old. Gestational age: 28 weeks.">
+                            <pre><code># Variables for patient data
+maternal_age = 34
+patient_id = "PAT-00123"
+gestational_age_weeks = 28
+is_first_pregnancy = False
+
+print(f"Patient is {maternal_age} years old.")
+print(f"Gestational age: {gestational_age_weeks} weeks.")</code></pre>
+                        </div>
+
+                        <h3 class="text-2xl font-semibold my-4">Data Types</h3>
+                        <p class="mb-2">Every variable has a type, which determines what kind of data it can store.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Integer (<code>int</code>):</strong> Whole numbers, like age or number of previous births.</li>
+                            <li><strong>Float (<code>float</code>):</strong> Numbers with decimal points, like birth weight in kilograms (e.g., 3.45).</li>
+                            <li><strong>String (<code>str</code>):</strong> Textual data, like patient names or notes. Must be in quotes.</li>
+                            <li><strong>Boolean (<code>bool</code>):</strong> Represents either <code>True</code> or <code>False</code>, perfect for yes/no data.</li>
+                        </ul>
+
+                        <h3 class="text-2xl font-semibold my-4">Operators</h3>
+                        <p class="mb-2">Operators perform actions on variables. Arithmetic operators (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>) do math, while comparison operators (<code>></code>, <code><</code>, <code>==</code>) compare values.</p>
+                        <div class="code-block" data-output="Weeks remaining (approx): 12\nPatient is over 30: True">
+                            <pre><code># Using operators
+full_term_weeks = 40
+weeks_remaining = full_term_weeks - gestational_age_weeks
+print(f"Weeks remaining (approx): {weeks_remaining}")
+
+is_over_30 = maternal_age > 30
+print(f"Patient is over 30: {is_over_30}")</code></pre>
+                        </div>
+                    `
+                },
+                'data-structures': {
+                    title: '3. Structuring Data: Lists & Dictionaries',
+                    body: `
+                        <h3 class="text-xl font-semibold mb-3">Lists: Ordered, Changeable Collections</h3>
+                        <p class="mb-2">A list stores a sequence of items in a specific order. They are ideal for collecting a series of measurements, like weekly weight tracking during pregnancy.</p>
+                        <div class="code-block" data-output="Weight at week 12: 61.5 kg\nTotal number of check-ins: 4">
+                            <pre><code># A list of weekly weight measurements in kg
+weekly_weights = [60.2, 60.8, 61.5, 62.1]
+
+# Access the third measurement (index 2)
+weight_at_week_12 = weekly_weights[2]
+print(f"Weight at week 12: {weight_at_week_12} kg")
+
+# Add a new measurement
+weekly_weights.append(62.9)
+print(f"Total number of check-ins: {len(weekly_weights)}")
+</code></pre>
+                        </div>
+
+                        <h3 class="text-xl font-semibold my-4">Dictionaries: Key-Value Pairs</h3>
+                        <p class="mb-2">A dictionary stores data in key-value pairs, which is perfect for organizing the properties of a single subject, like a patient's chart or a newborn's record.</p>
+                        <div class="code-block" data-output="Newborn's APGAR score at 5 mins: 9">
+                            <pre><code># A dictionary for a newborn's birth record
+newborn_record = {
+    "birth_weight_g": 3450,
+    "length_cm": 51,
+    "apgar_1min": 8,
+    "apgar_5min": 9,
+    "delivery_type": "Vaginal"
+}
+# Access a value by its key
+apgar_score = newborn_record["apgar_5min"]
+print(f"Newborn's APGAR score at 5 mins: {apgar_score}")
+</code></pre>
+                        </div>
+                    `
+                },
+                'control-flow': {
+                    title: '4. Controlling the Flow: Conditional Logic & Loops',
+                    body: `
+                        <h3 class="text-xl font-semibold mb-3">Conditional Statements (if/elif/else)</h3>
+                        <p class="mb-2">Conditional logic allows your program to make decisions. We can use it to classify a gestational age into the correct trimester.</p>
+                        <div class="code-block" data-output="This is the Second Trimester.">
+                             <pre><code># Classify gestational age into trimesters
+gestational_age = 15 # in weeks
+
+if gestational_age <= 12:
+    print("This is the First Trimester.")
+elif gestational_age <= 27:
+    print("This is the Second Trimester.")
+else:
+    print("This is the Third Trimester.")
+</code></pre>
+                        </div>
+
+                        <p class="mt-4 mb-2">Try it yourself! Enter a gestational week below to see the classification.</p>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <input type="number" id="trimester-input" placeholder="Enter week (e.g., 10, 25, 35)" class="p-2 border rounded-md w-64 bg-gray-50">
+                            <button id="trimester-button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Classify Trimester</button>
+                        </div>
+                        <div id="trimester-output" class="p-3 bg-gray-100 rounded-md h-10"></div>
+
+                        <h3 class="text-xl font-semibold my-4">'for' Loops</h3>
+                        <p class="mb-2">A <code>for</code> loop is used to repeat an action for each item in a sequence. Here, we can loop through a list of patient blood pressure readings to check for high values.</p>
+                        <div class="code-block" data-output="Checking reading: 120/80 - Normal\nChecking reading: 125/85 - Normal\nALERT: High blood pressure detected: 142/91\nChecking reading: 138/88 - Elevated">
+                             <pre><code># Check a list of blood pressure readings
+bp_readings = ["120/80", "125/85", "142/91", "138/88"]
+
+for reading in bp_readings:
+    systolic = int(reading.split('/')[0])
+    diastolic = int(reading.split('/')[1])
+    
+    if systolic >= 140 or diastolic >= 90:
+        print(f"ALERT: High blood pressure detected: {reading}")
+    elif systolic >= 130 or diastolic > 80:
+        print(f"Checking reading: {reading} - Elevated")
+    else:
+        print(f"Checking reading: {reading} - Normal")
+</code></pre>
+                        </div>
+                    `
+                },
+                'functions': {
+                    title: '5. Building Blocks: Functions',
+                    body: `
+                        <h3 class="text-xl font-semibold mb-3">What is a Function?</h3>
+                        <p class="mb-2">A function is a reusable block of code that performs a specific task. By packaging code into a function, you can run it multiple times with different inputs without rewriting it.</p>
+                        
+                        <h3 class="text-xl font-semibold my-4">Defining and Calling a Function</h3>
+                        <p class="mb-2">You define a function with <code>def</code>. It can take inputs (<strong>parameters</strong>) and can produce an output using the <code>return</code> statement. You use the function by "calling" it with specific values (<strong>arguments</strong>).</p>
+                        <div class="code-block" data-output="Birth weight category: Normal\nBirth weight category: Low">
+                            <pre><code># Define a function to categorize birth weight
+def categorize_birth_weight(weight_grams):
+    """Categorizes birth weight in grams."""
+    if weight_grams < 2500:
+        return "Low"
+    elif weight_grams > 4000:
+        return "High"
+    else:
+        return "Normal"
+
+# Call the function for two different newborns
+category1 = categorize_birth_weight(3200)
+print(f"Birth weight category: {category1}")
+
+category2 = categorize_birth_weight(2400)
+print(f"Birth weight category: {category2}")
+</code></pre>
+                        </div>
+                    `
+                },
+                'error-handling': {
+                    title: '6. Handling Errors: The try...except Block',
+                    body: `
+                        <p class="mb-2">When working with real-world data, you'll often encounter errors, such as missing or incorrectly formatted values. A <code>try...except</code> block lets you handle these errors gracefully without crashing your program.</p>
+                        <p class="mb-2">In this example, we'll try to calculate an average from a list that might contain non-numeric data.</p>
+                        <div class="code-block" data-output="Value 'N/A' is not a valid number and was skipped.\nAverage APGAR score: 8.5">
+                            <pre><code># Calculate average from a list with a bad data point
+apgar_scores = [8, 9, "N/A", 9]
+total_score = 0
+valid_count = 0
+
+for score in apgar_scores:
+    try:
+        # Try to convert the score to a number
+        total_score += int(score)
+        valid_count += 1
+    except ValueError:
+        # If it fails, print a message and continue
+        print(f"Value '{score}' is not a valid number and was skipped.")
+
+average_score = total_score / valid_count
+print(f"Average APGAR score: {average_score}")
+</code></pre>
+                        </div>
+                    `
+                },
+                'file-io': {
+                    title: '7. Working with Files',
+                    body: `
+                        <p class="mb-2">Analyzing health data often involves reading from or writing to files. The <code>with open(...)</code> syntax is the standard way to handle files, as it ensures they are closed properly.</p>
+                        <p class="mb-2">This example simulates writing patient notes to a text file.</p>
+                        <div class="code-block" data-output="Writing report to 'patient_PAT-00123.txt'...\nReport saved successfully.">
+                            <pre><code># Data to be written to a file
+patient_id = "PAT-00123"
+notes = "Patient at 32 weeks. Reports normal fetal movement. Blood pressure is stable at 122/81. Scheduled for follow-up in 2 weeks."
+filename = f"patient_{patient_id}.txt"
+
+# Simulate writing the file
+# In a real script, this would be:
+# with open(filename, "w") as f:
+#     f.write("Patient Visit Notes\\n")
+#     f.write("--------------------\\n")
+#     f.write(notes)
+
+print(f"Writing report to '{filename}'...")
+print("Report saved successfully.")
+</code></pre>
+                        </div>
+                    `
+                },
+                 'modules': {
+                    title: '8. Modules & Packages',
+                    body: `
+                        <h3 class="text-2xl font-semibold mb-3">What are Modules and Packages?</h3>
+                        <p class="mb-2">A <strong>module</strong> is a Python file with functions you can import into your script. A <strong>package</strong> (or library) is a collection of modules that provide tools for specific tasks, like data analysis or plotting.</p>
+                        <p class="mb-4">For health data, key packages include <strong>Pandas</strong> for organizing data into tables (DataFrames), and <strong>Matplotlib</strong> for creating charts and graphs.</p>
+                        
+                        <h3 class="text-2xl font-semibold mt-6 mb-3">Analyzing Birth Data</h3>
+                        <p class="mb-4">Here, we'll use Pandas and Matplotlib to analyze and visualize a small dataset of births by day of the week.</p>
+                        
+                        <h4 class="text-xl font-semibold mb-3">Pandas: Organizing Data</h4>
+                        <p class="mb-2">First, we load our data into a Pandas DataFrame. This gives us a powerful and easy-to-use table structure.</p>
+                        <div class="code-block" data-output="      Day  Births\n0     Mon     450\n1    Tues     510\n2     Wed     505\n3   Thurs     480\n4     Fri     460\n5     Sat     350\n6     Sun     310">
+                            <pre><code># This is a simulation of the library's output
+# import pandas as pd
+
+# Raw data for births per day
+data = {
+    'Day': ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
+    'Births': [450, 510, 505, 480, 460, 350, 310]
+}
+# df = pd.DataFrame(data)
+# print(df.to_string())
+print("      Day  Births\\n0     Mon     450\\n1    Tues     510\\n2     Wed     505\\n3   Thurs     480\\n4     Fri     460\\n5     Sat     350\\n6     Sun     310")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">Matplotlib: Visualizing Data</h4>
+                        <p class="mb-2">Now, we can use Matplotlib (via Chart.js in this interactive example) to create a bar chart from our DataFrame. This makes it easy to see that more births occur on weekdays.</p>
+                        <div class="my-4 p-4 border rounded-lg bg-gray-50">
+                            <div class="chart-container">
+                                <canvas id="birthsChart"></canvas>
+                            </div>
+                        </div>
+                    `
+                },
+                'putting-it-all-together': {
+                    title: '9. Putting It All Together: A Due Date Calculator',
+                    body: `
+                        <p class="mb-4">This final example combines everything we've learned: variables, data structures, functions, and error handling to create a useful tool: an estimated due date (EDD) calculator.</p>
+                        <p class="mb-4">The script defines a function that takes a last menstrual period (LMP) date as a string, validates it, and calculates the EDD based on Naegele's rule (LMP - 3 months + 7 days + 1 year). It uses error handling to manage incorrect date formats.</p>
+                        <div class="code-block" data-output="LMP: 2023-06-15 -> Estimated Due Date: 2024-03-22\nLMP: 2024-01-20 -> Estimated Due Date: 2024-10-27\nError processing date '2023/12/25': Invalid date format. Please use YYYY-MM-DD.">
+                            <pre><code># We need the 'datetime' module to work with dates
+from datetime import datetime, timedelta
+
+def calculate_edd(lmp_date_str):
+    """Calculates the estimated due date from an LMP date string."""
+    try:
+        # Try to convert the string to a date object
+        lmp_date = datetime.strptime(lmp_date_str, '%Y-%m-%d')
+        
+        # Naegele's Rule: Add 1 year, subtract 3 months, add 7 days
+        # This is a simplified way to do it
+        edd = lmp_date + timedelta(days=280) # Average pregnancy is 280 days
+        return edd.strftime('%Y-%m-%d')
+
+    except ValueError:
+        # Handle cases where the date format is wrong
+        return f"Invalid date format. Please use YYYY-MM-DD."
+
+# --- Main part of the script ---
+# A list of LMP dates to process
+lmp_dates = ["2023-06-15", "2024-01-20", "2023/12/25"]
+
+print("--- Due Date Calculations ---")
+for lmp in lmp_dates:
+    edd = calculate_edd(lmp)
+    if "Invalid" in edd:
+        print(f"Error processing date '{lmp}': {edd}")
+    else:
+        print(f"LMP: {lmp} -> Estimated Due Date: {edd}")
+</code></pre>
+                        </div>
+                    `
+                }
+            };
+
+            const contentContainer = document.getElementById('content-container');
+            const navigation = document.getElementById('navigation');
+            let birthsChartInstance = null;
+
+            function renderContent(hash) {
+                const key = hash.substring(1);
+                const sectionData = content[key] || content['introduction'];
+
+                contentContainer.innerHTML = `<h1 class="text-3xl font-bold mb-6 pb-2 border-b">${sectionData.title}</h1>${sectionData.body}`;
+                
+                contentContainer.querySelectorAll('.code-block').forEach(block => {
+                    const output = block.getAttribute('data-output');
+                    const button = document.createElement('button');
+                    button.textContent = '▶ Run Code';
+                    button.className = 'run-button mt-2 px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600';
+                    block.appendChild(button);
+
+                    const outputDiv = document.createElement('div');
+                    outputDiv.className = 'code-output hidden';
+                    block.appendChild(outputDiv);
+
+                    button.addEventListener('click', () => {
+                        outputDiv.textContent = output.replace(/\\n/g, '\n');
+                        outputDiv.classList.remove('hidden');
+                    });
+                });
+
+                if (key === 'control-flow') {
+                    document.getElementById('trimester-button').addEventListener('click', handleTrimesterCheck);
+                }
+                if (key === 'modules') {
+                    renderBirthsChart();
+                }
+
+                navigation.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === hash);
+                });
+            }
+
+            function handleTrimesterCheck() {
+                const input = document.getElementById('trimester-input');
+                const output = document.getElementById('trimester-output');
+                const week = parseInt(input.value);
+                let result = '';
+                if (isNaN(week) || week < 1 || week > 42) {
+                    result = 'Please enter a valid week (1-42).';
+                } else if (week <= 12) {
+                    result = 'This is the First Trimester.';
+                } else if (week <= 27) {
+                    result = 'This is the Second Trimester.';
+                } else {
+                    result = 'This is the Third Trimester.';
+                }
+                output.textContent = result;
+            }
+
+            function renderBirthsChart() {
+                const ctx = document.getElementById('birthsChart')?.getContext('2d');
+                if (!ctx) return;
+                if (birthsChartInstance) birthsChartInstance.destroy();
+                birthsChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Number of Births',
+                            data: [450, 510, 505, 480, 460, 350, 310],
+                            backgroundColor: '#76A9FA',
+                            borderColor: '#4299E1',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Births per Day of the Week' }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Number of Births' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            navigation.addEventListener('click', function(e) {
+                if (e.target.classList.contains('nav-link')) {
+                    e.preventDefault();
+                    const hash = e.target.getAttribute('href');
+                    window.location.hash = hash;
+                }
+            });
+
+            window.addEventListener('hashchange', () => {
+                renderContent(window.location.hash || '#introduction');
+            });
+
+            // Initial load
+            renderContent(window.location.hash || '#introduction');
+        });
+    </script>
+</body>
+</html>
