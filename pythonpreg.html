@@ -99,7 +99,8 @@
                     body: `
                         <h3 class="text-2xl font-semibold mb-3">What is Python?</h3>
                         <p class="mb-4">Python is a high-level, general-purpose programming language known for its simple, readable syntax. It's an excellent language for beginners because it allows you to write powerful programs with very few lines of code. It is "interpreted," meaning you can run your code line by line and see immediate results, which makes learning and debugging much faster.</p>
-                        
+
+
                         <h3 class="text-2xl font-semibold my-4">Why Use Python for Pregnancy & Birth Data?</h3>
                         <p class="mb-4">While pregnancy is a personal journey, understanding it on a larger scale involves analyzing data. Public health officials, researchers, and clinicians analyze data to find patterns, understand risks, and improve care for mothers and babies. Python is the leading language for data science because:</p>
                         <ul class="list-disc list-inside space-y-2">
@@ -109,13 +110,45 @@
                         </ul>
                         <p class="mt-4">This guide will teach you the fundamentals of Python using examples relevant to this important field.</p>
 
-                        <h3 class="text-2xl font-semibold my-4">Getting Started: Installation</h3>
-                        <p class="mb-4">To begin, you need to install Python on your computer. For data analysis, the easiest way is to use the <strong>Anaconda Distribution</strong>. It includes Python, a user-friendly code editor (Spyder), and all the essential scientific packages you'll need, pre-installed.</p>
-                        <ol class="list-decimal list-inside space-y-2">
-                            <li>Visit the <a href="https://www.anaconda.com/products/distribution" target="_blank" class="text-blue-600 hover:underline">Anaconda website</a> and download the installer for your operating system (Windows, macOS, or Linux).</li>
-                            <li>Run the installer, following the on-screen instructions. Using the default settings is recommended for beginners.</li>
-                            <li>Once installed, you can find and open the "Anaconda Navigator" application, from which you can launch tools like the Spyder code editor or a Jupyter Notebook to start coding.</li>
-                        </ol>
+                        <!-- Installation instructions now included in the VS Code/Jupyter section below -->
+
+                        <div class="my-4 p-4 bg-blue-50 border border-blue-200 rounded">
+                            <strong>Getting Started: Interactive Python Tutorial</strong>
+                            <ol class="list-decimal list-inside mt-2 space-y-2">
+                                <li>
+                                    <b>Download the tutorial notebook:</b><br>
+                                    <a id="notebook-download-link" href="Python_Pregnancy_Tutorial.zip" download class="text-blue-600 hover:underline">Download Python_Pregnancy_Tutorial.zip</a>
+                                    <span class="text-xs text-gray-700">(Unzip to get the .ipynb file)</span>
+                                </li>
+                                <li>
+                                    <b>Option 1: Use VS Code or Jupyter Notebook (on your computer)</b>
+                                    <ul class="list-disc list-inside ml-6 mt-1">
+                                        <li>Download and install <a href="https://code.visualstudio.com/" target="_blank" class="text-blue-600 hover:underline">Visual Studio Code</a> for your operating system.</li>
+                                        <li>Open VS Code and go to <b>Extensions</b> (left sidebar), then search for and install the <b>Jupyter</b> extension by Microsoft.</li>
+                                        <li>If you do not have Python installed, the easiest way is to install the <a href="https://www.anaconda.com/products/distribution" target="_blank" class="text-blue-600 hover:underline">Anaconda Distribution</a> (includes Python, Jupyter, and scientific libraries):
+                                            <ul class="list-disc list-inside ml-6 mt-1">
+                                                <li>Download the installer for your OS from the Anaconda website.</li>
+                                                <li>Run the installer and follow the on-screen instructions (default settings are fine).</li>
+                                            </ul>
+                                        </li>
+                                        <li>Unzip the downloaded <code>Python_Pregnancy_Tutorial.zip</code> to extract <code>Python_Pregnancy_Tutorial.ipynb</code>.</li>
+                                        <li>Open the <code>Python_Pregnancy_Tutorial.ipynb</code> file in VS Code.</li>
+                                        <li>Run code cells by clicking the <b>Run</b> button or pressing <code>Shift+Enter</code>.</li>
+                                        <li>Add new code or markdown cells as you explore.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <b>Option 2: Use Google Colab (in your browser, no install needed)</b>
+                                    <ul class="list-disc list-inside ml-6 mt-1">
+                                        <li>Go to <a href="https://colab.research.google.com/" target="_blank" class="text-blue-600 hover:underline">Google Colab</a>.</li>
+                                        <li>Click <b>File &gt; Upload notebook</b> and select <code>Python_Pregnancy_Tutorial.ipynb</code> from your computer (after unzipping).</li>
+                                        <li>Run code cells by clicking the <b>Run</b> button or pressing <code>Shift+Enter</code>.</li>
+                                        <li>You can also save your work to Google Drive.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                            <p class="mt-2 text-sm text-blue-900">Choose the method that works best for you. Both options let you run, edit, and experiment with the pregnancy data tutorial interactively!</p>
+                        </div>
                     `
                 },
                 'core-concepts': {
