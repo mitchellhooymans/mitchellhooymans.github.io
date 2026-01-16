@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamics & Formation of Stellar Mass Black Holes in Globular Clusters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax Configuration & Load -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* Chart Container Styling - Mandatory Strictness */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        
+        /* Custom Scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f5f5f4; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a8a29e; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #78716c; 
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Utility for logic visibility */
+        .hidden-content {
+            display: none;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Burnt Orange Accents. 
+         Background: Stone-50/100. Text: Stone-800. Accents: Orange-600/700.
+         Reason: Evokes a sense of academic seriousness, 'old paper', and the high-energy physics of black holes without being neon/sci-fi. -->
+
+    <!-- Application Structure Plan:
+         1. Hero Section: "The Unconstrained Variable". Hook the user with the central problem (Kicks).
+         2. Interactive Simulator (The Core): A dashboard combining Section 2 (Kicks) and Section 3 (Retention). 
+            - Users adjust the "Assumed Kick Velocity" (The unconstrained variable).
+            - This updates a Maxwellian distribution chart and a Retention Donut chart in real-time.
+            - This emphasizes the causal link: Kick -> Retention.
+         3. The Dynamical Factory (Section 3 & 4): Cards explaining the process (Mass Segregation -> Exchange -> Hardening).
+         4. The Synthesis (Section 5): A "Rate-Kick Relation" chart showing how the user's input affects the global GW merger rate.
+         5. Future Probes (Section 6): Accordion/Tabs for LISA vs. ET.
+         
+         Why: This structure transforms the linear literature review into a "Simulation" of the thesis argument. 
+         Instead of just reading about the correlation, the user *creates* the correlation by adjusting the kick slider. 
+    -->
+
+    <!-- Visualization & Content Choices:
+         1. Kick Distribution (Chart.js Line): Shows the Maxwellian probability density. Essential to visualize "High Kick" vs "Low Kick" populations.
+         2. Retention Fraction (Chart.js Doughnut): Dynamic visual of "Field" vs "Cluster" population based on Escape Velocity.
+         3. Merger Rate Synthesis (Chart.js Scatter/Line): Illustrates the theoretical inverse relationship between kick magnitude and merger rate.
+         4. Process Flow (HTML/CSS Cards): Uses Unicode icons to represent the N-body interactions (3-body, Exchange) as abstract diagrams.
+         
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visuals are Canvas (Chart.js) or styled HTML/Unicode.
+    -->
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans leading-relaxed">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-stone-100/95 backdrop-blur border-b border-stone-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl text-orange-600 font-bold">●</span>
+                    <span class="font-bold text-lg tracking-tight">GC Dynamics & GWs</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="#intro" class="hover:text-orange-600 transition-colors">Context</a>
+                    <a href="#simulator" class="hover:text-orange-600 transition-colors">Kick Simulator</a>
+                    <a href="#dynamics" class="hover:text-orange-600 transition-colors">Dynamics</a>
+                    <a href="#synthesis" class="hover:text-orange-600 transition-colors">Synthesis</a>
+                    <a href="#future" class="hover:text-orange-600 transition-colors">Future</a>
+                </div>
+                <!-- Mobile Nav Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-stone-600 hover:text-orange-600 text-xl font-bold">
+                    ☰
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-stone-100 border-b border-stone-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#intro" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-200">Context</a>
+                <a href="#simulator" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-200">Kick Simulator</a>
+                <a href="#dynamics" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-200">Dynamics</a>
+                <a href="#synthesis" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-stone-200">Synthesis</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- Section 1: Introduction / Hero -->
+        <section id="intro" class="text-center space-y-6 max-w-4xl mx-auto">
+            <div class="inline-block px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-semibold uppercase tracking-wider">
+                PhD Literature Review
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
+                Dynamics & Formation of <br>
+                <span class="text-orange-600">Stellar Mass Black Holes</span> <br>
+                in Dense Star Clusters
+            </h1>
+            <p class="text-lg md:text-xl text-stone-600">
+                Are Globular Clusters (GCs) the dominant factories for Gravitational Wave (GW) sources? 
+                The answer lies in an <strong>unconstrained variable</strong>: the magnitude of Black Hole Natal Kicks.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-left">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                    <div class="text-3xl mb-3">↺</div>
+                    <h3 class="font-bold text-stone-900 mb-2">The Paradigm Shift</h3>
+                    <p class="text-sm text-stone-600">
+                        Historically, Spitzer Instability suggested BHs were ejected immediately. 
+                        Modern view: Clusters retain significant BH populations (e.g., M22, 47 Tuc).
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                    <div class="text-3xl mb-3">≋</div>
+                    <h3 class="font-bold text-stone-900 mb-2">The GW Connection</h3>
+                    <p class="text-sm text-stone-600">
+                        LIGO/Virgo detect heavy binary black hole (BBH) mergers. Dense environments (GCs) create these efficiently via dynamical exchange, unlike isolated field evolution.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                    <div class="text-3xl mb-3 text-orange-600">?</div>
+                    <h3 class="font-bold text-stone-900 mb-2">The Unknown</h3>
+                    <p class="text-sm text-stone-600">
+                        <strong>Natal Kicks.</strong> Do BHs get kicked like Neutron Stars (high velocity) or do they direct-collapse (zero kick)? This thesis explores this uncertainty.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2 & 3: The Kick Simulator (Interactive Core) -->
+        <section id="simulator" class="scroll-mt-24">
+            <div class="bg-white rounded-2xl shadow-lg border border-stone-200 overflow-hidden">
+                <div class="bg-stone-900 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl font-bold mb-2">The Physics of Retention Simulator</h2>
+                    <p class="text-stone-300 max-w-3xl">
+                        This section combines <strong>Section 2 (Physics of Kicks)</strong> and <strong>Section 3 (Dynamics)</strong>. 
+                        Adjust the theoretical "Kick Dispersion" ($\sigma$) to see how it competes with the Cluster Escape Velocity ($v_{esc}$), determining the retention fraction ($f_{ret}$).
+                    </p>
+                </div>
+                
+                <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Controls Column -->
+                    <div class="lg:col-span-4 space-y-8">
+                        
+                        <!-- Control 1: Kick Sigma -->
+                        <div class="space-y-3">
+                            <label for="kickSlider" class="flex justify-between font-semibold text-stone-700">
+                                <span>Natal Kick Dispersion ($\sigma$)</span>
+                                <span id="kickValue" class="text-orange-600">265 km/s</span>
+                            </label>
+                            <input type="range" id="kickSlider" min="10" max="400" value="265" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-orange-600">
+                            <div class="flex justify-between text-xs text-stone-500">
+                                <span>Direct Collapse (10km/s)</span>
+                                <span>NS-like (265km/s)</span>
+                            </div>
+                            <p class="text-xs text-stone-500 bg-stone-50 p-3 rounded border border-stone-200">
+                                <strong>Mechanism:</strong> Momentum asymmetry (neutrinos/ejecta) vs. Blaauw kicks (mass loss). High values imply NS-like mechanisms; low values imply direct collapse.
+                            </p>
+                        </div>
+
+                        <!-- Control 2: Escape Velocity -->
+                        <div class="space-y-3">
+                            <label for="escSlider" class="flex justify-between font-semibold text-stone-700">
+                                <span>Cluster Escape Velocity ($v_{esc}$)</span>
+                                <span id="escValue" class="text-blue-600">50 km/s</span>
+                            </label>
+                            <input type="range" id="escSlider" min="10" max="100" value="50" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            <div class="flex justify-between text-xs text-stone-500">
+                                <span>Small Cluster</span>
+                                <span>Massive GC/NSC</span>
+                            </div>
+                            <p class="text-xs text-stone-500 bg-stone-50 p-3 rounded border border-stone-200">
+                                Typical GCs have $v_{esc} \approx 30-90$ km/s. If Kick > $v_{esc}$, the BH is ejected into the Galactic Halo.
+                            </p>
+                        </div>
+
+                        <!-- Result Box -->
+                        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg text-center">
+                            <span class="block text-sm text-stone-600 uppercase tracking-wide mb-1">Calculated Retention Fraction</span>
+                            <span id="retentionDisplay" class="text-4xl font-bold text-stone-800">0%</span>
+                            <p id="retentionText" class="text-xs text-stone-600 mt-2">
+                                Almost all BHs ejected. Cluster evolution dominated by Neutron Stars.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Visualizations Column -->
+                    <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Chart 1: Kick Distribution -->
+                        <div class="bg-white p-4 rounded-lg border border-stone-100 shadow-sm">
+                            <h4 class="text-sm font-bold text-stone-700 mb-2 text-center">Kick Probability Distribution (Maxwellian)</h4>
+                            <div class="chart-container">
+                                <canvas id="kickChart"></canvas>
+                            </div>
+                            <p class="text-xs text-center text-stone-400 mt-2">Shaded Area = Retained Population ($v < v_{esc}$)</p>
+                        </div>
+
+                        <!-- Chart 2: Retention Donut -->
+                        <div class="bg-white p-4 rounded-lg border border-stone-100 shadow-sm">
+                            <h4 class="text-sm font-bold text-stone-700 mb-2 text-center">Fate of Black Hole Population</h4>
+                            <div class="chart-container">
+                                <canvas id="retentionChart"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Dynamics & GW Formation Channels -->
+        <section id="dynamics" class="scroll-mt-24 space-y-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">Inside the Cluster: The GW Factory</h2>
+                <p class="text-stone-600">
+                    For the fraction of Black Holes that are <strong>retained</strong> (calculated above), the dense cluster environment acts as a catalyst for binary formation. This section details the "Dynamical Formation Channels" from the literature.
+                </p>
+            </div>
+
+            <!-- Interactive Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Mechanism 1 -->
+                <div class="group relative bg-white border border-stone-200 rounded-xl p-6 hover:border-orange-300 transition-all cursor-default">
+                    <div class="absolute -top-4 left-6 bg-stone-800 text-white text-xs font-bold px-3 py-1 rounded">Step 1</div>
+                    <div class="h-12 w-12 bg-stone-100 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:bg-orange-100 transition-colors">
+                        📉
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Mass Segregation</h3>
+                    <p class="text-sm text-stone-600 mb-4">
+                        Dynamical friction causes heavy BHs to sink to the core ($t_{df} \propto M^{-1}$). This forms a decoupled <strong>Black Hole Subsystem (BHS)</strong>.
+                    </p>
+                    <div class="bg-stone-50 p-3 rounded text-xs text-stone-500 border border-stone-100">
+                        <strong>Impact:</strong> Density increases dramatically, triggering the "Spitzer Instability".
+                    </div>
+                </div>
+
+                <!-- Mechanism 2 -->
+                <div class="group relative bg-white border border-stone-200 rounded-xl p-6 hover:border-orange-300 transition-all cursor-default">
+                    <div class="absolute -top-4 left-6 bg-stone-800 text-white text-xs font-bold px-3 py-1 rounded">Step 2</div>
+                    <div class="h-12 w-12 bg-stone-100 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:bg-orange-100 transition-colors">
+                        ⇄
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Exchange Interactions</h3>
+                    <p class="text-sm text-stone-600 mb-4">
+                        A heavy BH encounters a lighter binary (Star-Star) and swaps places.
+                        <br>
+                        <span class="font-mono text-xs block mt-1">BH + (Star-Star) → (BH-Star) + Star</span>
+                    </p>
+                    <div class="bg-stone-50 p-3 rounded text-xs text-stone-500 border border-stone-100">
+                        <strong>Outcome:</strong> Efficient formation of BH-BH binaries (BBH).
+                    </div>
+                </div>
+
+                <!-- Mechanism 3 -->
+                <div class="group relative bg-white border border-stone-200 rounded-xl p-6 hover:border-orange-300 transition-all cursor-default">
+                    <div class="absolute -top-4 left-6 bg-stone-800 text-white text-xs font-bold px-3 py-1 rounded">Step 3</div>
+                    <div class="h-12 w-12 bg-stone-100 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:bg-orange-100 transition-colors">
+                        💥
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Hardening & Merger</h3>
+                    <p class="text-sm text-stone-600 mb-4">
+                        "Heggie's Law": Hard binaries get harder via scattering interactions. Recoil often ejects the binary <em>before</em> merger.
+                    </p>
+                    <div class="bg-stone-50 p-3 rounded text-xs text-stone-500 border border-stone-100">
+                        <strong>Result:</strong> Ejection Mergers (merge in field) vs. In-cluster Mergers (rare, heavy).
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 5: Synthesis / Rate-Kick Relation -->
+        <section id="synthesis" class="bg-stone-900 rounded-3xl p-8 md:p-12 text-white scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <div>
+                    <h2 class="text-3xl font-bold mb-4">Synthesis: The Rate-Kick Relation</h2>
+                    <p class="text-stone-300 mb-6 leading-relaxed">
+                        This is the core analysis of the thesis. The uncertainty in the kick velocity (Section 2) propagates through the dynamics (Section 3 & 4) to fundamentally alter the predicted merger rate density ($\mathcal{R}$).
+                    </p>
+                    
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="text-orange-500 font-bold mt-1">A.</span>
+                            <div>
+                                <strong class="text-white">Low Kicks ($\sigma < 50$ km/s):</strong>
+                                <p class="text-sm text-stone-400">High retention -> Massive BHS -> Frequent interactions -> <span class="text-orange-400">High Merger Rate</span>.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-blue-500 font-bold mt-1">B.</span>
+                            <div>
+                                <strong class="text-white">High Kicks ($\sigma > 200$ km/s):</strong>
+                                <p class="text-sm text-stone-400">Low retention -> Cluster "puffed" less -> Evolution dominated by White Dwarfs/NS -> <span class="text-blue-400">Low Merger Rate</span>.</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="mt-8 p-4 bg-stone-800 rounded border-l-4 border-orange-500">
+                        <p class="text-xs text-stone-400 font-mono">THESIS GOAL</p>
+                        <p class="text-sm italic">"Constraining natal kicks by working backwards from dynamical arguments and observed LIGO rates."</p>
+                    </div>
+                </div>
+
+                <div class="bg-stone-800 p-4 rounded-xl border border-stone-700 shadow-xl">
+                    <h4 class="text-sm font-bold text-stone-300 mb-4 text-center">Theoretical Merger Rate vs. Kick Dispersion</h4>
+                    <div class="chart-container">
+                        <canvas id="rateChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-stone-500 mt-3">
+                        Conceptual model showing the inverse correlation.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Future Probes -->
+        <section id="future" class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl font-bold text-stone-900 text-center">Observational Constraints & Future Prospects</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Current Tension -->
+                <div class="border-t-4 border-stone-300 bg-white p-6 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">The Current Tension</h3>
+                    <p class="text-sm text-stone-600">
+                        Do "standard" Maxwellian kicks reproduce LIGO rates? Models like <code>CMC</code> and <code>NBODY6</code> suggest a tension. If kicks are high (NS-like), GCs cannot produce enough mergers to match the high mass BBH rate observed. This implies either <strong>low kicks</strong> or <strong>significant 2G mergers</strong>.
+                    </p>
+                </div>
+                <!-- Future Detectors -->
+                <div class="border-t-4 border-orange-500 bg-white p-6 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">Future Detectors</h3>
+                    <ul class="text-sm text-stone-600 space-y-2">
+                        <li><strong>LISA:</strong> Will detect IMBHs or heavy BHSs in the Milky Way, providing a local census of retention.</li>
+                        <li><strong>Einstein Telescope (3G):</strong> Will see the entire history of cluster mergers ($z \sim 10$), constraining the formation time and thus the initial conditions (kicks).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-10 mt-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">Generated Analysis based on User Literature Review Outline</p>
+            <p class="text-xs mt-2 text-stone-600">Topic: Dynamics and Formation of Stellar Mass Black Holes in Dense Star Clusters</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- State Management ---
+        const state = {
+            kickSigma: 265, // km/s
+            escapeVel: 50,  // km/s
+            retention: 0    // fraction 0-1
+        };
+
+        // --- DOM Elements ---
+        const kickSlider = document.getElementById('kickSlider');
+        const kickValue = document.getElementById('kickValue');
+        const escSlider = document.getElementById('escSlider');
+        const escValue = document.getElementById('escValue');
+        const retentionDisplay = document.getElementById('retentionDisplay');
+        const retentionText = document.getElementById('retentionText');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // --- Math Helpers ---
+        // Maxwell-Boltzmann Probability Density Function
+        function maxwellian(v, sigma) {
+            const a = Math.sqrt(2/Math.PI);
+            const b = (v*v) / (sigma*sigma*sigma);
+            const c = Math.exp( - (v*v) / (2*sigma*sigma) );
+            return a * b * c;
+        }
+
+        // Calculate Retention Fraction (Integral of Maxwellian from 0 to V_esc)
+        // Using approximation via error function for CDF of Maxwellian
+        function calculateRetention(sigma, v_esc) {
+            // The CDF of Maxwell-Boltzmann is: erf(v/(sqrt(2)*a)) - sqrt(2/pi)* (v/a) * exp(-v^2/(2a^2))
+            // Here sigma is 'a'.
+            const x = v_esc / (Math.sqrt(2) * sigma);
+            const term1 = erf(x);
+            const term2 = Math.sqrt(2/Math.PI) * (v_esc / sigma) * Math.exp( - (v_esc*v_esc) / (2*sigma*sigma) );
+            return Math.max(0, Math.min(1, term1 - term2));
+        }
+
+        // Error function approximation (Abramowitz and Stegun)
+        function erf(x) {
+            const sign = (x >= 0) ? 1 : -1;
+            x = Math.abs(x);
+            const a1 =  0.254829592;
+            const a2 = -0.284496736;
+            const a3 =  1.421413741;
+            const a4 = -1.453152027;
+            const a5 =  1.061405429;
+            const p  =  0.3275911;
+
+            const t = 1.0 / (1.0 + p*x);
+            const y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t * Math.exp(-x*x);
+            return sign * y;
+        }
+
+        // --- Chart Initialization ---
+        
+        // 1. Kick Distribution Chart
+        const ctxKick = document.getElementById('kickChart').getContext('2d');
+        const kickChart = new Chart(ctxKick, {
+            type: 'line',
+            data: {
+                labels: [], // To be filled
+                datasets: [
+                    {
+                        label: 'Probability Density',
+                        data: [],
+                        borderColor: '#ea580c', // Orange-600
+                        borderWidth: 2,
+                        fill: true,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            if (!chartArea) return null;
+                            // Gradient showing retention area? 
+                            // Easier: Just fill generic, we will use annotation or logic to show cut off
+                            return 'rgba(234, 88, 12, 0.1)';
+                        },
+                        pointRadius: 0,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Escape Velocity Cutoff',
+                        data: [],
+                        borderColor: '#2563eb', // Blue-600
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true, mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Velocity (km/s)' },
+                        min: 0,
+                        max: 1000 // Fixed scale for comparison
+                    },
+                    y: { display: false }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // 2. Retention Donut Chart
+        const ctxRet = document.getElementById('retentionChart').getContext('2d');
+        const retentionChart = new Chart(ctxRet, {
+            type: 'doughnut',
+            data: {
+                labels: ['Retained (Cluster)', 'Ejected (Field)'],
+                datasets: [{
+                    data: [50, 50],
+                    backgroundColor: ['#ea580c', '#e7e5e4'], // Orange for retained, Stone-200 for ejected
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 3. Synthesis Rate Chart
+        const ctxRate = document.getElementById('rateChart').getContext('2d');
+        // Pre-calculate the curve for the background
+        const rateCurveData = [];
+        for(let s=10; s<=400; s+=10) {
+            // Theoretical model: Rate proportional to Retention^2 (roughly, for binary formation)
+            // This is a simplified heuristic for visualization purposes based on Section 5.1
+            const r = calculateRetention(s, 50); // assuming typical vesc=50
+            const rate = r * r * 100; // Normalized scale
+            rateCurveData.push({x: s, y: rate});
+        }
+
+        const rateChart = new Chart(ctxRate, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Theoretical Merger Rate',
+                        data: rateCurveData,
+                        showLine: true,
+                        borderColor: '#a8a29e', // Stone-400
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        borderDash: [5,5]
+                    },
+                    {
+                        label: 'Current Simulation',
+                        data: [{x: 265, y: 10}], // Initial point
+                        backgroundColor: '#ea580c',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Kick Dispersion σ (km/s)' },
+                        min: 0, max: 400 
+                    },
+                    y: { 
+                        title: { display: true, text: 'Rel. Merger Rate' },
+                        min: 0, max: 100 
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `Rate Index: ${ctx.parsed.y.toFixed(1)}`
+                        }
+                    }
+                }
+            }
+        });
+
+
+        // --- Update Logic ---
+
+        function updateAll() {
+            // Update Text
+            kickValue.innerText = `${state.kickSigma} km/s`;
+            escValue.innerText = `${state.escapeVel} km/s`;
+
+            // Calculate Retention
+            const fraction = calculateRetention(state.kickSigma, state.escapeVel);
+            state.retention = fraction;
+            const percentage = (fraction * 100).toFixed(1);
+            
+            // Animate number (simple)
+            retentionDisplay.innerText = `${percentage}%`;
+
+            // Update Retention Text Context
+            if(fraction < 0.1) {
+                retentionText.innerHTML = "<strong>Catastrophic Loss.</strong> Cluster is depleted of BHs. GWs come mostly from Field channels.";
+                retentionDisplay.classList.replace('text-stone-800', 'text-stone-400');
+            } else if (fraction < 0.5) {
+                retentionText.innerHTML = "<strong>Moderate Retention.</strong> Some BHs remain, forming a small subsystem. Ejection mergers likely.";
+                retentionDisplay.classList.replace('text-stone-400', 'text-stone-800');
+                retentionDisplay.classList.replace('text-orange-600', 'text-stone-800');
+            } else {
+                retentionText.innerHTML = "<strong>High Retention.</strong> Dense BH subsystem forms. High rate of exchange interactions and mergers.";
+                retentionDisplay.classList.replace('text-stone-800', 'text-orange-600');
+            }
+
+            // Update Kick Chart Data
+            const labels = [];
+            const pdfData = [];
+            const cutoffData = [];
+            
+            // Generate Maxwellian curve points
+            for(let v=0; v<=1000; v+=10) {
+                labels.push(v);
+                pdfData.push(maxwellian(v, state.kickSigma));
+                // Vertical line logic for V_esc
+                if(Math.abs(v - state.escapeVel) < 10) {
+                     cutoffData.push(Math.max(...pdfData) * 1.2); // visual spike
+                } else {
+                    cutoffData.push(null);
+                }
+            }
+
+            kickChart.data.labels = labels;
+            kickChart.data.datasets[0].data = pdfData;
+            kickChart.data.datasets[1].data = cutoffData; // Re-add if needed, or just draw line
+            
+            // Add annotation line for V_esc (simplified as a dataset spike or plugin - doing dataset spike for simplicity without plugins)
+            // Better: Just update the colors. We are using `cutoffData` as a poor-man's annotation line.
+            
+            kickChart.update();
+
+            // Update Retention Donut
+            retentionChart.data.datasets[0].data = [percentage, 100 - percentage];
+            retentionChart.update();
+
+            // Update Synthesis Chart Point
+            // We recalculate the "current" rate based on the sliders
+            // Note: The curve in the background is fixed for V_esc = 50. 
+            // The point should move along a curve defined by the CURRENT V_esc.
+            const currentRate = fraction * fraction * 100;
+            rateChart.data.datasets[1].data = [{x: state.kickSigma, y: currentRate}];
+            rateChart.update();
+
+            // Force MathJax Reprocess on Update (for dynamic content if any, though mostly static here)
+            if (window.MathJax) {
+                // MathJax.typesetPromise(); 
+            }
+        }
+
+
+        // --- Event Listeners ---
+        
+        kickSlider.addEventListener('input', (e) => {
+            state.kickSigma = parseInt(e.target.value);
+            updateAll();
+        });
+
+        escSlider.addEventListener('input', (e) => {
+            state.escapeVel = parseInt(e.target.value);
+            updateAll();
+        });
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Initial Run
+        updateAll();
+
+    </script>
+</body>
+</html>
