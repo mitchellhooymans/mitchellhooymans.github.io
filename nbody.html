@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The N-Body Problem | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Learn about the two-body, three-body, and N-body problems in gravitational dynamics with mathematical derivations.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- MathJax for equations -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .content-section {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+
+        .info-card h3 {
+            color: var(--color-white);
+            margin-bottom: var(--space-4);
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-4);
+        }
+
+        .info-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .topic-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            margin-bottom: var(--space-8);
+            transition: all var(--transition-base);
+        }
+
+        .topic-card:hover {
+            border-color: var(--color-accent);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .topic-card h3 {
+            margin-bottom: var(--space-4);
+            color: var(--color-primary);
+        }
+
+        .equation-box {
+            background: var(--color-gray-50);
+            border-left: 4px solid var(--color-accent);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin: var(--space-6) 0;
+            overflow-x: auto;
+        }
+
+        .equation-box h4 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-500);
+            margin-bottom: var(--space-3);
+        }
+
+        .equation-box .equation {
+            font-size: 1.1rem;
+            text-align: center;
+            margin: var(--space-4) 0;
+        }
+
+        .equation-box p {
+            font-size: 0.9rem;
+            color: var(--color-gray-600);
+            margin-bottom: var(--space-3);
+        }
+
+        .equation-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #d4a853 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-top: var(--space-6);
+        }
+
+        .key-point h4 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-2);
+            opacity: 0.9;
+        }
+
+        .key-point p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .topic-card p {
+            margin-bottom: var(--space-4);
+            line-height: 1.8;
+        }
+
+        .topic-card p:last-of-type {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#resources">Resources</a></li>
+                <li><a href="index.html#photography">Photography</a></li>
+                <li><a href="index.html#cv">CV</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html#about">About</a>
+        <a href="index.html#resources">Resources</a>
+        <a href="index.html#photography">Photography</a>
+        <a href="index.html#cv">CV</a>
+        <a href="index.html#contact">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1>The N-Body Problem</h1>
+            <p>From Two Bodies to Many: The Mathematics of Gravitational Dynamics</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Homepage
+            </a>
+
+            <div class="content-section">
+                <!-- Introduction Card -->
+                <div class="info-card reveal">
+                    <h3>What is the N-Body Problem?</h3>
+                    <p>
+                        The N-body problem is one of the most fundamental questions in classical mechanics and
+                        celestial dynamics: given the initial positions and velocities of N point masses interacting
+                        through Newtonian gravity, can we predict their positions and velocities at any future time?
+                        This deceptively simple question has occupied some of the greatest minds in mathematics
+                        and physics for over three centuries.
+                    </p>
+                    <p>
+                        The problem's significance extends far beyond academic curiosity. Understanding how multiple
+                        gravitating bodies interact is essential for predicting planetary motions, designing spacecraft
+                        trajectories, understanding the dynamics of star clusters and galaxies, and even predicting
+                        potential asteroid impacts with Earth. The mathematical tools developed to tackle this problem
+                        have influenced fields ranging from chaos theory to statistical mechanics.
+                    </p>
+                    <p>
+                        What makes the N-body problem particularly fascinating is its sharp divide: the two-body problem
+                        has a complete, elegant analytical solution discovered in the 17th century, but adding just
+                        one more body creates a system that is, in general, analytically unsolvable. This transition
+                        from order to chaos—from predictability to sensitive dependence on initial conditions—lies
+                        at the heart of modern nonlinear dynamics.
+                    </p>
+                </div>
+
+                <!-- Topic: Newton's Law of Gravitation -->
+                <div class="topic-card reveal">
+                    <h3>Newton's Law of Universal Gravitation</h3>
+                    <p>
+                        The foundation of gravitational dynamics rests on Isaac Newton's law of universal gravitation,
+                        published in his <em>Principia Mathematica</em> in 1687. Newton's insight was revolutionary:
+                        he proposed that every particle of matter in the universe attracts every other particle with
+                        a force that is directly proportional to the product of their masses and inversely proportional
+                        to the square of the distance between their centres. This same force that causes an apple to
+                        fall from a tree also keeps the Moon in orbit around Earth and Earth in orbit around the Sun.
+                    </p>
+                    <p>
+                        The mathematical expression of this law is elegant in its simplicity. Consider two point masses,
+                        $m_i$ and $m_j$, located at positions $\vec{r}_i$ and $\vec{r}_j$ respectively. The
+                        gravitational
+                        force exerted on mass $m_i$ by mass $m_j$ is a vector quantity pointing from $m_i$ toward $m_j$
+                        (hence the attractive nature of gravity). The magnitude of this force decreases with the square
+                        of the separation distance, which explains why nearby objects exert much stronger gravitational
+                        influences than distant ones.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>Gravitational Force Vector</h4>
+                        <div class="equation">
+                            $$\vec{F}_{ij} = -\frac{G m_i m_j}{|\vec{r}_i - \vec{r}_j|^3} (\vec{r}_i - \vec{r}_j)$$
+                        </div>
+                        <p>
+                            Here, $G = 6.674 \times 10^{-11}$ N⋅m²/kg² is the gravitational constant, one of the
+                            fundamental constants of nature. The vector $(\vec{r}_i - \vec{r}_j)$ points from body $j$
+                            to body $i$, and the negative sign ensures the force is attractive (pointing in the opposite
+                            direction, from $i$ toward $j$). The factor $|\vec{r}_i - \vec{r}_j|^3$ in the denominator
+                            (rather than the perhaps expected $|\vec{r}_i - \vec{r}_j|^2$) accounts for the
+                            normalisation
+                            of the direction vector—we need one power of distance in the numerator to get the unit
+                            vector,
+                            combined with the inverse-square law gives us the cube in the denominator.
+                        </p>
+                    </div>
+
+                    <p>
+                        Newton's second law of motion tells us that force equals mass times acceleration: $\vec{F} =
+                        m\vec{a}$.
+                        Combining this with the gravitational force law gives us the equation of motion for each body.
+                        The acceleration of body $i$ due to the gravitational attraction of body $j$ is independent of
+                        $m_i$—this is the equivalence of gravitational and inertial mass, a principle that would later
+                        become central to Einstein's general theory of relativity.
+                    </p>
+                    <p>
+                        It's worth noting that Newton's law of gravitation is an approximation that works extremely well
+                        for most situations we encounter in astrophysics and celestial mechanics. It breaks down only
+                        in extreme conditions: very strong gravitational fields (near black holes), very high velocities
+                        (approaching the speed of light), or when extremely high precision is required (such as GPS
+                        satellites, which require general relativistic corrections). For the vast majority of N-body
+                        simulations—from planetary systems to galaxy dynamics—Newtonian gravity provides an excellent
+                        description.
+                    </p>
+
+                    <div class="key-point">
+                        <h4>Key Insight</h4>
+                        <p>
+                            The inverse-square nature of gravity has profound consequences: it means gravitational
+                            influence extends to infinity (unlike, say, the strong nuclear force), allowing distant
+                            objects to affect each other's motion. This long-range nature is what makes the N-body
+                            problem computationally challenging—in principle, every body affects every other body,
+                            requiring $O(N^2)$ force calculations per timestep for $N$ bodies.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Topic: Two-Body Problem -->
+                <div class="topic-card reveal">
+                    <h3>The Two-Body Problem</h3>
+                    <p>
+                        The two-body problem asks how two masses move under their mutual gravitational attraction.
+                        This is the simplest non-trivial gravitational system, and remarkably, it has a complete
+                        analytical solution. The solution was essentially known to Newton, with the full mathematical
+                        treatment developed by Johann Bernoulli, Euler, and others in the 18th century. Every
+                        undergraduate physics student learns this solution, and it forms the backbone of our
+                        understanding of planetary motion.
+                    </p>
+                    <p>
+                        Consider two bodies with masses $m_1$ and $m_2$ at positions $\vec{r}_1$ and $\vec{r}_2$.
+                        Each body accelerates toward the other according to Newton's laws. Writing out the equations
+                        of motion explicitly shows the coupled nature of the problem—the motion of body 1 depends on
+                        where body 2 is, and vice versa.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>Coupled Equations of Motion</h4>
+                        <div class="equation">
+                            $$m_1 \ddot{\vec{r}}_1 = -\frac{G m_1 m_2}{|\vec{r}_1 - \vec{r}_2|^3}(\vec{r}_1 -
+                            \vec{r}_2)$$
+                        </div>
+                        <div class="equation">
+                            $$m_2 \ddot{\vec{r}}_2 = -\frac{G m_1 m_2}{|\vec{r}_2 - \vec{r}_1|^3}(\vec{r}_2 -
+                            \vec{r}_1)$$
+                        </div>
+                        <p>
+                            The double dot notation $\ddot{\vec{r}}$ represents the second time derivative, i.e.,
+                            acceleration. Notice that these equations are symmetric under exchange of indices 1 and 2,
+                            reflecting Newton's third law: the force on body 1 due to body 2 is equal and opposite to
+                            the force on body 2 due to body 1.
+                        </p>
+                    </div>
+
+                    <p>
+                        The key insight that makes the two-body problem solvable is a clever change of variables.
+                        Instead of tracking the positions of both bodies in some external reference frame, we introduce
+                        the <strong>center of mass</strong> position $\vec{R} = (m_1\vec{r}_1 + m_2\vec{r}_2)/(m_1 +
+                        m_2)$
+                        and the <strong>relative position</strong> $\vec{r} = \vec{r}_1 - \vec{r}_2$. The center of
+                        mass,
+                        being unaffected by internal forces, moves with constant velocity (or remains stationary if we
+                        choose our reference frame appropriately). This leaves us with a single equation for the
+                        relative
+                        motion.
+                    </p>
+                    <p>
+                        Introducing the <strong>reduced mass</strong> $\mu = m_1 m_2 / (m_1 + m_2)$, the equation for
+                        the relative motion becomes mathematically identical to a single body of mass $\mu$ orbiting
+                        a fixed gravitational center with total mass $M = m_1 + m_2$. This is the key reduction: the
+                        two-body problem transforms into an equivalent one-body problem in a central force field.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>The Reduced One-Body Problem</h4>
+                        <div class="equation">
+                            $$\mu \ddot{\vec{r}} = -\frac{G M \mu}{r^3}\vec{r}$$
+                        </div>
+                        <p>
+                            where $r = |\vec{r}|$ is the separation distance. This equation describes motion in a
+                            central force field proportional to $1/r^2$. The conservation of angular momentum
+                            $\vec{L} = \mu \vec{r} \times \dot{\vec{r}}$ confines the motion to a plane, reducing
+                            the problem from three dimensions to two. The solution, expressed in polar coordinates
+                            $(r, \theta)$ in this orbital plane, is the famous conic section equation.
+                        </p>
+                    </div>
+
+                    <p>
+                        The trajectory of the relative position vector traces out a conic section: an ellipse for
+                        bound orbits (total energy $E < 0$), a parabola for the marginal case of exactly zero total
+                            energy ($E=0$), or a hyperbola for unbound orbits ($E> 0$). For bound elliptical orbits,
+                            the orbital period $T$ and the semi-major axis $a$ are related by Kepler's third law in its
+                            generalised form: $T^2 = 4\pi^2 a^3 / (GM)$. This relationship allows astronomers to
+                            determine
+                            planetary masses by observing orbital periods and semi-major axes.
+                    </p>
+                    <p>
+                        Another important result is the vis-viva equation, which relates the orbital speed $v$ to the
+                        distance $r$ from the focus and the semi-major axis $a$: $v^2 = GM(2/r - 1/a)$. This equation
+                        is invaluable for spacecraft mission design, as it immediately tells you how fast an object
+                        is moving at any point in its orbit. At the closest approach (perihelion/periapsis), the
+                        velocity is maximum; at the farthest point (aphelion/apoapsis), it is minimum.
+                    </p>
+
+                    <div class="key-point">
+                        <h4>Key Insight</h4>
+                        <p>
+                            The two-body problem is completely integrable, meaning it has as many conserved quantities
+                            (integrals of motion) as degrees of freedom. These conserved quantities—energy, angular
+                            momentum, and the Laplace-Runge-Lenz vector—completely determine the orbital shape,
+                            orientation, and timing. This is why planetary orbits are stable and predictable over
+                            billions of years when considering only the Sun-planet interaction.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Topic: Three-Body Problem -->
+                <div class="topic-card reveal">
+                    <h3>The Three-Body Problem</h3>
+                    <p>
+                        Adding a third body to the gravitational dance transforms the problem fundamentally. The
+                        three-body problem has captivated mathematicians since Newton first identified it as a
+                        major unsolved challenge. Despite nearly 350 years of effort by some of history's greatest
+                        mathematicians—including Euler, Lagrange, Jacobi, Poincaré, and many others—no general
+                        closed-form solution exists, and we now understand that none can exist for arbitrary
+                        initial conditions.
+                    </p>
+                    <p>
+                        The equations of motion for three bodies look like a natural extension of the two-body case.
+                        Each body experiences gravitational attraction from both other bodies, so each acceleration
+                        is the vector sum of two terms. However, this coupling creates a qualitatively different system.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>Three-Body Equations of Motion</h4>
+                        <div class="equation">
+                            $$\ddot{\vec{r}}_1 = -Gm_2\frac{\vec{r}_1 - \vec{r}_2}{|\vec{r}_1 - \vec{r}_2|^3}
+                            - Gm_3\frac{\vec{r}_1 - \vec{r}_3}{|\vec{r}_1 - \vec{r}_3|^3}$$
+                        </div>
+                        <p>
+                            Similar equations hold for bodies 2 and 3, with appropriate index permutations.
+                            The system has 18 degrees of freedom (three position components and three velocity
+                            components for each of three bodies) but only 10 classical integrals of motion:
+                            energy, three components of linear momentum, three components of angular momentum,
+                            and three components of the center-of-mass position. Since 10 &lt; 18, the system is
+                            not integrable in the classical sense.
+                        </p>
+                    </div>
+
+                    <p>
+                        The breakthrough in understanding why the three-body problem resists solution came from
+                        Henri Poincaré in the 1880s. While working on a prize problem posed by King Oscar II of
+                        Sweden, Poincaré discovered that the phase space of the three-body problem contains an
+                        intricate tangle of stable and unstable periodic orbits, creating what he called
+                        "homoclinic tangles." This structure means that nearby trajectories can diverge
+                        exponentially over time—the hallmark of <strong>deterministic chaos</strong>.
+                    </p>
+                    <p>
+                        Chaos in this context does not mean randomness; the system is entirely deterministic,
+                        governed by precise mathematical equations. Rather, it means that tiny uncertainties in
+                        initial conditions (which are always present in real measurements) grow exponentially
+                        over time, making long-term prediction practically impossible beyond a certain horizon.
+                        For the Sun-Jupiter-Saturn system, this horizon is tens of millions of years; for
+                        arbitrary three-body configurations, it can be as short as a few orbital periods.
+                    </p>
+                    <p>
+                        Despite the general unsolvability, certain special configurations of the three-body problem
+                        do have explicit solutions. Joseph-Louis Lagrange discovered in 1772 that if three masses
+                        are arranged at the vertices of an equilateral triangle, they can orbit their common center
+                        of mass while maintaining this triangular configuration. Leonhard Euler found that three
+                        bodies can also maintain a collinear arrangement if their distances are in a specific ratio
+                        depending on their masses.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>The Restricted Three-Body Problem</h4>
+                        <p>
+                            A particularly important special case is the <strong>circular restricted three-body
+                                problem</strong> (CR3BP), where two massive bodies move in circular orbits about their
+                            common center of mass, and a third body of negligible mass moves in their gravitational
+                            field without affecting them. This describes, for example, the motion of a spacecraft
+                            in the Earth-Moon system or a small asteroid in the Sun-Jupiter system.
+                        </p>
+                        <p>
+                            In a rotating reference frame that keeps the two massive bodies fixed, the equations
+                            simplify considerably. The effective potential in this frame combines the gravitational
+                            potentials from both masses with a centrifugal term:
+                        </p>
+                        <div class="equation">
+                            $$U_{eff} = -\frac{Gm_1}{r_1} - \frac{Gm_2}{r_2} - \frac{1}{2}\Omega^2(x^2 + y^2)$$
+                        </div>
+                        <p>
+                            The equilibrium points where $\nabla U_{eff} = 0$ are the five Lagrange points. L1, L2,
+                            and L3 lie on the line connecting the two massive bodies and are unstable saddle points.
+                            L4 and L5 form equilateral triangles with the two masses and can be stable for
+                            mass ratios below approximately 1:25. These stable points are home to Jupiter's
+                            "Trojan" asteroids and are prime locations for space telescopes like the James Webb
+                            Space Telescope (positioned at the Sun-Earth L2 point).
+                        </p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>Key Insight</h4>
+                        <p>
+                            The three-body problem's chaotic nature doesn't mean it's useless for prediction—it
+                            means that practical prediction requires careful attention to uncertainty quantification
+                            and typically relies on numerical integration rather than analytical formulas. Modern
+                            space missions routinely exploit three-body dynamics, using Lagrange points and
+                            low-energy transfer orbits designed through numerical exploration of the phase space.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Topic: N-Body Problem -->
+                <div class="topic-card reveal">
+                    <h3>The General N-Body Problem</h3>
+                    <p>
+                        Generalising from three to N bodies introduces no fundamentally new physics—the same
+                        Newtonian gravity governs all interactions—but the complexity grows dramatically. With N
+                        bodies, there are $N(N-1)/2$ pairs of interactions to compute at each moment, and the
+                        dimensionality of the phase space becomes $6N$ (three position and three velocity components
+                        per body). For a globular cluster with $10^6$ stars, this means tracking $6 \times 10^6$
+                        variables evolving under the influence of approximately $5 \times 10^{11}$ pairwise forces.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>General N-Body Equations of Motion</h4>
+                        <div class="equation">
+                            $$\ddot{\vec{r}}_i = -G\sum_{j=1, j\neq i}^{N} m_j \frac{\vec{r}_i - \vec{r}_j}{|\vec{r}_i -
+                            \vec{r}_j|^3}$$
+                        </div>
+                        <p>
+                            This equation must be solved simultaneously for all $i = 1, 2, \ldots, N$. Each body's
+                            acceleration is the vector sum of the gravitational attractions from all other bodies.
+                            The system represents $3N$ coupled second-order ordinary differential equations, or
+                            equivalently $6N$ first-order equations when rewritten in terms of positions and velocities.
+                        </p>
+                    </div>
+
+                    <p>
+                        The N-body system possesses exactly 10 classical integrals of motion, regardless of N.
+                        Conservation of total momentum (three components) tells us the center of mass moves uniformly.
+                        Conservation of angular momentum (three components) implies the total "spin" of the system is
+                        constant. Conservation of energy constrains the total kinetic plus potential energy.
+                        Finally, the center-of-mass position at $t=0$ combined with the constant velocity gives
+                        three more constraints. These 10 integrals are often called the "classical" or "Galilean"
+                        integrals, reflecting the symmetries of Newtonian mechanics under translations in space
+                        and time, rotations, and Galilean boosts.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>Conservation Laws</h4>
+                        <p><strong>Total Energy:</strong></p>
+                        <div class="equation">
+                            $$E = \frac{1}{2}\sum_{i=1}^{N} m_i v_i^2 - G\sum_{i=1}^{N}\sum_{j>i} \frac{m_i m_j}{r_{ij}}
+                            = \text{constant}$$
+                        </div>
+                        <p>
+                            The first term is the total kinetic energy $T$; the second term is the total gravitational
+                            potential energy $V$ (note the double sum counts each pair once). For a bound, virialised
+                            system in equilibrium, the virial theorem states that $\langle T \rangle =
+                            -\frac{1}{2}\langle V \rangle$,
+                            where the angle brackets denote time averages. This relation is fundamental to understanding
+                            the thermodynamics of self-gravitating systems like globular clusters and elliptical
+                            galaxies.
+                        </p>
+                        <p><strong>Total Momentum:</strong></p>
+                        <div class="equation">
+                            $$\vec{P} = \sum_{i=1}^{N} m_i \vec{v}_i = \text{constant}$$
+                        </div>
+                        <p><strong>Total Angular Momentum:</strong></p>
+                        <div class="equation">
+                            $$\vec{L} = \sum_{i=1}^{N} m_i (\vec{r}_i \times \vec{v}_i) = \text{constant}$$
+                        </div>
+                    </div>
+
+                    <p>
+                        A deep mathematical result, proven by Poincaré and later refined by Bruns and others,
+                        states that no additional independent integrals of motion exist that are algebraic functions
+                        of the positions and velocities. This means the 10 classical integrals are all there is—for
+                        $N \geq 3$, we cannot reduce the problem further by finding more conserved quantities.
+                        This is the fundamental reason why the general N-body problem has no closed-form solution.
+                    </p>
+                    <p>
+                        An important subtlety arises from the fact that self-gravitating systems have negative
+                        heat capacity: when energy is removed (e.g., by ejecting a star from a cluster), the
+                        remaining system becomes <em>hotter</em> (individual stars move faster). This thermodynamic
+                        peculiarity leads to the "gravothermal catastrophe" where the core of a star cluster can
+                        collapse while the envelope expands, a runaway process that shapes the long-term evolution
+                        of globular clusters.
+                    </p>
+
+                    <div class="key-point">
+                        <h4>Key Insight</h4>
+                        <p>
+                            The computational cost of directly computing all pairwise forces scales as $O(N^2)$,
+                            making simulations of very large systems expensive. Clever algorithms have been
+                            developed to reduce this: tree codes (Barnes-Hut, $O(N \log N)$) group distant particles
+                            into aggregate "macro-particles," while particle-mesh methods use the Fast Fourier
+                            Transform to solve the Poisson equation on a grid. These techniques enable simulations
+                            of billions of particles, revealing the large-scale structure of the universe.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Topic: Numerical Methods -->
+                <div class="topic-card reveal">
+                    <h3>Numerical Integration Methods</h3>
+                    <p>
+                        Since analytical solutions are unavailable for $N \geq 3$, numerical integration is the
+                        only path forward. The goal is to approximate the continuous evolution of the system by
+                        discrete steps: given positions and velocities at time $t$, compute approximate positions
+                        and velocities at time $t + \Delta t$, where $\Delta t$ is the timestep. Repeating this
+                        process advances the simulation forward in time.
+                    </p>
+                    <p>
+                        The simplest approach is Euler's method: update the position using the current velocity,
+                        then update the velocity using the current acceleration. While conceptually straightforward,
+                        Euler's method is poorly suited for gravitational systems. It neither conserves energy nor
+                        preserves the underlying Hamiltonian structure of the equations, leading to systematic drift
+                        in conserved quantities over long integrations. For gravitational problems, orbits computed
+                        with Euler's method tend to spiral outward, gaining energy spuriously.
+                    </p>
+
+                    <div class="equation-box">
+                        <h4>The Leapfrog (Velocity-Verlet) Integrator</h4>
+                        <p>
+                            A much better choice for gravitational dynamics is the leapfrog or velocity-Verlet
+                            integrator. The name "leapfrog" comes from the staggered timing: positions and
+                            velocities are updated at alternating half-timesteps, "leaping" over each other.
+                        </p>
+                        <div class="equation">
+                            $$\vec{v}_{i+1/2} = \vec{v}_i + \frac{\Delta t}{2}\vec{a}(\vec{r}_i)$$
+                        </div>
+                        <div class="equation">
+                            $$\vec{r}_{i+1} = \vec{r}_i + \Delta t \cdot \vec{v}_{i+1/2}$$
+                        </div>
+                        <div class="equation">
+                            $$\vec{v}_{i+1} = \vec{v}_{i+1/2} + \frac{\Delta t}{2}\vec{a}(\vec{r}_{i+1})$$
+                        </div>
+                        <p>
+                            The subscripts denote timestep indices: $i$ is the current step, $i+1/2$ is a half-step
+                            forward, and $i+1$ is the next full step. The acceleration $\vec{a}$ is computed from
+                            Newton's law of gravitation at the specified positions.
+                        </p>
+                    </div>
+
+                    <p>
+                        The leapfrog method has remarkable properties. It is <strong>symplectic</strong>, meaning
+                        it exactly preserves a modified Hamiltonian that differs from the true Hamiltonian by
+                        terms of order $O(\Delta t^2)$. This guarantees that energy fluctuates around its true
+                        value but never drifts systematically, even over millions of orbits. The method is also
+                        <strong>time-reversible</strong>: if you negate all velocities and run the integrator
+                        backward, you exactly retrace your steps. These properties make leapfrog the workhorse
+                        integrator for long-term N-body simulations.
+                    </p>
+                    <p>
+                        However, leapfrog struggles when particles come very close together. As $r_{ij} \to 0$,
+                        the gravitational force diverges, and any finite timestep becomes inadequate. This is
+                        addressed through techniques like <strong>softening</strong> (replacing $r^{-2}$ with
+                        $(r^2 + \epsilon^2)^{-1}$ for small $\epsilon$) or <strong>adaptive timestepping</strong>
+                        (using smaller $\Delta t$ when particles are close). For very close encounters,
+                        specialized regularization techniques rewrite the equations to remove the singularity
+                        mathematically.
+                    </p>
+                    <p>
+                        Higher-order integrators like the 4th-order Runge-Kutta (RK4) method achieve better
+                        accuracy per timestep ($O(\Delta t^4)$ error versus $O(\Delta t^2)$ for leapfrog) but
+                        are not symplectic, making them less suitable for long-term integrations where energy
+                        conservation matters. In practice, the choice of integrator depends on the scientific
+                        question: short, high-accuracy solar system ephemerides might use high-order methods,
+                        while billion-year galaxy simulations typically use symplectic integrators with
+                        adaptive techniques.
+                    </p>
+
+                    <div class="key-point">
+                        <h4>Key Insight</h4>
+                        <p>
+                            The symplectic property of the leapfrog integrator is not coincidental—it reflects
+                            a deep connection between numerical methods and differential geometry. Symplectic
+                            integrators preserve the phase-space volume element (Liouville's theorem) and the
+                            geometric structure of Hamiltonian mechanics. This makes them ideal for systems
+                            where long-term qualitative behaviour (like orbital stability) matters more than
+                            short-term quantitative precision.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Topic: Applications -->
+                <div class="topic-card reveal">
+                    <h3>Applications in Astrophysics</h3>
+                    <p>
+                        N-body simulations are indispensable tools in modern astrophysics, enabling researchers
+                        to explore phenomena that would be impossible to study otherwise. The applications span
+                        an enormous range of scales, from the dynamics of planetary systems (a few bodies over
+                        billions of years) to the formation of cosmic structure (trillions of dark matter
+                        particles over the age of the universe).
+                    </p>
+                    <p>
+                        <strong>Globular clusters</strong> are spherical collections of 10⁵ to 10⁶ old stars
+                        bound by their mutual gravity. They are natural laboratories for N-body dynamics because
+                        the crossing time (the time for a star to traverse the cluster) is short compared to
+                        their age, meaning they have undergone many dynamical relaxation times. Direct N-body
+                        simulations of globular clusters reveal their evolution: the core contracts while the
+                        envelope expands, stars are ejected, binaries form and harden, and exotic objects like
+                        blue stragglers emerge from stellar collisions and mergers. These simulations are crucial
+                        for understanding where gravitational wave sources (merging black holes and neutron stars)
+                        come from.
+                    </p>
+                    <p>
+                        <strong>Galaxy dynamics</strong> involves even larger N—our Milky Way contains roughly
+                        $10^{11}$ stars plus a comparable or greater mass in dark matter. Simulating individual
+                        stars is impossible, so cosmological simulations treat each particle as a
+                        "macro-particle" representing millions of solar masses of dark matter. Despite this
+                        coarse-graining, these simulations have successfully predicted the filamentary "cosmic
+                        web" structure of the universe, the abundance and properties of dark matter halos,
+                        and the formation of galaxies within them. The Millennium Simulation, Illustris,
+                        and EAGLE project are landmark examples.
+                    </p>
+                    <p>
+                        <strong>Planetary system dynamics</strong> operates at the opposite extreme: a small
+                        number of bodies integrated with extremely high precision over billions of years.
+                        Such simulations have shown that our inner solar system is chaotic on timescales
+                        of tens of millions of years, with Mercury having a small but nonzero probability
+                        of colliding with Venus or plunging into the Sun before the Sun's death. They also
+                        reveal the resonance structures that stabilize or destabilize planetary configurations,
+                        guiding the interpretation of thousands of exoplanetary systems discovered by Kepler
+                        and TESS.
+                    </p>
+                    <p>
+                        <strong>Asteroid and debris dynamics</strong> addresses more practical concerns:
+                        predicting the trajectories of near-Earth objects and assessing impact risks. The
+                        gravitational perturbations from planets, combined with the Yarkovsky effect
+                        (thrust from asymmetric thermal radiation), make long-term asteroid orbit prediction
+                        a sophisticated N-body problem. Similar techniques apply to space debris, where tens
+                        of thousands of tracked objects threaten operational satellites.
+                    </p>
+
+                    <div class="key-point">
+                        <h4>Key Insight</h4>
+                        <p>
+                            Perhaps the most striking application of N-body simulations is in gravitational
+                            wave astronomy. The LIGO and Virgo detectors observe merging black hole binaries,
+                            but to understand how these binaries formed and evolved, astrophysicists rely on
+                            massive N-body simulations of dense star clusters where dynamical encounters can
+                            bring black holes together. These simulations bridge the gap between gravitational
+                            wave signals and the astrophysical environments that produce them.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Closing -->
+                <div class="info-card reveal">
+                    <h3>Summary</h3>
+                    <p>
+                        The N-body problem encapsulates one of the deepest themes in physics: the tension between
+                        simple underlying laws and complex emergent behaviour. Newtonian gravity is entirely
+                        described by a single equation—the inverse-square law—yet the collective dynamics of
+                        many gravitating bodies gives rise to chaos, structure formation, and phenomena that
+                        could never be guessed from the two-body solution alone.
+                    </p>
+                    <p>
+                        The transition from two to three bodies marks a fundamental boundary. Below it lies
+                        integrability, periodicity, and exact prediction. Above it lies chaos, sensitivity to
+                        initial conditions, and the necessity of numerical methods. This boundary is not merely
+                        a mathematical curiosity—it shapes everything from the stability of the solar system
+                        to the distribution of matter in the cosmos.
+                    </p>
+                    <p>
+                        Modern computational power has transformed the N-body problem from an abstract
+                        mathematical challenge into a practical tool for astrophysical discovery. Simulations
+                        now routinely involve billions of particles, evolving over gigayears of cosmic time,
+                        revealing structures and processes invisible to any telescope. The marriage of classical
+                        mechanics and high-performance computing continues to push the frontier of our
+                        understanding of the gravitational universe.
+                    </p>
+                </div>
+
+                <!-- Back to Resources -->
+                <div class="text-center mt-8 reveal">
+                    <a href="index.html#resources" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Resources
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/MitchellHooymans" class="social-link" aria-label="Facebook"
+                        target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/mitchellhooymans/?hl=en" class="social-link"
+                        aria-label="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        navToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+    </script>
+</body>
+
+</html>
