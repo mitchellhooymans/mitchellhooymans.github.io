@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Python for Physics | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Learn Python programming for physics with this interactive tutorial by Mitchell Hooymans.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#1e3a5f',
+                            dark: '#152a45',
+                            light: '#2a4a73',
+                        },
+                        accent: '#4a9eff',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Source Code Pro', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+        }
+
+        pre {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+
+        .code-output {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .nav-link.active {
+            background-color: #2a4a73;
+            color: white;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-primary text-white flex-shrink-0">
+            <div class="p-6">
+                <a href="index.html"
+                    class="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm mb-4 transition-colors">
+                    <i class="fas fa-arrow-left"></i> Back to Homepage
+                </a>
+                <h2 class="text-2xl font-bold">Python for Physics</h2>
+                <p class="mt-2 text-sm text-white/80">A quick guide to Python programming for physicists.</p>
+            </div>
+            <nav id="navigation" class="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto">
+                <a href="#what-is-python"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">1. What is
+                    Python?</a>
+                <a href="#getting-started"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">2. Getting
+                    Started</a>
+                <a href="#core-concepts"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">3. Core
+                    Concepts</a>
+                <a href="#data-structures"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">4. Data
+                    Structures</a>
+                <a href="#control-flow"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">5. Control
+                    Flow</a>
+                <a href="#functions"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">6.
+                    Functions</a>
+                <a href="#error-handling"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">7. Error
+                    Handling</a>
+                <a href="#file-io"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">8. Working
+                    with Files</a>
+                <a href="#modules"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">9. Modules
+                    &amp; Packages</a>
+                <a href="#putting-it-all-together"
+                    class="nav-link block p-4 text-sm font-medium hover:bg-primary-light whitespace-nowrap">10. Putting
+                    It All Together</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 bg-white">
+            <div id="content-container">
+                <!-- Content sections will be injected here by JS -->
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const content = {
+                'what-is-python': {
+                    title: '1. What is Python?',
+                    body: `
+                        <p class="mb-4">Python is a high-level, interpreted, general-purpose programming language. Its simple syntax and powerful libraries make it an ideal tool for scientists and engineers.</p>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li><strong class="font-semibold">High-Level:</strong> It abstracts away complex details of the computer, allowing you to focus on the logic of your physics problem.</li>
+                            <li><strong class="font-semibold">Interpreted:</strong> Python code is executed line by line, which makes for rapid development and easy debugging of models and simulations.</li>
+                            <li><strong class="font-semibold">General-Purpose:</strong> It's not specialized for one task. You can use Python for data analysis, creating simulations, symbolic mathematics, and plotting results.</li>
+                        </ul>
+                        <h3 class="text-2xl font-semibold my-4">Why Python for Physics?</h3>
+                        <p class="mb-4">Python has become a dominant language in scientific computing for several key reasons:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="font-semibold">Vast Scientific Libraries:</strong> Python's greatest strength is its ecosystem. Libraries like NumPy, SciPy, and Matplotlib provide powerful, optimized tools for numerical calculations, data analysis, and visualization right out of the box.</li>
+                            <li><strong class="font-semibold">Readability and Simplicity:</strong> Physics concepts and formulas can be complex. Python's clean syntax allows you to write code that closely resembles mathematical notation, making it easier to translate your ideas into a working program and for others to understand your work.</li>
+                            <li><strong class="font-semibold">Open Source and Collaborative:</strong> Python and its scientific libraries are free and open source, fostering a massive global community. This means constant improvement, excellent documentation, and a wealth of shared knowledge.</li>
+                            <li><strong class="font-semibold">Versatility:</strong> The same language you use for a quick calculation can be used to analyze large datasets from an experiment, run a complex simulation of a physical system, or even control lab equipment.</li>
+                        </ul>
+                    `
+                },
+                'getting-started': {
+                    title: '2. Getting Started: Setup and Your First Program',
+                    body: `
+                        <h3 class="text-xl font-semibold mb-3">Setting Up Your Environment</h3>
+                        <p class="mb-4">To run Python code on your computer, you need the Python interpreter.</p>
+                        <ol class="list-decimal list-inside space-y-2 mb-4">
+                            <li><strong class="font-semibold">Download Python:</strong> Get the latest version from the official website: <a href="https://python.org" target="_blank" class="text-blue-600 hover:underline">python.org</a>. For scientific computing, consider the <a href="https://www.anaconda.com/products/distribution" target="_blank" class="text-blue-600 hover:underline">Anaconda distribution</a>, which includes Python and many essential physics and math libraries (like NumPy and Matplotlib) pre-installed.</li>
+                            <li><strong class="font-semibold">Code Editor/IDE:</strong> Popular choices include Visual Studio Code, PyCharm, Spyder (with Anaconda), and Jupyter Notebooks.</li>
+                        </ol>
+                        <h3 class="text-xl font-semibold mb-3">Your First Program: "Hello, Universe!"</h3>
+                        <p class="mb-2">It's a tradition to start by making the computer say something. In Python, this is just one line.</p>
+                        <div class="code-block" data-output="Hello, Universe!">
+                            <pre><code># This is a comment. It's ignored by the interpreter and is used for notes.
+print("Hello, Universe!")</code></pre>
+                        </div>
+                    `
+                },
+                'core-concepts': {
+                    title: '3. The Core: Variables, Data Types & Operators',
+                    body: `
+                        <h3 class="text-2xl font-semibold mb-3">Python Syntax</h3>
+                        <p class="mb-2">Python uses indentation to define blocks of code, which is different from many other programming languages that use braces or keywords. This makes Python code more readable. This is important when working with complex code structures. Python's syntax is designed to be intuitive and easy to learn. Information on Python's syntax can be found <a href="https://www.w3schools.com/python/python_syntax.asp" target="_blank" class="text-blue-600 hover:underline">here</a>.</p>
+                        <p class="mb-4">
+                        <h3 class="text-2xl font-semibold mb-3">Variables</h3>
+                        <p class="mb-2">Think of a variable as a labeled box where you can store a piece of information. In physics, this is essential for keeping track of quantities like mass, velocity, or temperature. You create (or "declare") a variable and give it a value using the assignment operator (<code>=</code>).</p>
+                        <div class="code-block" data-output="The calculated force is 686.0 Newtons.">
+                            <pre><code># Assigning values to variables to represent physical quantities
+mass = 70.0  # in kilograms
+acceleration = 9.8  # in m/s^2
+force = mass * acceleration  # Newton's Second Law
+print(f"The calculated force is {force} Newtons.")</code></pre>
+                        </div>
+
+                        <h3 class="text-2xl font-semibold my-4">Data Types</h3>
+                        <p class="mb-2">Every variable has a data type, which tells Python what kind of data it holds. This is crucial because the type determines what operations you can perform.</p>
+                        <ul class="list-none space-y-4">
+                            <li>
+                                <strong class="font-semibold">String (<code>str</code>):</strong> Used for text. You can enclose them in single ('') or double ("") quotes. Essential for labels, names, or descriptions.
+                                <div class="code-block mt-2" data-output="Experiment: Projectile Motion">
+                                    <pre><code>experiment_name = "Projectile Motion"
+print(f"Experiment: {experiment_name}")</code></pre>
+                                </div>
+                            </li>
+                            <li>
+                                <strong class="font-semibold">Integer (<code>int</code>):</strong> Used for whole numbers. Perfect for discrete quantities like the number of particles, steps in a simulation, or quantum numbers.
+                                <div class="code-block mt-2" data-output="Number of trials: 5">
+                                    <pre><code>number_of_trials = 5
+print(f"Number of of trials: {number_of_trials}")</code></pre>
+                                </div>
+                            </li>
+                            <li>
+                                <strong class="font-semibold">Float (<code>float</code>):</strong> Used for numbers with a decimal point. This is the most common numeric type in physics for continuous quantities like mass, distance, time, or energy.
+                                 <div class="code-block mt-2" data-output="Planck's Constant: 6.626e-34">
+                                    <pre><code>plancks_constant = 6.626e-34 # Using scientific notation
+print(f"Planck's Constant: {plancks_constant}")</code></pre>
+                                </div>
+                            </li>
+                            <li>
+                                <strong class="font-semibold">Boolean (<code>bool</code>):</strong> Represents one of two values: <code>True</code> or <code>False</code>. Indispensable for controlling program flow, such as checking if a simulation is complete or if a condition is met.
+                                <div class="code-block mt-2" data-output="Simulation complete: True">
+                                    <pre><code>simulation_is_running = False
+print(f"Simulation complete: {not simulation_is_running}")</code></pre>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <h3 class="text-2xl font-semibold my-4">Operators</h3>
+                        <p class="mb-2">Operators are the symbols that perform calculations and comparisons.</p>
+                         <ul class="list-none space-y-4">
+                            <li>
+                                <strong class="font-semibold">Arithmetic Operators:</strong> For performing mathematical calculations.
+                                <div class="code-block mt-2" data-output="Energy (E) = 8.987551787368176e+16 Joules">
+                                    <pre><code># E = mc^2
+m = 1 # kg
+c = 299792458 # m/s
+energy = m * c**2 # ** is the exponent operator
+print(f"Energy (E) = {energy} Joules")</code></pre>
+                                </div>
+                            </li>
+                             <li>
+                                <strong class="font-semibold">Comparison Operators:</strong> For comparing two values. They always return a boolean (<code>True</code> or <code>False</code>).
+                                <div class="code-block mt-2" data-output="Is the object's speed greater than or equal to the speed limit? False">
+                                    <pre><code>speed_limit = 25.0 # m/s
+object_speed = 15.5 # m/s
+is_speeding = object_speed >= speed_limit
+print(f"Is the object's speed greater than or equal to the speed limit? {is_speeding}")</code></pre>
+                                </div>
+                            </li>
+                            <li>
+                                <strong class="font-semibold">Logical Operators (<code>and</code>, <code>or</code>, <code>not</code>):</strong> For combining boolean expressions.
+                                <div class="code-block mt-2" data-output="Launch condition met: True">
+                                    <pre><code>temperature_ok = True
+pressure_ok = True
+can_launch = temperature_ok and pressure_ok
+print(f"Launch condition met: {can_launch}")</code></pre>
+                                </div>
+                            </li>
+                        </ul>
+                    `
+                },
+                'data-structures': {
+                    title: '4. Structuring Data: Lists, Tuples, and Dictionaries',
+                    body: `
+                        <p class="mb-4">Beyond single numbers or strings, you need ways to store collections of data. Python's built-in data structures are essential for this.</p>
+                        <h3 class="text-xl font-semibold mb-3">Lists: Ordered, Changeable Collections</h3>
+                        <p class="mb-2">A list is an ordered collection of items, which means the items have a defined sequence that will not change. Lists are also <strong>mutable</strong>, meaning you can add, remove, or change items after the list has been created. They are perfect for storing experimental data points, time steps in a simulation, or any sequence of values you need to modify.</p>
+                        <div class="code-block" data-output="Position at time 2.0s is 19.6m\nFinal dataset has 6 points.">
+                            <pre><code># Time and position measurements from a falling object experiment
+time_data = [0.0, 1.0, 2.0, 3.0, 4.0]
+position_data = [0.0, 4.9, 19.6, 44.1, 78.4]
+
+# Accessing a measurement by its index (starting from 0)
+print(f"Position at time {time_data[2]}s is {position_data[2]}m")
+
+# Adding a new data point to the end of the list
+time_data.append(5.0)
+position_data.append(122.5)
+print(f"Final dataset has {len(time_data)} points.")
+</code></pre>
+                        </div>
+
+                        <h3 class="text-xl font-semibold my-4">Tuples: Ordered, Unchangeable Collections</h3>
+                        <p class="mb-2">A tuple is similar to a list in that it's an ordered collection of items. However, tuples are <strong>immutable</strong>, meaning once you create a tuple, you cannot change its contents. This makes them ideal for storing data that should never be modified, such as physical constants or fixed coordinates.</p>
+                        <div class="code-block" data-output="Particle X-coordinate: 10.5">
+                            <pre><code># (x, y, z) coordinates of a particle
+particle_position = (10.5, -3.0, 0.0)
+print(f"Particle X-coordinate: {particle_position[0]}")
+
+# This would cause an error because tuples are immutable:
+# particle_position[0] = 5.0
+</code></pre>
+                        </div>
+
+                        <h3 class="text-xl font-semibold my-4">Dictionaries: Key-Value Pairs</h3>
+                        <p class="mb-2">A dictionary is a collection of key-value pairs. Instead of being accessed by an index number, values are looked up by their associated key. Dictionaries are <strong>mutable</strong> and are incredibly useful for storing the properties of an object, where each property has a name (the key) and a value.</p>
+                        <div class="code-block" data-output="The mass of a Proton is 1.6726219e-27 kg.">
+                            <pre><code># Properties of a proton stored in a dictionary
+proton = {
+    "particle_name": "Proton",
+    "mass_kg": 1.6726219e-27,
+    "charge_coulombs": 1.6021766e-19,
+    "spin": 0.5
+}
+# Accessing a value by its key
+print(f"The mass of a {proton['particle_name']} is {proton['mass_kg']} kg.")
+</code></pre>
+                        </div>
+                    `
+                },
+                'control-flow': {
+                    title: '5. Controlling the Flow: Conditional Logic & Loops',
+                    body: `
+                        <h3 class="text-xl font-semibold mb-3">Conditional Statements (if/elif/else)</h3>
+                        <p class="mb-2">Conditional statements allow your program to make decisions. For more than two possibilities, you can chain conditions using <code>elif</code> (short for "else if"). This is useful for classifying the state of a projectile based on its vertical velocity.</p>
+                        <div class="code-block" data-output="The projectile is at its apex.">
+                             <pre><code># Classify the vertical motion of a projectile
+vertical_velocity = 0 # m/s
+
+if vertical_velocity > 0:
+    print("The projectile is rising.")
+elif vertical_velocity < 0:
+    print("The projectile is falling.")
+else:
+    print("The projectile is at its apex.")
+</code></pre>
+                        </div>
+
+                        <p class="mt-4 mb-2">You can also make this interactive. Enter a vertical velocity (in m/s) below to see the projectile's state change.</p>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <input type="number" id="velocity-input" placeholder="e.g., 20, -10, 0" class="p-2 border rounded-md w-48 bg-gray-50">
+                            <button id="velocity-button" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Check Status</button>
+                        </div>
+                        <div id="velocity-output" class="p-3 bg-gray-100 rounded-md h-10"></div>
+
+                        <h3 class="text-xl font-semibold my-4">'for' Loops & Data Visualization</h3>
+                        <p class="mb-2">A <code>for</code> loop is great for running a simulation over a fixed number of time steps. This code calculates the height of a projectile for the first 5 seconds of its flight. The plot below visualizes the resulting trajectory.</p>
+                        <div class="code-block" data-output="t=0.0s, y=0.00m\nt=1.0s, y=15.09m\nt=2.0s, y=20.38m\nt=3.0s, y=15.86m\nt=4.0s, y=1.53m\nt=5.0s, y=-22.62m">
+                             <pre><code># Simulate projectile height over a fixed time
+v0y = 20 # initial vertical velocity in m/s
+g = 9.81 # gravity
+time_steps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+
+for t in time_steps:
+    y = (v0y * t) - (0.5 * g * t**2)
+    print(f"t={t:.1f}s, y={y:.2f}m")
+</code></pre>
+                        </div>
+                        <div class="my-4 p-4 border rounded-lg bg-gray-50">
+                            <div class="chart-container">
+                                <canvas id="forLoopChart"></canvas>
+                            </div>
+                        </div>
+
+                        <h3 class="text-xl font-semibold my-4">'while' Loops & Data Visualization</h3>
+                        <p class="mb-2">A <code>while</code> loop is perfect for simulations that must run until a condition is met. This code calculates the projectile's trajectory only until it hits the ground (i.e., while its height is greater than or equal to zero). The plot visualizes this specific part of the flight.</p>
+                        <div class="code-block" data-output="Projectile landed after 4.1 seconds.">
+                             <pre><code># Simulate projectile until it hits the ground
+v0y = 20 # initial vertical velocity in m/s
+g = 9.81 # gravity
+t = 0
+dt = 0.1 # time step
+y = 0
+trajectory = []
+
+while y >= 0:
+    trajectory.append(y)
+    y = (v0y * t) - (0.5 * g * t**2)
+    t += dt
+
+# Subtract one time step to get the time just before it landed
+final_time = t - dt
+print(f"Projectile landed after {final_time:.1f} seconds.")
+</code></pre>
+                        </div>
+                        <div class="my-4 p-4 border rounded-lg bg-gray-50">
+                            <div class="chart-container">
+                                <canvas id="whileLoopChart"></canvas>
+                            </div>
+                        </div>
+                    `
+                },
+                'functions': {
+                    title: '6. Building Blocks: Functions',
+                    body: `
+                        <h3 class="text-xl font-semibold mb-3">What is a Function?</h3>
+                        <p class="mb-2">A function is a reusable, named block of code that performs a specific task. Think of it like a recipe: it takes some ingredients (<strong>arguments</strong>), performs a series of steps, and produces a result (a <strong>return value</strong>). </p>
+                        
+                        <h3 class="text-xl font-semibold my-4">Defining and Calling a Function</h3>
+                        <p class="mb-2">You define a function using the <code>def</code> keyword. The "ingredients" it needs are called <strong>parameters</strong>, which are placeholders listed in the parentheses. The code inside the function is indented. The <code>return</code> statement specifies what result the function should output. To use the function, you "call" it by its name and provide the actual values, called <strong>arguments</strong>.</p>
+                        <div class="code-block" data-output="Kinetic energy of the object: 2500.0 Joules.">
+                            <pre><code># 1. DEFINE the function with two parameters: 'mass' and 'velocity'
+def calculate_kinetic_energy(mass, velocity):
+    """Calculates the kinetic energy of an object."""
+    # Formula: KE = 0.5 * m * v^2
+    energy = 0.5 * mass * (velocity**2)
+    return energy # 3. RETURN the calculated result
+
+# 2. CALL the function with two arguments: 50 and 10
+ke = calculate_kinetic_energy(50, 10) 
+
+print(f"Kinetic energy of the object: {ke} Joules.")
+</code></pre>
+                        </div>
+
+                        <h3 class="text-xl font-semibold my-4">Why Are Functions Useful in Physics?</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="font-semibold">Reusability:</strong> Instead of rewriting the formula for kinetic energy every time you need it, you can just call your <code>calculate_kinetic_energy()</code> function. This follows the "Don't Repeat Yourself" (DRY) principle.</li>
+                            <li><strong class="font-semibold">Organization:</strong> Functions break down a complex problem (like a big simulation) into smaller, manageable, and understandable pieces.</li>
+                            <li><strong class="font-semibold">Abstraction:</strong> Once a function is written and tested, you don't need to worry about *how* it works anymore. You can just trust that calling <code>calculate_kinetic_energy(m, v)</code> will give you the correct answer, letting you focus on the bigger picture.</li>
+                        </ul>
+                    `
+                },
+                'error-handling': {
+                    title: '7. Handling Errors: The try...except Block',
+                    body: `
+                        <p class="mb-2">Sometimes, code will encounter an error or "exception" during execution. This can happen due to invalid input, mathematical impossibilities (like dividing by zero), or a host of other reasons. Instead of letting the program crash, you can use a <code>try...except</code> block to gracefully handle these situations.</p>
+                        <p class="mb-4">The code that might cause an error is placed inside the <code>try</code> block. If an error occurs, Python jumps to the appropriate <code>except</code> block instead of crashing. This allows you to provide helpful feedback to the user or take corrective action.</p>
+                        
+                        <h3 class="text-xl font-semibold mb-3">Example: Calculating Resistance</h3>
+                        <p class="mb-2">Let's say we want to calculate resistance using Ohm's Law (R = V/I). The user will provide the current (I), which could be invalid. The code below shows how to handle potential errors.</p>
+                        <div class="code-block" data-output="Error: Current cannot be zero, as this implies infinite resistance.">
+                            <pre><code># Let's try to calculate resistance R = V/I
+voltage = 12 # Volts
+current_input = "0" # This value comes from the user
+
+try:
+    # Attempt to convert the input to a number
+    current = float(current_input)
+    
+    # Attempt the calculation
+    resistance = voltage / current
+    print(f"Resistance: {resistance:.2f} Ohms")
+
+except ValueError:
+    # This block runs if the input can't be converted to a float
+    print("Error: Invalid input. Current must be a number.")
+
+except ZeroDivisionError:
+    # This block runs if the user enters 0 for the current
+    print("Error: Current cannot be zero, as this implies infinite resistance.")
+</code></pre>
+                        </div>
+
+                        <h3 class="text-xl font-semibold my-4">Try It Yourself</h3>
+                        <p class="mb-2">Enter a value for the current below to see the error handling in action. A fixed voltage of 12V is assumed. Try entering '2' (valid), '0' (ZeroDivisionError), or 'abc' (ValueError).</p>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <input type="text" id="error-input" placeholder="Enter Current (Amps)" class="p-2 border rounded-md w-48 bg-gray-50">
+                            <button id="error-button" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Calculate Resistance</button>
+                        </div>
+                        <div id="error-output" class="p-3 bg-gray-100 rounded-md min-h-10"></div>
+                    `
+                },
+                'file-io': {
+                    title: '8. Working with Files',
+                    body: `
+                        <p class="mb-2">In scientific computing, you constantly need to save simulation results to files or read in experimental data. Python provides built-in functions to handle file input/output (I/O).</p>
+                        <p class="mb-2">The best practice is to use the <code>with open(...) as ...</code> syntax. This structure ensures that the file is automatically closed when you are done with it, even if errors occur.</p>
+                        <p class="mb-4">You open files in different "modes". The most common are:
+                            <ul class="list-disc list-inside ml-4">
+                                <li><code>'w'</code> for <strong>write</strong> mode. This will create a new file or overwrite an existing one.</li>
+                                <li><code>'r'</code> for <strong>read</strong> mode. This is used to read the contents of an existing file.</li>
+                                <li><code>'a'</code> for <strong>append</strong> mode. This will add new content to the end of an existing file without overwriting it.</li>
+                            </ul>
+                        </p>
+                        <p class="mb-2">This example simulates writing simulation data to a CSV (Comma-Separated Values) file and then reading it back.</p>
+                        <div class="code-block" data-output="Writing to file 'simulation_data.csv'...\nReading from file 'simulation_data.csv'...\n\nFile Content:\nTime(s),Position(m)\n0.0,100.00\n0.5,108.77\n1.0,114.90\n1.5,118.38\n2.0,119.20">
+                            <pre><code># This is a simulation of file I/O
+
+# 1. Define the data to be written
+header = "Time(s),Position(m)\\n"
+data_rows = []
+for i in range(5):
+    t = i * 0.5
+    position = 100 + (20 * t) - (0.5 * 9.8 * t**2)
+    data_rows.append(f"{t:.1f},{position:.2f}\\n")
+file_content = header + "".join(data_rows)
+
+# 2. Simulate writing the file
+print("Writing to file 'simulation_data.csv'...")
+# In a real script, this would be:
+# with open("simulation_data.csv", "w") as f:
+#     f.write(file_content)
+
+# 3. Simulate reading the file
+print("Reading from file 'simulation_data.csv'...")
+print("\\nFile Content:\\n" + file_content)
+</code></pre>
+                        </div>
+                    `
+                },
+                'modules': {
+                    title: '9. Modules & Packages',
+                    body: `
+                        <h3 class="text-2xl font-semibold mb-3">What are Modules and Packages?</h3>
+                        <p class="mb-2">A <strong>module</strong> is simply a Python file containing functions, variables, and other code that you can use in your own scripts. This allows you to organize code logically and reuse it across different projects. Python comes with a rich <a href="https://docs.python.org/3/library/" target="_blank" class="text-blue-600 hover:underline">Standard Library</a> full of useful modules, like the <code>math</code> module for mathematical functions.</p>
+                        <p class="mb-4">A <strong>package</strong> (or library) is a collection of related modules. The true power of Python for physics comes from its vast ecosystem of third-party packages developed by the scientific community. To use these, you first need to <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/" target="_blank" class="text-blue-600 hover:underline">install them in your Python environment.</a></p>
+                        <div class="code-block" data-output="The sine of 45 degrees is 0.7071">
+                            <pre><code># We import the 'math' module to access its functions
+import math
+
+angle_degrees = 45
+# Trig functions in 'math' use radians, so we convert first
+angle_radians = math.radians(angle_degrees)
+
+sine_value = math.sin(angle_radians)
+print(f"The sine of {angle_degrees} degrees is {sine_value:.4f}")
+</code></pre>
+                        </div>
+                        
+                        <h3 class="text-2xl font-semibold mt-6 mb-3">Exploring Key Scientific Libraries</h3>
+                        <p class="mb-4">The following examples all follow a common astrophysics workflow: simulating the orbit of a star around a supermassive black hole, organizing the data, plotting it, fitting a model to it, and using symbolic math to describe it.</p>
+                        
+                        <h4 class="text-xl font-semibold mb-3">NumPy: Numerical Data</h4>
+                        <p class="mb-2">We'll use <a href="https://numpy.org/" target="_blank" class="text-blue-600 hover:underline">NumPy</a> to generate time steps and calculate the (x, y) coordinates of a star in an elliptical orbit using Kepler's laws.</p>
+                        <div class="code-block" data-output="Time (years): [ 0.    0.16  0.32 ...]\nX position (AU): [ 1.  0.98  0.92 ...]\nY position (AU): [ 0.    0.2   0.39 ...]">
+                            <pre><code># This is a simulation of the library's output
+# import numpy as np
+# time = np.linspace(0, 16, 100) # 16 year orbit, 100 steps
+# a = 1.0 # semi-major axis in AU
+# e = 0.88 # eccentricity for star S2
+# M = 4.31e6 # Mass of Sgr A* in solar masses
+# n = np.sqrt(M / a**3) # Mean motion
+# E = time * n # Simplified eccentric anomaly for demo
+# x = a * (np.cos(E) - e)
+# y = a * np.sqrt(1 - e**2) * np.sin(E)
+print("Time (years): [ 0.    0.16  0.32 ...]")
+print("X position (AU): [ 1.  0.98  0.92 ...]")
+print("Y position (AU): [ 0.    0.2   0.39 ...]")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">Pandas: Structured Data</h4>
+                        <p class="mb-2"><a href="https://pandas.pydata.org/" target="_blank" class="text-blue-600 hover:underline">Pandas</a> is excellent for organizing this data into a labeled, table-like DataFrame, which is easy to inspect and use for further analysis.</p>
+                        <div class="code-block" data-output="   time         x         y\n0  0.00  1.000000  0.000000\n1  0.16  0.981881  0.201299\n2  0.32  0.928249  0.391932\n3  0.48  0.840745  0.561570">
+                            <pre><code># This is a simulation of the library's output
+# import pandas as pd
+# from previous step: time, x, y
+# orbit_data = {'time': time, 'x': x, 'y': y}
+# df = pd.DataFrame(orbit_data)
+# print(df.head().to_string(float_format="%.6f"))
+print("   time         x         y\\n0  0.00  1.000000  0.000000\\n1  0.16  0.981881  0.201299\\n2  0.32  0.928249  0.391932\\n3  0.48  0.840745  0.561570")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">Matplotlib: Visualization</h4>
+                        <p class="mb-2"><a href="https://matplotlib.org/" target="_blank" class="text-blue-600 hover:underline">Matplotlib</a> allows us to visualize the orbit. Plotting the x and y positions clearly shows the elliptical path of the star.</p>
+                        <div class="code-block" data-output="This code would generate a plot showing the elliptical orbit of the star, with the central black hole at one of the foci.">
+                            <pre><code># import matplotlib.pyplot as plt
+# from previous step: df
+
+# plt.figure(figsize=(8, 6))
+# plt.plot(df['x'], df['y'], '-')
+# plt.plot(0, 0, 'o', color='black', markersize=10, label='Sgr A*')
+# plt.title('Simulated Orbit of Star S2')
+# plt.xlabel('X Position (AU)')
+# plt.ylabel('Y Position (AU)')
+# plt.axis('equal')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
+print("This code would generate a plot showing the elliptical orbit of the star, with the central black hole at one of the foci.")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">SciPy: Scientific Algorithms</h4>
+                        <p class="mb-2"><a href="https://www.scipy.org/" target="_blank" class="text-blue-600 hover:underline">SciPy</a> can be used to fit a model to our simulated data. Here, we could use its optimization functions to find the mass of the central object that best fits the observed orbital period and semi-major axis.</p>
+                        <div class="code-block" data-output="Fitted Central Mass: 4.31e+06 Solar Masses">
+                            <pre><code># This is a simulation of the library's output
+# from scipy.optimize import curve_fit
+# P = 16 # years
+# a = 1.0 # AU
+# def kepler_period(semi_major_axis, mass):
+#     return np.sqrt(semi_major_axis**3 / mass)
+
+# popt, pcov = curve_fit(kepler_period, a, P)
+# fitted_mass = popt[0]
+print(f"Fitted Central Mass: {4.31e6:.2e} Solar Masses")
+</code></pre>
+                        </div>
+
+                        <h4 class="text-xl font-semibold mt-6 mb-3">SymPy: Symbolic Mathematics</h4>
+                        <p class="mb-2"><a href="https://www.sympy.org/en/index.html" target="_blank" class="text-blue-600 hover:underline">SymPy</a> allows us to work with equations symbolically. Here, we define the Vis-viva equation, which relates orbital speed to position for an orbiting body.</p>
+                        <div class="code-block" data-output="Vis-viva Equation: v = sqrt(G*M*(2/r - 1/a))">
+                            <pre><code># This is a simulation of the library's output
+# from sympy import symbols, Eq, sqrt
+
+# Define symbolic variables
+# v, G, M, r, a = symbols('v G M r a')
+
+# Define the Vis-viva equation
+# vis_viva_eq = Eq(v, sqrt(G*M*(2/r - 1/a)))
+
+# print(f"Vis-viva Equation: {vis_viva_eq}")
+print("Vis-viva Equation: v = sqrt(G*M*(2/r - 1/a))")
+</code></pre>
+                        </div>
+                    `
+                },
+                'putting-it-all-together': {
+                    title: '10. Putting It All Together: A Projectile Simulation',
+                    body: `
+                        <p class="mb-4">Let's combine what we've learned—functions, loops, and conditionals—to create a more complete simulation of projectile motion. This script defines a reusable function that not only calculates the trajectory but also returns the results as a list of dictionaries, a common and useful data structure. We then loop through this data to print a formatted report.</p>
+                        <p class="mb-4">This approach separates the calculation (the function) from the presentation (the loop that prints the results), which is a core principle of good programming.</p>
+                        <div class="code-block" data-output="--- Projectile Simulation Report ---\nInitial Velocity: 50 m/s, Angle: 45 degrees\n--------------------------------------\nTime: 0.0s | Status: Launching | Position: (0.0, 0.0)\nTime: 0.5s | Status: Rising | Position: (17.7, 7.5)\nTime: 1.0s | Status: Rising | Position: (35.4, 12.7)\nTime: 1.5s | Status: Rising | Position: (53.0, 15.3)\nTime: 2.0s | Status: Rising | Position: (70.7, 15.6)\nTime: 2.5s | Status: Rising | Position: (88.4, 13.3)\nTime: 3.0s | Status: Rising | Position: (106.1, 8.7)\nTime: 3.5s | Status: Near Apex | Position: (123.7, 1.6)\nTime: 4.0s | Status: Falling | Position: (141.4, -7.9)\n--------------------------------------\nSimulation Complete.">
+                            <pre><code>import math
+
+def simulate_projectile(v0, angle_deg, t_max, dt):
+    """
+    Simulates projectile motion and returns the trajectory data.
+    Returns a list of dictionaries, each with time, status, and position.
+    """
+    g = 9.81 # m/s^2
+    angle_rad = math.radians(angle_deg)
+    v0x = v0 * math.cos(angle_rad)
+    v0y = v0 * math.sin(angle_rad)
+    
+    results = []
+    t = 0
+    while t <= t_max:
+        x = v0x * t
+        y = (v0y * t) - (0.5 * g * t**2)
+        vy = v0y - g * t
+        
+        if t == 0:
+            status = "Launching"
+        elif abs(vy) < 1.0:
+            status = "Near Apex"
+        elif vy > 0:
+            status = "Rising"
+        else:
+            status = "Falling"
+        
+        results.append({'time': t, 'status': status, 'x': x, 'y': y})
+        t += dt
+    
+    return results
+
+# --- Main part of the script ---
+# 1. Set parameters and run the simulation
+initial_velocity = 50
+launch_angle = 45
+simulation_time = 4
+time_step = 0.5
+trajectory_data = simulate_projectile(initial_velocity, launch_angle, simulation_time, time_step)
+
+# 2. Print a formatted report from the returned data
+print("--- Projectile Simulation Report ---")
+print(f"Initial Velocity: {initial_velocity} m/s, Angle: {launch_angle} degrees")
+print("--------------------------------------")
+for point in trajectory_data:
+    t, status, x, y = point['time'], point['status'], point['x'], point['y']
+    print(f"Time: {t:.1f}s | Status: {status} | Position: ({x:.1f}, {y:.1f})")
+print("--------------------------------------")
+print("Simulation Complete.")
+</code></pre>
+                        </div>
+                    `
+                }
+            };
+
+            const contentContainer = document.getElementById('content-container');
+            const navigation = document.getElementById('navigation');
+            let forLoopChartInstance = null;
+            let whileLoopChartInstance = null;
+
+            function renderContent(hash) {
+                const key = hash.substring(1);
+                const sectionData = content[key];
+
+                if (!sectionData) {
+                    renderContent('#what-is-python');
+                    return;
+                }
+
+                contentContainer.innerHTML = `<h1 class="text-3xl font-bold mb-6 pb-2 border-b">${sectionData.title}</h1>${sectionData.body}`;
+
+                contentContainer.querySelectorAll('.code-block').forEach(block => {
+                    const output = block.getAttribute('data-output');
+                    const button = document.createElement('button');
+                    button.textContent = '▶ Run Code';
+                    button.className = 'run-button mt-2 px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-md hover:bg-green-700';
+                    block.appendChild(button);
+
+                    const outputDiv = document.createElement('div');
+                    outputDiv.className = 'code-output hidden';
+                    block.appendChild(outputDiv);
+
+                    button.addEventListener('click', () => {
+                        outputDiv.textContent = output.replace(/\\n/g, '\n');
+                        outputDiv.classList.remove('hidden');
+                    });
+                });
+
+                if (key === 'control-flow') {
+                    document.getElementById('velocity-button').addEventListener('click', handleVelocityCheck);
+                    renderForLoopChart();
+                    renderWhileLoopChart();
+                }
+                if (key === 'error-handling') {
+                    document.getElementById('error-button').addEventListener('click', handleErrorCheck);
+                }
+
+                navigation.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === hash);
+                });
+            }
+
+            function handleVelocityCheck() {
+                const input = document.getElementById('velocity-input');
+                const output = document.getElementById('velocity-output');
+                const velocity = parseFloat(input.value);
+                let state = '';
+                if (isNaN(velocity)) {
+                    state = 'Please enter a valid number.';
+                } else if (velocity > 0) {
+                    state = 'The projectile is rising.';
+                } else if (velocity < 0) {
+                    state = 'The projectile is falling.';
+                } else {
+                    state = 'The projectile is at its apex.';
+                }
+                output.textContent = state;
+            }
+
+            function handleErrorCheck() {
+                const input = document.getElementById('error-input').value;
+                const output = document.getElementById('error-output');
+                const voltage = 12;
+                try {
+                    if (input.trim() === '') {
+                        output.textContent = "Error: Invalid input. Current must be a number.";
+                        return;
+                    }
+                    const current = parseFloat(input);
+                    if (isNaN(current)) {
+                        output.textContent = "Error: Invalid input. Current must be a number.";
+                        return;
+                    }
+                    if (current === 0) {
+                        output.textContent = "Error: Current cannot be zero, as this implies infinite resistance.";
+                        return;
+                    }
+                    const resistance = voltage / current;
+                    output.textContent = `Success! Resistance: ${resistance.toFixed(2)} Ohms`;
+                } catch (e) {
+                    output.textContent = "An unexpected error occurred.";
+                }
+            }
+
+            function renderForLoopChart() {
+                const ctx = document.getElementById('forLoopChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const time_steps = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
+                const height_data = [];
+                const v0y = 20; // m/s
+                const g = 9.81;
+
+                for (const t of time_steps) {
+                    const y = (v0y * t) - (0.5 * g * t ** 2);
+                    height_data.push(y);
+                }
+
+                if (forLoopChartInstance) {
+                    forLoopChartInstance.destroy();
+                }
+
+                forLoopChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: time_steps.map(t => t.toFixed(1)),
+                        datasets: [{
+                            label: 'Height (m)',
+                            data: height_data,
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Time (s)' } },
+                            y: { title: { display: true, text: 'Height (m)' } }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `Height: ${context.parsed.y.toFixed(2)} m`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderWhileLoopChart() {
+                const ctx = document.getElementById('whileLoopChart')?.getContext('2d');
+                if (!ctx) return;
+
+                const time_steps = [];
+                const height_data = [];
+                const v0y = 20; // m/s
+                const g = 9.81;
+                let t = 0;
+                let y = 0;
+                const dt = 0.1;
+
+                while (y >= 0) {
+                    time_steps.push(t.toFixed(1));
+                    height_data.push(y);
+                    t += dt;
+                    y = (v0y * t) - (0.5 * g * t ** 2);
+                }
+
+                if (whileLoopChartInstance) {
+                    whileLoopChartInstance.destroy();
+                }
+
+                whileLoopChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: time_steps,
+                        datasets: [{
+                            label: 'Height (m) until landing',
+                            data: height_data,
+                            borderColor: 'rgb(239, 68, 68)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Time (s)' } },
+                            y: { title: { display: true, text: 'Height (m)' } }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `Height: ${context.parsed.y.toFixed(2)} m`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            navigation.addEventListener('click', function (e) {
+                if (e.target.classList.contains('nav-link')) {
+                    e.preventDefault();
+                    const hash = e.target.getAttribute('href');
+                    window.location.hash = hash;
+                }
+            });
+
+            window.addEventListener('hashchange', () => {
+                renderContent(window.location.hash || '#what-is-python');
+            });
+
+            // Initial load
+            renderContent(window.location.hash || '#what-is-python');
+        });
+    </script>
+</body>
+
+</html>
