@@ -306,16 +306,17 @@
 
         .author-bio-avatar {
             width: 100px;
-            height: 100px;
-            border-radius: var(--radius-full);
+            height: auto;
+            min-width: 100px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             flex-shrink: 0;
         }
 
         .author-bio-avatar img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            border-radius: 0;
         }
 
         .author-bio-content h4 {
@@ -364,7 +365,7 @@
         }
 
         .related-card-image {
-            height: 150px;
+            height: 350px;
             overflow: hidden;
         }
 
@@ -488,8 +489,8 @@
 
     <!-- Featured Image -->
     <figure class="post-featured-image">
-        <img src="../images/general/milkyway.jpg" alt="PhD Journey">
-        <figcaption>Looking back on a transformative year of growth, challenges, and discovery.</figcaption>
+        <img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey">
+        <figcaption>An amazing year of learning, adventure, & community.</figcaption>
     </figure>
 
     <!-- Post Content -->
@@ -503,18 +504,25 @@
         keeping the HTML formatting.
         =====================================================
         -->
-
         <p>
-            <strong>One year ago, I embarked on a journey that would fundamentally change how I think about
-                science, research, and myself.</strong> Starting a PhD is unlike anything I had experienced before,
-            and as I look back on these first twelve months, I'm struck by how much I've learned—not just about
-            astrophysics, but about the process of becoming a researcher.
+            <strong>Last year has been full of learning, new experiences, and exciting challenges. But I know I'm on the
+                right path..</strong>
+
+
+            Starting a PhD is hard to describe. The feeling of uncertainty, the change to self driven direction in your
+            research, and all of the new things you have to learn. Frankly it's a terrifying prospect, but it's one I
+            wouldn't change for the world.
         </p>
 
+
+        <p>
+            Full blog post coming soon...
+        </p>
+        <!--
         <h2>The Excitement of Beginning</h2>
 
         <p>
-            <!-- Add your content about starting the PhD here -->
+
             The first few weeks were a whirlwind of orientation sessions, meetings with supervisors, and trying
             to understand the scope of my research project. The impostor syndrome was real—surrounded by brilliant
             colleagues and wondering if I truly belonged.
@@ -523,7 +531,6 @@
         <h2>Challenges and Growth</h2>
 
         <p>
-            <!-- Add your content about challenges here -->
             No PhD journey is without its obstacles. There were moments of frustration when code wouldn't work,
             when simulations failed, and when papers seemed impossible to finish. But each challenge taught me
             something valuable about persistence and problem-solving.
@@ -546,7 +553,6 @@
         <h2>Looking Forward</h2>
 
         <p>
-            <!-- Add your content about future plans here -->
             As I begin my second year, I'm excited about the research directions opening up before me.
             The challenges ahead are daunting, but I feel better equipped to face them than I did a year ago.
         </p>
@@ -564,7 +570,7 @@
         <p>
             If you're considering a PhD or just starting one, feel free to
             <a href="../pages/contact.html">reach out</a>. I'm always happy to chat about the experience!
-        </p>
+        </p> -->
 
         <!-- Tags -->
         <div class="post-tags">
@@ -579,7 +585,8 @@
         <div class="post-share">
             <span class="post-share-label">Share this post:</span>
             <div class="share-buttons">
-                <a href="#" class="share-btn" aria-label="Share on LinkedIn">
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.github.io/blog/phd-journey.html"
+                    target="_blank" class="share-btn" aria-label="Share on LinkedIn">
                     <i class="fab fa-linkedin-in"></i>
                 </a>
                 <a href="#" class="share-btn" aria-label="Copy link">
@@ -614,7 +621,7 @@
             <div class="related-grid">
                 <article class="related-card">
                     <div class="related-card-image">
-                        <img src="../images/general/milkyway.jpg" alt="Programming for Scientists">
+                        <img src="../images/general/Coding in Python BlogImage.jpg" alt="Programming for Scientists">
                     </div>
                     <div class="related-card-content">
                         <h3 class="related-card-title">
@@ -678,6 +685,21 @@
                 mobileMenu.classList.remove('open');
             });
         });
+
+        // Copy Link Functionality
+        const copyBtn = document.querySelector('a[aria-label="Copy link"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    const originalIcon = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalIcon;
+                    }, 2000);
+                });
+            });
+        }
     </script>
 </body>
 

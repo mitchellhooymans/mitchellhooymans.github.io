@@ -57,12 +57,29 @@
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
-			aspect-ratio: 16/10;
 			transition: transform var(--transition-slow);
 		}
 
-		.gallery-page-item.span-1 img {
+		/* Aspect Ratio Utilities */
+		.aspect-3-2 {
+			aspect-ratio: 3/2;
+		}
+
+		.aspect-5-4 {
+			aspect-ratio: 5/4;
+		}
+
+		.aspect-4-5 {
+			aspect-ratio: 4/5;
+		}
+
+		.aspect-1-1 {
 			aspect-ratio: 1;
+		}
+
+		/* Remove enforced aspect ratio from base item if class is present */
+		.gallery-page-item[class*="aspect-"] {
+			aspect-ratio: auto;
 		}
 
 		.gallery-page-item:hover img {
@@ -154,62 +171,202 @@
 			</a>
 
 			<div class="gallery-page-grid">
-				<!-- Row 1 -->
-				<div class="gallery-page-item span-1" data-full="photography-images/fulls/01.jpg">
-					<img src="photography-images/thumbs/01.jpg" alt="Wildlife Photography">
+				<!-- Highlights -->
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/BlackMountainSun.jpg">
+					<img src="../images/photography/thumbnails/BlackMountainSun.jpg" alt="Black Mountain Sun">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">You Really Got Me</span>
+						<span class="gallery-page-item-title">Black Mountain Sun</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5"
+					data-full="../images/photography/LongExposureBrighton.jpg">
+					<img src="../images/photography/thumbnails/LongExposureBrighton.jpg" alt="Long Exposure Brighton">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Long Exposure Brighton</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5" data-full="../images/photography/sunsetTinbeerwah.jpg">
+					<img src="../images/photography/thumbnails/sunsetTinbeerwah.jpg" alt="Tinbeerwah Sunset">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Tinbeerwah Sunset</span>
 					</div>
 				</div>
 
-				<div class="gallery-page-item span-2" data-full="photography-images/fulls/02.jpg">
-					<img src="photography-images/thumbs/02.jpg" alt="Landscape Photography">
+				<!-- Landscape & Nature -->
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Brighton Tree.jpg">
+					<img src="../images/photography/thumbnails/Brighton Tree.jpg" alt="Brighton Tree">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">Ad Infinitum</span>
+						<span class="gallery-page-item-title">Brighton Tree</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Mt Cootha.jpg">
+					<img src="../images/photography/thumbnails/Mt Cootha.jpg" alt="Mt Cootha">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Mt Cootha</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-2 aspect-3-2"
+					data-full="../images/photography/mountainlookout-noosa.jpg">
+					<img src="../images/photography/thumbnails/mountainlookout-noosa.jpg" alt="Noosa Lookout">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Noosa Lookout</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5" data-full="../images/photography/runner at dusk.jpg">
+					<img src="../images/photography/thumbnails/runner at dusk.jpg" alt="Runner at Dusk">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Runner at Dusk</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5" data-full="../images/photography/BlueTang.jpg">
+					<img src="../images/photography/thumbnails/BlueTang.jpg" alt="Blue Tang">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Blue Tang</span>
 					</div>
 				</div>
 
-				<div class="gallery-page-item span-1" data-full="photography-images/fulls/03.jpg">
-					<img src="photography-images/thumbs/03.jpg" alt="Nature Photography">
+				<!-- Wildlife: Sharks & Ocean -->
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Shark_01.jpg">
+					<img src="../images/photography/thumbnails/Shark_01.jpg" alt="Shark">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">Different.</span>
+						<span class="gallery-page-item-title">Shark</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Shark_02.jpg">
+					<img src="../images/photography/thumbnails/Shark_02.jpg" alt="Shark Close-up">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Shark Close-up</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Jellyfish_Swim.jpg">
+					<img src="../images/photography/thumbnails/Jellyfish_Swim.jpg" alt="Jellyfish Swim">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Jellyfish Swim</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5" data-full="../images/photography/Jellyfish_Still.jpg">
+					<img src="../images/photography/thumbnails/Jellyfish_Still.jpg" alt="Jellyfish Still">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Jellyfish Still</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5"
+					data-full="../images/photography/Climbing_Redpanda.JPEG">
+					<img src="../images/photography/thumbnails/Climbing_Redpanda.JPEG" alt="Climbing Redpanda">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Climbing Redpanda</span>
 					</div>
 				</div>
 
-				<!-- Row 2 -->
-				<div class="gallery-page-item span-1" data-full="photography-images/fulls/04.jpg">
-					<img src="photography-images/thumbs/04.jpg" alt="Event Photography">
+				<!-- Wildlife: Land -->
+				<div class="gallery-page-item span-2 aspect-3-2"
+					data-full="../images/photography/RobertIrwin_CrocFeed.JPEG">
+					<img src="../images/photography/thumbnails/RobertIrwin_CrocFeed.JPEG" alt="Robert Irwin Croc Feed">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">Elysium</span>
+						<span class="gallery-page-item-title">Robert Irwin Croc Feed</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Tiger_Stalking.JPEG">
+					<img src="../images/photography/thumbnails/Tiger_Stalking.JPEG" alt="Tiger Stalking">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Tiger Stalking</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-5-4"
+					data-full="../images/photography/Tiger_Sideprofile.JPEG">
+					<img src="../images/photography/thumbnails/Tiger_Sideprofile.JPEG" alt="Tiger Profile">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Tiger Profile</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5"
+					data-full="../images/photography/Kangaroo_Sideprofile.JPEG">
+					<img src="../images/photography/thumbnails/Kangaroo_Sideprofile.JPEG" alt="Kangaroo">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Kangaroo</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-5-4" data-full="../images/photography/Emu_Sideprofile.JPEG">
+					<img src="../images/photography/thumbnails/Emu_Sideprofile.JPEG" alt="Emu">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Emu</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-5-4" data-full="../images/photography/Snake_BW.JPEG">
+					<img src="../images/photography/thumbnails/Snake_BW.JPEG" alt="Snake BW">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Snake BW</span>
 					</div>
 				</div>
 
-				<div class="gallery-page-item span-3" data-full="photography-images/fulls/05.jpg">
-					<img src="photography-images/thumbs/05.jpg" alt="Panorama Photography">
+				<!-- Koalas & Meerkats -->
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Koala_Joey.JPEG">
+					<img src="../images/photography/thumbnails/Koala_Joey.JPEG" alt="Koala Joey">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">Kingdom of the Wind</span>
+						<span class="gallery-page-item-title">Koala Joey</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-2 aspect-3-2" data-full="../images/photography/Redpanda.JPEG">
+					<img src="../images/photography/thumbnails/Redpanda.JPEG" alt="Redpanda">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Redpanda</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-4-5" data-full="../images/photography/Koala_Snacking.JPEG">
+					<img src="../images/photography/thumbnails/Koala_Snacking.JPEG" alt="Koala Snacking">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Koala Snacking</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-3-2" data-full="../images/photography/Koala_Eating.JPEG">
+					<img src="../images/photography/thumbnails/Koala_Eating.JPEG" alt="Koala Eating">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Koala Eating</span>
 					</div>
 				</div>
 
-				<!-- Row 3 -->
-				<div class="gallery-page-item span-1" data-full="photography-images/fulls/06.jpg">
-					<img src="photography-images/thumbs/06.jpg" alt="Wildlife">
+				<div class="gallery-page-item span-1 aspect-3-2" data-full="../images/photography/Koala_Frown.JPEG">
+					<img src="../images/photography/thumbnails/Koala_Frown.JPEG" alt="Koala Frown">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">The Pursuit</span>
+						<span class="gallery-page-item-title">Koala Frown</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-5-4" data-full="../images/photography/Koala_1.JPEG">
+					<img src="../images/photography/thumbnails/Koala_1.JPEG" alt="Koala">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Koala</span>
 					</div>
 				</div>
 
-				<div class="gallery-page-item span-2" data-full="photography-images/fulls/07.jpg">
-					<img src="photography-images/thumbs/07.jpg" alt="Landscape">
+				<!-- Meerkats -->
+				<div class="gallery-page-item span-1 aspect-3-2" data-full="../images/photography/Meerkat_Curious.JPEG">
+					<img src="../images/photography/thumbnails/Meerkat_Curious.JPEG" alt="Meerkat">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">Boundless</span>
+						<span class="gallery-page-item-title">Meerkat</span>
 					</div>
 				</div>
-
-				<div class="gallery-page-item span-1" data-full="photography-images/fulls/08.jpg">
-					<img src="photography-images/thumbs/08.jpg" alt="Nature">
+				<div class="gallery-page-item span-1 aspect-4-5" data-full="../images/photography/MeerketUp.JPEG">
+					<img src="../images/photography/thumbnails/MeerketUp.JPEG" alt="Meerkat Up">
 					<div class="gallery-page-item-overlay">
-						<span class="gallery-page-item-title">The Spectators</span>
+						<span class="gallery-page-item-title">Meerkat Up</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-1-1" data-full="../images/photography/Meerkat_Watch.JPEG">
+					<img src="../images/photography/thumbnails/Meerkat_Watch.JPEG" alt="Meerkat Watch">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Meerkat Watch</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-5-4" data-full="../images/photography/Meerkat_Stare.JPEG">
+					<img src="../images/photography/thumbnails/Meerkat_Stare.JPEG" alt="Meerkat Stare">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Meerkat Stare</span>
+					</div>
+				</div>
+				<div class="gallery-page-item span-1 aspect-5-4" data-full="../images/photography/Meerkat_Stare2.JPEG">
+					<img src="../images/photography/thumbnails/Meerkat_Stare2.JPEG" alt="Meerkat Stare">
+					<div class="gallery-page-item-overlay">
+						<span class="gallery-page-item-title">Meerkat Stare</span>
 					</div>
 				</div>
 			</div>

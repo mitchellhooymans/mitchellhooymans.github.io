@@ -306,16 +306,17 @@
 
         .author-bio-avatar {
             width: 100px;
-            height: 100px;
-            border-radius: var(--radius-full);
+            height: auto;
+            min-width: 100px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             flex-shrink: 0;
         }
 
         .author-bio-avatar img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            border-radius: 0;
         }
 
         .author-bio-content h4 {
@@ -364,7 +365,7 @@
         }
 
         .related-card-image {
-            height: 150px;
+            height: 350px;
             overflow: hidden;
         }
 
@@ -488,7 +489,7 @@
 
     <!-- Featured Image -->
     <figure class="post-featured-image">
-        <img src="../images/general/milkyway.jpg" alt="Programming and Science">
+        <img src="../images/general/Coding in Python BlogImage.jpg" alt="Programming and Science">
         <figcaption>The intersection of programming and scientific discovery opens new frontiers.</figcaption>
     </figure>
 
@@ -505,16 +506,17 @@
         -->
 
         <p>
-            <strong>Programming has become an indispensable tool in modern science.</strong> Whether you're analyzing
-            astronomical data, simulating molecular interactions, or processing experimental results, the ability to
-            write code opens up a world of possibilities that would be impossible to achieve through manual methods
-            alone.
+            <strong>Programming is quickly becoming essential in modern science.</strong> Whether you're analyzing
+            huge datasets, running simulations, or processing experimental results, the ability to
+            write code opens up a world of possibilities that would be <i>impossible</i> to achieve without it.
         </p>
-
+        <p>
+            Full blog post coming soon...
+        </p>
+        <!--
         <h2>The Data Revolution in Science</h2>
 
         <p>
-            <!-- Add your content about the data revolution here -->
             Modern scientific instruments generate vast amounts of data that require sophisticated analysis techniques.
             From telescope surveys capturing terabytes of images nightly to particle accelerators recording millions
             of collision events, programming is essential for making sense of this information deluge.
@@ -523,7 +525,6 @@
         <h3>Why Traditional Methods Fall Short</h3>
 
         <p>
-            <!-- Add your content about limitations of traditional methods -->
             Spreadsheets and manual calculations simply cannot keep pace with the scale of modern datasets.
             A simple Python script can process in seconds what would take hours or days to do by hand.
         </p>
@@ -538,7 +539,6 @@
         <h2>Getting Started with Python</h2>
 
         <p>
-            <!-- Add your content about Python here -->
             Python has emerged as the language of choice for scientific computing due to its readable syntax,
             extensive libraries, and active community. Here's a simple example of loading and plotting data:
         </p>
@@ -567,7 +567,7 @@ plt.show()</code></pre>
         </blockquote>
 
         <p>
-            <!-- Add your content about the ecosystem here -->
+
             The Python scientific ecosystem includes powerful libraries like NumPy for numerical computing,
             SciPy for scientific algorithms, Matplotlib for visualization, and Pandas for data manipulation.
         </p>
@@ -575,7 +575,6 @@ plt.show()</code></pre>
         <h2>Conclusion</h2>
 
         <p>
-            <!-- Add your conclusion here -->
             Learning to program is no longer optional for scientists—it's a fundamental skill that will
             enhance your research capabilities, make your work more reproducible, and open doors to
             collaborations and career opportunities you might never have imagined.
@@ -584,7 +583,7 @@ plt.show()</code></pre>
         <p>
             Ready to start your programming journey? Check out my
             <a href="../tutorials/pythonphys.html">Introduction to Python for Physicists</a> tutorial!
-        </p>
+        </p> -->
 
         <!-- Tags -->
         <div class="post-tags">
@@ -599,7 +598,8 @@ plt.show()</code></pre>
         <div class="post-share">
             <span class="post-share-label">Share this post:</span>
             <div class="share-buttons">
-                <a href="#" class="share-btn" aria-label="Share on LinkedIn">
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.github.io/blog/programming.html"
+                    target="_blank" class="share-btn" aria-label="Share on LinkedIn">
                     <i class="fab fa-linkedin-in"></i>
                 </a>
                 <a href="#" class="share-btn" aria-label="Copy link">
@@ -634,7 +634,7 @@ plt.show()</code></pre>
             <div class="related-grid">
                 <article class="related-card">
                     <div class="related-card-image">
-                        <img src="../images/general/milkyway.jpg" alt="PhD Journey">
+                        <img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey">
                     </div>
                     <div class="related-card-content">
                         <h3 class="related-card-title">
@@ -698,6 +698,21 @@ plt.show()</code></pre>
                 mobileMenu.classList.remove('open');
             });
         });
+
+        // Copy Link Functionality
+        const copyBtn = document.querySelector('a[aria-label="Copy link"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    const originalIcon = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalIcon;
+                    }, 2000);
+                });
+            });
+        }
     </script>
 </body>
 

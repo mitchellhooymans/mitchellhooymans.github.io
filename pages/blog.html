@@ -56,11 +56,14 @@
 
         .blog-card-image {
             position: relative;
-            height: 200px;
+            height: 160px;
             overflow: hidden;
         }
 
         .blog-card-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -170,6 +173,7 @@
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
             overflow: hidden;
+            margin-bottom: var(--space-8);
         }
 
         @media (min-width: 768px) {
@@ -342,7 +346,7 @@
                 <!-- Featured Post - Programming -->
                 <article class="featured-post reveal" data-category="education">
                     <div class="blog-card-image">
-                        <img src="../images/general/milkyway.jpg" alt="Programming for Scientists">
+                        <img src="../images/general/Coding in Python BlogImage.jpg" alt="Programming for Scientists">
                     </div>
                     <div class="blog-card-content">
                         <div class="featured-badge">
@@ -371,7 +375,7 @@
                 <!-- Blog Post - PhD Journey -->
                 <article class="blog-card reveal delay-100" data-category="personal">
                     <div class="blog-card-image">
-                        <img src="../images/general/milkyway.jpg" alt="PhD Journey">
+                        <img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey">
                         <span class="blog-card-category">Personal</span>
                     </div>
                     <div class="blog-card-content">
