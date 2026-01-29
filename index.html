@@ -18,21 +18,194 @@
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .landing-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, #2d4a6f 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('images/milkyway.jpg') center/cover no-repeat;
+            opacity: 0.15;
+        }
+
+        .landing-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: var(--space-10);
+            max-width: 900px;
+        }
+
+        .landing-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            margin: 0 auto var(--space-6) auto;
+            display: block;
+        }
+
+        .landing-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: var(--space-4);
+            letter-spacing: -1px;
+        }
+
+        .landing-subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: var(--space-8);
+            font-weight: 400;
+        }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-4);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5) var(--space-4);
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .nav-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-card i {
+            font-size: 1.75rem;
+            color: var(--color-accent);
+        }
+
+        .nav-card span {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            margin-top: var(--space-10);
+        }
+
+        .social-row a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .social-row a:hover {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            transform: translateY(-3px);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: var(--space-6);
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .landing-title {
+                font-size: 2.5rem;
+            }
+
+            .landing-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .landing-image {
+                width: 140px;
+                height: 140px;
+            }
+
+            .nav-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Navigation -->
+    <!-- Navigation (minimal for landing) -->
     <nav class="nav" id="nav">
         <div class="nav-content">
             <a href="index.html" class="nav-brand">
                 <span>Mitchell</span>Hooymans
             </a>
             <ul class="nav-links">
-                <li><a href="#about" class="active">About</a></li>
-                <li><a href="#resources">Resources</a></li>
-                <li><a href="#photography">Photography</a></li>
-                <li><a href="#cv">CV</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="photography.html">Photography</a></li>
+                <li><a href="cv.html">CV</a></li>
+                <li><a href="contact.html">Contact</a></li>
             </ul>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <span></span>
@@ -44,259 +217,65 @@
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="#about">About</a>
-        <a href="#resources">Resources</a>
-        <a href="#photography">Photography</a>
-        <a href="#cv">CV</a>
-        <a href="#contact">Contact</a>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="resources.html">Resources</a>
+        <a href="blog.html">Blog</a>
+        <a href="photography.html">Photography</a>
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
     </div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-image animate-fade-in-up">
-                    <img src="images/QARG_Headshot_smaller.jpg" alt="Mitchell Hooymans">
-                </div>
-                <h1 class="animate-fade-in-up delay-100">Mitchell Hooymans</h1>
-                <p class="hero-subtitle animate-fade-in-up delay-200">
-                    Aspiring Astrophysicist & STEM Communicator
-                </p>
-                <div class="flex gap-4 animate-fade-in-up delay-300">
-                    <a href="#about" class="btn btn-primary">
-                        <i class="fas fa-user"></i> About Me
-                    </a>
-                    <a href="#contact" class="btn btn-outline">
-                        <i class="fas fa-envelope"></i> Get in Touch
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Full-screen Landing Hero -->
+    <section class="landing-hero">
+        <div class="landing-content animate-fade-in-up">
+            <img src="images/QARG_Headshot_smaller.jpg" alt="Mitchell Hooymans" class="landing-image">
+            <h1 class="landing-title">Mitchell Hooymans</h1>
+            <p class="landing-subtitle">Aspiring Astrophysicist & STEM Communicator</p>
 
-    <!-- About Section -->
-    <section class="section" id="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text reveal">
-                    <span class="tag tag-accent mb-4">About Me</span>
-                    <h2>Who Am I?</h2>
-                    <p>
-                        I am an astrophysicist currently completing a PhD at
-                        <a href="https://about.uq.edu.au/" target="_blank">The University of Queensland</a>
-                        in the field of Astrophysics, where I am researching the formation and dynamics of
-                        <a href="https://www.nasa.gov/universe/what-are-black-holes/" target="_blank">black holes</a>
-                        in <a href="https://esahubble.org/wordbank/globular-cluster/" target="_blank">dense stellar
-                            systems</a>.
-                    </p>
-                    <p>
-                        My journey into astrophysics has been filled with a desire to understand the fundamental
-                        principles that govern the cosmos. I'm constantly seeking opportunities to learn and grow,
-                        applying my skills to unravel the complexities of celestial phenomena.
-                    </p>
-                    <p>
-                        With a keen interest in science communication and a background in computer science,
-                        I'm developing expertise in analyzing astronomical data, building models, and visualizing
-                        complex datasets that can be communicated to the general public.
-                    </p>
-                    <p>
-                        I'm passionate about education and outreach, and I'm dedicated to inspiring the next
-                        generation of scientists and science communicators.
-                    </p>
-                </div>
-                <div class="reveal delay-200">
-                    <img src="images/milkyway.jpg" alt="Milky Way"
-                        style="border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Resources Section -->
-    <section class="section section-alt" id="resources">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Resources</span>
-                <h2>Learning Materials</h2>
-                <p>Interactive tutorials and resources I've created to help others learn physics and programming.</p>
+            <div class="nav-cards">
+                <a href="about.html" class="nav-card">
+                    <i class="fas fa-user"></i>
+                    <span>About</span>
+                </a>
+                <a href="resources.html" class="nav-card">
+                    <i class="fas fa-book"></i>
+                    <span>Resources</span>
+                </a>
+                <a href="blog.html" class="nav-card">
+                    <i class="fas fa-pen"></i>
+                    <span>Blog</span>
+                </a>
+                <a href="photography.html" class="nav-card">
+                    <i class="fas fa-camera"></i>
+                    <span>Photography</span>
+                </a>
+                <a href="cv.html" class="nav-card">
+                    <i class="fas fa-file-alt"></i>
+                    <span>CV</span>
+                </a>
+                <a href="contact.html" class="nav-card">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact</span>
+                </a>
             </div>
 
-            <div class="grid grid-3">
-                <!-- Python for Physicists -->
-                <div class="card reveal">
-                    <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fab fa-python"></i>
-                        </div>
-                        <h3 class="card-title">Introduction to Python for Physicists</h3>
-                        <p class="card-text">
-                            A comprehensive tutorial course designed for anyone who wants to learn the basics of
-                            Python programming. It covers fundamental programming concepts and techniques, with
-                            a focus on applications in physics.
-                        </p>
-                        <a href="pythonphys.html" class="btn btn-primary">
-                            <i class="fas fa-book-open"></i> View Tutorial
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Black Holes Intro -->
-                <div class="card reveal delay-100">
-                    <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-meteor"></i>
-                        </div>
-                        <h3 class="card-title">Introduction to Black Holes</h3>
-                        <p class="card-text">
-                            Explore the fascinating world of black holes, binary systems, mergers, and
-                            gravitational waves. Learn the basics of these cosmic phenomena.
-                        </p>
-                        <a href="blackholes.html" class="btn btn-primary">
-                            <i class="fas fa-rocket"></i> Explore
-                        </a>
-                    </div>
-                </div>
-
-                <!-- N-Body Problem -->
-                <div class="card reveal delay-200">
-                    <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-atom"></i>
-                        </div>
-                        <h3 class="card-title">Introduction to the N-Body Problem</h3>
-                        <p class="card-text">
-                            From two bodies to many—explore the mathematics of gravitational dynamics
-                            including Kepler's laws, three-body chaos, and numerical methods.
-                        </p>
-                        <a href="nbody.html" class="btn btn-primary">
-                            <i class="fas fa-calculator"></i> Learn More
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Photography Section -->
-    <section class="section" id="photography">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Photography</span>
-                <h2>My Gallery</h2>
-                <p>I'm an avid photographer with a particular interest in wildlife and landscape photography.</p>
-            </div>
-
-            <div class="gallery-grid reveal">
-                <div class="gallery-item">
-                    <img src="photography-images/thumbs/01.jpg" alt="Wildlife Photography">
-                    <div class="gallery-item-overlay">
-                        <span class="gallery-item-title">Wildlife</span>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="photography-images/thumbs/02.jpg" alt="Landscape Photography">
-                    <div class="gallery-item-overlay">
-                        <span class="gallery-item-title">Landscapes</span>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="photography-images/thumbs/03.jpg" alt="Nature Photography">
-                    <div class="gallery-item-overlay">
-                        <span class="gallery-item-title">Nature</span>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <img src="photography-images/thumbs/04.jpg" alt="Event Photography">
-                    <div class="gallery-item-overlay">
-                        <span class="gallery-item-title">Events</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center mt-8 reveal">
-                <a href="photography.html" class="btn btn-secondary">
-                    <i class="fas fa-images"></i> View Full Gallery
+            <div class="social-row">
+                <a href="https://www.facebook.com/MitchellHooymans" aria-label="Facebook" target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/mitchellhooymans/?hl=en" aria-label="Instagram" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/mitchell-hooymans/" aria-label="LinkedIn" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://github.com/mitchellhooymans" aria-label="GitHub" target="_blank">
+                    <i class="fab fa-github"></i>
                 </a>
             </div>
         </div>
     </section>
-
-    <!-- CV Section -->
-    <section class="section section-alt" id="cv">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Curriculum Vitae</span>
-                <h2>My Academic Journey</h2>
-                <p>
-                    My CV provides a detailed overview of my academic journey, professional experience,
-                    and skills. It highlights my research interests, teaching experience, and contributions
-                    to the field of astrophysics.
-                </p>
-            </div>
-
-            <div class="text-center reveal">
-                <a href="MitchellHooymans_AcademicCV.pdf" class="btn btn-primary" target="_blank">
-                    <i class="fas fa-download"></i> Download CV
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="section" id="contact">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Contact</span>
-                <h2>Get in Touch</h2>
-                <p>Feel free to reach out via email or connect with me on my social media profiles.</p>
-            </div>
-
-            <div class="contact-info reveal" style="max-width: 500px; margin: 0 auto;">
-                <div class="contact-item">
-                    <div class="contact-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div>
-                        <strong>Email</strong>
-                        <p style="margin: 0;"><a href="mailto:m.hooymans@uq.edu.au">m.hooymans@uq.edu.au</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div>
-                    <div class="footer-brand">Mitchell Hooymans</div>
-                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
-                </div>
-                <div class="social-links">
-                    <a href="https://www.facebook.com/MitchellHooymans" class="social-link" aria-label="Facebook"
-                        target="_blank">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.instagram.com/mitchellhooymans/?hl=en" class="social-link"
-                        aria-label="Instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
-                        target="_blank">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
-                        target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Mitchell Hooymans. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- JavaScript -->
     <script>
@@ -322,43 +301,6 @@
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.remove('open');
-            });
-        });
-
-        // Scroll reveal animation
-        const revealElements = document.querySelectorAll('.reveal');
-
-        const revealOnScroll = () => {
-            const windowHeight = window.innerHeight;
-            revealElements.forEach(el => {
-                const elementTop = el.getBoundingClientRect().top;
-                if (elementTop < windowHeight - 100) {
-                    el.classList.add('visible');
-                }
-            });
-        };
-
-        window.addEventListener('scroll', revealOnScroll);
-        window.addEventListener('load', revealOnScroll);
-
-        // Active nav link on scroll
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-links a');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                if (window.scrollY >= sectionTop) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').slice(1) === current) {
-                    link.classList.add('active');
-                }
             });
         });
     </script>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Thoughts on astrophysics, black holes, STEM education, and the cosmos - by Mitchell Hooymans.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Blog-specific styles */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-8);
+        }
+
+        @media (min-width: 768px) {
+            .blog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .blog-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .blog-card {
+            background: var(--color-white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .blog-card-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .blog-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+
+        .blog-card:hover .blog-card-image img {
+            transform: scale(1.05);
+        }
+
+        .blog-card-category {
+            position: absolute;
+            top: var(--space-4);
+            left: var(--space-4);
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+            color: var(--color-white);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .blog-card-content {
+            padding: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .blog-card-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-3);
+            font-size: 0.85rem;
+            color: var(--color-gray-500);
+        }
+
+        .blog-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .blog-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-3);
+            line-height: 1.4;
+        }
+
+        .blog-card-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .blog-card-title a:hover {
+            color: var(--color-accent);
+        }
+
+        .blog-card-excerpt {
+            color: var(--color-gray-600);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: var(--space-4);
+            flex-grow: 1;
+        }
+
+        .blog-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--color-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: gap var(--transition-fast);
+        }
+
+        .read-more:hover {
+            gap: var(--space-3);
+        }
+
+        .reading-time {
+            color: var(--color-gray-500);
+            font-size: 0.85rem;
+        }
+
+        /* Featured post */
+        .featured-post {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            background: var(--color-white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .featured-post {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .featured-post .blog-card-image {
+            height: 300px;
+        }
+
+        @media (min-width: 768px) {
+            .featured-post .blog-card-image {
+                height: 100%;
+                min-height: 350px;
+            }
+        }
+
+        .featured-post .blog-card-content {
+            padding: var(--space-8);
+            justify-content: center;
+        }
+
+        .featured-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            color: var(--color-white);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+            width: fit-content;
+        }
+
+        .featured-post .blog-card-title {
+            font-size: 1.75rem;
+        }
+
+        /* Empty state */
+        .blog-empty {
+            text-align: center;
+            padding: var(--space-16) var(--space-6);
+            background: var(--color-gray-50);
+            border-radius: var(--radius-xl);
+        }
+
+        .blog-empty-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-6);
+            font-size: 2rem;
+            color: var(--color-white);
+        }
+
+        .blog-empty h3 {
+            margin-bottom: var(--space-4);
+        }
+
+        .blog-empty p {
+            color: var(--color-gray-600);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Categories filter */
+        .blog-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            justify-content: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .category-btn {
+            padding: var(--space-2) var(--space-5);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid var(--color-gray-200);
+            background: var(--color-white);
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="photography.html">Photography</a></li>
+                <li><a href="cv.html">CV</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="resources.html">Resources</a>
+        <a href="blog.html">Blog</a>
+        <a href="photography.html">Photography</a>
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
+        <div
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('images/milkyway.jpg') center/cover no-repeat; opacity: 0.5;">
+        </div>
+        <div
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(30, 58, 95, 0.5) 100%);">
+        </div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <div class="hero-content" style="text-align: center;">
+                <span class="tag tag-accent animate-fade-in-up">Blog</span>
+                <h1 class="animate-fade-in-up delay-100">My Blog</h1>
+                <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
+                    Thoughts on astrophysics, research, and life
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Category Filter -->
+            <div class="blog-categories reveal">
+                <button class="category-btn active" data-category="all">All Posts</button>
+                <button class="category-btn" data-category="education">Education</button>
+                <button class="category-btn" data-category="personal">Personal</button>
+            </div>
+
+            <!-- Blog Grid -->
+            <div class="blog-grid" id="blogGrid">
+                <!-- Featured Post - Programming -->
+                <article class="featured-post reveal" data-category="education">
+                    <div class="blog-card-image">
+                        <img src="images/milkyway.jpg" alt="Programming for Scientists">
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="featured-badge">
+                            <i class="fas fa-star"></i> Featured
+                        </div>
+                        <div class="blog-card-meta">
+                            <span><i class="fas fa-calendar-alt"></i> January 15, 2026</span>
+                            <span><i class="fas fa-folder"></i> Education</span>
+                        </div>
+                        <h3 class="blog-card-title">
+                            <a href="blog-programming.html">Why Every Scientist Should Learn Programming</a>
+                        </h3>
+                        <p class="blog-card-excerpt">
+                            Programming has become an essential skill in modern scientific research. Here's why
+                            you should learn to code to improve your productivity and open up new opportunities.
+                        </p>
+                        <div class="blog-card-footer">
+                            <a href="blog-programming.html" class="read-more">
+                                Read Article <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <span class="reading-time"><i class="fas fa-clock"></i> 10 min read</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Blog Post - PhD Journey -->
+                <article class="blog-card reveal delay-100" data-category="personal">
+                    <div class="blog-card-image">
+                        <img src="images/milkyway.jpg" alt="PhD Journey">
+                        <span class="blog-card-category">Personal</span>
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="blog-card-meta">
+                            <span><i class="fas fa-calendar-alt"></i> December 28, 2025</span>
+                        </div>
+                        <h3 class="blog-card-title">
+                            <a href="blog-phd-journey.html">Reflections on My First Year as a PhD Student</a>
+                        </h3>
+                        <p class="blog-card-excerpt">
+                            The highs, the lows, and everything in between. What I've learned in my first year
+                            of doctoral research at UQ.
+                        </p>
+                        <div class="blog-card-footer">
+                            <a href="blog-phd-journey.html" class="read-more">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <span class="reading-time">7 min</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="tag tag-accent">Stay Updated</span>
+                <h2>Subscribe to My Newsletter</h2>
+                <p>Get notified when I publish new articles about astrophysics, research updates, and more.</p>
+            </div>
+            <div class="text-center reveal">
+                <a href="#contact" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Contact Me to Subscribe
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/MitchellHooymans" class="social-link" aria-label="Facebook"
+                        target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/mitchellhooymans/?hl=en" class="social-link"
+                        aria-label="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        navToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+
+        // Scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Category filter - actual filtering
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const blogPosts = document.querySelectorAll('#blogGrid article');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Get selected category
+                const selectedCategory = btn.dataset.category;
+
+                // Filter posts
+                blogPosts.forEach(post => {
+                    const postCategory = post.dataset.category;
+
+                    if (selectedCategory === 'all' || postCategory === selectedCategory) {
+                        post.style.display = '';
+                        post.classList.add('visible');
+                    } else {
+                        post.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

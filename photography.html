@@ -97,14 +97,16 @@
 	<nav class="nav" id="nav">
 		<div class="nav-content">
 			<a href="index.html" class="nav-brand">
-				<span>M</span>Hooymans
+				<span>Mitchell</span>Hooymans
 			</a>
 			<ul class="nav-links">
-				<li><a href="index.html#about">About</a></li>
-				<li><a href="index.html#resources">Resources</a></li>
+				<li><a href="index.html">Home</a></li>
+				<li><a href="about.html">About</a></li>
+				<li><a href="resources.html">Resources</a></li>
+				<li><a href="blog.html">Blog</a></li>
 				<li><a href="photography.html" class="active">Photography</a></li>
-				<li><a href="index.html#cv">CV</a></li>
-				<li><a href="index.html#contact">Contact</a></li>
+				<li><a href="cv.html">CV</a></li>
+				<li><a href="contact.html">Contact</a></li>
 			</ul>
 			<button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
 				<span></span>
@@ -116,20 +118,33 @@
 
 	<!-- Mobile Menu -->
 	<div class="mobile-menu" id="mobileMenu">
-		<a href="index.html#about">About</a>
-		<a href="index.html#resources">Resources</a>
+		<a href="index.html">Home</a>
+		<a href="about.html">About</a>
+		<a href="resources.html">Resources</a>
+		<a href="blog.html">Blog</a>
 		<a href="photography.html">Photography</a>
-		<a href="index.html#cv">CV</a>
-		<a href="index.html#contact">Contact</a>
+		<a href="cv.html">CV</a>
+		<a href="contact.html">Contact</a>
 	</div>
 
 	<!-- Page Header -->
-	<header class="page-header">
-		<div class="container">
-			<h1>My Photography</h1>
-			<p>Wildlife, Landscapes, & Events</p>
+	<section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
+		<div
+			style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('images/milkyway.jpg') center/cover no-repeat; opacity: 0.5;">
 		</div>
-	</header>
+		<div
+			style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(30, 58, 95, 0.5) 100%);">
+		</div>
+		<div class="container" style="position: relative; z-index: 1;">
+			<div class="hero-content" style="text-align: center;">
+				<span class="tag tag-accent animate-fade-in-up">Photography</span>
+				<h1 class="animate-fade-in-up delay-100">My Photography</h1>
+				<p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
+					Wildlife, Landscapes, & Events
+				</p>
+			</div>
+		</div>
+	</section>
 
 	<!-- Gallery Section -->
 	<section class="section">

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Every Scientist Should Learn Programming | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Programming has become an essential skill in modern scientific research. Here's why you should learn to code to improve your productivity and open up new opportunities.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Blog Post Styles */
+        .post-header {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            padding: calc(70px + var(--space-16)) 0 var(--space-16);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('images/milkyway.jpg') center/cover no-repeat;
+            opacity: 0.3;
+        }
+
+        .post-header>.container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .post-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .post-category {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
+            color: var(--color-white);
+            padding: var(--space-1) var(--space-4);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-4);
+        }
+
+        .post-header h1 {
+            color: var(--color-white);
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: var(--space-6);
+        }
+
+        @media (min-width: 768px) {
+            .post-header h1 {
+                font-size: 3rem;
+            }
+        }
+
+        .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--space-6);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .post-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .post-author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .post-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Featured Image */
+        .post-featured-image {
+            max-width: 900px;
+            margin: var(--space-8) auto var(--space-12);
+            padding: 0 var(--space-6);
+        }
+
+        .post-featured-image img {
+            width: 100%;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .post-featured-image figcaption {
+            text-align: center;
+            color: var(--color-gray-500);
+            font-size: 0.9rem;
+            margin-top: var(--space-3);
+            font-style: italic;
+        }
+
+        /* Article Content */
+        .post-content {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-12);
+            margin-bottom: var(--space-4);
+            color: var(--color-gray-900);
+        }
+
+        .post-content h3 {
+            margin-top: var(--space-8);
+            margin-bottom: var(--space-3);
+            color: var(--color-gray-800);
+        }
+
+        .post-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-6);
+        }
+
+        .post-content a {
+            color: var(--color-accent);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .post-content a:hover {
+            color: var(--color-primary);
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: var(--space-6);
+            padding-left: var(--space-8);
+        }
+
+        .post-content li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-2);
+        }
+
+        .post-content blockquote {
+            margin: var(--space-8) 0;
+            padding: var(--space-6);
+            background: var(--color-gray-50);
+            border-left: 4px solid var(--color-accent);
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            font-style: italic;
+            color: var(--color-gray-600);
+        }
+
+        .post-content blockquote p {
+            margin-bottom: 0;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            border-radius: var(--radius-lg);
+            margin: var(--space-8) 0;
+        }
+
+        .post-content code {
+            background: var(--color-gray-100);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            color: var(--color-primary);
+        }
+
+        .post-content pre {
+            background: var(--color-gray-900);
+            color: var(--color-gray-100);
+            padding: var(--space-6);
+            border-radius: var(--radius-lg);
+            overflow-x: auto;
+            margin: var(--space-8) 0;
+        }
+
+        .post-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Tags */
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-top: var(--space-8);
+            padding-top: var(--space-8);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .post-tag {
+            background: var(--color-gray-100);
+            color: var(--color-gray-600);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        .post-tag:hover {
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        /* Share Section */
+        .post-share {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        .post-share-label {
+            font-weight: 600;
+            color: var(--color-gray-700);
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--color-gray-100);
+            color: var(--color-gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .share-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-white);
+            transform: translateY(-2px);
+        }
+
+        /* Author Bio */
+        .author-bio {
+            background: var(--color-gray-50);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            margin-top: var(--space-12);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 640px) {
+            .author-bio {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .author-bio-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .author-bio-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-bio-content h4 {
+            margin-bottom: var(--space-2);
+        }
+
+        .author-bio-content p {
+            color: var(--color-gray-600);
+            font-size: 0.95rem;
+            margin-bottom: var(--space-4);
+        }
+
+        /* Related Posts */
+        .related-posts {
+            padding: var(--space-16) 0;
+        }
+
+        .related-posts h2 {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 768px) {
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .related-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .related-card-image {
+            height: 150px;
+            overflow: hidden;
+        }
+
+        .related-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+
+        .related-card:hover .related-card-image img {
+            transform: scale(1.05);
+        }
+
+        .related-card-content {
+            padding: var(--space-5);
+        }
+
+        .related-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-gray-900);
+            line-height: 1.4;
+        }
+
+        .related-card-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .related-card-title a:hover {
+            color: var(--color-accent);
+        }
+
+        .related-card-date {
+            font-size: 0.8rem;
+            color: var(--color-gray-500);
+            margin-top: var(--space-2);
+        }
+
+        /* Back to Blog */
+        .back-to-blog {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            margin-bottom: var(--space-6);
+            transition: color var(--transition-fast);
+        }
+
+        .back-to-blog:hover {
+            color: var(--color-white);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="photography.html">Photography</a></li>
+                <li><a href="cv.html">CV</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="resources.html">Resources</a>
+        <a href="blog.html">Blog</a>
+        <a href="photography.html">Photography</a>
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Post Header -->
+    <header class="post-header">
+        <div class="container">
+            <div class="post-header-content">
+                <a href="blog.html" class="back-to-blog">
+                    <i class="fas fa-arrow-left"></i> Back to Blog
+                </a>
+                <span class="post-category">Education</span>
+                <h1>Why Every Scientist Should Learn Programming</h1>
+                <div class="post-meta">
+                    <div class="post-author">
+                        <div class="post-author-avatar">
+                            <img src="images/QARG_Headshot_smaller.jpg" alt="Mitchell Hooymans">
+                        </div>
+                        <span>Mitchell Hooymans</span>
+                    </div>
+                    <div class="post-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>January 15, 2026</span>
+                    </div>
+                    <div class="post-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>10 min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Featured Image -->
+    <figure class="post-featured-image">
+        <img src="images/milkyway.jpg" alt="Programming and Science">
+        <figcaption>The intersection of programming and scientific discovery opens new frontiers.</figcaption>
+    </figure>
+
+    <!-- Post Content -->
+    <article class="post-content">
+        <!-- 
+        =====================================================
+        EDIT YOUR BLOG POST CONTENT BELOW
+        
+        This is a placeholder structure for your blog post.
+        Replace the content with your own writing while
+        keeping the HTML formatting.
+        =====================================================
+        -->
+
+        <p>
+            <strong>Programming has become an indispensable tool in modern science.</strong> Whether you're analyzing
+            astronomical data, simulating molecular interactions, or processing experimental results, the ability to
+            write code opens up a world of possibilities that would be impossible to achieve through manual methods
+            alone.
+        </p>
+
+        <h2>The Data Revolution in Science</h2>
+
+        <p>
+            <!-- Add your content about the data revolution here -->
+            Modern scientific instruments generate vast amounts of data that require sophisticated analysis techniques.
+            From telescope surveys capturing terabytes of images nightly to particle accelerators recording millions
+            of collision events, programming is essential for making sense of this information deluge.
+        </p>
+
+        <h3>Why Traditional Methods Fall Short</h3>
+
+        <p>
+            <!-- Add your content about limitations of traditional methods -->
+            Spreadsheets and manual calculations simply cannot keep pace with the scale of modern datasets.
+            A simple Python script can process in seconds what would take hours or days to do by hand.
+        </p>
+
+        <ul>
+            <li>Automation of repetitive tasks saves countless hours</li>
+            <li>Reproducibility is built into your analysis workflow</li>
+            <li>Complex statistical methods become accessible</li>
+            <li>Visualization of multidimensional data becomes possible</li>
+        </ul>
+
+        <h2>Getting Started with Python</h2>
+
+        <p>
+            <!-- Add your content about Python here -->
+            Python has emerged as the language of choice for scientific computing due to its readable syntax,
+            extensive libraries, and active community. Here's a simple example of loading and plotting data:
+        </p>
+
+        <pre><code># Simple data analysis example
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load your data
+data = np.loadtxt('observations.csv', delimiter=',')
+
+# Create a visualization
+plt.figure(figsize=(10, 6))
+plt.plot(data[:, 0], data[:, 1], 'o')
+plt.xlabel('Time (days)')
+plt.ylabel('Brightness')
+plt.title('Stellar Light Curve')
+plt.show()</code></pre>
+
+        <h2>The Scientific Programming Ecosystem</h2>
+
+        <blockquote>
+            "The best thing about being a scientist in the 21st century is that you don't need
+            to be a computer scientist to harness the power of computation. The tools have become
+            accessible to everyone willing to learn."
+        </blockquote>
+
+        <p>
+            <!-- Add your content about the ecosystem here -->
+            The Python scientific ecosystem includes powerful libraries like NumPy for numerical computing,
+            SciPy for scientific algorithms, Matplotlib for visualization, and Pandas for data manipulation.
+        </p>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            <!-- Add your conclusion here -->
+            Learning to program is no longer optional for scientists—it's a fundamental skill that will
+            enhance your research capabilities, make your work more reproducible, and open doors to
+            collaborations and career opportunities you might never have imagined.
+        </p>
+
+        <p>
+            Ready to start your programming journey? Check out my
+            <a href="pythonphys.html">Introduction to Python for Physicists</a> tutorial!
+        </p>
+
+        <!-- Tags -->
+        <div class="post-tags">
+            <a href="#" class="post-tag">#Programming</a>
+            <a href="#" class="post-tag">#Python</a>
+            <a href="#" class="post-tag">#Science</a>
+            <a href="#" class="post-tag">#Education</a>
+            <a href="#" class="post-tag">#DataScience</a>
+        </div>
+
+        <!-- Share -->
+        <div class="post-share">
+            <span class="post-share-label">Share this post:</span>
+            <div class="share-buttons">
+                <a href="#" class="share-btn" aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="share-btn" aria-label="Share on LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="share-btn" aria-label="Share on Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="share-btn" aria-label="Copy link">
+                    <i class="fas fa-link"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Author Bio -->
+        <div class="author-bio">
+            <div class="author-bio-avatar">
+                <img src="images/QARG_Headshot_smaller.jpg" alt="Mitchell Hooymans">
+            </div>
+            <div class="author-bio-content">
+                <h4>About the Author</h4>
+                <p>
+                    Mitchell Hooymans is a PhD researcher in Astrophysics at The University of Queensland,
+                    specializing in black hole dynamics and STEM education. When not studying the cosmos,
+                    he enjoys photography and science communication.
+                </p>
+                <a href="about.html" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-user"></i> Learn More
+                </a>
+            </div>
+        </div>
+    </article>
+
+    <!-- Related Posts -->
+    <section class="related-posts section-alt">
+        <div class="container">
+            <h2>Related Posts</h2>
+            <div class="related-grid">
+                <article class="related-card">
+                    <div class="related-card-image">
+                        <img src="images/milkyway.jpg" alt="PhD Journey">
+                    </div>
+                    <div class="related-card-content">
+                        <h3 class="related-card-title">
+                            <a href="blog-phd-journey.html">Reflections on My First Year as a PhD Student</a>
+                        </h3>
+                        <p class="related-card-date">December 28, 2025</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/MitchellHooymans" class="social-link" aria-label="Facebook"
+                        target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/mitchellhooymans/?hl=en" class="social-link"
+                        aria-label="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        navToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+
+</html>
