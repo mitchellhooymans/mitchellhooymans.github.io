@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Why Every Scientist Should Learn Programming | Mitchell Hooymans</title>
-    <meta name="description"
-        content="Programming has become an essential skill in modern scientific research. Here's why you should learn to code to improve your productivity and open up new opportunities.">
+    <!-- UPDATE: Change title for each post -->
+    <title>Blog Post Title | Mitchell Hooymans</title>
+    <meta name="description" content="UPDATE: Add a brief description of your blog post here for SEO.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,25 +24,7 @@
         .post-header {
             background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
             color: var(--color-white);
-            padding: calc(70px + var(--space-16)) 0 var(--space-16);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .post-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('images/milkyway.jpg') center/cover no-repeat;
-            opacity: 0.3;
-        }
-
-        .post-header>.container {
-            position: relative;
-            z-index: 1;
+            padding: calc(70px + var(--space-12)) 0 var(--space-12);
         }
 
         .post-header-content {
@@ -114,7 +96,7 @@
         /* Featured Image */
         .post-featured-image {
             max-width: 900px;
-            margin: var(--space-8) auto var(--space-12);
+            margin: calc(-1 * var(--space-8)) auto var(--space-8);
             padding: 0 var(--space-6);
         }
 
@@ -346,7 +328,7 @@
 
         @media (min-width: 768px) {
             .related-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -426,17 +408,17 @@
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-content">
-            <a href="index.html" class="nav-brand">
+            <a href="../index.html" class="nav-brand">
                 <span>Mitchell</span>Hooymans
             </a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="resources.html">Resources</a></li>
-                <li><a href="blog.html" class="active">Blog</a></li>
-                <li><a href="photography.html">Photography</a></li>
-                <li><a href="cv.html">CV</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li><a href="../pages/resources.html">Resources</a></li>
+                <li><a href="../pages/blog.html" class="active">Blog</a></li>
+                <li><a href="../pages/photography.html">Photography</a></li>
+                <li><a href="../pages/cv.html">CV</a></li>
+                <li><a href="../pages/contact.html">Contact</a></li>
             </ul>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <span></span>
@@ -448,38 +430,42 @@
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="resources.html">Resources</a>
-        <a href="blog.html">Blog</a>
-        <a href="photography.html">Photography</a>
-        <a href="cv.html">CV</a>
-        <a href="contact.html">Contact</a>
+        <a href="../index.html">Home</a>
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/resources.html">Resources</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
     </div>
 
     <!-- Post Header -->
     <header class="post-header">
         <div class="container">
             <div class="post-header-content">
-                <a href="blog.html" class="back-to-blog">
+                <a href="../pages/blog.html" class="back-to-blog">
                     <i class="fas fa-arrow-left"></i> Back to Blog
                 </a>
-                <span class="post-category">Education</span>
-                <h1>Why Every Scientist Should Learn Programming</h1>
+                <!-- UPDATE: Change category -->
+                <span class="post-category">Astrophysics</span>
+                <!-- UPDATE: Change title -->
+                <h1>Understanding Black Hole Dynamics in Globular Clusters</h1>
                 <div class="post-meta">
                     <div class="post-author">
                         <div class="post-author-avatar">
-                            <img src="images/QARG_Headshot_smaller.jpg" alt="Mitchell Hooymans">
+                            <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans">
                         </div>
                         <span>Mitchell Hooymans</span>
                     </div>
+                    <!-- UPDATE: Change date -->
                     <div class="post-meta-item">
                         <i class="fas fa-calendar-alt"></i>
                         <span>January 15, 2026</span>
                     </div>
+                    <!-- UPDATE: Change reading time -->
                     <div class="post-meta-item">
                         <i class="fas fa-clock"></i>
-                        <span>10 min read</span>
+                        <span>8 min read</span>
                     </div>
                 </div>
             </div>
@@ -488,125 +474,139 @@
 
     <!-- Featured Image -->
     <figure class="post-featured-image">
-        <img src="images/milkyway.jpg" alt="Programming and Science">
-        <figcaption>The intersection of programming and scientific discovery opens new frontiers.</figcaption>
+        <!-- UPDATE: Change image and alt text -->
+        <img src="../images/general/milkyway.jpg" alt="Black holes in globular cluster">
+        <!-- UPDATE: Add image caption (optional) -->
+        <figcaption>Artist's impression of a globular cluster containing black holes. Credit: ESA/Hubble</figcaption>
     </figure>
 
     <!-- Post Content -->
     <article class="post-content">
         <!-- 
         =====================================================
-        EDIT YOUR BLOG POST CONTENT BELOW
+        INSTRUCTIONS FOR WRITING YOUR BLOG POST:
         
-        This is a placeholder structure for your blog post.
-        Replace the content with your own writing while
-        keeping the HTML formatting.
+        1. Replace the sample content below with your own
+        2. Use proper HTML tags for formatting:
+           - <h2> for main sections
+           - <h3> for subsections
+           - <p> for paragraphs
+           - <ul> or <ol> for lists
+           - <blockquote> for quotes
+           - <code> for inline code
+           - <pre><code> for code blocks
+           - <a href="..."> for links
+           - <img src="..." alt="..."> for images
+        3. Update all meta information (title, date, category)
+        4. Update featured image and caption
+        5. Update tags at the bottom
+        6. Update related posts section
         =====================================================
         -->
 
         <p>
-            <strong>Programming has become an indispensable tool in modern science.</strong> Whether you're analyzing
-            astronomical data, simulating molecular interactions, or processing experimental results, the ability to
-            write code opens up a world of possibilities that would be impossible to achieve through manual methods
-            alone.
+            <strong>Introduction paragraph:</strong> Hook your readers with an engaging opening that explains
+            what this post is about and why it matters. For example, black holes are among the most fascinating
+            objects in the universe, and understanding how they form and interact in dense stellar environments
+            is crucial for gravitational wave astronomy.
         </p>
 
-        <h2>The Data Revolution in Science</h2>
+        <h2>First Main Section</h2>
 
         <p>
-            <!-- Add your content about the data revolution here -->
-            Modern scientific instruments generate vast amounts of data that require sophisticated analysis techniques.
-            From telescope surveys capturing terabytes of images nightly to particle accelerators recording millions
-            of collision events, programming is essential for making sense of this information deluge.
+            This is where you begin the main content of your post. Each section should flow naturally
+            from the introduction and build upon previous points. Remember to break up long text with
+            subheadings, images, and bullet points to keep readers engaged.
         </p>
 
-        <h3>Why Traditional Methods Fall Short</h3>
+        <p>
+            You can include links to external resources like
+            <a href="https://www.nasa.gov/universe/what-are-black-holes/" target="_blank">NASA's explanation of black
+                holes</a>
+            or reference academic papers to support your points.
+        </p>
+
+        <h3>A Subsection Example</h3>
 
         <p>
-            <!-- Add your content about limitations of traditional methods -->
-            Spreadsheets and manual calculations simply cannot keep pace with the scale of modern datasets.
-            A simple Python script can process in seconds what would take hours or days to do by hand.
+            Use subsections to break down complex topics into digestible parts. Here's an example of a
+            bulleted list:
         </p>
 
         <ul>
-            <li>Automation of repetitive tasks saves countless hours</li>
-            <li>Reproducibility is built into your analysis workflow</li>
-            <li>Complex statistical methods become accessible</li>
-            <li>Visualization of multidimensional data becomes possible</li>
+            <li>First key point about your topic</li>
+            <li>Second important consideration</li>
+            <li>Third aspect worth discussing</li>
+            <li>Additional details as needed</li>
         </ul>
 
-        <h2>Getting Started with Python</h2>
+        <h2>Key Concepts</h2>
 
         <p>
-            <!-- Add your content about Python here -->
-            Python has emerged as the language of choice for scientific computing due to its readable syntax,
-            extensive libraries, and active community. Here's a simple example of loading and plotting data:
+            Explain core concepts here. If you're discussing technical material, use blockquotes to
+            highlight important definitions or quotes:
         </p>
 
-        <pre><code># Simple data analysis example
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Load your data
-data = np.loadtxt('observations.csv', delimiter=',')
-
-# Create a visualization
-plt.figure(figsize=(10, 6))
-plt.plot(data[:, 0], data[:, 1], 'o')
-plt.xlabel('Time (days)')
-plt.ylabel('Brightness')
-plt.title('Stellar Light Curve')
-plt.show()</code></pre>
-
-        <h2>The Scientific Programming Ecosystem</h2>
-
         <blockquote>
-            "The best thing about being a scientist in the 21st century is that you don't need
-            to be a computer scientist to harness the power of computation. The tools have become
-            accessible to everyone willing to learn."
+            "A globular cluster is a spherical collection of stars that orbits a galactic core.
+            These ancient stellar systems can contain hundreds of thousands to millions of stars,
+            bound together by gravity."
         </blockquote>
 
         <p>
-            <!-- Add your content about the ecosystem here -->
-            The Python scientific ecosystem includes powerful libraries like NumPy for numerical computing,
-            SciPy for scientific algorithms, Matplotlib for visualization, and Pandas for data manipulation.
+            If you need to show code or equations, you can use inline <code>code formatting</code>
+            or code blocks:
         </p>
+
+        <pre><code># Example Python code for N-body simulation
+import numpy as np
+
+def calculate_gravitational_force(m1, m2, r):
+    G = 6.67430e-11  # Gravitational constant
+    return G * m1 * m2 / r**2</code></pre>
+
+        <h2>Results and Discussion</h2>
+
+        <p>
+            Share your findings, insights, or conclusions here. Use numbered lists for step-by-step
+            processes or rankings:
+        </p>
+
+        <ol>
+            <li>First discovery or step in your process</li>
+            <li>Second important finding</li>
+            <li>Third conclusion you've drawn</li>
+        </ol>
 
         <h2>Conclusion</h2>
 
         <p>
-            <!-- Add your conclusion here -->
-            Learning to program is no longer optional for scientists—it's a fundamental skill that will
-            enhance your research capabilities, make your work more reproducible, and open doors to
-            collaborations and career opportunities you might never have imagined.
+            Summarize your main points and leave readers with something to think about. What are the
+            implications of what you've discussed? What questions remain unanswered? What's the next
+            step in this research area?
         </p>
 
         <p>
-            Ready to start your programming journey? Check out my
-            <a href="pythonphys.html">Introduction to Python for Physicists</a> tutorial!
+            If you have questions or want to discuss this topic further, feel free to
+            <a href="index.html#contact">get in touch</a> with me!
         </p>
 
         <!-- Tags -->
         <div class="post-tags">
-            <a href="#" class="post-tag">#Programming</a>
-            <a href="#" class="post-tag">#Python</a>
-            <a href="#" class="post-tag">#Science</a>
-            <a href="#" class="post-tag">#Education</a>
-            <a href="#" class="post-tag">#DataScience</a>
+            <!-- UPDATE: Change tags to match your post -->
+            <a href="#" class="post-tag">#BlackHoles</a>
+            <a href="#" class="post-tag">#Astrophysics</a>
+            <a href="#" class="post-tag">#GlobularClusters</a>
+            <a href="#" class="post-tag">#Research</a>
+            <a href="#" class="post-tag">#GravitationalWaves</a>
         </div>
 
         <!-- Share -->
         <div class="post-share">
             <span class="post-share-label">Share this post:</span>
             <div class="share-buttons">
-                <a href="#" class="share-btn" aria-label="Share on Twitter">
-                    <i class="fab fa-twitter"></i>
-                </a>
                 <a href="#" class="share-btn" aria-label="Share on LinkedIn">
                     <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a href="#" class="share-btn" aria-label="Share on Facebook">
-                    <i class="fab fa-facebook-f"></i>
                 </a>
                 <a href="#" class="share-btn" aria-label="Copy link">
                     <i class="fas fa-link"></i>
@@ -617,7 +617,7 @@ plt.show()</code></pre>
         <!-- Author Bio -->
         <div class="author-bio">
             <div class="author-bio-avatar">
-                <img src="images/QARG_Headshot_smaller.jpg" alt="Mitchell Hooymans">
+                <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans">
             </div>
             <div class="author-bio-content">
                 <h4>About the Author</h4>
@@ -626,7 +626,7 @@ plt.show()</code></pre>
                     specializing in black hole dynamics and STEM education. When not studying the cosmos,
                     he enjoys photography and science communication.
                 </p>
-                <a href="about.html" class="btn btn-secondary btn-sm">
+                <a href="index.html#about" class="btn btn-secondary btn-sm">
                     <i class="fas fa-user"></i> Learn More
                 </a>
             </div>
@@ -638,13 +638,40 @@ plt.show()</code></pre>
         <div class="container">
             <h2>Related Posts</h2>
             <div class="related-grid">
+                <!-- Related Post 1 - UPDATE these -->
                 <article class="related-card">
                     <div class="related-card-image">
-                        <img src="images/milkyway.jpg" alt="PhD Journey">
+                        <img src="../images/general/milkyway.jpg" alt="Related post">
                     </div>
                     <div class="related-card-content">
                         <h3 class="related-card-title">
-                            <a href="blog-phd-journey.html">Reflections on My First Year as a PhD Student</a>
+                            <a href="#">The Beauty of N-Body Simulations</a>
+                        </h3>
+                        <p class="related-card-date">January 5, 2026</p>
+                    </div>
+                </article>
+
+                <!-- Related Post 2 -->
+                <article class="related-card">
+                    <div class="related-card-image">
+                        <img src="../images/general/milkyway.jpg" alt="Related post">
+                    </div>
+                    <div class="related-card-content">
+                        <h3 class="related-card-title">
+                            <a href="#">Why Every Physicist Should Learn Python</a>
+                        </h3>
+                        <p class="related-card-date">January 10, 2026</p>
+                    </div>
+                </article>
+
+                <!-- Related Post 3 -->
+                <article class="related-card">
+                    <div class="related-card-image">
+                        <img src="../images/general/milkyway.jpg" alt="Related post">
+                    </div>
+                    <div class="related-card-content">
+                        <h3 class="related-card-title">
+                            <a href="#">Reflections on My First Year as a PhD Student</a>
                         </h3>
                         <p class="related-card-date">December 28, 2025</p>
                     </div>
@@ -662,14 +689,6 @@ plt.show()</code></pre>
                     <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
                 </div>
                 <div class="social-links">
-                    <a href="https://www.facebook.com/MitchellHooymans" class="social-link" aria-label="Facebook"
-                        target="_blank">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.instagram.com/mitchellhooymans/?hl=en" class="social-link"
-                        aria-label="Instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
                     <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
                         target="_blank">
                         <i class="fab fa-linkedin-in"></i>

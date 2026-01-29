@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python for Pregnancy & Health Data | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Learn Python programming with interactive examples focused on pregnancy and health data analysis.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+
+    <style>
+        .tutorial-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .tutorial-sidebar {
+            width: 300px;
+            background: linear-gradient(180deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: white;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: var(--space-6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: var(--space-3) var(--space-6);
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left-color: var(--color-accent);
+        }
+
+        .tutorial-content {
+            flex: 1;
+            padding: var(--space-10);
+            max-width: 1000px;
+        }
+
+        .lesson-section {
+            display: none;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        .code-editor-container {
+            background: var(--color-gray-800);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin: var(--space-6) 0;
+            border: 1px solid var(--color-gray-700);
+        }
+
+        .code-editor-header {
+            background: var(--color-gray-900);
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-gray-700);
+        }
+
+        .code-editor-title {
+            color: var(--color-gray-400);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: var(--font-mono);
+        }
+
+        .run-btn {
+            background: var(--color-accent);
+            color: white;
+            border: none;
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .run-btn:hover {
+            opacity: 0.9;
+        }
+
+        .run-btn:disabled {
+            background: var(--color-gray-600);
+            cursor: not-allowed;
+        }
+
+        .code-textarea {
+            width: 100%;
+            height: 200px;
+            background: var(--color-gray-800);
+            color: #e2e8f0;
+            border: none;
+            padding: var(--space-4);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .output-container {
+            background: #0f172a;
+            border-top: 1px solid var(--color-gray-700);
+            padding: var(--space-4);
+            min-height: 80px;
+        }
+
+        .output-label {
+            color: #64748b;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-2);
+        }
+
+        .output-text {
+            color: #22c55e;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .output-error {
+            color: #ef4444;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(30, 58, 95, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: var(--space-4);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-lg);
+            margin: var(--space-6) 0;
+        }
+
+        .concept-box h4 {
+            color: white;
+            margin-bottom: var(--space-3);
+        }
+
+        .tip-box {
+            background: #ecfdf5;
+            border-left: 4px solid #22c55e;
+            padding: var(--space-5);
+            border-radius: var(--radius-md);
+            margin: var(--space-5) 0;
+        }
+
+        .tip-box h4 {
+            color: #166534;
+            margin-bottom: var(--space-2);
+            font-size: 0.9rem;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: var(--space-5);
+            border-radius: var(--radius-md);
+            margin: var(--space-5) 0;
+        }
+
+        .warning-box h4 {
+            color: #92400e;
+            margin-bottom: var(--space-2);
+            font-size: 0.9rem;
+        }
+
+        .next-lesson-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-top: var(--space-8);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: var(--space-4);
+            color: var(--color-primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: var(--space-8) 0 var(--space-4);
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-gray-200);
+            padding-bottom: var(--space-2);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: var(--space-6) 0 var(--space-3);
+            color: var(--color-primary-dark);
+        }
+
+        p {
+            margin-bottom: var(--space-4);
+            line-height: 1.8;
+        }
+
+        code {
+            background: var(--color-gray-100);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9em;
+        }
+
+        ul,
+        ol {
+            margin-bottom: var(--space-4);
+            padding-left: var(--space-6);
+        }
+
+        li {
+            margin-bottom: var(--space-2);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            .tutorial-layout {
+                flex-direction: column;
+            }
+
+            .tutorial-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .sidebar-nav a {
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                padding: var(--space-3) var(--space-4);
+            }
+
+            .sidebar-nav a.active {
+                border-bottom-color: var(--color-primary);
+            }
+
+            .tutorial-content {
+                padding: var(--space-6);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading Python Environment...</p>
+        <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 8px;">This may take a few seconds on first load</p>
+    </div>
+
+    <div class="tutorial-layout">
+        <aside class="tutorial-sidebar">
+            <div class="sidebar-header">
+                <a href="../pages/resources.html"
+                    style="color: rgba(255,255,255,0.8); font-size: 0.8rem; display: block; margin-bottom: 12px;">
+                    <i class="fas fa-arrow-left"></i> Back to Resources
+                </a>
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0; color: white;">Python for Health Data</h2>
+                <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 4px; color: rgba(255,255,255,0.8);">Pregnancy &
+                    Birth Data Analysis</p>
+            </div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="#" class="active" data-section="intro">1. Introduction</a>
+                <a href="#" data-section="variables">2. Variables & Types</a>
+                <a href="#" data-section="datastructures">3. Data Structures</a>
+                <a href="#" data-section="conditionals">4. Conditionals</a>
+                <a href="#" data-section="loops">5. Loops</a>
+                <a href="#" data-section="functions">6. Functions</a>
+                <a href="#" data-section="errors">7. Error Handling</a>
+                <a href="#" data-section="analysis">8. Data Analysis</a>
+            </nav>
+        </aside>
+
+        <main class="tutorial-content">
+
+            <!-- Section 1: Introduction -->
+            <section class="lesson-section active" id="intro">
+                <h1>1. Introduction to Python</h1>
+
+                <p>Welcome to this comprehensive Python tutorial! This course is designed for <strong>complete
+                        beginners</strong>
+                    with no prior programming experience. By the end, you'll be able to write Python programs to analyze
+                    pregnancy and health data.</p>
+
+                <h2>What is Python?</h2>
+
+                <p>Python is a <strong>programming language</strong>—a way for humans to give instructions to computers.
+                    Think of it like learning a new language, except instead of communicating with people, you're
+                    communicating with a computer.</p>
+
+                <p>Python is special because:</p>
+
+                <ul>
+                    <li><strong>It reads like English:</strong> Python code is designed to be readable. Even without
+                        training, you can often guess what Python code does just by reading it.</li>
+                    <li><strong>It's "interpreted":</strong> You can run your code line by line and see immediate
+                        results,
+                        which makes learning and fixing mistakes (called "debugging") much faster.</li>
+                    <li><strong>It's beginner-friendly:</strong> Python allows you to write powerful programs with very
+                        few lines of code, so you can focus on solving problems rather than fighting the language.</li>
+                    <li><strong>It's widely used:</strong> Python is the #1 language for data science, machine learning,
+                        and scientific research. Skills you learn here are directly applicable to real jobs.</li>
+                </ul>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-book"></i> Key Terminology</h4>
+                    <p><strong>Code:</strong> The instructions you write for the computer.<br>
+                        <strong>Program:</strong> A complete set of code that performs a task.<br>
+                        <strong>Run/Execute:</strong> Tell the computer to follow your instructions.<br>
+                        <strong>Output:</strong> What the computer shows you after running your code.
+                    </p>
+                </div>
+
+                <h2>Why Use Python for Pregnancy & Health Data?</h2>
+
+                <p>While pregnancy is a personal journey, understanding it on a larger scale involves analyzing data.
+                    Public health officials, researchers, and clinicians analyze data to find patterns, understand
+                    risks, and improve care for mothers and babies.</p>
+
+                <p>Python is the leading language for this because:</p>
+
+                <ul>
+                    <li><strong>Powerful Data Tools:</strong> Libraries (pre-written code packages) like Pandas and
+                        Matplotlib make it simple to clean, organize, analyze, and visualize large datasets of
+                        patient information.</li>
+                    <li><strong>Reproducibility:</strong> A Python script provides a clear, repeatable set of steps
+                        for an analysis. This is crucial for scientific validity—other researchers can run your
+                        exact analysis and verify your results.</li>
+                    <li><strong>Automation:</strong> You can write scripts to automate repetitive tasks, like
+                        processing patient records or generating weekly reports, saving time and reducing human error.
+                    </li>
+                    <li><strong>Free and Open Source:</strong> Python is completely free to use. There are no
+                        licensing fees, making it accessible to everyone.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-heartbeat"></i> Throughout This Tutorial</h4>
+                    <p>We'll work with real-world examples including: maternal age tracking, gestational age
+                        calculations,
+                        trimester classification, birth weight classification, blood pressure monitoring, APGAR score
+                        analysis, and due date calculations.</p>
+                </div>
+
+                <h2>How This Tutorial Works</h2>
+
+                <p>This is an <strong>interactive tutorial</strong>. Each lesson contains:</p>
+
+                <ol>
+                    <li><strong>Explanations:</strong> Clear descriptions of each concept in plain language.</li>
+                    <li><strong>Code Examples:</strong> Real Python code you can see, edit, and run right in your
+                        browser.</li>
+                    <li><strong>Try It Yourself:</strong> Opportunities to experiment and practice what you've learned.
+                    </li>
+                </ol>
+
+                <p>The code boxes below run <strong>real Python code</strong>. Click the green "Run" button to execute
+                    the code and see the results. You can also edit the code and run it again—don't worry, you can't
+                    break anything!</p>
+
+                <h2>Your First Python Program</h2>
+
+                <p>Let's write your first program! The <code>print()</code> function is one of the most basic and useful
+                    tools in Python. It displays text (or numbers) on the screen. Whatever you put inside the
+                    parentheses
+                    will be shown as output.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Your First Program</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># This is a comment - it starts with #
+# Comments are notes for humans and are ignored by Python
+
+# The print() function displays text on the screen
+# Text must be enclosed in quotation marks (either " or ')
+print("Hello! Welcome to Python for Health Data!")
+print("This is your first Python program.")
+print("Congratulations on taking this step!")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-info-circle"></i> Understanding the Code Above</h4>
+                    <p><strong>Lines starting with #</strong> are called "comments". Python ignores them
+                        completely—they're
+                        just notes to help humans understand the code.<br><br>
+                        <strong>print("...")</strong> is a "function call". Functions are like
+                        actions—<code>print</code>
+                        is the action of displaying something. The text inside the quotes is what gets displayed.
+                    </p>
+                </div>
+
+                <h3>Try It Yourself!</h3>
+
+                <p>Now it's your turn! In the code box below, try these exercises:</p>
+
+                <ol>
+                    <li>Change the message to say your name</li>
+                    <li>Add another <code>print()</code> line with a different message</li>
+                    <li>Try removing the quotation marks and see what error you get (this teaches error messages!)</li>
+                </ol>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Try Editing This!</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Edit this code and click Run to see what happens!
+
+print("My name is [Your Name Here]")
+print("I am learning Python for health data analysis.")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Python Can Do Math!</h2>
+
+                <p>Python is excellent at performing calculations. You can use it like a very powerful calculator.
+                    Here are the basic math operations:</p>
+
+                <ul>
+                    <li><code>+</code> Addition (e.g., <code>5 + 3</code> gives <code>8</code>)</li>
+                    <li><code>-</code> Subtraction (e.g., <code>10 - 4</code> gives <code>6</code>)</li>
+                    <li><code>*</code> Multiplication (e.g., <code>6 * 7</code> gives <code>42</code>)</li>
+                    <li><code>/</code> Division (e.g., <code>15 / 3</code> gives <code>5.0</code>)</li>
+                </ul>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Basic Calculations</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Python as a calculator - pregnancy-related calculations
+
+# How many weeks in a typical pregnancy?
+total_days = 280
+days_per_week = 7
+weeks = total_days / days_per_week
+print("Weeks in typical pregnancy:", weeks)
+
+# Calculate weeks remaining if currently at week 28
+current_week = 28
+full_term = 40
+remaining = full_term - current_week
+print("Weeks remaining:", remaining)
+
+# How many days is that?
+remaining_days = remaining * 7
+print("Days remaining:", remaining_days)</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-lightbulb"></i> Notice Something?</h4>
+                    <p>In the code above, we used words like <code>total_days</code> and <code>weeks</code> to store
+                        numbers. These are called <strong>variables</strong>—and they're the topic of our next lesson!
+                    </p>
+                </div>
+
+                <h2>Getting Started Offline (Optional)</h2>
+
+                <p>This tutorial runs Python directly in your browser, so you don't need to install anything. However,
+                    if you want to write Python on your own computer later, here are your options:</p>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-download"></i> Option 1: Google Colab (Easiest - No Install)</h4>
+                    <p>Go to <a href="https://colab.research.google.com/" target="_blank"
+                            style="color: var(--color-primary);">Google Colab</a>.
+                        It's free and runs in your browser. You just need a Google account.</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-laptop-code"></i> Option 2: VS Code + Python (Recommended for Later)</h4>
+                    <p>1. Download <a href="https://www.python.org/downloads/" target="_blank"
+                            style="color: var(--color-primary);">Python</a><br>
+                        2. Download <a href="https://code.visualstudio.com/" target="_blank"
+                            style="color: var(--color-primary);">VS Code</a><br>
+                        3. Install the Python extension in VS Code</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-file-code"></i> Option 3: Download This Tutorial</h4>
+                    <p>Download the Jupyter notebook version to practice offline:<br>
+                        <a href="../documents/tutorials/Python_Pregnancy_Tutorial.zip"
+                            style="color: var(--color-primary);">
+                            Download Python_Pregnancy_Tutorial.zip
+                        </a>
+                    </p>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('variables')">
+                    Next: Variables & Data Types <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 2: Variables & Types -->
+            <section class="lesson-section" id="variables">
+                <h1>2. Variables and Data Types</h1>
+
+                <p>In the last lesson, we used words like <code>total_days</code> and <code>weeks</code> to store
+                    numbers. These are called <strong>variables</strong>, and they're one of the most fundamental
+                    concepts in programming.</p>
+
+                <h2>What is a Variable?</h2>
+
+                <p>Think of a variable as a <strong>labeled box</strong> where you can store a piece of information.
+                    The label (variable name) helps you remember what's inside, and you can look inside the box
+                    whenever you need that information.</p>
+
+                <p>In health data, variables might store things like:</p>
+                <ul>
+                    <li>A patient's age (e.g., <code>maternal_age = 34</code>)</li>
+                    <li>A measurement (e.g., <code>birth_weight_kg = 3.45</code>)</li>
+                    <li>A patient ID (e.g., <code>patient_id = "PAT-00123"</code>)</li>
+                    <li>A yes/no answer (e.g., <code>is_first_pregnancy = True</code>)</li>
+                </ul>
+
+                <h2>Creating Variables</h2>
+
+                <p>To create a variable in Python, you use the <strong>equals sign (=)</strong>. This is called
+                    "assignment"—you're assigning a value to a name.</p>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Important: = Means "Assign", Not "Equals"</h4>
+                    <p>In Python, <code>=</code> means "store this value in this variable". It's NOT a mathematical
+                        equation. When you write <code>age = 34</code>, you're saying "put the value 34 into the
+                        box labeled 'age'".</p>
+                </div>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Creating Variables</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Creating variables is simple: name = value
+
+# Store the patient's age
+maternal_age = 34
+
+# Store a patient ID (text needs quotation marks)
+patient_id = "PAT-00123"
+
+# Store gestational age in weeks
+gestational_age_weeks = 28
+
+# Store whether this is a first pregnancy (True or False)
+is_first_pregnancy = False
+
+# Store birth weight as a decimal number
+birth_weight_kg = 3.45
+
+# Now we can use these variables!
+print("Patient Information:")
+print("--------------------")
+print("Patient ID:", patient_id)
+print("Maternal age:", maternal_age, "years")
+print("Gestational age:", gestational_age_weeks, "weeks")
+print("First pregnancy:", is_first_pregnancy)
+print("Birth weight:", birth_weight_kg, "kg")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Variable Naming Rules</h2>
+
+                <p>Python has some rules about what you can name your variables:</p>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-check-circle"></i> Variable Naming Rules</h4>
+                    <p><strong>✓ Must start with a letter or underscore:</strong> <code>age</code>,
+                        <code>_temp</code><br>
+                        <strong>✓ Can contain letters, numbers, underscores:</strong> <code>patient_id_2</code><br>
+                        <strong>✗ Cannot start with a number:</strong> <code>2nd_patient</code> is NOT valid<br>
+                        <strong>✗ Cannot contain spaces:</strong> Use underscores instead: <code>birth_weight</code><br>
+                        <strong>✗ Cannot use Python keywords:</strong> Words like <code>if</code>, <code>for</code>,
+                        <code>print</code>
+                    </p>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-lightbulb"></i> Best Practice: Use Descriptive Names!</h4>
+                    <p>Use names that describe what the variable contains. <code>maternal_age</code> is much clearer
+                        than <code>x</code> or <code>ma</code>. Your future self (and colleagues) will thank you!</p>
+                </div>
+
+                <h2>Data Types: What Kind of Data?</h2>
+
+                <p>Every variable in Python has a <strong>type</strong> that tells Python what kind of data it holds.
+                    This is important because different types can do different things. Here are the four main types:</p>
+
+                <h3>1. Integers (int) — Whole Numbers</h3>
+                <p>Numbers without decimal points. Used for things like age, counts, or gestational weeks.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Integers</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Integers are whole numbers (no decimals)
+maternal_age = 34
+gestational_weeks = 28
+number_of_previous_births = 2
+
+# You can do math with integers
+weeks_remaining = 40 - gestational_weeks
+print("Patient age:", maternal_age)
+print("Weeks pregnant:", gestational_weeks)
+print("Weeks remaining:", weeks_remaining)
+print("Type:", type(maternal_age))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>2. Floats (float) — Decimal Numbers</h3>
+                <p>Numbers with decimal points. Used for measurements like weight, temperature, or percentages.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Floats</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Floats are decimal numbers
+birth_weight_kg = 3.45
+body_temperature_c = 37.2
+bmi = 24.8
+
+# Math with floats
+weight_in_grams = birth_weight_kg * 1000
+print("Birth weight:", birth_weight_kg, "kg")
+print("Birth weight:", weight_in_grams, "grams")
+print("Type:", type(birth_weight_kg))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>3. Strings (str) — Text</h3>
+                <p>Text data enclosed in quotation marks. Used for names, IDs, notes, or any text.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Strings</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Strings are text - must use quotes!
+patient_name = "Jane Smith"     # Double quotes work
+patient_id = 'PAT-00123'        # Single quotes also work
+blood_type = "O+"
+notes = "Patient reports normal fetal movement."
+
+# You can combine (concatenate) strings with +
+full_info = patient_name + " - " + patient_id
+print("Patient:", full_info)
+print("Blood type:", blood_type)
+print("Notes:", notes)
+print("Type:", type(patient_name))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>4. Booleans (bool) — True/False</h3>
+                <p>Values that can only be <code>True</code> or <code>False</code>. Perfect for yes/no questions.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Booleans</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Booleans are True or False (note the capital letters!)
+is_first_pregnancy = True
+has_gestational_diabetes = False
+is_high_risk = True
+
+# Booleans often come from comparisons
+maternal_age = 38
+is_advanced_maternal_age = maternal_age >= 35  # Is age 35 or more?
+
+print("First pregnancy?", is_first_pregnancy)
+print("Has gestational diabetes?", has_gestational_diabetes)
+print("Age:", maternal_age)
+print("Advanced maternal age (35+)?", is_advanced_maternal_age)
+print("Type:", type(is_first_pregnancy))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Operators: Doing Things with Variables</h2>
+
+                <p>Now that you know how to store data, let's learn how to work with it using
+                    <strong>operators</strong>.
+                </p>
+
+                <h3>Arithmetic Operators (Math)</h3>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Math Operators</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Math operators in Python
+gestational_days = 196
+
+# Division: days to weeks
+weeks = gestational_days / 7
+print(f"{gestational_days} days = {weeks} weeks")
+
+# Integer division: whole weeks only (// drops the decimal)
+whole_weeks = gestational_days // 7
+print(f"Complete weeks: {whole_weeks}")
+
+# Modulo: remaining days after complete weeks
+remaining_days = gestational_days % 7
+print(f"Plus {remaining_days} extra days")
+
+# So: 196 days = 28 weeks and 0 days</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>Comparison Operators</h3>
+
+                <p>Comparison operators compare two values and return True or False:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Comparison Operators</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Comparison operators return True or False
+birth_weight_g = 2400
+maternal_age = 38
+
+# Is the weight less than 2500g (low birth weight)?
+is_low_weight = birth_weight_g < 2500
+print(f"Weight {birth_weight_g}g - Low birth weight? {is_low_weight}")
+
+# Is the age 35 or greater?
+is_advanced_age = maternal_age >= 35
+print(f"Age {maternal_age} - Advanced maternal age? {is_advanced_age}")
+
+# Is the weight exactly 2500?
+is_exactly_2500 = birth_weight_g == 2500  # Note: == for comparison!
+print(f"Weight exactly 2500g? {is_exactly_2500}")
+
+# Is the weight NOT low?
+is_not_low = birth_weight_g >= 2500
+print(f"Weight is NOT low? {is_not_low}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> = vs ==</h4>
+                    <p><code>=</code> means "assign a value" (put something in a variable)<br>
+                        <code>==</code> means "is equal to?" (compare two values)<br><br>
+                        This is a common source of confusion for beginners!
+                    </p>
+                </div>
+
+                <h2>F-Strings: Easy Text Formatting</h2>
+
+                <p>You've seen <code>f"..."</code> in some examples. These are called <strong>f-strings</strong>
+                    (formatted strings), and they're the easiest way to combine text with variables:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - F-Strings</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># F-strings let you embed variables inside text
+patient_name = "Jane Smith"
+age = 34
+weight_kg = 3.456
+
+# Put an f before the quotes, then use {variable_name}
+print(f"Patient: {patient_name}")
+print(f"Age: {age} years")
+
+# You can even do math inside the braces!
+print(f"Weight: {weight_kg * 1000} grams")
+
+# Format decimals: :.2f means 2 decimal places
+print(f"Weight (formatted): {weight_kg:.2f} kg")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('datastructures')">
+                    Next: Data Structures <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 3: Data Structures -->
+            <section class="lesson-section" id="datastructures">
+                <h1>3. Data Structures: Lists and Dictionaries</h1>
+
+                <p>So far we've stored single values in variables. But what if you need to track multiple blood pressure
+                    readings over time? Or store all the information about a patient in one place? That's where
+                    <strong>data structures</strong> come in.
+                </p>
+
+                <h2>Lists: Storing Multiple Items in Order</h2>
+
+                <p>A <strong>list</strong> is like a numbered container that holds multiple items in a specific order.
+                    Think of it like a patient's chart where measurements are recorded chronologically.</p>
+
+                <p>Lists are created using square brackets <code>[]</code>, with items separated by commas:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Creating Lists</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Creating lists - use square brackets []
+# List of blood pressure readings
+bp_readings = ["120/80", "118/76", "125/82", "130/85"]
+
+# List of gestational ages at check-ups (in weeks)
+checkup_weeks = [12, 20, 28, 32, 36, 38, 40]
+
+# List of daily fetal movement counts
+kick_counts = [8, 12, 10, 15, 9, 11, 14]
+
+# Lists can hold any type of data!
+print("Blood pressure readings:", bp_readings)
+print("Check-up weeks:", checkup_weeks)
+print("Daily kick counts:", kick_counts)</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>Accessing Items by Index</h3>
+
+                <p>Each item in a list has a position number called an <strong>index</strong>.
+                    <strong>Important: Python counts from 0!</strong>
+                </p>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Lists Start at Index 0, Not 1!</h4>
+                    <p>The first item is at index [0], the second at index [1], and so on. This trips up many
+                        beginners!<br>
+                        You can also use negative indices: [-1] is the last item, [-2] is second to last.</p>
+                </div>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Accessing List Items</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Weekly weight measurements during pregnancy (kg)
+weekly_weights = [60.2, 60.8, 61.5, 62.1, 62.9]
+#                  [0]   [1]   [2]   [3]   [4]  <- Index positions
+
+# Access by positive index (counting from start)
+print("First weight (index 0):", weekly_weights[0], "kg")
+print("Third weight (index 2):", weekly_weights[2], "kg")
+
+# Access by negative index (counting from end)
+print("Last weight (index -1):", weekly_weights[-1], "kg")
+print("Second to last (index -2):", weekly_weights[-2], "kg")
+
+# How many items in the list? Use len()
+print("Number of measurements:", len(weekly_weights))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>Modifying Lists</h3>
+
+                <p>Lists are <strong>mutable</strong>, meaning you can change them after creating them:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Modifying Lists</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Start with some APGAR scores
+apgar_scores = [7, 8, 9]
+print("Initial scores:", apgar_scores)
+
+# Add a new score at the end with .append()
+apgar_scores.append(9)
+print("After append(9):", apgar_scores)
+
+# Change a value at a specific index
+apgar_scores[0] = 8  # Change first score from 7 to 8
+print("After changing index 0:", apgar_scores)
+
+# Remove the last item with .pop()
+removed = apgar_scores.pop()
+print(f"Removed {removed}, now:", apgar_scores)
+
+# Calculate statistics
+print("Average score:", sum(apgar_scores) / len(apgar_scores))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-list"></i> Common List Methods</h4>
+                    <p><code>list.append(item)</code> - Add item to end<br>
+                        <code>list.pop()</code> - Remove and return last item<br>
+                        <code>list.insert(index, item)</code> - Insert item at position<br>
+                        <code>len(list)</code> - Get number of items<br>
+                        <code>sum(list)</code> - Add up all numbers in list<br>
+                        <code>min(list)</code> / <code>max(list)</code> - Get smallest/largest
+                    </p>
+                </div>
+
+                <h2>Dictionaries: Labeled Data</h2>
+
+                <p>A <strong>dictionary</strong> stores data in <strong>key-value pairs</strong>. Think of it like a
+                    patient record where each piece of information has a label (key) and a value.</p>
+
+                <p>Dictionaries are created using curly braces <code>{}</code> with key: value pairs:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Creating Dictionaries</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># A patient record as a dictionary
+patient = {
+    "name": "Jane Smith",
+    "age": 32,
+    "patient_id": "PAT-00456",
+    "gestational_weeks": 28,
+    "is_high_risk": False,
+    "blood_type": "O+"
+}
+
+# Access values using their keys
+print("Patient name:", patient["name"])
+print("Age:", patient["age"])
+print("Weeks pregnant:", patient["gestational_weeks"])
+print("High risk?", patient["is_high_risk"])</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h3>Why Dictionaries Are Powerful</h3>
+
+                <p>Unlike lists where you access items by number (index 0, 1, 2...), dictionaries let you access
+                    data by meaningful names. This makes your code much more readable!</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Working with Dictionaries</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># A newborn's birth record
+newborn = {
+    "birth_weight_g": 3450,
+    "length_cm": 51,
+    "apgar_1min": 8,
+    "apgar_5min": 9,
+    "delivery_type": "Vaginal",
+    "birth_date": "2024-01-15"
+}
+
+# Access values by key
+print("Birth Record")
+print("-" * 30)
+print(f"Weight: {newborn['birth_weight_g']} grams")
+print(f"Length: {newborn['length_cm']} cm")
+print(f"APGAR (1 min): {newborn['apgar_1min']}")
+print(f"APGAR (5 min): {newborn['apgar_5min']}")
+print(f"Delivery: {newborn['delivery_type']}")
+
+# Add a new key-value pair
+newborn["pediatrician"] = "Dr. Johnson"
+print(f"Pediatrician: {newborn['pediatrician']}")
+
+# Update a value
+newborn["apgar_5min"] = 10  # Updated after rechecking
+print(f"Updated APGAR (5 min): {newborn['apgar_5min']}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-lightbulb"></i> Lists vs Dictionaries: When to Use Which?</h4>
+                    <p><strong>Use Lists when:</strong> You have a collection of similar items in order
+                        (e.g., weekly measurements, list of patients)<br>
+                        <strong>Use Dictionaries when:</strong> You have different pieces of information about one thing
+                        (e.g., a patient record with name, age, ID, etc.)
+                    </p>
+                </div>
+
+                <h3>Lists of Dictionaries: Real-World Data</h3>
+
+                <p>In real health data, you often have <strong>lists of dictionaries</strong>—multiple patient records,
+                    each containing multiple fields:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Lists of Dictionaries</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Multiple patient records in a list
+patients = [
+    {"name": "Alice", "age": 28, "weeks": 32},
+    {"name": "Bob", "age": 35, "weeks": 24},
+    {"name": "Carol", "age": 31, "weeks": 38}
+]
+
+# Access the first patient
+print("First patient:", patients[0]["name"])
+
+# Loop through all patients
+print("\nAll Patients:")
+print("-" * 30)
+for patient in patients:
+    print(f"{patient['name']}, Age {patient['age']}, Week {patient['weeks']}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('conditionals')">
+                    Next: Conditionals <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 4: Conditionals -->
+            <section class="lesson-section" id="conditionals">
+                <h1>4. Making Decisions: Conditional Logic</h1>
+
+                <p>In healthcare, programs often need to make decisions: Is this blood pressure high? What trimester
+                    is this patient in? Is the birth weight concerning? <strong>Conditionals</strong> allow your
+                    program to execute different code based on whether conditions are true or false.</p>
+
+                <h2>The if Statement</h2>
+
+                <p>The <code>if</code> statement is the simplest form of conditional logic. It runs a block of code
+                    only if a condition is true:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Basic if Statement</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Basic if statement
+maternal_age = 38
+
+# Check if age is 35 or above (advanced maternal age)
+if maternal_age >= 35:
+    print("⚠️ Advanced Maternal Age")
+    print("Additional monitoring recommended")
+
+print("Age check complete")  # This always runs</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Indentation is Crucial!</h4>
+                    <p>In Python, <strong>indentation (4 spaces or 1 tab) determines what code belongs to the if
+                            statement</strong>.
+                        The indented lines only run if the condition is true. The non-indented line at the end always
+                        runs.<br><br>
+                        This is different from many other languages—Python uses indentation instead of curly braces!</p>
+                </div>
+
+                <h2>if-else: Two Paths</h2>
+
+                <p>Use <code>else</code> to specify what happens when the condition is false:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - if-else Statement</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># if-else: two different paths
+gestational_weeks = 37
+
+if gestational_weeks < 37:
+    print("Preterm (before 37 weeks)")
+    print("⚠️ May require special care")
+else:
+    print("Term (37 weeks or later)")
+    print("✓ Full development expected")
+
+# Try changing gestational_weeks to 35 and run again!</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>if-elif-else: Multiple Paths</h2>
+
+                <p>Use <code>elif</code> (short for "else if") when you have more than two possibilities:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Trimester Classification</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Classify pregnancy into trimesters
+gestational_age = 28  # Try changing: 8, 15, 28, 38
+
+print(f"Gestational age: {gestational_age} weeks")
+print()
+
+if gestational_age <= 12:
+    trimester = "First Trimester (Weeks 1-12)"
+    info = "Major organ development occurs"
+    risk_note = "Highest risk for miscarriage"
+elif gestational_age <= 27:
+    trimester = "Second Trimester (Weeks 13-27)"
+    info = "Baby grows rapidly, movement begins"
+    risk_note = "Generally lowest risk period"
+else:
+    trimester = "Third Trimester (Weeks 28-40)"
+    info = "Final development, preparing for birth"
+    risk_note = "Monitor for preterm labor"
+
+print(f"Stage: {trimester}")
+print(f"Development: {info}")
+print(f"Note: {risk_note}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-code-branch"></i> How if-elif-else Works</h4>
+                    <p>Python checks each condition <strong>from top to bottom</strong>:<br>
+                        1. If the <code>if</code> condition is True → run that block, skip the rest<br>
+                        2. If False → check the first <code>elif</code><br>
+                        3. Keep checking until one is True or you reach <code>else</code><br>
+                        4. <code>else</code> runs only if ALL previous conditions were False</p>
+                </div>
+
+                <h2>Birth Weight Classification</h2>
+
+                <p>Here's a practical example classifying newborn birth weight:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Birth Weight Classification</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Birth weight classification
+birth_weight_g = 3200  # Try: 1200, 2200, 3200, 4300
+
+print(f"Birth weight: {birth_weight_g} grams")
+print("-" * 35)
+
+if birth_weight_g < 1500:
+    category = "Very Low Birth Weight"
+    status = "🔴 NICU care likely needed"
+elif birth_weight_g < 2500:
+    category = "Low Birth Weight"
+    status = "🟡 Close monitoring recommended"
+elif birth_weight_g <= 4000:
+    category = "Normal Birth Weight"
+    status = "🟢 Healthy range"
+else:
+    category = "Macrosomia (High Birth Weight)"
+    status = "🟡 Monitor for complications"
+
+print(f"Category: {category}")
+print(f"Status: {status}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Combining Conditions with and/or</h2>
+
+                <p>Sometimes you need to check multiple conditions together:</p>
+
+                <ul>
+                    <li><code>and</code> - Both conditions must be True</li>
+                    <li><code>or</code> - At least one condition must be True</li>
+                    <li><code>not</code> - Reverses True/False</li>
+                </ul>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Combining Conditions</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># High-risk pregnancy assessment
+maternal_age = 38
+has_diabetes = True
+has_hypertension = False
+
+print("Risk Assessment")
+print("=" * 30)
+print(f"Maternal age: {maternal_age}")
+print(f"Diabetes: {has_diabetes}")
+print(f"Hypertension: {has_hypertension}")
+print()
+
+# Using 'or' - true if ANY condition is met
+if maternal_age >= 35 or has_diabetes or has_hypertension:
+    print("⚠️ High-risk factors present")
+else:
+    print("✓ No high-risk factors identified")
+
+# Using 'and' - true only if BOTH are true
+if maternal_age >= 35 and has_diabetes:
+    print("⚠️ Both advanced age AND diabetes - extra care needed")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-lightbulb"></i> Practice Makes Perfect!</h4>
+                    <p>Try modifying the values in the examples above and running them again. Change
+                        <code>gestational_age</code>
+                        to different values (8, 15, 30), or change the boolean values (True/False) to see how the output
+                        changes.
+                    </p>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('loops')">
+                    Next: Loops <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 5: Loops -->
+            <section class="lesson-section" id="loops">
+                <h1>5. Loops: Repeating Actions</h1>
+
+                <p>Imagine you need to analyze 100 patient records. You wouldn't want to write the same code 100 times!
+                    <strong>Loops</strong> let you repeat code automatically, making them essential for processing
+                    health data at scale.
+                </p>
+
+                <h2>The for Loop</h2>
+
+                <p>The most common loop in Python is the <code>for</code> loop. It goes through each item in a list
+                    (or other collection) one at a time:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Basic for Loop</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># A simple for loop
+gestational_weeks = [12, 20, 28, 32, 36, 40]
+
+print("Prenatal Check-up Schedule:")
+print("-" * 30)
+
+for week in gestational_weeks:
+    print(f"Week {week}: Scheduled appointment")
+
+print()
+print("All appointments displayed!")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-sync-alt"></i> How the for Loop Works</h4>
+                    <p><code>for week in gestational_weeks:</code><br><br>
+                        1. Take the first item from the list → store it in <code>week</code> → run the indented code<br>
+                        2. Take the next item → store it in <code>week</code> → run the code again<br>
+                        3. Continue until all items have been processed<br><br>
+                        The variable name (<code>week</code>) can be anything you choose—but use descriptive names!</p>
+                </div>
+
+                <h2>Using range() for Counting</h2>
+
+                <p>Sometimes you want to repeat something a specific number of times. Use <code>range()</code>:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Using range()</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># range(n) counts from 0 to n-1
+print("Counting trimesters:")
+for i in range(3):
+    print(f"Trimester {i + 1}")  # Add 1 because range starts at 0
+
+print()
+
+# range(start, end) counts from start to end-1
+print("Weeks in third trimester (28-40):")
+for week in range(28, 41):  # 41 because end is exclusive
+    print(f"Week {week}", end=" ")  # end=" " prints on same line</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-lightbulb"></i> range() Tips</h4>
+                    <p><code>range(5)</code> → 0, 1, 2, 3, 4 (5 numbers, starting at 0)<br>
+                        <code>range(1, 6)</code> → 1, 2, 3, 4, 5 (from 1 up to, but not including, 6)<br>
+                        <code>range(0, 10, 2)</code> → 0, 2, 4, 6, 8 (count by 2s)
+                    </p>
+                </div>
+
+                <h2>Loops with Conditionals</h2>
+
+                <p>Combining loops with if statements is very powerful—you can check each item and respond accordingly:
+                </p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Loop + Conditional</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Blood pressure readings to analyze
+bp_readings = ["120/80", "125/85", "142/91", "118/78", "138/88"]
+
+print("Blood Pressure Analysis:")
+print("-" * 40)
+
+for reading in bp_readings:
+    # Split into systolic/diastolic
+    parts = reading.split('/')
+    systolic = int(parts[0])
+    diastolic = int(parts[1])
+    
+    # Classify based on values
+    if systolic >= 140 or diastolic >= 90:
+        status = "🔴 HIGH - Alert!"
+    elif systolic >= 130 or diastolic >= 85:
+        status = "🟡 Elevated"
+    else:
+        status = "🟢 Normal"
+    
+    print(f"{reading}: {status}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Accumulating Values in a Loop</h2>
+
+                <p>A common pattern is to build up a result as you loop through data:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Accumulating Values</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># APGAR scores from multiple newborns
+apgar_scores = [8, 9, 7, 9, 10, 8, 9, 7]
+
+# Calculate statistics manually using a loop
+total = 0  # Start with 0
+for score in apgar_scores:
+    total = total + score  # Add each score to total
+
+# Calculate average
+count = len(apgar_scores)
+average = total / count
+
+print("APGAR Score Statistics:")
+print("-" * 30)
+print(f"Number of newborns: {count}")
+print(f"Total of all scores: {total}")
+print(f"Average score: {average:.1f}")
+print(f"Lowest: {min(apgar_scores)}")
+print(f"Highest: {max(apgar_scores)}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Looping Through Dictionaries</h2>
+
+                <p>You can also loop through patient records stored as dictionaries:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Looping Through Patient Records</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Multiple patient records
+patients = [
+    {"name": "Alice", "age": 28, "weeks": 32, "high_risk": False},
+    {"name": "Barbara", "age": 38, "weeks": 24, "high_risk": True},
+    {"name": "Carol", "age": 31, "weeks": 38, "high_risk": False}
+]
+
+print("Patient Dashboard")
+print("=" * 50)
+
+for patient in patients:
+    print(f"\nPatient: {patient['name']}")
+    print(f"  Age: {patient['age']} years")
+    print(f"  Gestational Week: {patient['weeks']}")
+    
+    if patient['high_risk']:
+        print("  Status: ⚠️ HIGH RISK")
+    else:
+        print("  Status: ✓ Normal")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('functions')">
+                    Next: Functions <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 6: Functions -->
+            <section class="lesson-section" id="functions">
+                <h1>6. Functions: Reusable Code</h1>
+
+                <p>Imagine you need to calculate the BMI for 50 patients. Writing the formula
+                    <code>weight / (height * height)</code>
+                    50 times would be tedious and prone to errors. <strong>Functions</strong> let you write code once
+                    and reuse it whenever you need it.
+                </p>
+
+                <h2>Parts of a Function</h2>
+
+                <p>A function is like a recipe: it takes ingredients (inputs), does something with them
+                    (processing), and gives you a result (output).</p>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-cogs"></i> Function Anatomy</h4>
+                    <pre><code style="background:none; color:inherit; padding:0;">def function_name(parameter):
+    """Docstring explaining what it does"""
+    # ... code that does something ...
+    return result</code></pre>
+                    <p><strong>def:</strong> Keyword that defines a function<br>
+                        <strong>parameter:</strong> Variable that receives input (the ingredients)<br>
+                        <strong>return:</strong> Keyword that sends back the result
+                    </p>
+                </div>
+
+                <h2>Creating Your First Function</h2>
+
+                <p>Let's create a simple function to calculate BMI:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - BMI Function</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea">def calculate_bmi(weight_kg, height_m):
+    """Calculates Body Mass Index (BMI)."""
+    bmi = weight_kg / (height_m * height_m)
+    return bmi
+
+# Now we can use (call) the function!
+# Patient A: 70kg, 1.75m
+bmi_a = calculate_bmi(70, 1.75)
+print(f"Patient A BMI: {bmi_a:.1f}")
+
+# Patient B: 90kg, 1.80m
+bmi_b = calculate_bmi(90, 1.80)
+print(f"Patient B BMI: {bmi_b:.1f}")
+
+# Patient C: 55kg, 1.60m
+print(f"Patient C BMI: {calculate_bmi(55, 1.60):.1f}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Functions with Logic</h2>
+
+                <p>Functions can contain any code, including if statements. Let's make a function that checks for fever:
+                </p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Clinical Logic Function</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea">def check_temperature(temp_c):
+    """Checks if a temperature indicates fever."""
+    if temp_c >= 38.0:
+        return "Fever (High)"
+    elif temp_c >= 37.5:
+        return "Low-grade fever"
+    else:
+        return "Normal temperature"
+
+# Test the function with different values
+temps = [36.6, 37.8, 38.4, 37.0]
+
+for t in temps:
+    result = check_temperature(t)
+    print(f"{t}°C: {result}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>A Real-World Example: Due Date Calculator</h2>
+
+                <p>Let's build a function to estimate a due date. We'll use Python's <code>datetime</code> module to
+                    handle dates.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Due Date Calculator</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea">from datetime import datetime, timedelta
+
+def calculate_due_date(lmp_date_str):
+    """
+    Calculates Estimated Due Date (EDD) from Last Menstrual Period.
+    Rule: EDD = LMP + 280 days (40 weeks)
+    """
+    # 1. Convert string "YYYY-MM-DD" to a date object
+    lmp_date = datetime.strptime(lmp_date_str, '%Y-%m-%d')
+    
+    # 2. Add 280 days
+    edd = lmp_date + timedelta(days=280)
+    
+    # 3. Convert back to string to read it
+    return edd.strftime('%Y-%m-%d')
+
+# Test it
+lmp = "2024-01-15"
+due_date = calculate_due_date(lmp)
+
+print(f"LMP Date:      {lmp}")
+print(f"Due Date (EDD): {due_date}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Functions Returning Multiple Values</h2>
+
+                <p>Functions can return more than one piece of information. This is useful for returning a result
+                    AND a status message.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Multiple Return Values</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea">def classify_birth_weight(grams):
+    """Categorizes birth weight and returns category AND notes."""
+    if grams < 2500:
+        return "Low Birth Weight", "Monitor closely"
+    elif grams > 4000:
+        return "Macrosomia", "Check for diabetes"
+    else:
+        return "Normal", "Routine care"
+
+# Test with a list of weights
+weights = [3200, 2100, 4300, 3500]
+
+print("Birth Weight Screening:")
+print("-" * 40)
+
+for w in weights:
+    # Unpack the two returned values into two variables
+    category, plan = classify_birth_weight(w)
+    print(f"Weight {w}g: {category} ({plan})")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('errors')">
+                    Next: Error Handling <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 7: Error Handling -->
+            <section class="lesson-section" id="errors">
+                <h1>7. Error Handling: Expecting the Unexpected</h1>
+
+                <p>In the real world, health data is messy. You'll encounter missing values, typos (like "O positive"
+                    instead of "O+"), or text where numbers should be. If you don't handle these errors, your program
+                    will crash.</p>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-shield-alt"></i> The try-except Block</h4>
+                    <p>Python uses <code>try</code> and <code>except</code> to handle errors gracefully:</p>
+                    <pre><code style="background:none; color:inherit; padding:0;">try:
+    # Attempt to run this code...
+except ErrorName:
+    # If that specific error happens, run this code instead!</code></pre>
+                </div>
+
+                <h2>Handling User Input Errors</h2>
+
+                <p>Let's try to convert a string to a number. If the string contains letters, Python raises a
+                    <code>ValueError</code>.
+                </p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Handling ValueError</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># A list of gestational weeks from a spreadsheet
+# Some entries are typos or missing!
+entries = ["38", "40", "39", "unknown", "37", "N/A", "41"]
+
+print("Processing gestational ages:")
+print("-" * 30)
+
+for entry in entries:
+    try:
+        weeks = int(entry)  # Try to convert to integer
+        print(f"✓ Valid: {weeks} weeks")
+    except ValueError:
+        # This runs if int(entry) fails
+        print(f"⚠️ Error: Could not convert '{entry}'")
+
+print("-" * 30)
+print("Processing complete - program didn't crash!")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Cleaning Data with Error Handling</h2>
+
+                <p>Error handling is essential for "cleaning" data so you can analyze it. Let's filter out invalid
+                    APGAR scores so we can calculate an accurate average.</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Data Cleaning</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># Raw APGAR scores (0-10) with some messy data
+raw_scores = [9, 8, "missing", 10, "7.5", 9, "error", 8]
+
+clean_scores = []
+skipped_count = 0
+
+print("Cleaning Data...")
+
+for score in raw_scores:
+    try:
+        # Convert to integer
+        # Note: int("7.5") fails, but float("7.5") works
+        clean_score = int(score)
+        
+        # Check if score is in valid range (0-10)
+        if 0 <= clean_score <= 10:
+            clean_scores.append(clean_score)
+        else:
+            print(f"  Skipped (out of range): {clean_score}")
+            skipped_count += 1
+            
+    except ValueError:
+        print(f"  Skipped (not a number): '{score}'")
+        skipped_count += 1
+
+# Calculate average of CLEAN data only
+if len(clean_scores) > 0:
+    average = sum(clean_scores) / len(clean_scores)
+    print("\nResults:")
+    print(f"Valid scores: {clean_scores}")
+    print(f"Average APGAR: {average:.1f}")
+else:
+    print("No valid scores found.")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <h2>Catching Multiple Errors (Advanced)</h2>
+
+                <p>Sometimes different things can go wrong. You can have multiple <code>except</code> blocks:</p>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Multiple Exceptions</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea">def calculate_bmi(weight, height):
+    try:
+        return weight / (height * height)
+    except ZeroDivisionError:
+        return "Error: Height cannot be zero"
+    except TypeError:
+        return "Error: Inputs must be numbers"
+
+# Test cases
+print("1. Normal:", calculate_bmi(70, 1.75))
+print("2. Zero Height:", calculate_bmi(70, 0))
+print("3. Text Input:", calculate_bmi("70", "1.75"))</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <a href="#" class="btn btn-primary next-lesson-btn" onclick="showSection('analysis')">
+                    Next: Data Analysis <i class="fas fa-arrow-right"></i>
+                </a>
+            </section>
+
+            <!-- Section 8: Data Analysis -->
+            <section class="lesson-section" id="analysis">
+                <h1>8. Putting It All Together: Capstone Project</h1>
+
+                <p>Congratulations! You've learned the building blocks of Python. Now, let's combine them into a real
+                    data analysis script. We'll analyze a dataset of patient outcomes to identify preterm births and
+                    weight abnormalities.</p>
+
+                <h2>Comprehensive Patient Analysis</h2>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-project-diagram"></i> The Plan</h4>
+                    <p><strong>1. Data Structure:</strong> A list of dictionaries (Patient Database)<br>
+                        <strong>2. Logic:</strong> Functions to classify weight and check term status<br>
+                        <strong>3. Analysis:</strong> A loop to process each patient and update statistics<br>
+                        <strong>4. Output:</strong> A summary report
+                    </p>
+                </div>
+
+                <div class="code-editor-container">
+                    <div class="code-editor-header">
+                        <span class="code-editor-title">Python - Final Project</span>
+                        <button class="run-btn" onclick="runCode(this)"><i class="fas fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="code-textarea"># --- STEP 1: DEFINE OUR DATA (Lists & Dictionaries) ---
+patients = [
+    {"id": "P001", "age": 28, "weeks": 38, "weight_g": 3200},
+    {"id": "P002", "age": 35, "weeks": 36, "weight_g": 2400},
+    {"id": "P003", "age": 24, "weeks": 40, "weight_g": 3800},
+    {"id": "P004", "age": 32, "weeks": 37, "weight_g": 4200},
+    {"id": "P005", "age": 29, "weeks": 35, "weight_g": 2100}
+]
+
+# --- STEP 2: DEFINE OUR HELPERS (Functions & Conditionals) ---
+def classify_weight(weight):
+    """Returns 'Low', 'Normal', or 'High' based on grams."""
+    if weight < 2500: return "Low"
+    elif weight > 4000: return "High"
+    else: return "Normal"
+
+def is_preterm(weeks):
+    """Returns True if born before 37 weeks."""
+    return weeks < 37
+
+# --- STEP 3: ANALYZE THE DATA (Loops & Accumulators) ---
+print("PATIENT ANALYSIS REPORT")
+print("=" * 40)
+
+# Initialize counters
+stats = {
+    "total": len(patients),
+    "preterm": 0,
+    "weight_counts": {"Low": 0, "Normal": 0, "High": 0}
+}
+
+for patient in patients:
+    # 1. Apply logic
+    weight_cat = classify_weight(patient["weight_g"])
+    preterm = is_preterm(patient["weeks"])
+    
+    # 2. Update stats
+    stats["weight_counts"][weight_cat] += 1
+    if preterm:
+        stats["preterm"] += 1
+    
+    # 3. Print individual result
+    status_icon = "⚠️" if preterm else "✓"
+    print(f"Patient {patient['id']}: {status_icon} Weeks: {patient['weeks']}, Weight: {weight_cat}")
+
+# --- STEP 4: PRINT SUMMARY REPORT ---
+print("\n" + "=" * 40)
+print("POPULATION STATISTICS")
+print("=" * 40)
+print(f"Total Patients Analyzed: {stats['total']}")
+print(f"Preterm Birth Rate:      {(stats['preterm']/stats['total'])*100:.1f}%")
+print(f"Weight Distribution:     {stats['weight_counts']}")</textarea>
+                    <div class="output-container">
+                        <div class="output-label">Output</div>
+                        <div class="output-text">Click "Run" to execute the code</div>
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4><i class="fas fa-graduation-cap"></i> Congratulations!</h4>
+                    <p>You've completed the Python for Health Data tutorial! You now know how to work with variables,
+                        data structures, conditionals, loops, functions, and error handling—all skills you can apply to
+                        real health data analysis.</p>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-download"></i> Continue Learning</h4>
+                    <p>Download the Jupyter notebook version of this tutorial to practice on your own computer with
+                        larger datasets:</p>
+                    <p><a href="../documents/tutorials/Python_Pregnancy_Tutorial.zip" class="btn btn-primary"
+                            style="margin-top: 12px;">
+                            <i class="fas fa-download"></i> Download Tutorial Notebook
+                        </a></p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let pyodide = null;
+
+        async function initPyodide() {
+            pyodide = await loadPyodide();
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        initPyodide();
+
+        async function runCode(button) {
+            const container = button.closest('.code-editor-container');
+            const textarea = container.querySelector('.code-textarea');
+            const outputDiv = container.querySelector('.output-text');
+            const code = textarea.value;
+
+            if (!pyodide) {
+                outputDiv.textContent = 'Python is still loading, please wait...';
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running';
+
+            try {
+                pyodide.runPython(`
+import sys
+from io import StringIO
+sys.stdout = StringIO()
+`);
+                await pyodide.runPythonAsync(code);
+                const output = pyodide.runPython('sys.stdout.getvalue()');
+                outputDiv.textContent = output || '(No output)';
+                outputDiv.classList.remove('output-error');
+            } catch (error) {
+                outputDiv.textContent = error.message;
+                outputDiv.classList.add('output-error');
+            }
+
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-play"></i> Run';
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            const section = document.getElementById(sectionId);
+            if (section) section.classList.add('active');
+
+            const link = document.querySelector(`.sidebar-nav a[data-section="${sectionId}"]`);
+            if (link) link.classList.add('active');
+
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('sidebarNav').addEventListener('click', function (e) {
+            if (e.target.tagName === 'A' && e.target.dataset.section) {
+                e.preventDefault();
+                showSection(e.target.dataset.section);
+            }
+        });
+    </script>
+</body>
+
+</html>
