@@ -17,6 +17,10 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -45,12 +49,14 @@
             overflow: hidden;
             box-shadow: var(--shadow-xl);
             position: relative;
+            width: 100%;
         }
 
         #simulationCanvas {
             display: block;
             width: 100%;
-            aspect-ratio: 4/3;
+            height: 100%;
+            aspect-ratio: 16/9;
             background: radial-gradient(ellipse at center, #0d1117 0%, #000 100%);
         }
 
@@ -307,8 +313,8 @@
     <!-- Main Content -->
     <section class="section">
         <div class="container">
-            <a href="../tutorials/nbody.html#two-body" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Tutorial
+            <a href="../pages/resources.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Resources
             </a>
 
             <div class="content-section">
@@ -339,7 +345,7 @@
                     <div class="simulation-container">
                         <canvas id="simulationCanvas"></canvas>
                         <div class="sim-overlay">
-                            <div>Time: <span id="timeDisplay">0.00</span> yr</div>
+                            <div>Time: <span id="timeDisplay">0.00</span></div>
                             <div>Orbits: <span id="orbitCount">0</span></div>
                         </div>
                     </div>

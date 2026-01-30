@@ -16,9 +16,69 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Categories filter */
+        .resource-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            justify-content: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .category-btn {
+            padding: var(--space-2) var(--space-5);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid var(--color-gray-200);
+            background: var(--color-white);
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        /* Category badge */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+            margin-top: 0.25rem;
+            margin-bottom: 0.75rem;
+            width: fit-content;
+        }
+
+        .category-badge.tutorial {
+            background: rgba(74, 144, 226, 0.15);
+            color: #4a90e2;
+        }
+
+        .category-badge.simulation {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+        }
+    </style>
 </head>
 
 <body>
@@ -78,14 +138,19 @@
     <!-- Resources Grid -->
     <section class="section">
         <div class="container">
-            <div class="grid grid-3">
+            <!-- Category Filter -->
+            <div class="resource-categories reveal">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="tutorial">Tutorials</button>
+                <button class="category-btn" data-category="simulation">Simulations</button>
+            </div>
+
+            <div class="grid grid-3" id="resourceGrid">
                 <!-- Python for Physicists -->
-                <div class="card reveal">
+                <div class="card reveal" data-category="tutorial">
                     <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fab fa-python"></i>
-                        </div>
                         <h3 class="card-title">Introduction to Python for Physicists</h3>
+                        <span class="category-badge tutorial"><i class="fas fa-book"></i> Tutorial</span>
                         <p class="card-text">
                             A comprehensive tutorial course designed for anyone who wants to learn the basics of
                             Python programming. It covers fundamental programming concepts and techniques, with
@@ -98,12 +163,10 @@
                 </div>
 
                 <!-- Black Holes Intro -->
-                <div class="card reveal delay-100">
+                <div class="card reveal delay-100" data-category="tutorial">
                     <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-meteor"></i>
-                        </div>
                         <h3 class="card-title">Introduction to Black Holes</h3>
+                        <span class="category-badge tutorial"><i class="fas fa-book"></i> Tutorial</span>
                         <p class="card-text">
                             Explore the fascinating world of black holes, binary systems, mergers, and
                             gravitational waves. Learn the basics of these amazing astronomical objects.
@@ -115,18 +178,61 @@
                 </div>
 
                 <!-- N-Body Problem -->
-                <div class="card reveal delay-200">
+                <div class="card reveal delay-200" data-category="tutorial">
                     <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-atom"></i>
-                        </div>
                         <h3 class="card-title">Introduction to the N-Body Problem</h3>
+                        <span class="category-badge tutorial"><i class="fas fa-book"></i> Tutorial</span>
                         <p class="card-text">
                             From two bodies to many—explore the basics of gravitational dynamics
                             including Kepler's laws, three-body chaos, and numerical methods.
                         </p>
                         <a href="../tutorials/nbody.html" class="btn btn-primary">
                             <i class="fas fa-calculator"></i> Learn More
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2-Body Simulation -->
+                <div class="card reveal" data-category="simulation">
+                    <div class="card-body">
+                        <h3 class="card-title">2-Body Simulation</h3>
+                        <span class="category-badge simulation"><i class="fas fa-play"></i> Simulation</span>
+                        <p class="card-text">
+                            Interactive simulation of two gravitating bodies. Explore orbital mechanics,
+                            elliptical orbits, and Kepler's laws in real-time.
+                        </p>
+                        <a href="../simulations/twobody.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3-Body Simulation -->
+                <div class="card reveal delay-100" data-category="simulation">
+                    <div class="card-body">
+                        <h3 class="card-title">3-Body Simulation</h3>
+                        <span class="category-badge simulation"><i class="fas fa-play"></i> Simulation</span>
+                        <p class="card-text">
+                            Witness the chaotic dance of three gravitating bodies. Includes famous configurations
+                            like figure-8 orbits and Lagrange points.
+                        </p>
+                        <a href="../simulations/threebody.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- N-Body Simulation -->
+                <div class="card reveal delay-200" data-category="simulation">
+                    <div class="card-body">
+                        <h3 class="card-title">N-Body Simulation</h3>
+                        <span class="category-badge simulation"><i class="fas fa-play"></i> Simulation</span>
+                        <p class="card-text">
+                            Simulate systems with many gravitating particles. Create solar systems, star clusters,
+                            galaxy collisions, and more.
+                        </p>
+                        <a href="../simulations/nbodysim.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
                         </a>
                     </div>
                 </div>
@@ -212,6 +318,33 @@
 
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
+
+        // Category filter
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const resourceCards = document.querySelectorAll('#resourceGrid .card');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Get selected category
+                const selectedCategory = btn.dataset.category;
+
+                // Filter cards
+                resourceCards.forEach(card => {
+                    const cardCategory = card.dataset.category;
+
+                    if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+                        card.style.display = '';
+                        card.classList.add('visible');
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
     </script>
 </body>
 

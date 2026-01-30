@@ -17,6 +17,10 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -45,12 +49,14 @@
             overflow: hidden;
             box-shadow: var(--shadow-xl);
             position: relative;
+            width: 100%;
         }
 
         #simulationCanvas {
             display: block;
             width: 100%;
-            aspect-ratio: 4/3;
+            height: 100%;
+            aspect-ratio: 16/9;
             background: radial-gradient(ellipse at center, #0d1117 0%, #000 100%);
         }
 
@@ -341,8 +347,8 @@
     <!-- Main Content -->
     <section class="section">
         <div class="container">
-            <a href="../tutorials/nbody.html#three-body" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Tutorial
+            <a href="../pages/resources.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Resources
             </a>
 
             <div class="content-section">
@@ -403,15 +409,15 @@
                             <h4>Masses</h4>
                             <div class="control-group">
                                 <label>Body 1 <span class="control-value" id="m1Value">1.0</span></label>
-                                <input type="range" id="m1Slider" min="0.1" max="500" step="0.1" value="1">
+                                <input type="range" id="m1Slider" min="0.1" max="300" step="0.1" value="1">
                             </div>
                             <div class="control-group">
                                 <label>Body 2 <span class="control-value" id="m2Value">1.0</span></label>
-                                <input type="range" id="m2Slider" min="0.1" max="500" step="0.1" value="1">
+                                <input type="range" id="m2Slider" min="0.1" max="100" step="0.1" value="1">
                             </div>
                             <div class="control-group">
                                 <label>Body 3 <span class="control-value" id="m3Value">1.0</span></label>
-                                <input type="range" id="m3Slider" min="0.01" max="500" step="0.01" value="1">
+                                <input type="range" id="m3Slider" min="0.01" max="100" step="0.01" value="1">
                             </div>
                         </div>
 
@@ -566,7 +572,7 @@
             },
             // Sun-Earth-Moon Hierarchical
             'sun-earth-moon': {
-                masses: [330, 1, 0.01],
+                masses: [100, 1, 0.01],
                 positions: [
                     [0, 0],         // Sun
                     [1.5, 0],       // Earth (Distance 1.5)
