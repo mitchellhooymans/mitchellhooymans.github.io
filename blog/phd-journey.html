@@ -586,9 +586,30 @@
         <div class="post-share">
             <span class="post-share-label">Share this post:</span>
             <div class="share-buttons">
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.github.io/blog/phd-journey.html"
+                <!-- Native Share Button (Mobile) -->
+                <button class="share-btn native-share-btn" aria-label="Share" style="display: none;">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+
+                <a href="https://twitter.com/intent/tweet?url=https://mitchellhooymans.com/blog/phd-journey.html&text=Reflections%20on%20My%20First%20Year%20as%20a%20PhD%20Student"
+                    target="_blank" class="share-btn" aria-label="Share on X">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://mitchellhooymans.com/blog/phd-journey.html"
+                    target="_blank" class="share-btn" aria-label="Share on Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.com/blog/phd-journey.html"
                     target="_blank" class="share-btn" aria-label="Share on LinkedIn">
                     <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://www.reddit.com/submit?url=https://mitchellhooymans.com/blog/phd-journey.html&title=Reflections%20on%20My%20First%20Year%20as%20a%20PhD%20Student"
+                    target="_blank" class="share-btn" aria-label="Share on Reddit">
+                    <i class="fab fa-reddit-alien"></i>
+                </a>
+                <a href="mailto:?subject=Reflections%20on%20My%20First%20Year%20as%20a%20PhD%20Student&body=Check%20out%20this%20post:%20https://mitchellhooymans.com/blog/phd-journey.html"
+                    class="share-btn" aria-label="Share via Email">
+                    <i class="fas fa-envelope"></i>
                 </a>
                 <a href="#" class="share-btn" aria-label="Copy link">
                     <i class="fas fa-link"></i>
@@ -699,6 +720,18 @@
                         copyBtn.innerHTML = originalIcon;
                     }, 2000);
                 });
+            });
+        }
+
+        // Web Share API
+        const shareBtn = document.querySelector('.native-share-btn');
+        if (navigator.share) {
+            shareBtn.style.display = 'inline-flex';
+            shareBtn.addEventListener('click', () => {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                }).catch(console.error);
             });
         }
     </script>
