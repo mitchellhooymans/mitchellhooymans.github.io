@@ -8,6 +8,8 @@
     <meta name="description"
         content="Programming has become an essential skill in modern scientific research. Here's why you should learn to code to improve your productivity and open up new opportunities.">
     <link rel="canonical" href="https://mitchellhooymans.com/blog/programming.html" />
+    <meta property="og:image"
+        content="https://mitchellhooymans.com/images/general/Coding%20in%20Python%20BlogImage.jpg">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -267,6 +269,7 @@
         .share-buttons {
             display: flex;
             gap: var(--space-2);
+            flex-wrap: wrap;
         }
 
         .share-btn {
@@ -736,10 +739,20 @@ plt.show()</code></pre>
             });
         }
 
-        // Web Share API
+        // Web Share API & Responsive Logic
         const shareBtn = document.querySelector('.native-share-btn');
-        if (navigator.share) {
+        const socialBtns = document.querySelectorAll('.share-btn:not(.native-share-btn):not([aria-label="Copy link"])');
+
+        // Check if device supports native sharing AND is likely a mobile device (touch primary)
+        const isMobileContext = window.matchMedia('(pointer: coarse)').matches;
+
+        if (navigator.share && isMobileContext) {
+            // Show native share button
             shareBtn.style.display = 'inline-flex';
+
+            // Hide individual social buttons to reduce clutter on mobile
+            socialBtns.forEach(btn => btn.style.display = 'none');
+
             shareBtn.addEventListener('click', () => {
                 navigator.share({
                     title: document.title,
