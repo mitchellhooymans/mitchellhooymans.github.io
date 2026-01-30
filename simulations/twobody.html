@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Two-Body Simulation | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Explore gravitational dynamics with this interactive two-body simulation. Watch two masses orbit their common centre of mass.">
+    <link rel="canonical" href="https://mitchellhooymans.com/tutorials/twobody.html" />
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .content-section {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 900px) {
+            .simulation-wrapper {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+
+        .simulation-container {
+            background: #000;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: radial-gradient(ellipse at center, #0d1117 0%, #000 100%);
+        }
+
+        .sim-overlay {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-3);
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            color: #fff;
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sim-overlay div {
+            margin-bottom: var(--space-1);
+        }
+
+        .controls-panel {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+        }
+
+        .controls-panel h3 {
+            margin-bottom: var(--space-4);
+            color: var(--color-primary);
+            font-size: 1rem;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .control-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-500);
+            margin-bottom: var(--space-3);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            margin-bottom: var(--space-3);
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            font-size: 0.85rem;
+        }
+
+        .control-value {
+            font-weight: 600;
+            color: var(--color-accent);
+            font-size: 0.8rem;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-gray-200);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-row {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .sim-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: var(--space-2) var(--space-3);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+        }
+
+        .sim-btn-primary {
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        .sim-btn-primary:hover {
+            background: #d4a853;
+        }
+
+        .sim-btn-secondary {
+            background: var(--color-gray-200);
+            color: var(--color-gray-700);
+        }
+
+        .sim-btn-secondary:hover {
+            background: var(--color-gray-300);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .info-card h3 {
+            color: var(--color-white);
+            margin-bottom: var(--space-3);
+            font-size: 1.1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-3);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .info-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: var(--space-4);
+            margin-top: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.8rem;
+            color: var(--color-gray-600);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .preset-btns {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-3);
+        }
+
+        .preset-btn {
+            padding: var(--space-1) var(--space-3);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-full);
+            background: var(--color-white);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .preset-btn:hover {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li><a href="../pages/resources.html">Resources</a></li>
+                <li><a href="../pages/blog.html">Blog</a></li>
+                <li><a href="../pages/photography.html">Photography</a></li>
+                <li><a href="../pages/cv.html">CV</a></li>
+                <li><a href="../pages/contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html">Home</a>
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/resources.html">Resources</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1>Two-Body Simulation</h1>
+            <p>Explore gravitational dynamics interactively</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <a href="../tutorials/nbody.html#two-body" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Tutorial
+            </a>
+
+            <div class="content-section">
+                <!-- Info Card -->
+                <div class="info-card">
+                    <h3><i class="fas fa-star"></i> About This Simulation</h3>
+                    <p>
+                        Watch two bodies orbit their common <strong>centre of mass</strong> (marked with a +).
+                        This is a top-down view of a gravitational system. Both bodies move — the heavier one
+                        moves less, the lighter one moves more.
+                    </p>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #fbbf24;"></span> Body 1 (Primary)
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #60a5fa;"></span> Body 2 (Secondary)
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #fff; border: 1px solid #666;"></span> Centre of
+                            Mass
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simulation-wrapper">
+                    <!-- Simulation Canvas -->
+                    <div class="simulation-container">
+                        <canvas id="simulationCanvas"></canvas>
+                        <div class="sim-overlay">
+                            <div>Time: <span id="timeDisplay">0.00</span> yr</div>
+                            <div>Orbits: <span id="orbitCount">0</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Controls Panel -->
+                    <div class="controls-panel">
+                        <h3><i class="fas fa-sliders-h"></i> Controls</h3>
+
+                        <div class="control-section">
+                            <h4>Presets</h4>
+                            <div class="preset-btns">
+                                <button class="preset-btn" data-preset="earth-sun">Earth-Sun</button>
+                                <button class="preset-btn" data-preset="binary-star">Binary Star</button>
+                                <button class="preset-btn" data-preset="planet-moon">Planet-Moon</button>
+                                <button class="preset-btn" data-preset="equal-mass">Equal Mass</button>
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Masses</h4>
+                            <div class="control-group">
+                                <label>Body 1 Mass <span class="control-value" id="m1Value">10</span></label>
+                                <input type="range" id="m1Slider" min="1" max="500" step="1" value="10">
+                            </div>
+                            <div class="control-group">
+                                <label>Body 2 Mass <span class="control-value" id="m2Value">1</span></label>
+                                <input type="range" id="m2Slider" min="1" max="500" step="1" value="1">
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Orbit</h4>
+                            <div class="control-group">
+                                <label>Separation <span class="control-value" id="sepValue">150</span> px</label>
+                                <input type="range" id="sepSlider" min="80" max="250" step="10" value="150">
+                            </div>
+                            <div class="control-group">
+                                <label>Eccentricity <span class="control-value" id="eccValue">0.0</span></label>
+                                <input type="range" id="eccSlider" min="0" max="0.8" step="0.05" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Display</h4>
+                            <div class="control-group">
+                                <label>Speed <span class="control-value" id="speedValue">1.0x</span></label>
+                                <input type="range" id="speedSlider" min="0.25" max="4" step="0.25" value="1">
+                            </div>
+                            <div class="control-group">
+                                <label>Trail Length <span class="control-value" id="trailValue">300</span></label>
+                                <input type="range" id="trailSlider" min="0" max="600" step="50" value="300">
+                            </div>
+                        </div>
+
+                        <div class="button-row">
+                            <button class="sim-btn sim-btn-primary" id="playPauseBtn">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button class="sim-btn sim-btn-secondary" id="resetBtn">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // Navigation
+        // ========================================
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        });
+
+        // ========================================
+        // Simulation Setup
+        // ========================================
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // High-DPI scaling
+        function setupCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        setupCanvas();
+        window.addEventListener('resize', setupCanvas);
+
+        // ========================================
+        // Simulation State
+        // ========================================
+        let isPlaying = true;
+        let simTime = 0;
+        let orbitCount = 0;
+        let lastAngle = 0;
+
+        // Parameters (from controls)
+        let m1 = 10, m2 = 1;
+        let separation = 150;
+        let eccentricity = 0;
+        let timeScale = 1;
+        let trailLength = 300;
+
+        // Physics state
+        let body1, body2;
+        let trail1 = [], trail2 = [];
+
+        // Gravitational constant (scaled for visual appearance)
+        const G = 1000;
+
+        // ========================================
+        // Initialization
+        // ========================================
+        function initSimulation() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            const cx = W / 2;
+            const cy = H / 2;
+
+            const totalMass = m1 + m2;
+
+            // Periapsis distance (closest approach)
+            const rPeri = separation * (1 - eccentricity);
+
+            // Distance of each body from centre of mass at periapsis
+            const r1 = rPeri * m2 / totalMass;
+            const r2 = rPeri * m1 / totalMass;
+
+            // Orbital velocity at periapsis for the reduced mass system
+            // v = sqrt(G * M * (1 + e) / rPeri)
+            const vPeri = Math.sqrt(G * totalMass * (1 + eccentricity) / rPeri);
+
+            // Velocities scaled by mass ratio (momentum conservation)
+            const v1 = vPeri * m2 / totalMass;
+            const v2 = vPeri * m1 / totalMass;
+
+            body1 = {
+                x: cx + r1,
+                y: cy,
+                vx: 0,
+                vy: -v1,
+                mass: m1,
+                radius: Math.max(6, 4 + Math.sqrt(m1) * 1.2),
+                color: '#fbbf24' // Amber
+            };
+
+            body2 = {
+                x: cx - r2,
+                y: cy,
+                vx: 0,
+                vy: v2,
+                mass: m2,
+                radius: Math.max(4, 3 + Math.sqrt(m2) * 1.0),
+                color: '#60a5fa' // Blue
+            };
+
+            trail1 = [];
+            trail2 = [];
+            simTime = 0;
+            orbitCount = 0;
+            lastAngle = Math.atan2(body2.y - cy, body2.x - cx);
+        }
+
+        // ========================================
+        // Physics Update (Velocity Verlet)
+        // ========================================
+        function computeAcceleration(b1, b2) {
+            const dx = b2.x - b1.x;
+            const dy = b2.y - b1.y;
+            const distSq = dx * dx + dy * dy;
+            const dist = Math.sqrt(distSq);
+
+            // Softening to prevent singularities
+            const softDist = Math.max(dist, b1.radius + b2.radius);
+            const softDistSq = softDist * softDist;
+
+            const forceMag = G * b1.mass * b2.mass / softDistSq;
+
+            return {
+                ax1: (forceMag / b1.mass) * (dx / dist),
+                ay1: (forceMag / b1.mass) * (dy / dist),
+                ax2: -(forceMag / b2.mass) * (dx / dist),
+                ay2: -(forceMag / b2.mass) * (dy / dist)
+            };
+        }
+
+        function updatePhysics(dt) {
+            // Velocity Verlet integration for stability
+            const acc = computeAcceleration(body1, body2);
+
+            // Half-step velocity update
+            body1.vx += acc.ax1 * dt / 2;
+            body1.vy += acc.ay1 * dt / 2;
+            body2.vx += acc.ax2 * dt / 2;
+            body2.vy += acc.ay2 * dt / 2;
+
+            // Full-step position update
+            body1.x += body1.vx * dt;
+            body1.y += body1.vy * dt;
+            body2.x += body2.vx * dt;
+            body2.y += body2.vy * dt;
+
+            // Recalculate acceleration at new position
+            const acc2 = computeAcceleration(body1, body2);
+
+            // Half-step velocity update with new acceleration
+            body1.vx += acc2.ax1 * dt / 2;
+            body1.vy += acc2.ay1 * dt / 2;
+            body2.vx += acc2.ax2 * dt / 2;
+            body2.vy += acc2.ay2 * dt / 2;
+
+            // Record trails
+            if (trailLength > 0) {
+                trail1.push({ x: body1.x, y: body1.y });
+                trail2.push({ x: body2.x, y: body2.y });
+                while (trail1.length > trailLength) trail1.shift();
+                while (trail2.length > trailLength) trail2.shift();
+            }
+
+            // Update time and orbit count
+            simTime += dt / 60; // Approximate time unit
+
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            const cx = W / 2;
+            const cy = H / 2;
+            const angle = Math.atan2(body2.y - cy, body2.x - cx);
+
+            // Detect orbit completion (crossing from -π to π)
+            if (lastAngle < -2 && angle > 2) {
+                orbitCount++;
+            } else if (lastAngle > 2 && angle < -2) {
+                orbitCount++;
+            }
+            lastAngle = angle;
+        }
+
+        // ========================================
+        // Rendering
+        // ========================================
+        function drawStars() {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            for (let i = 0; i < 80; i++) {
+                const x = (i * 137.5 + 13) % W;
+                const y = (i * 97.3 + 7) % H;
+                const size = 0.5 + (i % 3) * 0.5;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawTrail(trail, color) {
+            if (trail.length < 2) return;
+
+            for (let i = 1; i < trail.length; i++) {
+                const alpha = (i / trail.length) * 0.6;
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+                ctx.lineTo(trail[i].x, trail[i].y);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawBody(body) {
+            // Glow
+            const glow = ctx.createRadialGradient(
+                body.x, body.y, 0,
+                body.x, body.y, body.radius * 3
+            );
+            glow.addColorStop(0, body.color + 'aa');
+            glow.addColorStop(0.5, body.color + '40');
+            glow.addColorStop(1, 'transparent');
+
+            ctx.beginPath();
+            ctx.arc(body.x, body.y, body.radius * 3, 0, Math.PI * 2);
+            ctx.fillStyle = glow;
+            ctx.fill();
+
+            // Solid body
+            ctx.beginPath();
+            ctx.arc(body.x, body.y, body.radius, 0, Math.PI * 2);
+            ctx.fillStyle = body.color;
+            ctx.fill();
+        }
+
+        function drawCentreOfMass() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            const cx = W / 2;
+            const cy = H / 2;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(cx - 8, cy);
+            ctx.lineTo(cx + 8, cy);
+            ctx.moveTo(cx, cy - 8);
+            ctx.lineTo(cx, cy + 8);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fill();
+        }
+
+        function render() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+
+            // Clear
+            ctx.fillStyle = '#0a0a14';
+            ctx.fillRect(0, 0, W, H);
+
+            drawStars();
+            drawTrail(trail1, body1.color);
+            drawTrail(trail2, body2.color);
+            drawCentreOfMass();
+            drawBody(body1);
+            drawBody(body2);
+
+            // Update display
+            document.getElementById('timeDisplay').textContent = simTime.toFixed(2);
+            document.getElementById('orbitCount').textContent = orbitCount;
+        }
+
+        // ========================================
+        // Game Loop
+        // ========================================
+        let lastTime = 0;
+        function gameLoop(timestamp) {
+            const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.05);
+            lastTime = timestamp;
+
+            if (isPlaying) {
+                // Multiple sub-steps for stability
+                const steps = 4;
+                const subDt = deltaTime * timeScale * 40 / steps;
+                for (let i = 0; i < steps; i++) {
+                    updatePhysics(subDt);
+                }
+            }
+
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ========================================
+        // Controls
+        // ========================================
+        const m1Slider = document.getElementById('m1Slider');
+        const m2Slider = document.getElementById('m2Slider');
+        const sepSlider = document.getElementById('sepSlider');
+        const eccSlider = document.getElementById('eccSlider');
+        const speedSlider = document.getElementById('speedSlider');
+        const trailSlider = document.getElementById('trailSlider');
+
+        function updateFromControls() {
+            m1 = parseFloat(m1Slider.value);
+            m2 = parseFloat(m2Slider.value);
+            separation = parseFloat(sepSlider.value);
+            eccentricity = parseFloat(eccSlider.value);
+            timeScale = parseFloat(speedSlider.value);
+            trailLength = parseInt(trailSlider.value);
+
+            document.getElementById('m1Value').textContent = m1;
+            document.getElementById('m2Value').textContent = m2;
+            document.getElementById('sepValue').textContent = separation;
+            document.getElementById('eccValue').textContent = eccentricity.toFixed(2);
+            document.getElementById('speedValue').textContent = timeScale.toFixed(2) + 'x';
+            document.getElementById('trailValue').textContent = trailLength;
+        }
+
+        [m1Slider, m2Slider, sepSlider, eccSlider].forEach(slider => {
+            slider.addEventListener('input', () => {
+                updateFromControls();
+                initSimulation();
+            });
+        });
+
+        [speedSlider, trailSlider].forEach(slider => {
+            slider.addEventListener('input', updateFromControls);
+        });
+
+        // Play/Pause
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            document.getElementById('playPauseBtn').innerHTML = isPlaying
+                ? '<i class="fas fa-pause"></i> Pause'
+                : '<i class="fas fa-play"></i> Play';
+        });
+
+        // Reset
+        document.getElementById('resetBtn').addEventListener('click', initSimulation);
+
+        // Presets
+        const presets = {
+            'earth-sun': { m1: 333, m2: 1, sep: 200, ecc: 0.017 },
+            'binary-star': { m1: 50, m2: 40, sep: 150, ecc: 0.3 },
+            'planet-moon': { m1: 81, m2: 1, sep: 100, ecc: 0.055 },
+            'equal-mass': { m1: 30, m2: 30, sep: 160, ecc: 0 }
+        };
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const p = presets[btn.dataset.preset];
+                if (p) {
+                    m1Slider.value = p.m1;
+                    m2Slider.value = p.m2;
+                    sepSlider.value = p.sep;
+                    eccSlider.value = p.ecc;
+                    updateFromControls();
+                    initSimulation();
+                }
+            });
+        });
+
+        // ========================================
+        // Initialize
+        // ========================================
+        updateFromControls();
+        initSimulation();
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+
+</html>

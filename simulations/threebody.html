@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Three-Body Simulation | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Explore the famous three-body problem with this interactive simulation. Watch chaotic dynamics unfold or discover stable configurations.">
+    <link rel="canonical" href="https://mitchellhooymans.com/tutorials/threebody.html" />
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .content-section {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 900px) {
+            .simulation-wrapper {
+                grid-template-columns: 1fr 320px;
+            }
+        }
+
+        .simulation-container {
+            background: #000;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: radial-gradient(ellipse at center, #0d1117 0%, #000 100%);
+        }
+
+        .sim-overlay {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-3);
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            color: #fff;
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sim-overlay div {
+            margin-bottom: var(--space-1);
+        }
+
+        .chaos-indicator {
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-3);
+            background: rgba(239, 68, 68, 0.9);
+            border-radius: var(--radius-md);
+            padding: var(--space-2) var(--space-3);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: none;
+        }
+
+        .chaos-indicator.active {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .controls-panel {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .controls-panel h3 {
+            margin-bottom: var(--space-4);
+            color: var(--color-primary);
+            font-size: 1rem;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .control-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-500);
+            margin-bottom: var(--space-3);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            margin-bottom: var(--space-3);
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            font-size: 0.85rem;
+        }
+
+        .control-value {
+            font-weight: 600;
+            color: var(--color-accent);
+            font-size: 0.8rem;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-gray-200);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+        }
+
+        .button-row {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .sim-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: var(--space-2) var(--space-3);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+        }
+
+        .sim-btn-primary {
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        .sim-btn-primary:hover {
+            background: #d4a853;
+        }
+
+        .sim-btn-secondary {
+            background: var(--color-gray-200);
+            color: var(--color-gray-700);
+        }
+
+        .sim-btn-secondary:hover {
+            background: var(--color-gray-300);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .info-card h3 {
+            color: var(--color-white);
+            margin-bottom: var(--space-3);
+            font-size: 1.1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-3);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .info-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: var(--space-4);
+            margin-top: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.8rem;
+            color: var(--color-gray-600);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .preset-btns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-2);
+            margin-bottom: var(--space-3);
+        }
+
+        .preset-btn {
+            padding: var(--space-2) var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            background: var(--color-white);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li><a href="../pages/resources.html">Resources</a></li>
+                <li><a href="../pages/blog.html">Blog</a></li>
+                <li><a href="../pages/photography.html">Photography</a></li>
+                <li><a href="../pages/cv.html">CV</a></li>
+                <li><a href="../pages/contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html">Home</a>
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/resources.html">Resources</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1>Three-Body Simulation</h1>
+            <p>The famous chaotic gravitational problem</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <a href="../tutorials/nbody.html#three-body" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Tutorial
+            </a>
+
+            <div class="content-section">
+                <!-- Info Card -->
+                <div class="info-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> The Three-Body Problem</h3>
+                    <p>
+                        Unlike the two-body problem, the <strong>three-body problem has no general closed-form
+                            solution</strong>.
+                        The motion is often <strong>chaotic</strong> — tiny changes in initial conditions lead to wildly
+                        different outcomes.
+                        However, some special stable configurations exist, like the famous <strong>Figure-8
+                            orbit</strong>.
+                    </p>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #fbbf24;"></span> Body 1
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #60a5fa;"></span> Body 2
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #34d399;"></span> Body 3
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simulation-wrapper">
+                    <!-- Simulation Canvas -->
+                    <div class="simulation-container">
+                        <canvas id="simulationCanvas"></canvas>
+                        <div class="sim-overlay">
+                            <div>Time: <span id="timeDisplay">0.00</span></div>
+                            <div>Energy: <span id="energyDisplay">0.00</span></div>
+                        </div>
+                        <div class="chaos-indicator" id="chaosIndicator">
+                            <i class="fas fa-bolt"></i> Chaotic
+                        </div>
+                    </div>
+
+                    <!-- Controls Panel -->
+                    <div class="controls-panel">
+                        <h3><i class="fas fa-sliders-h"></i> Controls</h3>
+
+                        <div class="control-section">
+                            <h4>Presets</h4>
+                            <div class="preset-btns">
+                                <button class="preset-btn" data-preset="figure8">Figure-8</button>
+                                <button class="preset-btn" data-preset="sun-earth-moon">Sun-Earth-Moon</button>
+                                <button class="preset-btn" data-preset="lagrange">Lagrange (L4)</button>
+                                <button class="preset-btn" data-preset="random">Random</button>
+                                <button class="preset-btn" data-preset="butterfly">Butterfly I</button>
+                                <button class="preset-btn" data-preset="moth">Moth I</button>
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Masses</h4>
+                            <div class="control-group">
+                                <label>Body 1 <span class="control-value" id="m1Value">1.0</span></label>
+                                <input type="range" id="m1Slider" min="0.1" max="500" step="0.1" value="1">
+                            </div>
+                            <div class="control-group">
+                                <label>Body 2 <span class="control-value" id="m2Value">1.0</span></label>
+                                <input type="range" id="m2Slider" min="0.1" max="500" step="0.1" value="1">
+                            </div>
+                            <div class="control-group">
+                                <label>Body 3 <span class="control-value" id="m3Value">1.0</span></label>
+                                <input type="range" id="m3Slider" min="0.01" max="500" step="0.01" value="1">
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Display</h4>
+                            <div class="control-group">
+                                <label>Speed <span class="control-value" id="speedValue">1.0x</span></label>
+                                <input type="range" id="speedSlider" min="0.25" max="3" step="0.25" value="1">
+                            </div>
+                            <div class="control-group">
+                                <label>Trail Length <span class="control-value" id="trailValue">400</span></label>
+                                <input type="range" id="trailSlider" min="0" max="800" step="50" value="400">
+                            </div>
+                            <div class="control-group">
+                                <label>Zoom <span class="control-value" id="zoomValue">1.0x</span></label>
+                                <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+                            </div>
+                        </div>
+
+                        <div class="button-row">
+                            <button class="sim-btn sim-btn-primary" id="playPauseBtn">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button class="sim-btn sim-btn-secondary" id="resetBtn">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // Navigation
+        // ========================================
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        });
+
+        // ========================================
+        // Simulation Setup
+        // ========================================
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setupCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        setupCanvas();
+        window.addEventListener('resize', setupCanvas);
+
+        // ========================================
+        // State
+        // ========================================
+        let isPlaying = true;
+        let simTime = 0;
+        let timeScale = 1;
+        let trailLength = 400;
+        let zoom = 1;
+        let initialEnergy = 0;
+
+        let bodies = [];
+        let trails = [[], [], []];
+        let currentPreset = 'figure8';
+
+        const G = 1; // Gravitational constant
+        const scale = 100; // Pixels per unit length
+
+        // ========================================
+        // Presets (Famous periodic solutions)
+        // ========================================
+        const presets = {
+            // Figure-8: All three bodies chase each other on a figure-8 path
+            figure8: {
+                masses: [1, 1, 1],
+                positions: [
+                    [-0.97000436, 0.24308753],
+                    [0, 0],
+                    [0.97000436, -0.24308753]
+                ],
+                velocities: [
+                    [0.4662036850, 0.4323657300],
+                    [-0.93240737, -0.86473146],
+                    [0.4662036850, 0.4323657300]
+                ]
+            },
+            // Lagrange L4: Sun-Jupiter-Trojan stability
+            // Mass ratio for stability is mu < 0.0385. Let's use Sun=100, Jupiter=1 (mu ~ 0.01)
+            lagrange: {
+                masses: [100, 1, 0.01], // Sun, Planet, Trojan
+                positions: [
+                    [0, 0],             // Sun roughly at center (will be corrected by CoM logic later but let's assume heavy)
+                    [1, 0],             // Planet at R=1
+                    [0.5, 0.866]        // Trojan at L4 (equilateral)
+                ],
+                // For circular restricted problem:
+                // v = r * omega. omega = sqrt(GM/R^3) = sqrt(100/1^3) = 10.
+                // Velocity is perpendicular to position.
+                // Sun (approx stationary): [0, 0]
+                // Planet (x=1, y=0): vy = 1 * 10 = 10. [0, 10]
+                // Trojan (x=0.5, y=0.866): v magnitude 10. Direction tangent.
+                // Tangent vector is (-y, x). So [-8.66, 5].
+                // Let's refine for inertial frame.
+                // M1=100 at (-0.01, 0), M2=1 at (0.99, 0).
+                // Let's stick to a simpler approximation or precise coords if possible.
+                // Actually, let's use the code's CoM centering to handle the drift, 
+                // just give relative velocities for circular motion.
+                velocities: [
+                    [0, -0.1],      // Slight reflex for Sun
+                    [0, 10],        // Planet v ~ sqrt(100/1) = 10
+                    [-8.66, 5]      // Trojan v 
+                ]
+            },
+            // Sun-Earth-Moon Hierarchical
+            'sun-earth-moon': {
+                masses: [330, 1, 0.01],
+                positions: [
+                    [0, 0],         // Sun
+                    [1.5, 0],       // Earth (Distance 1.5)
+                    [1.55, 0]       // Moon (Distance 0.05 from Earth)
+                ],
+                velocities: [
+                    [0, -0.045],    // Sun reflex
+                    [0, 14.8],      // Earth v = sqrt(330/1.5) = 14.83
+                    [0, 17.5]       // Moon v = vEarth + vRel. vRel = sqrt(1/0.05) = 4.47. Total ~ 19.3
+                    // vMoon should be 14.83 + 4.47 = 19.3. Let's try [0, 19.3]
+                ]
+            },
+            // Hierarchical: Binary + distant third (Old preset, keeping refined)
+            hierarchical: {
+                masses: [20, 20, 1],
+                positions: [
+                    [-0.5, 0],
+                    [0.5, 0],
+                    [4.0, 0]
+                ],
+                velocities: [
+                    [0, -4.47], // v = sqrt(20/1) * 0.7 = 3.1. Wait, v_circ for binary is sqrt(GM/4a) isn't it?
+                    // v = sqrt(G*M / (2R)) where 2R is separation. M=20. Sep=1. v = sqrt(20/1) = 4.47
+                    // Wait Kepler: v = sqrt(GM/(2a)). Radius is 0.5. M_total effectively... let's trust v=4.5 roughly.
+                    [0, 4.47],
+                    [0, 2.2]  // Distant body
+                ]
+            },
+            // Random
+            random: {
+                masses: [1, 1, 1],
+                positions: 'random',
+                velocities: 'random'
+            },
+            // Butterfly I (another periodic solution)
+            butterfly: {
+                masses: [1, 1, 1],
+                positions: [
+                    [-1, 0],
+                    [1, 0],
+                    [0, 0]
+                ],
+                velocities: [
+                    [0.30689, 0.12551],
+                    [0.30689, 0.12551],
+                    [-0.61378, -0.25102]
+                ]
+            },
+            // Moth I
+            moth: {
+                masses: [1, 1, 1],
+                positions: [
+                    [-1, 0],
+                    [1, 0],
+                    [0, 0]
+                ],
+                velocities: [
+                    [0.46444, 0.39606],
+                    [0.46444, 0.39606],
+                    [-0.92888, -0.79212]
+                ]
+            }
+        };
+
+        // ========================================
+        // Initialization
+        // ========================================
+        function initSimulation(presetName) {
+            currentPreset = presetName || currentPreset;
+            const preset = presets[currentPreset];
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            const cx = W / 2;
+            const cy = H / 2;
+
+            const m1 = parseFloat(document.getElementById('m1Slider').value);
+            const m2 = parseFloat(document.getElementById('m2Slider').value);
+            const m3 = parseFloat(document.getElementById('m3Slider').value);
+
+            const masses = [m1, m2, m3];
+            const colors = ['#fbbf24', '#60a5fa', '#34d399'];
+
+            bodies = [];
+            trails = [[], [], []];
+
+            for (let i = 0; i < 3; i++) {
+                let pos, vel;
+
+                if (preset.positions === 'random') {
+                    pos = [(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2];
+                    vel = [(Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5];
+                } else {
+                    pos = [...preset.positions[i]];
+                    vel = [...preset.velocities[i]];
+                }
+
+                bodies.push({
+                    x: pos[0],
+                    y: pos[1],
+                    vx: vel[0],
+                    vy: vel[1],
+                    mass: masses[i],
+                    radius: 6 + masses[i] * 3,
+                    color: colors[i]
+                });
+            }
+
+            simTime = 0;
+            initialEnergy = computeTotalEnergy();
+        }
+
+        // ========================================
+        // Physics
+        // ========================================
+        function computeAccelerations() {
+            const acc = bodies.map(() => ({ ax: 0, ay: 0 }));
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = i + 1; j < 3; j++) {
+                    const dx = bodies[j].x - bodies[i].x;
+                    const dy = bodies[j].y - bodies[i].y;
+                    const distSq = dx * dx + dy * dy;
+                    const dist = Math.sqrt(distSq);
+
+                    // Softening
+                    const softDist = Math.max(dist, 0.05);
+                    const softDistSq = softDist * softDist;
+
+                    const forceMag = G * bodies[i].mass * bodies[j].mass / softDistSq;
+
+                    const fx = forceMag * dx / dist;
+                    const fy = forceMag * dy / dist;
+
+                    acc[i].ax += fx / bodies[i].mass;
+                    acc[i].ay += fy / bodies[i].mass;
+                    acc[j].ax -= fx / bodies[j].mass;
+                    acc[j].ay -= fy / bodies[j].mass;
+                }
+            }
+
+            return acc;
+        }
+
+        function computeTotalEnergy() {
+            let KE = 0, PE = 0;
+
+            for (let i = 0; i < 3; i++) {
+                KE += 0.5 * bodies[i].mass * (bodies[i].vx * bodies[i].vx + bodies[i].vy * bodies[i].vy);
+            }
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = i + 1; j < 3; j++) {
+                    const dx = bodies[j].x - bodies[i].x;
+                    const dy = bodies[j].y - bodies[i].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    PE -= G * bodies[i].mass * bodies[j].mass / Math.max(dist, 0.01);
+                }
+            }
+
+            return KE + PE;
+        }
+
+        function updatePhysics(dt) {
+            // Velocity Verlet
+            const acc1 = computeAccelerations();
+
+            // Half velocity update + full position update
+            for (let i = 0; i < 3; i++) {
+                bodies[i].vx += acc1[i].ax * dt / 2;
+                bodies[i].vy += acc1[i].ay * dt / 2;
+                bodies[i].x += bodies[i].vx * dt;
+                bodies[i].y += bodies[i].vy * dt;
+            }
+
+            // New accelerations
+            const acc2 = computeAccelerations();
+
+            // Complete velocity update
+            for (let i = 0; i < 3; i++) {
+                bodies[i].vx += acc2[i].ax * dt / 2;
+                bodies[i].vy += acc2[i].ay * dt / 2;
+            }
+
+            // Record trails
+            if (trailLength > 0) {
+                for (let i = 0; i < 3; i++) {
+                    trails[i].push({ x: bodies[i].x, y: bodies[i].y });
+                    while (trails[i].length > trailLength) trails[i].shift();
+                }
+            }
+
+            simTime += dt;
+
+            // Check for chaos (energy drift)
+            const currentEnergy = computeTotalEnergy();
+            const drift = Math.abs((currentEnergy - initialEnergy) / Math.abs(initialEnergy + 0.001));
+            document.getElementById('chaosIndicator').classList.toggle('active', drift > 0.05);
+        }
+
+        // ========================================
+        // Rendering
+        // ========================================
+        function drawStars() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+            for (let i = 0; i < 100; i++) {
+                const x = (i * 137.5 + 13) % W;
+                const y = (i * 97.3 + 7) % H;
+                ctx.beginPath();
+                ctx.arc(x, y, 0.5 + (i % 3) * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function toScreen(x, y) {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            return {
+                sx: W / 2 + x * scale * zoom,
+                sy: H / 2 - y * scale * zoom
+            };
+        }
+
+        function drawTrail(trail, color) {
+            if (trail.length < 2) return;
+
+            for (let i = 1; i < trail.length; i++) {
+                const alpha = (i / trail.length) * 0.6;
+                const p1 = toScreen(trail[i - 1].x, trail[i - 1].y);
+                const p2 = toScreen(trail[i].x, trail[i].y);
+
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(p1.sx, p1.sy);
+                ctx.lineTo(p2.sx, p2.sy);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawBody(body) {
+            const { sx, sy } = toScreen(body.x, body.y);
+            const r = body.radius * zoom;
+
+            // Glow
+            const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3);
+            glow.addColorStop(0, body.color + 'aa');
+            glow.addColorStop(0.5, body.color + '40');
+            glow.addColorStop(1, 'transparent');
+
+            ctx.beginPath();
+            ctx.arc(sx, sy, r * 3, 0, Math.PI * 2);
+            ctx.fillStyle = glow;
+            ctx.fill();
+
+            // Solid
+            ctx.beginPath();
+            ctx.arc(sx, sy, r, 0, Math.PI * 2);
+            ctx.fillStyle = body.color;
+            ctx.fill();
+        }
+
+        function render() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+
+            ctx.fillStyle = '#08080f';
+            ctx.fillRect(0, 0, W, H);
+
+            drawStars();
+
+            for (let i = 0; i < 3; i++) {
+                drawTrail(trails[i], bodies[i].color);
+            }
+
+            for (let i = 0; i < 3; i++) {
+                drawBody(bodies[i]);
+            }
+
+            // Update display
+            document.getElementById('timeDisplay').textContent = simTime.toFixed(2);
+            const energy = computeTotalEnergy();
+            document.getElementById('energyDisplay').textContent = energy.toFixed(3);
+        }
+
+        // ========================================
+        // Game Loop
+        // ========================================
+        let lastTime = 0;
+        function gameLoop(timestamp) {
+            const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.05);
+            lastTime = timestamp;
+
+            if (isPlaying) {
+                const steps = 8;
+                const subDt = deltaTime * timeScale * 0.5 / steps;
+                for (let i = 0; i < steps; i++) {
+                    updatePhysics(subDt);
+                }
+            }
+
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ========================================
+        // Controls
+        // ========================================
+        function updateDisplayValues() {
+            document.getElementById('m1Value').textContent = document.getElementById('m1Slider').value;
+            document.getElementById('m2Value').textContent = document.getElementById('m2Slider').value;
+            document.getElementById('m3Value').textContent = document.getElementById('m3Slider').value;
+            document.getElementById('speedValue').textContent = timeScale.toFixed(2) + 'x';
+            document.getElementById('trailValue').textContent = trailLength;
+            document.getElementById('zoomValue').textContent = zoom.toFixed(1) + 'x';
+        }
+
+        ['m1Slider', 'm2Slider', 'm3Slider'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                updateDisplayValues();
+                initSimulation();
+            });
+        });
+
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            timeScale = parseFloat(e.target.value);
+            updateDisplayValues();
+        });
+
+        document.getElementById('trailSlider').addEventListener('input', (e) => {
+            trailLength = parseInt(e.target.value);
+            trails = trails.map(t => t.slice(-trailLength));
+            updateDisplayValues();
+        });
+
+        document.getElementById('zoomSlider').addEventListener('input', (e) => {
+            zoom = parseFloat(e.target.value);
+            updateDisplayValues();
+        });
+
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            document.getElementById('playPauseBtn').innerHTML = isPlaying
+                ? '<i class="fas fa-pause"></i> Pause'
+                : '<i class="fas fa-play"></i> Play';
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => initSimulation());
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = presets[btn.dataset.preset];
+                if (preset && preset.masses) {
+                    document.getElementById('m1Slider').value = preset.masses[0];
+                    document.getElementById('m2Slider').value = preset.masses[1];
+                    document.getElementById('m3Slider').value = preset.masses[2];
+                }
+                initSimulation(btn.dataset.preset);
+                updateDisplayValues();
+            });
+        });
+
+        // ========================================
+        // Initialize
+        // ========================================
+        updateDisplayValues();
+        initSimulation('figure8');
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+
+</html>

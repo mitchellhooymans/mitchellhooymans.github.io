@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive N-Body Simulation | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Explore gravitational dynamics with multiple bodies. Watch star clusters evolve, planets orbit, and chaos emerge.">
+    <link rel="canonical" href="https://mitchellhooymans.com/tutorials/nbodysim.html" />
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .content-section {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 950px) {
+            .simulation-wrapper {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+
+        .simulation-container {
+            background: #000;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: radial-gradient(ellipse at center, #0a0a18 0%, #000 100%);
+        }
+
+        .sim-overlay {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-3);
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            color: #fff;
+            font-size: 0.7rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sim-overlay div {
+            margin-bottom: 2px;
+        }
+
+        .controls-panel {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            max-height: 650px;
+            overflow-y: auto;
+        }
+
+        .controls-panel h3 {
+            margin-bottom: var(--space-4);
+            color: var(--color-primary);
+            font-size: 1rem;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .control-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-section h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-500);
+            margin-bottom: var(--space-2);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: var(--space-2);
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            font-size: 0.8rem;
+        }
+
+        .control-value {
+            font-weight: 600;
+            color: var(--color-accent);
+            font-size: 0.75rem;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 5px;
+            border-radius: 3px;
+            background: var(--color-gray-200);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+        }
+
+        .button-row {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .sim-btn {
+            flex: 1;
+            min-width: 65px;
+            padding: var(--space-2) var(--space-2);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .sim-btn-primary {
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        .sim-btn-primary:hover {
+            background: #d4a853;
+        }
+
+        .sim-btn-secondary {
+            background: var(--color-gray-200);
+            color: var(--color-gray-700);
+        }
+
+        .sim-btn-secondary:hover {
+            background: var(--color-gray-300);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            margin-bottom: var(--space-5);
+        }
+
+        .info-card h3 {
+            color: var(--color-white);
+            margin-bottom: var(--space-2);
+            font-size: 1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-2);
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .info-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .preset-btns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-2);
+        }
+
+        .preset-btn {
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            background: var(--color-white);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 0.8rem;
+            color: var(--color-gray-700);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li><a href="../pages/resources.html">Resources</a></li>
+                <li><a href="../pages/blog.html">Blog</a></li>
+                <li><a href="../pages/photography.html">Photography</a></li>
+                <li><a href="../pages/cv.html">CV</a></li>
+                <li><a href="../pages/contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html">Home</a>
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/resources.html">Resources</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1>N-Body Simulation</h1>
+            <p>Many-body gravitational dynamics</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <a href="../tutorials/nbody.html#n-body" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Tutorial
+            </a>
+
+            <div class="content-section">
+                <!-- Info Card -->
+                <div class="info-card">
+                    <h3><i class="fas fa-globe"></i> The N-Body Problem</h3>
+                    <p>
+                        Simulate gravitational interactions between many bodies. Watch star clusters form,
+                        planets orbit a central star, or observe chaotic encounters. The computational
+                        complexity grows as O(N²), so we keep N reasonable for smooth animation.
+                    </p>
+                </div>
+
+                <div class="simulation-wrapper">
+                    <!-- Simulation Canvas -->
+                    <div class="simulation-container">
+                        <canvas id="simulationCanvas"></canvas>
+                        <div class="sim-overlay">
+                            <div>Bodies: <span id="bodyCount">0</span></div>
+                            <div>Time: <span id="timeDisplay">0.00</span></div>
+                            <div>FPS: <span id="fpsDisplay">0</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Controls Panel -->
+                    <div class="controls-panel">
+                        <h3><i class="fas fa-sliders-h"></i> Controls</h3>
+
+                        <div class="control-section">
+                            <h4>Presets</h4>
+                            <div class="preset-btns">
+                                <button class="preset-btn" data-preset="solar">Solar System</button>
+                                <button class="preset-btn" data-preset="cluster">Star Cluster</button>
+                                <button class="preset-btn" data-preset="ring">Ring Galaxy</button>
+                                <button class="preset-btn" data-preset="binary">Binary + Planets</button>
+                                <button class="preset-btn" data-preset="collision">Collision</button>
+                                <button class="preset-btn" data-preset="random">Random</button>
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Particles</h4>
+                            <div class="control-group">
+                                <label>Number of Bodies <span class="control-value" id="nValue">15</span></label>
+                                <input type="range" id="nSlider" min="3" max="50" step="1" value="15">
+                            </div>
+                            <div class="control-group">
+                                <label>Central Mass <span class="control-value" id="centralValue">50</span></label>
+                                <input type="range" id="centralSlider" min="10" max="1000" step="10" value="300">
+                            </div>
+                            <div class="control-group">
+                                <label>Particle Mass <span class="control-value" id="massValue">1.0</span></label>
+                                <input type="range" id="massSlider" min="0.1" max="10" step="0.1" value="0.1">
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Initial Conditions</h4>
+                            <div class="control-group">
+                                <label>Spread <span class="control-value" id="spreadValue">150</span> px</label>
+                                <input type="range" id="spreadSlider" min="50" max="300" step="10" value="150">
+                            </div>
+                            <div class="control-group">
+                                <label>Initial Velocity <span class="control-value" id="velValue">1.0</span>x</label>
+                                <input type="range" id="velSlider" min="0" max="2" step="0.1" value="1">
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Display</h4>
+                            <div class="control-group">
+                                <label>Speed <span class="control-value" id="speedValue">1.0</span>x</label>
+                                <input type="range" id="speedSlider" min="0.25" max="4" step="0.25" value="1">
+                            </div>
+                            <div class="control-group">
+                                <label>Trail Length <span class="control-value" id="trailValue">100</span></label>
+                                <input type="range" id="trailSlider" min="0" max="300" step="25" value="100">
+                            </div>
+                            <div class="control-group">
+                                <label>Zoom <span class="control-value" id="zoomValue">1.0</span>x</label>
+                                <input type="range" id="zoomSlider" min="0.3" max="2" step="0.1" value="1">
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showVectors">
+                                <label for="showVectors">Show velocity vectors</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showCoM">
+                                <label for="showCoM">Show centre of mass</label>
+                            </div>
+                        </div>
+
+                        <div class="button-row">
+                            <button class="sim-btn sim-btn-primary" id="playPauseBtn">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button class="sim-btn sim-btn-secondary" id="resetBtn">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // Navigation
+        // ========================================
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        });
+
+        // ========================================
+        // Canvas Setup
+        // ========================================
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function setupCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        setupCanvas();
+        window.addEventListener('resize', setupCanvas);
+
+        // ========================================
+        // State
+        // ========================================
+        let isPlaying = true;
+        let simTime = 0;
+        let fps = 0;
+        let frameCount = 0;
+        let lastFpsTime = 0;
+
+        let N = 15;
+        let centralMass = 50;
+        let particleMass = 1;
+        let spread = 150;
+        let initialVelFactor = 1;
+        let timeScale = 1;
+        let trailLength = 100;
+        let zoom = 1;
+        let showVectors = false;
+        let showCoM = false;
+
+        let bodies = [];
+        let trails = [];
+        let currentPreset = 'solar';
+
+        const G = 500;
+
+        // Color palette for bodies
+        const colors = [
+            '#fbbf24', '#60a5fa', '#34d399', '#f472b6', '#a78bfa',
+            '#fb923c', '#4ade80', '#38bdf8', '#e879f9', '#facc15',
+            '#22d3d8', '#f87171', '#a3e635', '#818cf8', '#fb7185'
+        ];
+
+        // ========================================
+        // Preset Configurations
+        // ========================================
+        const presetsConfig = {
+            'solar': {
+                n: 8,
+                central: 300,
+                mass: 0.1,
+                spread: 100,
+                vel: 1.0
+            },
+            'cluster': {
+                n: 100,
+                central: 50, // Not used much in cluster but good to have
+                mass: 1.0,
+                spread: 200,
+                vel: 0.5
+            },
+            'ring': {
+                n: 50,
+                central: 300,
+                mass: 0.1,
+                spread: 120,
+                vel: 1.0
+            },
+            'binary': {
+                n: 20,
+                central: 100, // per star
+                mass: 0.1,
+                spread: 150,
+                vel: 1.0
+            },
+            'collision': {
+                n: 100,
+                central: 50,
+                mass: 1.0,
+                spread: 200,
+                vel: 0.8
+            },
+            'random': {
+                n: 50,
+                central: 50,
+                mass: 1.0,
+                spread: 200,
+                vel: 1.0
+            }
+        };
+
+        // ========================================
+        // Initialization
+        // ========================================
+        function initSimulation(presetName) {
+            // If switching preset, update controls
+            if (presetName && presetsConfig[presetName]) {
+                currentPreset = presetName;
+                const p = presetsConfig[presetName];
+
+                document.getElementById('nSlider').value = p.n;
+                document.getElementById('centralSlider').value = p.central;
+                document.getElementById('massSlider').value = p.mass;
+                document.getElementById('spreadSlider').value = p.spread;
+                document.getElementById('velSlider').value = p.vel;
+
+                // Update global vars
+                readControls();
+            }
+
+            // Fallback if just called without presetName (e.g. Reset button)
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+
+            bodies = [];
+            trails = [];
+
+            switch (currentPreset) {
+                case 'solar':
+                    initSolarSystem(W, H);
+                    break;
+                case 'cluster':
+                    initCluster(W, H);
+                    break;
+                case 'ring':
+                    initRing(W, H);
+                    break;
+                case 'binary':
+                    initBinarySystem(W, H);
+                    break;
+                case 'collision':
+                    initCollision(W, H);
+                    break;
+                case 'random':
+                default:
+                    initRandom(W, H);
+            }
+
+            simTime = 0;
+            document.getElementById('bodyCount').textContent = bodies.length;
+        }
+
+        function initSolarSystem(W, H) {
+            // Central star
+            bodies.push({
+                x: 0, y: 0,
+                vx: 0, vy: 0,
+                mass: centralMass,
+                radius: 15,
+                color: '#fcd34d',
+                isStar: true
+            });
+            trails.push([]);
+
+            // Orbiting planets
+            for (let i = 0; i < N - 1; i++) {
+                // Distribute distances
+                const r = 50 + (i + 1) * (spread / N) * 2.5;
+                const angle = Math.random() * Math.PI * 2;
+
+                // Circular velocity: v = sqrt(GM/r)
+                const orbitalV = Math.sqrt(G * centralMass / r) * initialVelFactor;
+
+                bodies.push({
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: -orbitalV * Math.sin(angle),
+                    vy: orbitalV * Math.cos(angle),
+                    mass: Math.max(0.2, particleMass * (0.5 + Math.random())), // Varied small masses
+                    radius: 3 + particleMass * 1.5,
+                    color: colors[i % colors.length]
+                });
+                trails.push([]);
+            }
+        }
+
+        function initCluster(W, H) {
+            for (let i = 0; i < N; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = Math.random() * spread;
+                const v = (Math.random() - 0.5) * 0.5 * initialVelFactor;
+                const vAngle = Math.random() * Math.PI * 2;
+
+                bodies.push({
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: v * Math.cos(vAngle),
+                    vy: v * Math.sin(vAngle),
+                    mass: particleMass * (0.5 + Math.random()),
+                    radius: 4 + Math.random() * 4,
+                    color: colors[i % colors.length]
+                });
+                trails.push([]);
+            }
+        }
+
+        function initRing(W, H) {
+            // Central mass
+            bodies.push({
+                x: 0, y: 0,
+                vx: 0, vy: 0,
+                mass: centralMass,
+                radius: 15,
+                color: '#fcd34d',
+                isStar: true
+            });
+            trails.push([]);
+
+            // Ring of particles
+            for (let i = 0; i < N - 1; i++) {
+                const angle = (i / (N - 1)) * Math.PI * 2;
+                const r = spread;
+                // Circular velocity
+                const orbitalV = Math.sqrt(G * centralMass / r) * initialVelFactor;
+
+                bodies.push({
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: -orbitalV * Math.sin(angle),
+                    vy: orbitalV * Math.cos(angle),
+                    mass: particleMass * 0.1, // Very light particles for ring stability
+                    radius: 2,
+                    color: colors[i % colors.length]
+                });
+                trails.push([]);
+            }
+        }
+
+        function initBinarySystem(W, H) {
+            // Binary stars
+            const starMass = centralMass; // Use slider value for each star
+            const binaryDist = 60;
+            // Velocity for circular binary orbit
+            const binaryV = Math.sqrt(G * starMass / (2 * binaryDist)) * initialVelFactor;
+
+            bodies.push({
+                x: -binaryDist / 2, y: 0,
+                vx: 0, vy: -binaryV,
+                mass: starMass,
+                radius: 12,
+                color: '#fcd34d',
+                isStar: true
+            });
+            trails.push([]);
+
+            bodies.push({
+                x: binaryDist / 2, y: 0,
+                vx: 0, vy: binaryV,
+                mass: starMass,
+                radius: 12,
+                color: '#fb923c',
+                isStar: true
+            });
+            trails.push([]);
+
+            // Circumbinary planets (must be > 2-3x binary separation)
+            for (let i = 0; i < N - 2; i++) {
+                const r = 120 + i * 25; // Start far out
+                const angle = Math.random() * Math.PI * 2;
+                // Approximate central mass as 2M
+                const orbitalV = Math.sqrt(G * (2 * starMass) / r) * initialVelFactor;
+
+                bodies.push({
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: -orbitalV * Math.sin(angle),
+                    vy: orbitalV * Math.cos(angle),
+                    mass: particleMass,
+                    radius: 4,
+                    color: colors[i % colors.length]
+                });
+                trails.push([]);
+            }
+        }
+
+        function initCollision(W, H) {
+            // Two clusters approaching each other
+            const clusterSize = Math.floor(N / 2);
+
+            for (let i = 0; i < clusterSize; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = Math.random() * 60;
+
+                bodies.push({
+                    x: -spread + r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: 0.8 * initialVelFactor,
+                    vy: (Math.random() - 0.5) * 0.2,
+                    mass: particleMass,
+                    radius: 4 + Math.random() * 3,
+                    color: colors[i % 5]
+                });
+                trails.push([]);
+            }
+
+            for (let i = 0; i < N - clusterSize; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = Math.random() * 60;
+
+                bodies.push({
+                    x: spread + r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: -0.8 * initialVelFactor,
+                    vy: (Math.random() - 0.5) * 0.2,
+                    mass: particleMass,
+                    radius: 4 + Math.random() * 3,
+                    color: colors[(i + 5) % colors.length]
+                });
+                trails.push([]);
+            }
+        }
+
+        function initRandom(W, H) {
+            for (let i = 0; i < N; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = Math.random() * spread;
+                const v = Math.random() * 0.8 * initialVelFactor;
+                const vAngle = Math.random() * Math.PI * 2;
+
+                bodies.push({
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle),
+                    vx: v * Math.cos(vAngle),
+                    vy: v * Math.sin(vAngle),
+                    mass: particleMass * (0.3 + Math.random() * 1.5),
+                    radius: 3 + Math.random() * 5,
+                    color: colors[i % colors.length]
+                });
+                trails.push([]);
+            }
+        }
+
+        // ========================================
+        // Physics
+        // ========================================
+        function updatePhysics(dt) {
+            const n = bodies.length;
+
+            // Compute initial accelerations
+            const acc = bodies.map(() => ({ ax: 0, ay: 0 }));
+
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    const dx = bodies[j].x - bodies[i].x;
+                    const dy = bodies[j].y - bodies[i].y;
+                    const distSq = dx * dx + dy * dy;
+                    const dist = Math.sqrt(distSq);
+
+                    // Softening to prevent singularities
+                    const softening = (bodies[i].radius + bodies[j].radius) * 0.5;
+                    const softDistSq = distSq + softening * softening;
+
+                    const forceMag = G * bodies[i].mass * bodies[j].mass / softDistSq;
+
+                    const fx = forceMag * dx / dist;
+                    const fy = forceMag * dy / dist;
+
+                    acc[i].ax += fx / bodies[i].mass;
+                    acc[i].ay += fy / bodies[i].mass;
+                    acc[j].ax -= fx / bodies[j].mass;
+                    acc[j].ay -= fy / bodies[j].mass;
+                }
+            }
+
+            // Velocity Verlet: half-step velocity + full position update
+            for (let i = 0; i < n; i++) {
+                bodies[i].vx += acc[i].ax * dt / 2;
+                bodies[i].vy += acc[i].ay * dt / 2;
+                bodies[i].x += bodies[i].vx * dt;
+                bodies[i].y += bodies[i].vy * dt;
+            }
+
+            // Recompute accelerations at new positions
+            const acc2 = bodies.map(() => ({ ax: 0, ay: 0 }));
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    const dx = bodies[j].x - bodies[i].x;
+                    const dy = bodies[j].y - bodies[i].y;
+                    const distSq = dx * dx + dy * dy;
+                    const dist = Math.sqrt(distSq);
+
+                    const softening = (bodies[i].radius + bodies[j].radius) * 0.5;
+                    const softDistSq = distSq + softening * softening;
+
+                    const forceMag = G * bodies[i].mass * bodies[j].mass / softDistSq;
+
+                    const fx = forceMag * dx / dist;
+                    const fy = forceMag * dy / dist;
+
+                    acc2[i].ax += fx / bodies[i].mass;
+                    acc2[i].ay += fy / bodies[i].mass;
+                    acc2[j].ax -= fx / bodies[j].mass;
+                    acc2[j].ay -= fy / bodies[j].mass;
+                }
+            }
+
+            // Complete velocity update with new accelerations
+            for (let i = 0; i < n; i++) {
+                bodies[i].vx += acc2[i].ax * dt / 2;
+                bodies[i].vy += acc2[i].ay * dt / 2;
+
+                // Record trails
+                if (trailLength > 0) {
+                    trails[i].push({ x: bodies[i].x, y: bodies[i].y });
+                    while (trails[i].length > trailLength) trails[i].shift();
+                }
+            }
+
+            simTime += dt;
+        }
+
+        // ========================================
+        // Rendering
+        // ========================================
+        function toScreen(x, y) {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            return {
+                sx: W / 2 + x * zoom,
+                sy: H / 2 - y * zoom
+            };
+        }
+
+        function drawStars() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            for (let i = 0; i < 100; i++) {
+                const x = (i * 137.5 + 17) % W;
+                const y = (i * 97.3 + 11) % H;
+                ctx.beginPath();
+                ctx.arc(x, y, 0.5 + (i % 3) * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawTrail(trail, color) {
+            if (trail.length < 2) return;
+
+            for (let i = 1; i < trail.length; i++) {
+                const alpha = (i / trail.length) * 0.5;
+                const p1 = toScreen(trail[i - 1].x, trail[i - 1].y);
+                const p2 = toScreen(trail[i].x, trail[i].y);
+
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(p1.sx, p1.sy);
+                ctx.lineTo(p2.sx, p2.sy);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawBody(body, index) {
+            const { sx, sy } = toScreen(body.x, body.y);
+            const r = body.radius * zoom;
+
+            // Glow for stars
+            if (body.isStar) {
+                const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 4);
+                glow.addColorStop(0, body.color + 'cc');
+                glow.addColorStop(0.3, body.color + '60');
+                glow.addColorStop(1, 'transparent');
+                ctx.beginPath();
+                ctx.arc(sx, sy, r * 4, 0, Math.PI * 2);
+                ctx.fillStyle = glow;
+                ctx.fill();
+            }
+
+            // Body
+            ctx.beginPath();
+            ctx.arc(sx, sy, r, 0, Math.PI * 2);
+            ctx.fillStyle = body.color;
+            ctx.fill();
+
+            // Velocity vector
+            if (showVectors) {
+                const vScale = 30 * zoom;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(sx + body.vx * vScale, sy - body.vy * vScale);
+                ctx.stroke();
+            }
+        }
+
+        function drawCentreOfMass() {
+            if (!showCoM || bodies.length === 0) return;
+
+            let totalMass = 0;
+            let comX = 0, comY = 0;
+            for (const b of bodies) {
+                totalMass += b.mass;
+                comX += b.x * b.mass;
+                comY += b.y * b.mass;
+            }
+            comX /= totalMass;
+            comY /= totalMass;
+
+            const { sx, sy } = toScreen(comX, comY);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(sx - 10, sy);
+            ctx.lineTo(sx + 10, sy);
+            ctx.moveTo(sx, sy - 10);
+            ctx.lineTo(sx, sy + 10);
+            ctx.stroke();
+        }
+
+        function render() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+
+            ctx.fillStyle = '#050510';
+            ctx.fillRect(0, 0, W, H);
+
+            drawStars();
+
+            for (let i = 0; i < bodies.length; i++) {
+                drawTrail(trails[i], bodies[i].color);
+            }
+
+            drawCentreOfMass();
+
+            for (let i = 0; i < bodies.length; i++) {
+                drawBody(bodies[i], i);
+            }
+
+            document.getElementById('timeDisplay').textContent = simTime.toFixed(2);
+        }
+
+        // ========================================
+        // Game Loop
+        // ========================================
+        let lastTime = 0;
+        function gameLoop(timestamp) {
+            const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.05);
+            lastTime = timestamp;
+
+            // FPS counter
+            frameCount++;
+            if (timestamp - lastFpsTime >= 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastFpsTime = timestamp;
+                document.getElementById('fpsDisplay').textContent = fps;
+            }
+
+            if (isPlaying) {
+                const steps = 4;
+                const subDt = deltaTime * timeScale * 20 / steps;
+                for (let i = 0; i < steps; i++) {
+                    updatePhysics(subDt);
+                }
+            }
+
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ========================================
+        // Controls
+        // ========================================
+        function readControls() {
+            N = parseInt(document.getElementById('nSlider').value);
+            centralMass = parseFloat(document.getElementById('centralSlider').value);
+            particleMass = parseFloat(document.getElementById('massSlider').value);
+            spread = parseFloat(document.getElementById('spreadSlider').value);
+            initialVelFactor = parseFloat(document.getElementById('velSlider').value);
+            timeScale = parseFloat(document.getElementById('speedSlider').value);
+            trailLength = parseInt(document.getElementById('trailSlider').value);
+            zoom = parseFloat(document.getElementById('zoomSlider').value);
+            showVectors = document.getElementById('showVectors').checked;
+            showCoM = document.getElementById('showCoM').checked;
+
+            document.getElementById('nValue').textContent = N;
+            document.getElementById('centralValue').textContent = centralMass;
+            document.getElementById('massValue').textContent = particleMass.toFixed(1);
+            document.getElementById('spreadValue').textContent = spread;
+            document.getElementById('velValue').textContent = initialVelFactor.toFixed(1);
+            document.getElementById('speedValue').textContent = timeScale.toFixed(2);
+            document.getElementById('trailValue').textContent = trailLength;
+            document.getElementById('zoomValue').textContent = zoom.toFixed(1);
+        }
+
+        // Initial condition sliders - reset simulation
+        ['nSlider', 'centralSlider', 'massSlider', 'spreadSlider', 'velSlider'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                readControls();
+                initSimulation();
+            });
+        });
+
+        // Display sliders - no reset needed
+        ['speedSlider', 'trailSlider', 'zoomSlider'].forEach(id => {
+            document.getElementById(id).addEventListener('input', readControls);
+        });
+
+        document.getElementById('showVectors').addEventListener('change', readControls);
+        document.getElementById('showCoM').addEventListener('change', readControls);
+
+        document.getElementById('playPauseBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            document.getElementById('playPauseBtn').innerHTML = isPlaying
+                ? '<i class="fas fa-pause"></i> Pause'
+                : '<i class="fas fa-play"></i> Play';
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => initSimulation());
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                initSimulation(btn.dataset.preset);
+            });
+        });
+
+        // ========================================
+        // Initialize
+        // ========================================
+        readControls();
+        initSimulation('solar');
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+
+</html>

@@ -67,25 +67,34 @@
         .topic-image {
             width: 100%;
             border-radius: var(--radius-lg);
-            margin-bottom: var(--space-6);
+            margin-bottom: var(--space-2);
             background: var(--color-gray-100);
             min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--color-gray-400);
-            font-size: 0.875rem;
             overflow: hidden;
         }
 
-        .topic-image img {
+        .topic-image img,
+        .topic-image video {
             width: 100%;
             height: auto;
             object-fit: cover;
         }
 
+        .media-credit {
+            font-size: 0.75rem;
+            color: var(--color-gray-500);
+            text-align: right;
+            margin-bottom: var(--space-6);
+            font-style: italic;
+        }
+
         .topic-image.placeholder {
             border: 2px dashed var(--color-gray-300);
+            color: var(--color-gray-400);
+            font-size: 0.875rem;
         }
 
         .key-facts {
@@ -192,10 +201,10 @@
 
                 <!-- Topic: Massive Stars -->
                 <div class="topic-card reveal">
-                    <div class="topic-image placeholder">
-                        <!-- Add your image here: <img src="images/massive-star.jpg" alt="Massive Star"> -->
-                        Image: Massive Star
+                    <div class="topic-image">
+                        <img src="../images/tutorials/MassiveStar.jpg" alt="Massive Star">
                     </div>
+                    <div class="media-credit">Image Credit: NASA/ESA/Hubble</div>
                     <h3>Massive Stars</h3>
                     <p>
                         The story of stellar mass black holes begins with massive stars—stellar giants that
@@ -227,10 +236,10 @@
 
                 <!-- Topic: Stellar Mass Black Holes -->
                 <div class="topic-card reveal">
-                    <div class="topic-image placeholder">
-                        <!-- Add your image here: <img src="images/stellar-black-hole.jpg" alt="Stellar Mass Black Hole"> -->
-                        Image: Stellar Mass Black Hole
+                    <div class="topic-image">
+                        <img src="../images/tutorials/StellarBlackHole.jpg" alt="Stellar Mass Black Hole">
                     </div>
+                    <div class="media-credit">Image Credit: NASA/CXC/M.Weiss</div>
                     <h3>Stellar Mass Black Holes</h3>
                     <p>
                         Stellar mass black holes form when massive stars (typically more than 20 times the mass
@@ -252,10 +261,10 @@
 
                 <!-- Topic: Binary Black Holes -->
                 <div class="topic-card reveal">
-                    <div class="topic-image placeholder">
-                        <!-- Add your image here: <img src="images/binary-black-holes.jpg" alt="Binary Black Hole System"> -->
-                        Image: Binary Black Hole System
+                    <div class="topic-image">
+                        <img src="../images/tutorials/BinaryBlackHole.jpg" alt="Binary Black Hole System">
                     </div>
+                    <div class="media-credit">Image Credit: NASA/JPL-Caltech</div>
                     <h3>Binary Black Hole Systems</h3>
                     <p>
                         A binary black hole is a system consisting of two black holes orbiting around their
@@ -283,10 +292,11 @@
 
                 <!-- Topic: Mergers -->
                 <div class="topic-card reveal">
-                    <div class="topic-image placeholder">
-                        <!-- Add your image here: <img src="images/black-hole-merger.jpg" alt="Black Hole Merger"> -->
-                        Image: Black Hole Merger
+                    <div class="topic-image">
+                        <video src="../images/tutorials/binary-bh-merger.webm" autoplay muted loop playsinline
+                            width="100%"></video>
                     </div>
+                    <div class="media-credit">Video Credit: LIGO/Caltech/MIT/SXS Collaboration</div>
                     <h3>Black Hole Mergers</h3>
                     <p>
                         When two black holes spiral close enough together, they merge in a violent event
@@ -312,10 +322,11 @@
 
                 <!-- Topic: Gravitational Waves -->
                 <div class="topic-card reveal">
-                    <div class="topic-image placeholder">
-                        <!-- Add your image here: <img src="images/gravitational-waves.jpg" alt="Gravitational Waves"> -->
-                        Image: Gravitational Waves
+                    <div class="topic-image">
+                        <video src="../images/tutorials/gravitational-waves.webm" autoplay muted loop playsinline
+                            width="100%"></video>
                     </div>
+                    <div class="media-credit">Video Credit: LIGO/T. Pyle</div>
                     <h3>Gravitational Waves</h3>
                     <p>
                         Gravitational waves are ripples in the fabric of spacetime caused by the acceleration
