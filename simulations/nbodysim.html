@@ -636,7 +636,7 @@
                     vx: -orbitalV * Math.sin(angle),
                     vy: orbitalV * Math.cos(angle),
                     mass: Math.max(0.2, particleMass * (0.5 + Math.random())), // Varied small masses
-                    radius: 3 + particleMass * 1.5,
+                    radius: 5,
                     color: colors[i % colors.length]
                 });
                 trails.push([]);
@@ -656,7 +656,7 @@
                     vx: v * Math.cos(vAngle),
                     vy: v * Math.sin(vAngle),
                     mass: particleMass * (0.5 + Math.random()),
-                    radius: 4 + Math.random() * 4,
+                    radius: 5,
                     color: colors[i % colors.length]
                 });
                 trails.push([]);
@@ -756,7 +756,7 @@
                     vx: 0.8 * initialVelFactor,
                     vy: (Math.random() - 0.5) * 0.2,
                     mass: particleMass,
-                    radius: 4 + Math.random() * 3,
+                    radius: 5,
                     color: colors[i % 5]
                 });
                 trails.push([]);
@@ -772,7 +772,7 @@
                     vx: -0.8 * initialVelFactor,
                     vy: (Math.random() - 0.5) * 0.2,
                     mass: particleMass,
-                    radius: 4 + Math.random() * 3,
+                    radius: 5,
                     color: colors[(i + 5) % colors.length]
                 });
                 trails.push([]);
@@ -792,7 +792,7 @@
                     vx: v * Math.cos(vAngle),
                     vy: v * Math.sin(vAngle),
                     mass: particleMass * (0.3 + Math.random() * 1.5),
-                    radius: 3 + Math.random() * 5,
+                    radius: 5,
                     color: colors[i % colors.length]
                 });
                 trails.push([]);

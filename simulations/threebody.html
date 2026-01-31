@@ -571,18 +571,24 @@
                 ]
             },
             // Sun-Earth-Moon Hierarchical
+            // For stability, Moon must orbit Earth at a distance small compared to Earth-Sun distance
+            // but large enough for numerical stability
             'sun-earth-moon': {
                 masses: [100, 1, 0.01],
                 positions: [
-                    [0, 0],         // Sun
-                    [1.5, 0],       // Earth (Distance 1.5)
-                    [1.55, 0]       // Moon (Distance 0.05 from Earth)
+                    [0, 0],         // Sun at origin
+                    [2, 0],         // Earth at distance 2 from Sun
+                    [2.15, 0]       // Moon at distance 0.15 from Earth
                 ],
                 velocities: [
-                    [0, -0.045],    // Sun reflex
-                    [0, 14.8],      // Earth v = sqrt(330/1.5) = 14.83
-                    [0, 17.5]       // Moon v = vEarth + vRel. vRel = sqrt(1/0.05) = 4.47. Total ~ 19.3
-                    // vMoon should be 14.83 + 4.47 = 19.3. Let's try [0, 19.3]
+                    // Sun reflex: v_sun = v_earth * (m_earth / m_sun) ≈ 0
+                    [0, -0.07],
+                    // Earth orbital velocity: v = sqrt(G*M_sun/r) = sqrt(1*100/2) = sqrt(50) ≈ 7.07
+                    [0, 7.07],
+                    // Moon velocity = Earth velocity + Moon orbital velocity around Earth
+                    // v_moon_rel = sqrt(G*M_earth/r_moon) = sqrt(1*1/0.15) ≈ 2.58
+                    // Total = 7.07 + 2.58 = 9.65
+                    [0, 9.65]
                 ]
             },
             // Hierarchical: Binary + distant third (Old preset, keeping refined)
@@ -648,11 +654,22 @@
             const cx = W / 2;
             const cy = H / 2;
 
-            const m1 = parseFloat(document.getElementById('m1Slider').value);
-            const m2 = parseFloat(document.getElementById('m2Slider').value);
-            const m3 = parseFloat(document.getElementById('m3Slider').value);
+            // Use preset masses if available, otherwise use slider values
+            let masses;
+            if (preset.masses) {
+                masses = [...preset.masses];
+                // Update sliders to reflect preset values
+                document.getElementById('m1Slider').value = masses[0];
+                document.getElementById('m2Slider').value = masses[1];
+                document.getElementById('m3Slider').value = masses[2];
+            } else {
+                masses = [
+                    parseFloat(document.getElementById('m1Slider').value),
+                    parseFloat(document.getElementById('m2Slider').value),
+                    parseFloat(document.getElementById('m3Slider').value)
+                ];
+            }
 
-            const masses = [m1, m2, m3];
             const colors = ['#fbbf24', '#60a5fa', '#34d399'];
 
             bodies = [];
@@ -675,7 +692,7 @@
                     vx: vel[0],
                     vy: vel[1],
                     mass: masses[i],
-                    radius: 6 + masses[i] * 3,
+                    radius: 8,
                     color: colors[i]
                 });
             }
