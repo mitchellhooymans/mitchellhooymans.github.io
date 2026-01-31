@@ -298,6 +298,47 @@
             background: var(--color-accent);
             color: white;
         }
+
+        .placement-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: var(--space-4);
+            cursor: crosshair;
+            z-index: 10;
+        }
+
+        .placement-overlay.hidden {
+            display: none;
+        }
+
+        .placement-overlay i {
+            font-size: 2rem;
+            margin-bottom: var(--space-3);
+            color: var(--color-accent);
+        }
+
+        .placement-count {
+            margin-top: var(--space-2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .unit-label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-left: 2px;
+        }
     </style>
 </head>
 
@@ -363,6 +404,11 @@
                         However, some special stable configurations exist, like the famous <strong>Figure-8
                             orbit</strong>.
                     </p>
+                    <p style="font-size: 0.85rem; opacity: 0.9;">
+                        <strong>Units:</strong> Mass is measured in <em>solar masses</em> (M☉), where 1 M☉ = the mass of
+                        our Sun
+                        (≈ 2 × 10³⁰ kg).
+                    </p>
                     <div class="legend">
                         <div class="legend-item">
                             <span class="legend-dot" style="background: #fbbf24;"></span> Body 1
@@ -381,11 +427,16 @@
                     <div class="simulation-container">
                         <canvas id="simulationCanvas"></canvas>
                         <div class="sim-overlay">
-                            <div>Time: <span id="timeDisplay">0.00</span></div>
+                            <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label">years</span></div>
                             <div>Energy: <span id="energyDisplay">0.00</span></div>
                         </div>
                         <div class="chaos-indicator" id="chaosIndicator">
                             <i class="fas fa-bolt"></i> Chaotic
+                        </div>
+                        <div class="placement-overlay hidden" id="placementOverlay">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <div>Click to place <span id="placementBodyName">Body 1</span></div>
+                            <div class="placement-count"><span id="placementProgress">0</span>/3 bodies placed</div>
                         </div>
                     </div>
 
@@ -402,21 +453,25 @@
                                 <button class="preset-btn" data-preset="random">Random</button>
                                 <button class="preset-btn" data-preset="butterfly">Butterfly I</button>
                                 <button class="preset-btn" data-preset="moth">Moth I</button>
+                                <button class="preset-btn" data-preset="custom">Custom</button>
                             </div>
                         </div>
 
                         <div class="control-section">
                             <h4>Masses</h4>
                             <div class="control-group">
-                                <label>Body 1 <span class="control-value" id="m1Value">1.0</span></label>
+                                <label>Body 1 <span class="control-value" id="m1Value">1.0</span><span
+                                        class="unit-label">M☉</span></label>
                                 <input type="range" id="m1Slider" min="0.1" max="300" step="0.1" value="1">
                             </div>
                             <div class="control-group">
-                                <label>Body 2 <span class="control-value" id="m2Value">1.0</span></label>
+                                <label>Body 2 <span class="control-value" id="m2Value">1.0</span><span
+                                        class="unit-label">M☉</span></label>
                                 <input type="range" id="m2Slider" min="0.1" max="100" step="0.1" value="1">
                             </div>
                             <div class="control-group">
-                                <label>Body 3 <span class="control-value" id="m3Value">1.0</span></label>
+                                <label>Body 3 <span class="control-value" id="m3Value">1.0</span><span
+                                        class="unit-label">M☉</span></label>
                                 <input type="range" id="m3Slider" min="0.01" max="100" step="0.01" value="1">
                             </div>
                         </div>
@@ -521,6 +576,13 @@
         let bodies = [];
         let trails = [[], [], []];
         let currentPreset = 'figure8';
+
+        // Custom placement mode
+        let isCustomMode = false;
+        let customBodies = [];
+        const placementOverlay = document.getElementById('placementOverlay');
+        const bodyNames = ['Body 1', 'Body 2', 'Body 3'];
+        const bodyColors = ['#fbbf24', '#60a5fa', '#34d399'];
 
         const G = 1; // Gravitational constant
         const scale = 100; // Pixels per unit length
@@ -944,16 +1006,133 @@
 
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const preset = presets[btn.dataset.preset];
+                const presetName = btn.dataset.preset;
+
+                // Handle custom mode
+                if (presetName === 'custom') {
+                    startCustomPlacement();
+                    return;
+                }
+
+                // Exit custom mode if active
+                exitCustomMode();
+
+                const preset = presets[presetName];
                 if (preset && preset.masses) {
                     document.getElementById('m1Slider').value = preset.masses[0];
                     document.getElementById('m2Slider').value = preset.masses[1];
                     document.getElementById('m3Slider').value = preset.masses[2];
                 }
-                initSimulation(btn.dataset.preset);
+                initSimulation(presetName);
                 updateDisplayValues();
             });
         });
+
+        // ========================================
+        // Custom Placement Mode
+        // ========================================
+        function startCustomPlacement() {
+            isCustomMode = true;
+            customBodies = [];
+            isPlaying = false;
+            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i> Play';
+
+            // Show overlay
+            placementOverlay.classList.remove('hidden');
+            updatePlacementUI();
+
+            // Clear existing simulation visually
+            bodies = [];
+            trails = [[], [], []];
+            render();
+        }
+
+        function exitCustomMode() {
+            isCustomMode = false;
+            customBodies = [];
+            placementOverlay.classList.add('hidden');
+        }
+
+        function updatePlacementUI() {
+            const count = customBodies.length;
+            document.getElementById('placementProgress').textContent = count;
+            document.getElementById('placementBodyName').textContent = bodyNames[count] || 'Body 1';
+        }
+
+        // Canvas click for custom placement
+        canvas.addEventListener('click', (e) => {
+            if (!isCustomMode) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const W = rect.width;
+            const H = rect.height;
+
+            // Convert to simulation coordinates (centered at origin)
+            const simX = (x - W / 2) / scale / zoom;
+            const simY = -(y - H / 2) / scale / zoom;
+
+            customBodies.push({ x: simX, y: simY, screenX: x, screenY: y });
+            updatePlacementUI();
+
+            if (customBodies.length >= 3) {
+                // All bodies placed - initialize custom simulation
+                initCustomSimulation();
+            } else {
+                // Draw preview
+                renderCustomPreview();
+            }
+        });
+
+        function renderCustomPreview() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+
+            ctx.fillStyle = '#08080f';
+            ctx.fillRect(0, 0, W, H);
+            drawStars();
+
+            // Draw placed bodies
+            customBodies.forEach((pos, i) => {
+                ctx.beginPath();
+                ctx.arc(pos.screenX, pos.screenY, 8, 0, Math.PI * 2);
+                ctx.fillStyle = bodyColors[i];
+                ctx.fill();
+            });
+        }
+
+        function initCustomSimulation() {
+            const m1 = parseFloat(document.getElementById('m1Slider').value);
+            const m2 = parseFloat(document.getElementById('m2Slider').value);
+            const m3 = parseFloat(document.getElementById('m3Slider').value);
+            const masses = [m1, m2, m3];
+
+            // Create bodies at clicked positions with zero velocity
+            bodies = [];
+            trails = [[], [], []];
+
+            for (let i = 0; i < 3; i++) {
+                bodies.push({
+                    x: customBodies[i].x,
+                    y: customBodies[i].y,
+                    vx: 0,
+                    vy: 0,
+                    mass: masses[i],
+                    radius: 8,
+                    color: bodyColors[i]
+                });
+            }
+
+            simTime = 0;
+            initialEnergy = computeTotalEnergy();
+
+            // Hide overlay and start playing
+            placementOverlay.classList.add('hidden');
+            isCustomMode = false;
+            isPlaying = true;
+            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+        }
 
         // ========================================
         // Initialize

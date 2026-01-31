@@ -263,6 +263,53 @@
             color: var(--color-gray-700);
             cursor: pointer;
         }
+
+        .placement-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: var(--space-4);
+            cursor: crosshair;
+            z-index: 10;
+        }
+
+        .placement-overlay.hidden {
+            display: none;
+        }
+
+        .placement-overlay i {
+            font-size: 2rem;
+            margin-bottom: var(--space-3);
+            color: var(--color-accent);
+        }
+
+        .placement-count {
+            margin-top: var(--space-2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .placement-hint {
+            margin-top: var(--space-3);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .unit-label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-left: 2px;
+        }
     </style>
 </head>
 
@@ -325,6 +372,11 @@
                         planets orbit a central star, or observe chaotic encounters. The computational
                         complexity grows as O(N²), so we keep N reasonable for smooth animation.
                     </p>
+                    <p style="font-size: 0.85rem; opacity: 0.9;">
+                        <strong>Units:</strong> Central mass in <em>solar masses</em> (M☉). Particle mass in <em>Earth
+                            masses</em> (M⊕).
+                        Spread in <em>astronomical units</em> (AU).
+                    </p>
                 </div>
 
                 <div class="simulation-wrapper">
@@ -333,8 +385,15 @@
                         <canvas id="simulationCanvas"></canvas>
                         <div class="sim-overlay">
                             <div>Bodies: <span id="bodyCount">0</span></div>
-                            <div>Time: <span id="timeDisplay">0.00</span></div>
+                            <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label">years</span></div>
                             <div>FPS: <span id="fpsDisplay">0</span></div>
+                        </div>
+                        <div class="placement-overlay hidden" id="placementOverlay">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <div>Left-click to add bodies</div>
+                            <div class="placement-count"><span id="placementProgress">0</span> bodies placed</div>
+                            <div class="placement-hint">Right-click to remove last body<br>Click "Start" when ready
+                            </div>
                         </div>
                     </div>
 
@@ -351,6 +410,7 @@
                                 <button class="preset-btn" data-preset="binary">Binary + Planets</button>
                                 <button class="preset-btn" data-preset="collision">Collision</button>
                                 <button class="preset-btn" data-preset="random">Random</button>
+                                <button class="preset-btn" data-preset="custom">Custom</button>
                             </div>
                         </div>
 
@@ -361,11 +421,13 @@
                                 <input type="range" id="nSlider" min="3" max="50" step="1" value="15">
                             </div>
                             <div class="control-group">
-                                <label>Central Mass <span class="control-value" id="centralValue">50</span></label>
+                                <label>Central Mass <span class="control-value" id="centralValue">50</span><span
+                                        class="unit-label">M☉</span></label>
                                 <input type="range" id="centralSlider" min="10" max="1000" step="10" value="300">
                             </div>
                             <div class="control-group">
-                                <label>Particle Mass <span class="control-value" id="massValue">1.0</span></label>
+                                <label>Particle Mass <span class="control-value" id="massValue">1.0</span><span
+                                        class="unit-label">M⊕</span></label>
                                 <input type="range" id="massSlider" min="0.1" max="10" step="0.1" value="0.1">
                             </div>
                         </div>
@@ -373,8 +435,9 @@
                         <div class="control-section">
                             <h4>Initial Conditions</h4>
                             <div class="control-group">
-                                <label>Spread <span class="control-value" id="spreadValue">150</span> px</label>
-                                <input type="range" id="spreadSlider" min="50" max="300" step="10" value="150">
+                                <label>Spread <span class="control-value" id="spreadValue">1.5</span><span
+                                        class="unit-label">AU</span></label>
+                                <input type="range" id="spreadSlider" min="0.5" max="3" step="0.1" value="1.5">
                             </div>
                             <div class="control-group">
                                 <label>Initial Velocity <span class="control-value" id="velValue">1.0</span>x</label>
@@ -489,7 +552,7 @@
         let N = 15;
         let centralMass = 50;
         let particleMass = 1;
-        let spread = 150;
+        let spread = 1.5; // AU
         let initialVelFactor = 1;
         let timeScale = 1;
         let trailLength = 100;
@@ -501,6 +564,14 @@
         let trails = [];
         let currentPreset = 'solar';
 
+        // Custom placement mode
+        let isCustomMode = false;
+        let customBodies = [];
+        const placementOverlay = document.getElementById('placementOverlay');
+
+        // Scale: pixels per AU
+        const PIXELS_PER_AU = 100;
+
         const G = 500;
 
         // Color palette for bodies
@@ -511,49 +582,49 @@
         ];
 
         // ========================================
-        // Preset Configurations
+        // Preset Configurations (spread now in AU)
         // ========================================
         const presetsConfig = {
             'solar': {
                 n: 8,
                 central: 300,
                 mass: 0.1,
-                spread: 100,
+                spread: 1.0, // AU
                 vel: 1.0
             },
             'cluster': {
                 n: 100,
-                central: 50, // Not used much in cluster but good to have
+                central: 50,
                 mass: 1.0,
-                spread: 200,
+                spread: 2.0, // AU
                 vel: 0.5
             },
             'ring': {
                 n: 50,
                 central: 300,
                 mass: 0.1,
-                spread: 120,
+                spread: 1.2, // AU
                 vel: 1.0
             },
             'binary': {
                 n: 20,
-                central: 100, // per star
+                central: 100,
                 mass: 0.1,
-                spread: 150,
+                spread: 1.5, // AU
                 vel: 1.0
             },
             'collision': {
                 n: 100,
                 central: 50,
                 mass: 1.0,
-                spread: 200,
+                spread: 2.0, // AU
                 vel: 0.8
             },
             'random': {
                 n: 50,
                 central: 50,
                 mass: 1.0,
-                spread: 200,
+                spread: 2.0, // AU
                 vel: 1.0
             }
         };
@@ -610,6 +681,9 @@
         }
 
         function initSolarSystem(W, H) {
+            // Convert AU to pixels
+            const spreadPx = spread * PIXELS_PER_AU;
+
             // Central star
             bodies.push({
                 x: 0, y: 0,
@@ -624,7 +698,7 @@
             // Orbiting planets
             for (let i = 0; i < N - 1; i++) {
                 // Distribute distances
-                const r = 50 + (i + 1) * (spread / N) * 2.5;
+                const r = 50 + (i + 1) * (spreadPx / N) * 2.5;
                 const angle = Math.random() * Math.PI * 2;
 
                 // Circular velocity: v = sqrt(GM/r)
@@ -635,7 +709,7 @@
                     y: r * Math.sin(angle),
                     vx: -orbitalV * Math.sin(angle),
                     vy: orbitalV * Math.cos(angle),
-                    mass: Math.max(0.2, particleMass * (0.5 + Math.random())), // Varied small masses
+                    mass: Math.max(0.2, particleMass * (0.5 + Math.random())),
                     radius: 5,
                     color: colors[i % colors.length]
                 });
@@ -644,9 +718,11 @@
         }
 
         function initCluster(W, H) {
+            const spreadPx = spread * PIXELS_PER_AU;
+
             for (let i = 0; i < N; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const r = Math.random() * spread;
+                const r = Math.random() * spreadPx;
                 const v = (Math.random() - 0.5) * 0.5 * initialVelFactor;
                 const vAngle = Math.random() * Math.PI * 2;
 
@@ -664,6 +740,8 @@
         }
 
         function initRing(W, H) {
+            const spreadPx = spread * PIXELS_PER_AU;
+
             // Central mass
             bodies.push({
                 x: 0, y: 0,
@@ -678,7 +756,7 @@
             // Ring of particles
             for (let i = 0; i < N - 1; i++) {
                 const angle = (i / (N - 1)) * Math.PI * 2;
-                const r = spread;
+                const r = spreadPx;
                 // Circular velocity
                 const orbitalV = Math.sqrt(G * centralMass / r) * initialVelFactor;
 
@@ -687,7 +765,7 @@
                     y: r * Math.sin(angle),
                     vx: -orbitalV * Math.sin(angle),
                     vy: orbitalV * Math.cos(angle),
-                    mass: particleMass * 0.1, // Very light particles for ring stability
+                    mass: particleMass * 0.1,
                     radius: 2,
                     color: colors[i % colors.length]
                 });
@@ -743,6 +821,8 @@
         }
 
         function initCollision(W, H) {
+            const spreadPx = spread * PIXELS_PER_AU;
+
             // Two clusters approaching each other
             const clusterSize = Math.floor(N / 2);
 
@@ -751,7 +831,7 @@
                 const r = Math.random() * 60;
 
                 bodies.push({
-                    x: -spread + r * Math.cos(angle),
+                    x: -spreadPx + r * Math.cos(angle),
                     y: r * Math.sin(angle),
                     vx: 0.8 * initialVelFactor,
                     vy: (Math.random() - 0.5) * 0.2,
@@ -767,7 +847,7 @@
                 const r = Math.random() * 60;
 
                 bodies.push({
-                    x: spread + r * Math.cos(angle),
+                    x: spreadPx + r * Math.cos(angle),
                     y: r * Math.sin(angle),
                     vx: -0.8 * initialVelFactor,
                     vy: (Math.random() - 0.5) * 0.2,
@@ -780,9 +860,11 @@
         }
 
         function initRandom(W, H) {
+            const spreadPx = spread * PIXELS_PER_AU;
+
             for (let i = 0; i < N; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const r = Math.random() * spread;
+                const r = Math.random() * spreadPx;
                 const v = Math.random() * 0.8 * initialVelFactor;
                 const vAngle = Math.random() * Math.PI * 2;
 
@@ -1084,9 +1166,132 @@
 
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                initSimulation(btn.dataset.preset);
+                const presetName = btn.dataset.preset;
+
+                // Handle custom mode
+                if (presetName === 'custom') {
+                    startCustomPlacement();
+                    return;
+                }
+
+                // Exit custom mode if active
+                exitCustomMode();
+
+                initSimulation(presetName);
             });
         });
+
+        // ========================================
+        // Custom Placement Mode
+        // ========================================
+        function startCustomPlacement() {
+            isCustomMode = true;
+            customBodies = [];
+            isPlaying = false;
+            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i> Play';
+
+            // Show overlay
+            placementOverlay.classList.remove('hidden');
+            updatePlacementUI();
+
+            // Clear existing simulation visually
+            bodies = [];
+            trails = [];
+            render();
+        }
+
+        function exitCustomMode() {
+            isCustomMode = false;
+            customBodies = [];
+            placementOverlay.classList.add('hidden');
+        }
+
+        function updatePlacementUI() {
+            document.getElementById('placementProgress').textContent = customBodies.length;
+        }
+
+        // Canvas click for custom placement
+        canvas.addEventListener('click', (e) => {
+            if (!isCustomMode) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const W = rect.width;
+            const H = rect.height;
+
+            // Convert to simulation coordinates (centered at origin)
+            const simX = (x - W / 2) / zoom;
+            const simY = (y - H / 2) / zoom;
+
+            customBodies.push({ x: simX, y: simY, screenX: x, screenY: y });
+            updatePlacementUI();
+            renderCustomPreview();
+        });
+
+        // Right-click to remove last body
+        canvas.addEventListener('contextmenu', (e) => {
+            if (!isCustomMode) return;
+            e.preventDefault();
+
+            if (customBodies.length > 0) {
+                customBodies.pop();
+                updatePlacementUI();
+                renderCustomPreview();
+            }
+        });
+
+        function renderCustomPreview() {
+            const W = canvas.getBoundingClientRect().width;
+            const H = canvas.getBoundingClientRect().height;
+
+            ctx.fillStyle = '#050510';
+            ctx.fillRect(0, 0, W, H);
+            drawStars();
+
+            // Draw placed bodies
+            customBodies.forEach((pos, i) => {
+                ctx.beginPath();
+                ctx.arc(pos.screenX, pos.screenY, 5, 0, Math.PI * 2);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+            });
+        }
+
+        // Double-click or replace overlay with "Start" button behavior
+        // Using dblclick to start simulation
+        canvas.addEventListener('dblclick', (e) => {
+            if (!isCustomMode || customBodies.length < 2) return;
+            initCustomSimulation();
+        });
+
+        function initCustomSimulation() {
+            // Create bodies at clicked positions with zero velocity
+            bodies = [];
+            trails = [];
+
+            for (let i = 0; i < customBodies.length; i++) {
+                bodies.push({
+                    x: customBodies[i].x,
+                    y: customBodies[i].y,
+                    vx: 0,
+                    vy: 0,
+                    mass: particleMass,
+                    radius: 5,
+                    color: colors[i % colors.length]
+                });
+                trails.push([]);
+            }
+
+            simTime = 0;
+            document.getElementById('bodyCount').textContent = bodies.length;
+
+            // Hide overlay and start playing
+            placementOverlay.classList.add('hidden');
+            isCustomMode = false;
+            isPlaying = true;
+            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+        }
 
         // ========================================
         // Initialize
