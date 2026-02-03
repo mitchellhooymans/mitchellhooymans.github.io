@@ -308,10 +308,15 @@
             text-align: center;
         }
 
-        .preset-btn:hover {
+        .preset-btn:hover,
+        .preset-btn.active {
             border-color: var(--color-accent);
             background: var(--color-accent);
             color: white;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         .placement-overlay {
@@ -353,6 +358,51 @@
             font-size: 0.7rem;
             opacity: 0.7;
             margin-left: 2px;
+        }
+
+        .mass-input-group {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .mass-input {
+            flex: 1;
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            background: var(--color-white);
+            min-width: 0;
+        }
+
+        .mass-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2);
+        }
+
+        .unit-select {
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--color-gray-600);
+            background: var(--color-white);
+            cursor: pointer;
+            min-width: 65px;
+        }
+
+        .unit-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .control-group.mass-control label {
+            margin-bottom: var(--space-1);
         }
     </style>
 </head>
@@ -448,11 +498,7 @@
                         <div class="chaos-indicator" id="chaosIndicator">
                             <i class="fas fa-bolt"></i> Chaotic
                         </div>
-                        <div class="placement-overlay hidden" id="placementOverlay">
-                            <i class="fas fa-mouse-pointer"></i>
-                            <div>Click to place <span id="placementBodyName">Body 1</span></div>
-                            <div class="placement-count"><span id="placementProgress">0</span>/3 bodies placed</div>
-                        </div>
+
                     </div>
 
                     <!-- Controls Panel -->
@@ -463,33 +509,51 @@
                             <h4>Presets</h4>
                             <div class="preset-btns">
                                 <button class="preset-btn" data-preset="figure8">Figure-8</button>
-                                <button class="preset-btn" data-preset="sun-earth-moon">Sun-Earth-Moon</button>
+                                <button class="preset-btn" data-preset="yin-yang">Yin-Yang I</button>
                                 <button class="preset-btn" data-preset="lagrange">Lagrange (L4)</button>
-                                <button class="preset-btn" data-preset="random">Random</button>
+                                <button class="preset-btn" data-preset="hierarchical">Binary + Distant</button>
                                 <button class="preset-btn" data-preset="butterfly">Butterfly I</button>
                                 <button class="preset-btn" data-preset="moth">Moth I</button>
-                                <button class="preset-btn" data-preset="custom">Custom</button>
+                                <button class="preset-btn" data-preset="random">Random</button>
+
                             </div>
                         </div>
 
                         <div class="control-section">
                             <h4>Masses</h4>
-                            <div class="control-group">
-                                <label>Body 1 <span class="control-value" id="m1Value">1.0</span><span
-                                        class="unit-label">M☉</span></label>
-                                <input type="range" id="m1Slider" min="0.1" max="300" step="0.1" value="1">
+                            <div class="control-group mass-control">
+                                <label>Body 1</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="m1Input" class="mass-input" value="1" min="0" step="any">
+                                    <select id="m1Unit" class="unit-select">
+                                        <option value="solar" selected>M☉</option>
+                                        <option value="earth">M⊕</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="control-group">
-                                <label>Body 2 <span class="control-value" id="m2Value">1.0</span><span
-                                        class="unit-label">M☉</span></label>
-                                <input type="range" id="m2Slider" min="0.1" max="100" step="0.1" value="1">
+                            <div class="control-group mass-control">
+                                <label>Body 2</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="m2Input" class="mass-input" value="1" min="0" step="any">
+                                    <select id="m2Unit" class="unit-select">
+                                        <option value="solar" selected>M☉</option>
+                                        <option value="earth">M⊕</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="control-group">
-                                <label>Body 3 <span class="control-value" id="m3Value">1.0</span><span
-                                        class="unit-label">M☉</span></label>
-                                <input type="range" id="m3Slider" min="0.01" max="100" step="0.01" value="1">
+                            <div class="control-group mass-control">
+                                <label>Body 3</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="m3Input" class="mass-input" value="1" min="0" step="any">
+                                    <select id="m3Unit" class="unit-select">
+                                        <option value="solar" selected>M☉</option>
+                                        <option value="earth">M⊕</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
+
+
 
                         <div class="control-section">
                             <h4>Display</h4>
@@ -503,7 +567,7 @@
                             </div>
                             <div class="control-group">
                                 <label>Zoom <span class="control-value" id="zoomValue">1.0x</span></label>
-                                <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+                                <input type="range" id="zoomSlider" min="0.5" max="50" step="0.1" value="1">
                             </div>
                         </div>
 
@@ -647,25 +711,20 @@
                     [-8.66, 5]      // Trojan v 
                 ]
             },
-            // Sun-Earth-Moon Hierarchical
-            // For stability, Moon must orbit Earth at a distance small compared to Earth-Sun distance
-            // but large enough for numerical stability
-            'sun-earth-moon': {
-                masses: [100, 1, 0.01],
+
+            // Yin-Yang I (Li & Liao 2017)
+            // Periodic orbit with equal masses.
+            'yin-yang': {
+                masses: [1, 1, 1],
                 positions: [
-                    [0, 0],         // Sun at origin
-                    [2, 0],         // Earth at distance 2 from Sun
-                    [2.15, 0]       // Moon at distance 0.15 from Earth
+                    [-1, 0],
+                    [1, 0],
+                    [0, 0]
                 ],
                 velocities: [
-                    // Sun reflex: v_sun = v_earth * (m_earth / m_sun) ≈ 0
-                    [0, -0.07],
-                    // Earth orbital velocity: v = sqrt(G*M_sun/r) = sqrt(1*100/2) = sqrt(50) ≈ 7.07
-                    [0, 7.07],
-                    // Moon velocity = Earth velocity + Moon orbital velocity around Earth
-                    // v_moon_rel = sqrt(G*M_earth/r_moon) = sqrt(1*1/0.15) ≈ 2.58
-                    // Total = 7.07 + 2.58 = 9.65
-                    [0, 9.65]
+                    [0.513938, 0.304736],
+                    [0.513938, 0.304736],
+                    [-1.027876, -0.609472]
                 ]
             },
             // Hierarchical: Binary + distant third (Old preset, keeping refined)
@@ -677,11 +736,9 @@
                     [4.0, 0]
                 ],
                 velocities: [
-                    [0, -4.47], // v = sqrt(20/1) * 0.7 = 3.1. Wait, v_circ for binary is sqrt(GM/4a) isn't it?
-                    // v = sqrt(G*M / (2R)) where 2R is separation. M=20. Sep=1. v = sqrt(20/1) = 4.47
-                    // Wait Kepler: v = sqrt(GM/(2a)). Radius is 0.5. M_total effectively... let's trust v=4.5 roughly.
-                    [0, 4.47],
-                    [0, 2.2]  // Distant body
+                    [0, -3.24], // Reflex to balance M2 (-3.162 - 0.079)
+                    [0, 3.08],  // v = 3.162 (circular around binary CoM) - 0.079
+                    [0, 3.162]  // Distant body v = sqrt(10) ≈ 3.162
                 ]
             },
             // Random
@@ -725,26 +782,37 @@
         // ========================================
         function initSimulation(presetName) {
             currentPreset = presetName || currentPreset;
+
+            // Highlight active button
+            if (presetName) {
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.preset === currentPreset);
+                });
+            } else {
+                // If called without preset name, maybe just ensure highlighting respects currentPreset variable?
+                // The global 'currentPreset' is updated.
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.preset === currentPreset);
+                });
+            }
+
             const preset = presets[currentPreset];
             const W = canvas.getBoundingClientRect().width;
             const H = canvas.getBoundingClientRect().height;
             const cx = W / 2;
             const cy = H / 2;
 
-            // Use preset masses if available, otherwise use slider values
-            let masses;
-            if (preset.masses) {
-                masses = [...preset.masses];
-                // Update sliders to reflect preset values
-                document.getElementById('m1Slider').value = masses[0];
-                document.getElementById('m2Slider').value = masses[1];
-                document.getElementById('m3Slider').value = masses[2];
-            } else {
-                masses = [
-                    parseFloat(document.getElementById('m1Slider').value),
-                    parseFloat(document.getElementById('m2Slider').value),
-                    parseFloat(document.getElementById('m3Slider').value)
-                ];
+            // Always get masses from textbox inputs (presets update textboxes, then this reads them)
+            const masses = getMassesFromInputs();
+
+            // For choreographic solutions (figure-8, butterfly, moth), velocities need to scale
+            // with sqrt(mass) to preserve the orbit shape. The preset velocities are calibrated for mass=1.
+            const choreographicPresets = ['figure8', 'butterfly', 'moth', 'yin-yang'];
+            const isChoreographic = choreographicPresets.includes(currentPreset);
+            let velocityScale = 1;
+            if (isChoreographic && masses[0] > 0) {
+                // All masses should be equal for choreographic solutions
+                velocityScale = Math.sqrt(masses[0]);
             }
 
             const colors = ['#fbbf24', '#60a5fa', '#34d399'];
@@ -756,11 +824,21 @@
                 let pos, vel;
 
                 if (preset.positions === 'random') {
+                    // Random preset - logic handled by generating random values here
+                    // However, we should arguably update the inputs to show these random values...
+                    // But initSimulation() is called every frame loop start? No, only on init.
+                    // Let's generate them, but we won't update inputs unless we want to lock them in.
+                    // For simplicity, random stays generated.
                     pos = [(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2];
                     vel = [(Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5];
                 } else {
+                    // Set velocities from preset
+                    const rawVel = preset.velocities[i];
                     pos = [...preset.positions[i]];
-                    vel = [...preset.velocities[i]];
+                    vel = [
+                        rawVel[0] * velocityScale,
+                        rawVel[1] * velocityScale
+                    ];
                 }
 
                 bodies.push({
@@ -791,8 +869,8 @@
                     const distSq = dx * dx + dy * dy;
                     const dist = Math.sqrt(distSq);
 
-                    // Softening
-                    const softDist = Math.max(dist, 0.05);
+                    // Softening (reduced for moon stability)
+                    const softDist = Math.max(dist, 0.0001);
                     const softDistSq = softDist * softDist;
 
                     const forceMag = G * bodies[i].mass * bodies[j].mass / softDistSq;
@@ -822,7 +900,7 @@
                     const dx = bodies[j].x - bodies[i].x;
                     const dy = bodies[j].y - bodies[i].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    PE -= G * bodies[i].mass * bodies[j].mass / Math.max(dist, 0.01);
+                    PE -= G * bodies[i].mass * bodies[j].mass / Math.max(dist, 0.0001);
                 }
             }
 
@@ -850,13 +928,7 @@
                 bodies[i].vy += acc2[i].ay * dt / 2;
             }
 
-            // Record trails
-            if (trailLength > 0) {
-                for (let i = 0; i < 3; i++) {
-                    trails[i].push({ x: bodies[i].x, y: bodies[i].y });
-                    while (trails[i].length > trailLength) trails[i].shift();
-                }
-            }
+
 
             simTime += dt;
 
@@ -964,10 +1036,18 @@
             lastTime = timestamp;
 
             if (isPlaying) {
-                const steps = 8;
+                const steps = 40;
                 const subDt = deltaTime * timeScale * 0.5 / steps;
                 for (let i = 0; i < steps; i++) {
                     updatePhysics(subDt);
+                }
+
+                // Update trails once per frame
+                if (trailLength > 0) {
+                    for (let i = 0; i < 3; i++) {
+                        trails[i].push({ x: bodies[i].x, y: bodies[i].y });
+                        while (trails[i].length > trailLength) trails[i].shift();
+                    }
                 }
             }
 
@@ -976,20 +1056,71 @@
         }
 
         // ========================================
-        // Controls
+        // Controls & Unit Conversion
         // ========================================
+
+        // Unit conversion constants (relative to solar mass)
+        const UNIT_TO_SOLAR = {
+            'solar': 1,
+            'earth': 1 / 332946
+        };
+
+        const SOLAR_TO_UNIT = {
+            'solar': 1,
+            'earth': 332946
+        };
+
+        // Convert display value to internal simulation mass
+        function displayToInternal(value, unit) {
+            return value * UNIT_TO_SOLAR[unit];
+        }
+
+        // Convert between display units
+        function convertUnits(value, fromUnit, toUnit) {
+            const solarMass = value * UNIT_TO_SOLAR[fromUnit];
+            return solarMass * SOLAR_TO_UNIT[toUnit];
+        }
+
+        // Get masses from inputs (converting to internal units)
+        // Get masses from inputs (converting to internal units)
+        function getMassesFromInputs() {
+            const m1 = displayToInternal(parseFloat(document.getElementById('m1Input').value) || 1, document.getElementById('m1Unit').value);
+            const m2 = displayToInternal(parseFloat(document.getElementById('m2Input').value) || 1, document.getElementById('m2Unit').value);
+            const m3 = displayToInternal(parseFloat(document.getElementById('m3Input').value) || 1, document.getElementById('m3Unit').value);
+            return [m1, m2, m3];
+        }
+
+        const massInputs = ['m1Input', 'm2Input', 'm3Input'];
+        const unitSelects = ['m1Unit', 'm2Unit', 'm3Unit'];
+
+
+
         function updateDisplayValues() {
-            document.getElementById('m1Value').textContent = document.getElementById('m1Slider').value;
-            document.getElementById('m2Value').textContent = document.getElementById('m2Slider').value;
-            document.getElementById('m3Value').textContent = document.getElementById('m3Slider').value;
             document.getElementById('speedValue').textContent = timeScale.toFixed(2) + 'x';
             document.getElementById('trailValue').textContent = trailLength;
             document.getElementById('zoomValue').textContent = zoom.toFixed(1) + 'x';
         }
 
-        ['m1Slider', 'm2Slider', 'm3Slider'].forEach(id => {
+        // Mass input event listeners
+        massInputs.forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
-                updateDisplayValues();
+                initSimulation();
+            });
+        });
+
+
+
+        // Unit dropdown listeners - convert existing value to new unit
+        unitSelects.forEach((id, index) => {
+            const select = document.getElementById(id);
+            select.dataset.prevUnit = 'solar';
+            select.addEventListener('change', (e) => {
+                const oldUnit = e.target.dataset.prevUnit || 'solar';
+                const newUnit = e.target.value;
+                const input = document.getElementById(massInputs[index]);
+                const currentValue = parseFloat(input.value) || 1;
+                input.value = convertUnits(currentValue, oldUnit, newUnit).toPrecision(4);
+                e.target.dataset.prevUnit = newUnit;
                 initSimulation();
             });
         });
@@ -1019,135 +1150,37 @@
 
         document.getElementById('resetBtn').addEventListener('click', () => initSimulation());
 
+        // Preset mass display values (with units)
+        const presetDisplayMasses = {
+            'figure8': { m: [1, 1, 1], units: ['solar', 'solar', 'solar'] },
+            'lagrange': { m: [100, 1, 0.01], units: ['solar', 'solar', 'solar'] },
+            'yin-yang': { m: [1, 1, 1], units: ['solar', 'solar', 'solar'] },
+            'hierarchical': { m: [20, 20, 1], units: ['solar', 'solar', 'solar'] },
+            'random': { m: [1, 1, 1], units: ['solar', 'solar', 'solar'] },
+            'butterfly': { m: [1, 1, 1], units: ['solar', 'solar', 'solar'] },
+            'moth': { m: [1, 1, 1], units: ['solar', 'solar', 'solar'] }
+        };
+
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const presetName = btn.dataset.preset;
 
-                // Handle custom mode
-                if (presetName === 'custom') {
-                    startCustomPlacement();
-                    return;
+                // Set display values for the preset
+                const displayMasses = presetDisplayMasses[presetName];
+                if (displayMasses) {
+                    for (let i = 0; i < 3; i++) {
+                        document.getElementById(massInputs[i]).value = displayMasses.m[i];
+                        document.getElementById(unitSelects[i]).value = displayMasses.units[i];
+                        document.getElementById(unitSelects[i]).dataset.prevUnit = displayMasses.units[i];
+                    }
                 }
 
-                // Exit custom mode if active
-                exitCustomMode();
-
-                const preset = presets[presetName];
-                if (preset && preset.masses) {
-                    document.getElementById('m1Slider').value = preset.masses[0];
-                    document.getElementById('m2Slider').value = preset.masses[1];
-                    document.getElementById('m3Slider').value = preset.masses[2];
-                }
                 initSimulation(presetName);
                 updateDisplayValues();
             });
         });
 
-        // ========================================
-        // Custom Placement Mode
-        // ========================================
-        function startCustomPlacement() {
-            isCustomMode = true;
-            customBodies = [];
-            isPlaying = false;
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i> Play';
 
-            // Show overlay
-            placementOverlay.classList.remove('hidden');
-            updatePlacementUI();
-
-            // Clear existing simulation visually
-            bodies = [];
-            trails = [[], [], []];
-            render();
-        }
-
-        function exitCustomMode() {
-            isCustomMode = false;
-            customBodies = [];
-            placementOverlay.classList.add('hidden');
-        }
-
-        function updatePlacementUI() {
-            const count = customBodies.length;
-            document.getElementById('placementProgress').textContent = count;
-            document.getElementById('placementBodyName').textContent = bodyNames[count] || 'Body 1';
-        }
-
-        // Canvas click for custom placement
-        canvas.addEventListener('click', (e) => {
-            if (!isCustomMode) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const W = rect.width;
-            const H = rect.height;
-
-            // Convert to simulation coordinates (centered at origin)
-            const simX = (x - W / 2) / scale / zoom;
-            const simY = -(y - H / 2) / scale / zoom;
-
-            customBodies.push({ x: simX, y: simY, screenX: x, screenY: y });
-            updatePlacementUI();
-
-            if (customBodies.length >= 3) {
-                // All bodies placed - initialize custom simulation
-                initCustomSimulation();
-            } else {
-                // Draw preview
-                renderCustomPreview();
-            }
-        });
-
-        function renderCustomPreview() {
-            const W = canvas.getBoundingClientRect().width;
-            const H = canvas.getBoundingClientRect().height;
-
-            ctx.fillStyle = '#08080f';
-            ctx.fillRect(0, 0, W, H);
-            drawStars();
-
-            // Draw placed bodies
-            customBodies.forEach((pos, i) => {
-                ctx.beginPath();
-                ctx.arc(pos.screenX, pos.screenY, 8, 0, Math.PI * 2);
-                ctx.fillStyle = bodyColors[i];
-                ctx.fill();
-            });
-        }
-
-        function initCustomSimulation() {
-            const m1 = parseFloat(document.getElementById('m1Slider').value);
-            const m2 = parseFloat(document.getElementById('m2Slider').value);
-            const m3 = parseFloat(document.getElementById('m3Slider').value);
-            const masses = [m1, m2, m3];
-
-            // Create bodies at clicked positions with zero velocity
-            bodies = [];
-            trails = [[], [], []];
-
-            for (let i = 0; i < 3; i++) {
-                bodies.push({
-                    x: customBodies[i].x,
-                    y: customBodies[i].y,
-                    vx: 0,
-                    vy: 0,
-                    mass: masses[i],
-                    radius: 8,
-                    color: bodyColors[i]
-                });
-            }
-
-            simTime = 0;
-            initialEnergy = computeTotalEnergy();
-
-            // Hide overlay and start playing
-            placementOverlay.classList.add('hidden');
-            isCustomMode = false;
-            isPlaying = true;
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
-        }
 
         // ========================================
         // Initialize

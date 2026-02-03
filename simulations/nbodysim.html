@@ -254,10 +254,15 @@
             text-align: center;
         }
 
-        .preset-btn:hover {
+        .preset-btn:hover,
+        .preset-btn.active {
             border-color: var(--color-accent);
             background: var(--color-accent);
             color: white;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         .checkbox-group {
@@ -324,6 +329,51 @@
             font-size: 0.7rem;
             opacity: 0.7;
             margin-left: 2px;
+        }
+
+        .mass-input-group {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .mass-input {
+            flex: 1;
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            background: var(--color-white);
+            min-width: 0;
+        }
+
+        .mass-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2);
+        }
+
+        .unit-select {
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--color-gray-600);
+            background: var(--color-white);
+            cursor: pointer;
+            min-width: 65px;
+        }
+
+        .unit-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .control-group.mass-control label {
+            margin-bottom: var(--space-1);
         }
     </style>
 </head>
@@ -400,16 +450,11 @@
                         <canvas id="simulationCanvas"></canvas>
                         <div class="sim-overlay">
                             <div>Bodies: <span id="bodyCount">0</span></div>
-                            <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label">years</span></div>
+                            <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label"
+                                    id="timeUnitLabel">years</span></div>
                             <div>FPS: <span id="fpsDisplay">0</span></div>
                         </div>
-                        <div class="placement-overlay hidden" id="placementOverlay">
-                            <i class="fas fa-mouse-pointer"></i>
-                            <div>Left-click to add bodies</div>
-                            <div class="placement-count"><span id="placementProgress">0</span> bodies placed</div>
-                            <div class="placement-hint">Right-click to remove last body<br>Click "Start" when ready
-                            </div>
-                        </div>
+
                     </div>
 
                     <!-- Controls Panel -->
@@ -425,38 +470,50 @@
                                 <button class="preset-btn" data-preset="binary">Binary + Planets</button>
                                 <button class="preset-btn" data-preset="collision">Collision</button>
                                 <button class="preset-btn" data-preset="random">Random</button>
-                                <button class="preset-btn" data-preset="custom">Custom</button>
+
                             </div>
                         </div>
 
                         <div class="control-section">
                             <h4>Particles</h4>
-                            <div class="control-group">
+                            <div class="control-group" id="nControl">
                                 <label>Number of Bodies <span class="control-value" id="nValue">15</span></label>
                                 <input type="range" id="nSlider" min="3" max="50" step="1" value="15">
                             </div>
-                            <div class="control-group">
-                                <label>Central Mass <span class="control-value" id="centralValue">50</span><span
-                                        class="unit-label">M☉</span></label>
-                                <input type="range" id="centralSlider" min="10" max="1000" step="10" value="300">
+                            <div class="control-group mass-control" id="centralMassControl">
+                                <label id="centralMassLabel">Central Mass</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="centralInput" class="mass-input" value="1" min="0"
+                                        step="any">
+                                    <select id="centralUnit" class="unit-select">
+                                        <option value="solar" selected>M☉</option>
+                                        <option value="earth">M⊕</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="control-group">
-                                <label>Particle Mass <span class="control-value" id="massValue">1.0</span><span
-                                        class="unit-label">M⊕</span></label>
-                                <input type="range" id="massSlider" min="0.1" max="10" step="0.1" value="0.1">
+                            <div class="control-group mass-control" id="particleMassControl">
+                                <label>Particle Mass</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="massInput" class="mass-input" value="1" min="0" step="any">
+                                    <select id="massUnit" class="unit-select">
+                                        <option value="solar">M☉</option>
+                                        <option value="earth" selected>M⊕</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Planet Masses Container -->
+                            <div id="planetControls" class="hidden">
+                                <h4 style="margin-bottom: 10px;">Planet Masses</h4>
+                                <div id="planetInputs"></div>
                             </div>
                         </div>
 
                         <div class="control-section">
                             <h4>Initial Conditions</h4>
-                            <div class="control-group">
-                                <label>Spread <span class="control-value" id="spreadValue">1.5</span><span
-                                        class="unit-label">AU</span></label>
+                            <div class="control-group" id="spreadControl">
+                                <label>Size/Spread <span class="control-value" id="spreadValue">1.5</span> <span
+                                        class="unit-label" id="spreadUnitLabel">AU</span></label>
                                 <input type="range" id="spreadSlider" min="0.5" max="3" step="0.1" value="1.5">
-                            </div>
-                            <div class="control-group">
-                                <label>Initial Velocity <span class="control-value" id="velValue">1.0</span>x</label>
-                                <input type="range" id="velSlider" min="0" max="2" step="0.1" value="1">
                             </div>
                         </div>
 
@@ -472,7 +529,7 @@
                             </div>
                             <div class="control-group">
                                 <label>Zoom <span class="control-value" id="zoomValue">1.0</span>x</label>
-                                <input type="range" id="zoomSlider" min="0.3" max="2" step="0.1" value="1">
+                                <input type="range" id="zoomSlider" min="0.01" max="2" step="0.01" value="1">
                             </div>
                             <div class="checkbox-group">
                                 <input type="checkbox" id="showVectors">
@@ -596,72 +653,306 @@
             '#22d3d8', '#f87171', '#a3e635', '#818cf8', '#fb7185'
         ];
 
+        // Solar System Configuration (modifiable)
+        const solarConfig = [
+            { name: 'Mercury', r: 0.39, m: 1.66e-7, radius: 3, color: '#A5A5A5' },
+            { name: 'Venus', r: 0.72, m: 2.45e-6, radius: 4, color: '#E3BB76' },
+            { name: 'Earth', r: 1.00, m: 3.00e-6, radius: 4, color: '#22A6B3' },
+            { name: 'Mars', r: 1.52, m: 3.23e-7, radius: 3, color: '#EB4C42' },
+            { name: 'Jupiter', r: 5.20, m: 9.55e-4, radius: 10, color: '#D97706' },
+            { name: 'Saturn', r: 9.54, m: 2.86e-4, radius: 9, color: '#F59E0B' },
+            { name: 'Uranus', r: 19.2, m: 4.36e-5, radius: 6, color: '#67E8F9' },
+            { name: 'Neptune', r: 30.1, m: 5.15e-5, radius: 6, color: '#3B82F6' }
+        ];
+
         // ========================================
-        // Preset Configurations (spread now in AU)
+        // Preset Configurations (with display values and units)
+        // centralMassType: 'star' = central star, 'binary' = star mass for binary, 'none' = not used
         // ========================================
         const presetsConfig = {
             'solar': {
                 n: 8,
-                central: 300,
-                mass: 0.1,
-                spread: 1.0, // AU
-                vel: 1.0
+                central: 1, centralUnit: 'solar',
+                mass: 1, massUnit: 'earth',
+                spread: 1.0, distUnit: 'AU',
+                vel: 1.0, timeUnit: 'years',
+                zoom: 0.08, // Zoom out to see Neptune
+                centralMassType: 'star'
             },
             'cluster': {
                 n: 100,
-                central: 50,
-                mass: 1.0,
-                spread: 2.0, // AU
-                vel: 0.5
+                mass: 0.01, massUnit: 'solar',
+                spread: 2.0, distUnit: 'pc',
+                vel: 1.0, timeUnit: 'Myr',
+                centralMassType: 'none'
             },
             'ring': {
                 n: 50,
-                central: 300,
-                mass: 0.1,
-                spread: 1.2, // AU
-                vel: 1.0
+                central: 1, centralUnit: 'solar',
+                mass: 1, massUnit: 'earth',
+                spread: 1.2, distUnit: 'kpc',
+                vel: 1.0, timeUnit: 'Myr',
+                centralMassType: 'star'
             },
             'binary': {
                 n: 20,
-                central: 100,
-                mass: 0.1,
-                spread: 1.5, // AU
-                vel: 1.0
+                central: 1, centralUnit: 'solar',
+                mass: 1, massUnit: 'earth',
+                spread: 1.5, distUnit: 'AU',
+                vel: 1.0, timeUnit: 'years',
+                centralMassType: 'binary'
             },
             'collision': {
                 n: 100,
-                central: 50,
-                mass: 1.0,
-                spread: 2.0, // AU
-                vel: 0.8
+                mass: 1, massUnit: 'solar',
+                spread: 2.0, distUnit: 'pc',
+                vel: 0.8, timeUnit: 'Myr',
+                centralMassType: 'none'
             },
             'random': {
                 n: 50,
-                central: 50,
-                mass: 1.0,
-                spread: 2.0, // AU
-                vel: 1.0
+                mass: 1, massUnit: 'solar',
+                spread: 2.0, distUnit: 'AU',
+                vel: 1.0, timeUnit: 'years',
+                centralMassType: 'none'
             }
         };
+
+        // Update central mass control visibility and label based on preset
+        function updateCentralMassControl(presetName) {
+            const preset = presetsConfig[presetName];
+            const controlEl = document.getElementById('centralMassControl');
+            const labelEl = document.getElementById('centralMassLabel');
+
+            if (preset.centralMassType === 'none') {
+                controlEl.style.display = 'none';
+            } else {
+                controlEl.style.display = '';
+                if (preset.centralMassType === 'binary') {
+                    labelEl.textContent = 'Star Mass (each)';
+                } else {
+                    labelEl.textContent = 'Central Mass';
+                }
+            }
+        }
+
+        // ========================================
+        // Unit Conversion
+        // ========================================
+        const UNIT_TO_SOLAR = {
+            'solar': 1,
+            'earth': 1 / 332946
+        };
+
+        const SOLAR_TO_UNIT = {
+            'solar': 1,
+            'earth': 332946
+        };
+
+        // Internal mass scale (keeps simulation stable)
+        const INTERNAL_MASS_SCALE = 100;
+
+        function displayToInternal(value, unit) {
+            return value * UNIT_TO_SOLAR[unit] * INTERNAL_MASS_SCALE;
+        }
+
+        function convertUnits(value, fromUnit, toUnit) {
+            const solarMass = value * UNIT_TO_SOLAR[fromUnit];
+            return solarMass * SOLAR_TO_UNIT[toUnit];
+        }
 
         // ========================================
         // Initialization
         // ========================================
+
+        // Helper functions moved to global scope
+        function toggleControls(presetName) {
+            const spreadControl = document.getElementById('spreadControl');
+            const particleMassControl = document.getElementById('particleMassControl');
+            const nControl = document.getElementById('nControl');
+            const planetControls = document.getElementById('planetControls');
+            const centralMassControl = document.getElementById('centralMassControl');
+            const p = presetsConfig[presetName];
+
+            // Central Mass
+            if (centralMassControl) {
+                if (p.centralMassType !== 'none') {
+                    centralMassControl.classList.remove('hidden');
+                    document.getElementById('centralMassLabel').textContent =
+                        p.centralMassType === 'binary' ? 'Star Mass' : 'Central Mass';
+                } else {
+                    centralMassControl.classList.add('hidden');
+                }
+            }
+
+            const searchParams = new URLSearchParams(window.location.search);
+            const isSolar = presetName === 'solar';
+
+            if (spreadControl) spreadControl.classList.toggle('hidden', isSolar);
+            if (particleMassControl) particleMassControl.classList.toggle('hidden', isSolar);
+            if (nControl) nControl.classList.toggle('hidden', isSolar);
+
+            if (planetControls) {
+                planetControls.classList.toggle('hidden', !isSolar);
+                if (isSolar) setupPlanetControls();
+            }
+        }
+
+        // Unit conversion helpers
+        function convertMass(val, fromUnit, toUnit) {
+            if (fromUnit === toUnit) return val;
+            // Base is Solar
+            const solar = fromUnit === 'solar' ? val : val / 332946;
+            return toUnit === 'solar' ? solar : solar * 332946;
+        }
+
+        function toPlanetDisplay(solarMass, unit) {
+            // Redundant but keeping for safety if referenced, actually used in setupPlanetControls?
+            // setupPlanetControls uses convertMass. 
+            // previous implementation used toPlanetDisplay?
+            // In view 799, setupPlanetControls uses convertMass at line 875.
+            // But let's check input value setting.
+            // Line 875: input.value = convertMass(p.m, 'solar', 'earth').toFixed(4);
+            // So we don't need toPlanetDisplay.
+            return convertMass(solarMass, 'solar', unit).toFixed(4);
+        }
+
+        let currentPlanetUnit = 'earth';
+
+        // One-time listener for global unit toggle
+        const planetMassUnitSelect = document.getElementById('planetMassUnit');
+        if (planetMassUnitSelect) {
+            planetMassUnitSelect.addEventListener('change', (e) => {
+                currentPlanetUnit = e.target.value;
+                setupPlanetControls(true); // Force redraw
+            });
+        }
+
+        function setupPlanetControls(force = false) {
+            const container = document.getElementById('planetInputs');
+            if (!container || (container.children.length > 0 && !force)) return;
+
+            container.innerHTML = '';
+
+            solarConfig.forEach((p, i) => {
+                const row = document.createElement('div');
+                // Removed 'control-group' class to avoid column layout conflict
+                row.className = 'sm-row';
+                row.style.marginBottom = '8px';
+                row.style.display = 'flex';
+                row.style.flexDirection = 'row'; // Explicitly force row
+                row.style.alignItems = 'center';
+                row.style.justifyContent = 'space-between'; // Spread out
+                row.style.gap = '5px';
+
+                const label = document.createElement('label');
+                label.textContent = p.name;
+                label.style.width = '70px';
+                label.style.flexShrink = '0';
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'mass-input';
+                input.step = 'any';
+                input.style.width = '80px';
+                input.style.flexGrow = '1';
+
+                const select = document.createElement('select');
+                select.className = 'unit-select';
+                select.style.width = '60px';
+                select.innerHTML = `
+                    <option value="earth" selected>M⊕</option>
+                    <option value="solar">M☉</option>
+                `;
+
+                // Initial Value (Earth default for row?) No, use currentPlanetUnit?
+                // The prompt asked for "Dropdown for EACH planet".
+                // In my prev implementation (View 799), I added a SELECT to each row.
+                // But I ALSO had a global logic `currentPlanetUnit`?
+                // Line 850: `document.getElementById('planetMassUnit')...`
+                // Wait, user asked "The simulation should start with... Planet Masses... each with their own input and unit dropdown."
+                // My global dropdown `planetMassUnit` (Line 504) acts as a default?
+                // Or did I confuse the global one with per-row?
+                // The implementation in View 799 adds a per-row select (Line 866).
+                // AND there is a global `planetMassUnit` (Line 850 listener).
+                // What does the global one do? `setupPlanetControls(true)`.
+                // It resets ALL rows to the global setting?
+                // If user wants per-planet, the global one is a convenience "Set All"?
+                // That's fine.
+                // But for individual control, the per-row select handles it (Line 878).
+                // "Input value depends on convertMass(p.m, 'solar', select.value)".
+                // So per-row is working.
+
+                // Set initial row unit to Global default?
+                // select.value is 'earth' by default innerHTML.
+                // If I want to respect global `currentPlanetUnit`, I should set `select.value = currentPlanetUnit`.
+                select.value = currentPlanetUnit;
+
+                input.value = convertMass(p.m, 'solar', currentPlanetUnit).toFixed(4);
+
+                select.addEventListener('change', () => {
+                    const newVal = convertMass(p.m, 'solar', select.value);
+                    input.value = select.value === 'earth' ? newVal.toFixed(4) : newVal.toPrecision(4);
+                });
+
+                input.addEventListener('change', () => {
+                    const val = parseFloat(input.value) || 0;
+                    solarConfig[i].m = convertMass(val, select.value, 'solar');
+                    initSimulation('solar');
+                });
+
+                row.appendChild(label);
+                row.appendChild(input);
+                row.appendChild(select);
+                container.appendChild(row);
+            });
+        }
+
         function initSimulation(presetName) {
             // If switching preset, update controls
             if (presetName && presetsConfig[presetName]) {
                 currentPreset = presetName;
+
+                // Highlight active button
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.preset === presetName);
+                });
+
                 const p = presetsConfig[presetName];
 
                 document.getElementById('nSlider').value = p.n;
-                document.getElementById('centralSlider').value = p.central;
-                document.getElementById('massSlider').value = p.mass;
+
+                // Only set central mass for presets that use it
+                if (p.centralMassType !== 'none' && p.central !== undefined) {
+                    document.getElementById('centralInput').value = p.central;
+                    document.getElementById('centralUnit').value = p.centralUnit;
+                    document.getElementById('centralUnit').dataset.prevUnit = p.centralUnit;
+                }
+
+                document.getElementById('massInput').value = p.mass;
+                document.getElementById('massUnit').value = p.massUnit;
+                document.getElementById('massUnit').dataset.prevUnit = p.massUnit;
                 document.getElementById('spreadSlider').value = p.spread;
-                document.getElementById('velSlider').value = p.vel;
+                initialVelFactor = p.vel;
+
+                if (p.zoom) {
+                    zoom = p.zoom;
+                    document.getElementById('zoomSlider').value = zoom;
+                }
+
+                // Update label text
+                document.getElementById('spreadUnitLabel').textContent = p.distUnit;
+                document.getElementById('timeUnitLabel').textContent = p.timeUnit;
+
+                // Update controls visibility
+                toggleControls(presetName);
 
                 // Update global vars
                 readControls();
             }
+
+            // Functions moved to global scope
+
 
             // Fallback if just called without presetName (e.g. Reset button)
             const W = canvas.getBoundingClientRect().width;
@@ -696,10 +987,9 @@
         }
 
         function initSolarSystem(W, H) {
-            // Convert AU to pixels
-            const spreadPx = spread * PIXELS_PER_AU;
+            // Use global solarConfig
 
-            // Central star
+            // Central star (Sun)
             bodies.push({
                 x: 0, y: 0,
                 vx: 0, vy: 0,
@@ -710,35 +1000,49 @@
             });
             trails.push([]);
 
-            // Orbiting planets
-            for (let i = 0; i < N - 1; i++) {
-                // Distribute distances
-                const r = 50 + (i + 1) * (spreadPx / N) * 2.5;
+            // Create Planets
+            solarConfig.forEach(p => {
+                const rPx = p.r * PIXELS_PER_AU;
                 const angle = Math.random() * Math.PI * 2;
 
-                // Circular velocity: v = sqrt(GM/r)
-                const orbitalV = Math.sqrt(G * centralMass / r) * initialVelFactor;
+                // Calculate mass
+                const simMass = p.m * centralMass;
+
+                // Circular orbital velocity
+                const orbitalV = Math.sqrt(G * centralMass / rPx);
 
                 bodies.push({
-                    x: r * Math.cos(angle),
-                    y: r * Math.sin(angle),
+                    x: rPx * Math.cos(angle),
+                    y: rPx * Math.sin(angle),
                     vx: -orbitalV * Math.sin(angle),
                     vy: orbitalV * Math.cos(angle),
-                    mass: Math.max(0.2, particleMass * (0.5 + Math.random())),
-                    radius: 5,
-                    color: colors[i % colors.length]
+                    mass: simMass,
+                    radius: p.radius,
+                    color: p.color
                 });
                 trails.push([]);
-            }
+            });
+
+            // Update N
+            N = bodies.length;
+            document.getElementById('nSlider').value = N;
+            document.getElementById('nValue').textContent = N;
         }
 
         function initCluster(W, H) {
             const spreadPx = spread * PIXELS_PER_AU;
 
+            // Calculate total mass for Virial theorem estimation
+            // V_virial ≈ sqrt(G * M_total / R)
+            // Using a simpler approximation for stable cluster
+            const totalMass = N * particleMass;
+            const virialV = Math.sqrt(G * totalMass / spreadPx) * initialVelFactor;
+
             for (let i = 0; i < N; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const r = Math.random() * spreadPx;
-                const v = (Math.random() - 0.5) * 0.5 * initialVelFactor;
+                // Distributed radius (denser in center)
+                const r = spreadPx * Math.sqrt(Math.random());
+                const v = virialV * (0.8 + Math.random() * 0.4); // Randomize around virial velocity
                 const vAngle = Math.random() * Math.PI * 2;
 
                 bodies.push({
@@ -965,11 +1269,6 @@
                 bodies[i].vx += acc2[i].ax * dt / 2;
                 bodies[i].vy += acc2[i].ay * dt / 2;
 
-                // Record trails
-                if (trailLength > 0) {
-                    trails[i].push({ x: bodies[i].x, y: bodies[i].y });
-                    while (trails[i].length > trailLength) trails[i].shift();
-                }
             }
 
             simTime += dt;
@@ -1021,7 +1320,8 @@
 
         function drawBody(body, index) {
             const { sx, sy } = toScreen(body.x, body.y);
-            const r = body.radius * zoom;
+            // Ensure bodies don't disappear at low zoom
+            const r = Math.max(2.5, body.radius * zoom);
 
             // Glow for stars
             if (body.isStar) {
@@ -1123,6 +1423,14 @@
                 for (let i = 0; i < steps; i++) {
                     updatePhysics(subDt);
                 }
+
+                // Update trails once per frame
+                if (trailLength > 0) {
+                    for (let i = 0; i < bodies.length; i++) {
+                        trails[i].push({ x: bodies[i].x, y: bodies[i].y });
+                        while (trails[i].length > trailLength) trails[i].shift();
+                    }
+                }
             }
 
             render();
@@ -1134,10 +1442,17 @@
         // ========================================
         function readControls() {
             N = parseInt(document.getElementById('nSlider').value);
-            centralMass = parseFloat(document.getElementById('centralSlider').value);
-            particleMass = parseFloat(document.getElementById('massSlider').value);
+
+            // Get masses from textbox inputs with unit conversion
+            const centralDisplay = parseFloat(document.getElementById('centralInput').value) || 1;
+            const centralUnit = document.getElementById('centralUnit').value;
+            centralMass = displayToInternal(centralDisplay, centralUnit);
+
+            const massDisplay = parseFloat(document.getElementById('massInput').value) || 1;
+            const massUnit = document.getElementById('massUnit').value;
+            particleMass = displayToInternal(massDisplay, massUnit);
+
             spread = parseFloat(document.getElementById('spreadSlider').value);
-            initialVelFactor = parseFloat(document.getElementById('velSlider').value);
             timeScale = parseFloat(document.getElementById('speedSlider').value);
             trailLength = parseInt(document.getElementById('trailSlider').value);
             zoom = parseFloat(document.getElementById('zoomSlider').value);
@@ -1145,17 +1460,41 @@
             showCoM = document.getElementById('showCoM').checked;
 
             document.getElementById('nValue').textContent = N;
-            document.getElementById('centralValue').textContent = centralMass;
-            document.getElementById('massValue').textContent = particleMass.toFixed(1);
             document.getElementById('spreadValue').textContent = spread;
-            document.getElementById('velValue').textContent = initialVelFactor.toFixed(1);
             document.getElementById('speedValue').textContent = timeScale.toFixed(2);
             document.getElementById('trailValue').textContent = trailLength;
             document.getElementById('zoomValue').textContent = zoom.toFixed(1);
         }
 
+        // Initialize unit tracking
+        document.getElementById('centralUnit').dataset.prevUnit = 'solar';
+        document.getElementById('massUnit').dataset.prevUnit = 'earth';
+
+        // Unit dropdown listeners
+        ['centralUnit', 'massUnit'].forEach((id, index) => {
+            const inputId = index === 0 ? 'centralInput' : 'massInput';
+            document.getElementById(id).addEventListener('change', (e) => {
+                const oldUnit = e.target.dataset.prevUnit || 'solar';
+                const newUnit = e.target.value;
+                const input = document.getElementById(inputId);
+                const currentValue = parseFloat(input.value) || 1;
+                input.value = convertUnits(currentValue, oldUnit, newUnit).toPrecision(4);
+                e.target.dataset.prevUnit = newUnit;
+                readControls();
+                initSimulation();
+            });
+        });
+
+        // Mass inputs
+        ['centralInput', 'massInput'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                readControls();
+                initSimulation();
+            });
+        });
+
         // Initial condition sliders - reset simulation
-        ['nSlider', 'centralSlider', 'massSlider', 'spreadSlider', 'velSlider'].forEach(id => {
+        ['nSlider', 'spreadSlider'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
                 readControls();
                 initSimulation();
@@ -1183,15 +1522,6 @@
             btn.addEventListener('click', () => {
                 const presetName = btn.dataset.preset;
 
-                // Handle custom mode
-                if (presetName === 'custom') {
-                    startCustomPlacement();
-                    return;
-                }
-
-                // Exit custom mode if active
-                exitCustomMode();
-
                 initSimulation(presetName);
             });
         });
@@ -1199,114 +1529,7 @@
         // ========================================
         // Custom Placement Mode
         // ========================================
-        function startCustomPlacement() {
-            isCustomMode = true;
-            customBodies = [];
-            isPlaying = false;
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i> Play';
 
-            // Show overlay
-            placementOverlay.classList.remove('hidden');
-            updatePlacementUI();
-
-            // Clear existing simulation visually
-            bodies = [];
-            trails = [];
-            render();
-        }
-
-        function exitCustomMode() {
-            isCustomMode = false;
-            customBodies = [];
-            placementOverlay.classList.add('hidden');
-        }
-
-        function updatePlacementUI() {
-            document.getElementById('placementProgress').textContent = customBodies.length;
-        }
-
-        // Canvas click for custom placement
-        canvas.addEventListener('click', (e) => {
-            if (!isCustomMode) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const W = rect.width;
-            const H = rect.height;
-
-            // Convert to simulation coordinates (centered at origin)
-            const simX = (x - W / 2) / zoom;
-            const simY = (y - H / 2) / zoom;
-
-            customBodies.push({ x: simX, y: simY, screenX: x, screenY: y });
-            updatePlacementUI();
-            renderCustomPreview();
-        });
-
-        // Right-click to remove last body
-        canvas.addEventListener('contextmenu', (e) => {
-            if (!isCustomMode) return;
-            e.preventDefault();
-
-            if (customBodies.length > 0) {
-                customBodies.pop();
-                updatePlacementUI();
-                renderCustomPreview();
-            }
-        });
-
-        function renderCustomPreview() {
-            const W = canvas.getBoundingClientRect().width;
-            const H = canvas.getBoundingClientRect().height;
-
-            ctx.fillStyle = '#050510';
-            ctx.fillRect(0, 0, W, H);
-            drawStars();
-
-            // Draw placed bodies
-            customBodies.forEach((pos, i) => {
-                ctx.beginPath();
-                ctx.arc(pos.screenX, pos.screenY, 5, 0, Math.PI * 2);
-                ctx.fillStyle = colors[i % colors.length];
-                ctx.fill();
-            });
-        }
-
-        // Double-click or replace overlay with "Start" button behavior
-        // Using dblclick to start simulation
-        canvas.addEventListener('dblclick', (e) => {
-            if (!isCustomMode || customBodies.length < 2) return;
-            initCustomSimulation();
-        });
-
-        function initCustomSimulation() {
-            // Create bodies at clicked positions with zero velocity
-            bodies = [];
-            trails = [];
-
-            for (let i = 0; i < customBodies.length; i++) {
-                bodies.push({
-                    x: customBodies[i].x,
-                    y: customBodies[i].y,
-                    vx: 0,
-                    vy: 0,
-                    mass: particleMass,
-                    radius: 5,
-                    color: colors[i % colors.length]
-                });
-                trails.push([]);
-            }
-
-            simTime = 0;
-            document.getElementById('bodyCount').textContent = bodies.length;
-
-            // Hide overlay and start playing
-            placementOverlay.classList.add('hidden');
-            isCustomMode = false;
-            isPlaying = true;
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
-        }
 
         // ========================================
         // Initialize

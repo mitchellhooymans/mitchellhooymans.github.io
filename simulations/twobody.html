@@ -274,10 +274,15 @@
             transition: all var(--transition-fast);
         }
 
-        .preset-btn:hover {
+        .preset-btn:hover,
+        .preset-btn.active {
             border-color: var(--color-accent);
             background: var(--color-accent);
             color: white;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         .placement-overlay {
@@ -319,6 +324,51 @@
             font-size: 0.7rem;
             opacity: 0.7;
             margin-left: 2px;
+        }
+
+        .mass-input-group {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .mass-input {
+            flex: 1;
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            background: var(--color-white);
+            min-width: 0;
+        }
+
+        .mass-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2);
+        }
+
+        .unit-select {
+            padding: var(--space-2);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--color-gray-600);
+            background: var(--color-white);
+            cursor: pointer;
+            min-width: 70px;
+        }
+
+        .unit-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .control-group.mass-control label {
+            margin-bottom: var(--space-1);
         }
     </style>
 </head>
@@ -411,11 +461,7 @@
                             <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label">years</span></div>
                             <div>Orbits: <span id="orbitCount">0</span></div>
                         </div>
-                        <div class="placement-overlay hidden" id="placementOverlay">
-                            <i class="fas fa-mouse-pointer"></i>
-                            <div>Click to place <span id="placementBodyName">Body 1</span></div>
-                            <div class="placement-count"><span id="placementProgress">0</span>/2 bodies placed</div>
-                        </div>
+
                     </div>
 
                     <!-- Controls Panel -->
@@ -427,23 +473,34 @@
                             <div class="preset-btns">
                                 <button class="preset-btn" data-preset="earth-sun">Earth-Sun</button>
                                 <button class="preset-btn" data-preset="binary-star">Binary Star</button>
-                                <button class="preset-btn" data-preset="planet-moon">Planet-Moon</button>
+
                                 <button class="preset-btn" data-preset="equal-mass">Equal Mass</button>
-                                <button class="preset-btn" data-preset="custom">Custom</button>
+
                             </div>
                         </div>
 
                         <div class="control-section">
                             <h4>Masses</h4>
-                            <div class="control-group">
-                                <label>Body 1 Mass <span class="control-value" id="m1Value">10</span><span
-                                        class="unit-label">M☉</span></label>
-                                <input type="range" id="m1Slider" min="1" max="500" step="1" value="10">
+                            <div class="control-group mass-control">
+                                <label>Body 1 Mass</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="m1Input" class="mass-input" value="1" min="0" step="any">
+                                    <select id="m1Unit" class="unit-select">
+                                        <option value="solar" selected>M☉</option>
+                                        <option value="earth">M⊕</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="control-group">
-                                <label>Body 2 Mass <span class="control-value" id="m2Value">1</span><span
-                                        class="unit-label">M☉</span></label>
-                                <input type="range" id="m2Slider" min="1" max="500" step="1" value="1">
+                            <div class="control-group mass-control">
+                                <label>Body 2 Mass</label>
+                                <div class="mass-input-group">
+                                    <input type="number" id="m2Input" class="mass-input" value="0.000003" min="0"
+                                        step="any">
+                                    <select id="m2Unit" class="unit-select">
+                                        <option value="solar" selected>M☉</option>
+                                        <option value="earth">M⊕</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -459,6 +516,8 @@
                                 <input type="range" id="eccSlider" min="0" max="0.8" step="0.05" value="0">
                             </div>
                         </div>
+
+
 
                         <div class="control-section">
                             <h4>Display</h4>
@@ -822,32 +881,137 @@
         }
 
         // ========================================
-        // Controls
+        // Controls & Unit Conversion
         // ========================================
-        const m1Slider = document.getElementById('m1Slider');
-        const m2Slider = document.getElementById('m2Slider');
+
+        // Unit conversion constants (relative to solar mass)
+        const UNIT_TO_SOLAR = {
+            'solar': 1,
+            'earth': 1 / 332946        // 1 Earth mass = 1/332946 solar masses
+        };
+
+        const SOLAR_TO_UNIT = {
+            'solar': 1,
+            'earth': 332946
+        };
+
+        // Internal mass unit scale (keeps simulation stable)
+        const INTERNAL_MASS_SCALE = 10;  // 1 solar mass = 10 internal units
+
+        // Convert display value to internal simulation mass
+        function displayToInternal(value, unit) {
+            const solarMass = value * UNIT_TO_SOLAR[unit];
+            return solarMass * INTERNAL_MASS_SCALE;
+        }
+
+        // Convert internal simulation mass to display value
+        function internalToDisplay(internalMass, unit) {
+            const solarMass = internalMass / INTERNAL_MASS_SCALE;
+            return solarMass * SOLAR_TO_UNIT[unit];
+        }
+
+        // Convert between display units
+        function convertUnits(value, fromUnit, toUnit) {
+            const solarMass = value * UNIT_TO_SOLAR[fromUnit];
+            return solarMass * SOLAR_TO_UNIT[toUnit];
+        }
+
+        const m1Input = document.getElementById('m1Input');
+        const m2Input = document.getElementById('m2Input');
+        const m1UnitSelect = document.getElementById('m1Unit');
+        const m2UnitSelect = document.getElementById('m2Unit');
+
         const sepSlider = document.getElementById('sepSlider');
         const eccSlider = document.getElementById('eccSlider');
         const speedSlider = document.getElementById('speedSlider');
         const trailSlider = document.getElementById('trailSlider');
 
-        function updateFromControls() {
-            m1 = parseFloat(m1Slider.value);
-            m2 = parseFloat(m2Slider.value);
+
+
+        function updateFromControls(source) {
+            // Get display values and convert to internal units
+            const m1Display = parseFloat(m1Input.value) || 0;
+            const m2Display = parseFloat(m2Input.value) || 0;
+            const m1Unit = m1UnitSelect.value;
+            const m2Unit = m2UnitSelect.value;
+
+            m1 = displayToInternal(m1Display, m1Unit);
+            m2 = displayToInternal(m2Display, m2Unit);
+
             separation = parseFloat(sepSlider.value);
             eccentricity = parseFloat(eccSlider.value);
             timeScale = parseFloat(speedSlider.value);
             trailLength = parseInt(trailSlider.value);
 
-            document.getElementById('m1Value').textContent = m1;
-            document.getElementById('m2Value').textContent = m2;
+            // Compute velocities if not set manually
+            if (false) { // DISABLED
+                // Same logic as initSimulation to compute vPeri
+                const totalMass = m1 + m2;
+                const rPeri = (separation * PIXELS_PER_AU) * (1 - eccentricity);
+                // Need to be careful with units here. G is 1000 in pixel/frame units. 
+                // separation is AU. rPeri is pixels.
+                // Wait, initSimulation uses G=1000. 
+                // Let's replicate exact logic or just let initSimulation handle it?
+                // The issue is updateFromControls is just for DISPLAYING the calculated v.
+
+                // Let's use the same formula:
+                // vPeri = sqrt(G * totalMass * (1 + eccentricity) / rPeri);
+                const G = 1000;
+                const PIXELS_PER_AU = 100;
+                const rPeriPx = (separation * PIXELS_PER_AU) * (1 - eccentricity);
+
+                if (rPeriPx > 0 && totalMass > 0) {
+                    const vPeri = Math.sqrt(G * totalMass * (1 + eccentricity) / rPeriPx);
+                    const vy1 = -(vPeri * m2 / totalMass);
+                    const vy2 = vPeri * m1 / totalMass;
+
+                    v1Input.value = vy1.toFixed(4);
+                    v2Input.value = vy2.toFixed(4);
+                }
+            }
+
             document.getElementById('sepValue').textContent = separation;
             document.getElementById('eccValue').textContent = eccentricity.toFixed(2);
             document.getElementById('speedValue').textContent = timeScale.toFixed(2) + 'x';
             document.getElementById('trailValue').textContent = trailLength;
         }
 
-        [m1Slider, m2Slider, sepSlider, eccSlider].forEach(slider => {
+        // Mass input event listeners
+        [m1Input, m2Input].forEach(input => {
+            input.addEventListener('input', () => {
+                updateFromControls();
+                initSimulation();
+            });
+        });
+
+
+
+        // Unit dropdown listeners - convert existing value to new unit
+        m1UnitSelect.addEventListener('change', (e) => {
+            const oldUnit = e.target.dataset.prevUnit || 'solar';
+            const newUnit = e.target.value;
+            const currentValue = parseFloat(m1Input.value) || 0;
+            m1Input.value = convertUnits(currentValue, oldUnit, newUnit).toPrecision(4);
+            e.target.dataset.prevUnit = newUnit;
+            updateFromControls();
+            initSimulation();
+        });
+
+        m2UnitSelect.addEventListener('change', (e) => {
+            const oldUnit = e.target.dataset.prevUnit || 'solar';
+            const newUnit = e.target.value;
+            const currentValue = parseFloat(m2Input.value) || 0;
+            m2Input.value = convertUnits(currentValue, oldUnit, newUnit).toPrecision(4);
+            e.target.dataset.prevUnit = newUnit;
+            updateFromControls();
+            initSimulation();
+        });
+
+        // Initialize previous unit tracking
+        m1UnitSelect.dataset.prevUnit = 'solar';
+        m2UnitSelect.dataset.prevUnit = 'solar';
+
+        [sepSlider, eccSlider].forEach(slider => {
             slider.addEventListener('input', () => {
                 updateFromControls();
                 initSimulation();
@@ -869,31 +1033,49 @@
         // Reset
         document.getElementById('resetBtn').addEventListener('click', initSimulation);
 
-        // Presets (separation now in AU)
+        // Presets with accurate physics values (in solar masses internally)
+        // Displayed in appropriate units for each body
         const presets = {
-            'earth-sun': { m1: 333, m2: 1, sep: 1.0, ecc: 0.017 },
-            'binary-star': { m1: 50, m2: 40, sep: 1.5, ecc: 0.3 },
-            'planet-moon': { m1: 81, m2: 1, sep: 0.8, ecc: 0.055 },
-            'equal-mass': { m1: 30, m2: 30, sep: 1.6, ecc: 0 }
+            'earth-sun': {
+                m1: 1, m1Unit: 'solar',           // Sun: 1 solar mass
+                m2: 1, m2Unit: 'earth',           // Earth: 1 Earth mass (≈3×10⁻⁶ solar)
+                sep: 1.0, ecc: 0.017
+            },
+            'binary-star': {
+                m1: 1.5, m1Unit: 'solar',         // Star A: 1.5 solar masses
+                m2: 1.2, m2Unit: 'solar',         // Star B: 1.2 solar masses
+                sep: 1.5, ecc: 0.3
+            },
+            'earth-sun': {
+                m1: 1, m1Unit: 'solar',           // Sun
+                m2: 1, m2Unit: 'earth',           // Earth
+                sep: 1, ecc: 0.017                // 1 AU, almost circular
+            },
+            'equal-mass': {
+                m1: 1, m1Unit: 'solar',           // Equal solar-mass stars
+                m2: 1, m2Unit: 'solar',
+                sep: 1.6, ecc: 0
+            }
         };
 
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
+                // Highlight active button
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
                 const presetName = btn.dataset.preset;
-
-                // Handle custom mode
-                if (presetName === 'custom') {
-                    startCustomPlacement();
-                    return;
-                }
-
-                // Exit custom mode if active
-                exitCustomMode();
-
                 const p = presets[presetName];
                 if (p) {
-                    m1Slider.value = p.m1;
-                    m2Slider.value = p.m2;
+                    // Set mass values and units
+                    m1Input.value = p.m1;
+                    m1UnitSelect.value = p.m1Unit;
+                    m1UnitSelect.dataset.prevUnit = p.m1Unit;
+
+                    m2Input.value = p.m2;
+                    m2UnitSelect.value = p.m2Unit;
+                    m2UnitSelect.dataset.prevUnit = p.m2Unit;
+
                     sepSlider.value = p.sep;
                     eccSlider.value = p.ecc;
                     updateFromControls();
@@ -905,116 +1087,21 @@
         // ========================================
         // Custom Placement Mode
         // ========================================
-        function startCustomPlacement() {
-            isCustomMode = true;
-            customBodies = [];
-            isPlaying = false;
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i> Play';
 
-            // Show overlay
-            placementOverlay.classList.remove('hidden');
-            updatePlacementUI();
-
-            // Clear existing simulation visually
-            trail1 = [];
-            trail2 = [];
-            body1 = null;
-            body2 = null;
-            render();
-        }
-
-        function exitCustomMode() {
-            isCustomMode = false;
-            customBodies = [];
-            placementOverlay.classList.add('hidden');
-        }
-
-        function updatePlacementUI() {
-            const count = customBodies.length;
-            document.getElementById('placementProgress').textContent = count;
-            document.getElementById('placementBodyName').textContent = count === 0 ? 'Body 1' : 'Body 2';
-        }
-
-        // Canvas click for custom placement
-        canvas.addEventListener('click', (e) => {
-            if (!isCustomMode) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            customBodies.push({ x, y });
-            updatePlacementUI();
-
-            if (customBodies.length >= 2) {
-                // Both bodies placed - initialize custom simulation
-                initCustomSimulation();
-            } else {
-                // Draw first body preview
-                renderCustomPreview();
-            }
-        });
-
-        function renderCustomPreview() {
-            const W = canvas.getBoundingClientRect().width;
-            const H = canvas.getBoundingClientRect().height;
-
-            ctx.fillStyle = '#0a0a14';
-            ctx.fillRect(0, 0, W, H);
-            drawStars();
-
-            // Draw placed bodies
-            customBodies.forEach((pos, i) => {
-                const color = i === 0 ? '#fbbf24' : '#60a5fa';
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2);
-                ctx.fillStyle = color;
-                ctx.fill();
-            });
-        }
-
-        function initCustomSimulation() {
-            const W = canvas.getBoundingClientRect().width;
-            const H = canvas.getBoundingClientRect().height;
-
-            // Create bodies at clicked positions with zero velocity
-            body1 = {
-                x: customBodies[0].x,
-                y: customBodies[0].y,
-                vx: 0,
-                vy: 0,
-                mass: m1,
-                radius: 8,
-                color: '#fbbf24'
-            };
-
-            body2 = {
-                x: customBodies[1].x,
-                y: customBodies[1].y,
-                vx: 0,
-                vy: 0,
-                mass: m2,
-                radius: 8,
-                color: '#60a5fa'
-            };
-
-            trail1 = [];
-            trail2 = [];
-            simTime = 0;
-            orbitCount = 0;
-
-            // Hide overlay and start playing
-            placementOverlay.classList.add('hidden');
-            isCustomMode = false;
-            isPlaying = true;
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
-        }
 
         // ========================================
         // Initialize
         // ========================================
         updateFromControls();
-        initSimulation();
+        updateFromControls();
+
+        // Initialize with default preset
+        const defaultPresetBtn = document.querySelector('.preset-btn[data-preset="earth-sun"]');
+        if (defaultPresetBtn) {
+            defaultPresetBtn.click();
+        } else {
+            initSimulation();
+        }
         requestAnimationFrame(gameLoop);
     </script>
 </body>

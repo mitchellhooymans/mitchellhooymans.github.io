@@ -42,121 +42,128 @@
 
     <style>
         .content-section {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
+            color: var(--color-gray-800);
+            line-height: 1.8;
+            font-size: 1.1rem;
         }
 
-        .info-card {
-            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-            color: var(--color-white);
-            border-radius: var(--radius-xl);
-            padding: var(--space-8);
-            margin-bottom: var(--space-8);
+        .section-block {
+            margin-bottom: var(--space-12);
         }
 
-        .info-card h3 {
-            color: var(--color-white);
+        .section-block h3 {
+            font-size: 1.75rem;
+            color: var(--color-primary-dark);
+            margin-bottom: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        .section-block p {
             margin-bottom: var(--space-4);
         }
 
-        .info-card p {
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0;
+        .intro-lead {
+            font-size: 1.25rem;
+            color: var(--color-gray-700);
+            line-height: 1.6;
+            margin-bottom: var(--space-10);
+            font-weight: 500;
         }
 
-        .topic-card {
-            background: var(--color-white);
-            border: 1px solid var(--color-gray-200);
-            border-radius: var(--radius-xl);
-            padding: var(--space-8);
-            margin-bottom: var(--space-8);
-            transition: all var(--transition-base);
-        }
-
-        .topic-card:hover {
-            border-color: var(--color-accent);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .topic-card h3 {
-            margin-bottom: var(--space-4);
+        /* Modern Link Styling */
+        .term-link {
             color: var(--color-primary);
+            text-decoration: none;
+            border-bottom: 2px solid var(--color-accent-light);
+            transition: all 0.2s ease;
+        }
+
+        .term-link:hover {
+            background-color: var(--color-accent-light);
+            color: var(--color-primary-dark);
+            border-bottom-color: transparent;
+            border-radius: 4px;
+            padding: 0 4px;
+            margin: 0 -4px;
+        }
+
+        /* Reading Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: transparent;
+            z-index: 1001;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--color-accent);
+            width: 0%;
+            transition: width 0.1s;
         }
 
         .topic-image {
             width: 100%;
             border-radius: var(--radius-lg);
-            margin-bottom: var(--space-2);
+            margin-bottom: var(--space-4);
             background: var(--color-gray-100);
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
+            box-shadow: var(--shadow-md);
         }
 
         .topic-image img,
         .topic-image video {
             width: 100%;
             height: auto;
-            object-fit: cover;
+            display: block;
+        }
+
+        .highlight-list {
+            margin: var(--space-4) 0;
+            padding-left: var(--space-4);
+            border-left: 2px solid var(--color-gray-200);
+        }
+
+        .highlight-list li {
+            margin-bottom: var(--space-3);
+            list-style: none;
+            position: relative;
+            padding-left: var(--space-6);
+        }
+
+        .highlight-list li::before {
+            content: '•';
+            color: var(--color-accent);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.2em;
+            line-height: 1;
         }
 
         .media-credit {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             color: var(--color-gray-500);
+            margin-top: var(--space-2);
             text-align: right;
-            margin-bottom: var(--space-6);
-            font-style: italic;
-        }
-
-        .topic-image.placeholder {
-            border: 2px dashed var(--color-gray-300);
-            color: var(--color-gray-400);
-            font-size: 0.875rem;
-        }
-
-        .key-facts {
-            background: var(--color-gray-50);
-            border-radius: var(--radius-lg);
-            padding: var(--space-4);
-            margin-top: var(--space-4);
-        }
-
-        .key-facts h4 {
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--color-gray-500);
-            margin-bottom: var(--space-2);
-        }
-
-        .key-facts ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .key-facts li {
-            padding: var(--space-2) 0;
             border-bottom: 1px solid var(--color-gray-200);
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-2);
-        }
-
-        .key-facts li:last-child {
-            border-bottom: none;
-        }
-
-        .key-facts li i {
-            color: var(--color-accent);
-            margin-top: 4px;
+            padding-bottom: var(--space-2);
+            margin-bottom: var(--space-6);
         }
     </style>
 </head>
 
 <body>
+    <!-- Scroll Progress -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-content">
@@ -208,184 +215,176 @@
 
             <div class="content-section">
                 <!-- Introduction Card -->
-                <div class="info-card reveal">
-                    <h3>What Are Black Holes?</h3>
+                <!-- Introduction -->
+                <div class="intro-lead reveal">
                     <p>
-                        Black holes are regions of spacetime where gravity is so strong that nothing—not even
-                        light or other electromagnetic waves—can escape once past the event horizon. They are
+                        Black holes are regions of <a href="https://en.wikipedia.org/wiki/Spacetime" class="term-link"
+                            target="_blank">spacetime</a> where gravity is so strong that nothing—not even
+                        light or other electromagnetic waves—can escape once past the <a
+                            href="https://en.wikipedia.org/wiki/Event_horizon" class="term-link" target="_blank">event
+                            horizon</a>. They are
                         among the most fascinating and mysterious objects in the universe, predicted by Einstein's
-                        theory of general relativity and now observed through gravitational wave detection.
+                        theory of <a href="https://en.wikipedia.org/wiki/General_relativity" class="term-link"
+                            target="_blank">general relativity</a> and now observed directly through gravitational wave
+                        detection.
                     </p>
                 </div>
 
                 <!-- Topic: Massive Stars -->
-                <div class="topic-card reveal">
+                <!-- Topic: Massive Stars -->
+                <div class="section-block reveal">
+                    <h3>Massive Stars</h3>
                     <div class="topic-image">
                         <img src="../images/tutorials/MassiveStar.jpg" alt="Massive Star">
                     </div>
                     <div class="media-credit">Image Credit: NASA's Goddard Space Flight Center</div>
-                    <h3>Massive Stars</h3>
+
                     <p>
                         The story of stellar mass black holes begins with massive stars—stellar giants that
-                        are at least 8 times more massive than our Sun, with the most extreme being 100+ solar masses.
-                        These cosmic powerhouses burn through their nuclear fuel at prodigious rates, living
-                        fast and dying young compared to smaller stars.
+                        are at least <strong>8 times more massive than our Sun</strong>, with the most extreme reaching
+                        over 100 solar masses.
+                        Unlike our Sun, which has a lifespan of billions of years, these cosmic powerhouses burn through
+                        their nuclear fuel at prodigious rates, living fast and dying young—often in just millions of
+                        years.
                     </p>
                     <p>
-                        In their cores, massive stars fuse hydrogen into helium, then helium into carbon,
-                        and progressively heavier elements in an "onion-layer" structure. This process
-                        continues until iron accumulates in the core—iron fusion absorbs energy rather
-                        than releasing it, setting the stage for catastrophic collapse.
+                        In their cores, these stars fuse elements in an "onion-layer" sequence: hydrogen to helium,
+                        then carbon, and so on. This process creates immense energy that supports the star against
+                        gravity.
+                        However, once iron accumulates in the core, the fusion stops releasing energy. This triggers a
+                        catastrophic
+                        collapse, often resulting in a brilliant <strong>supernova explosion</strong> that leaves behind
+                        either a <a href="https://en.wikipedia.org/wiki/Neutron_star" class="term-link"
+                            target="_blank">neutron star</a> or, if massive enough, a black hole.
                     </p>
-                    <div class="key-facts">
-                        <h4>Key Characteristics</h4>
-                        <ul>
-                            <li><i class="fas fa-check"></i> <strong>Mass range:</strong> 8 to 100+ solar masses</li>
-                            <li><i class="fas fa-check"></i> <strong>Lifespan:</strong> Only millions of years (vs.
-                                billions for Sun-like stars)</li>
-                            <li><i class="fas fa-check"></i> <strong>Luminosity:</strong> Up to millions of times
-                                brighter than the Sun</li>
-                            <li><i class="fas fa-check"></i> <strong>Core fusion:</strong> Produces elements up to iron
-                                through nuclear burning</li>
-                            <li><i class="fas fa-check"></i> <strong>Fate:</strong> Supernova explosion → neutron star
-                                or black hole</li>
-                        </ul>
-                    </div>
                 </div>
 
                 <!-- Topic: Stellar Mass Black Holes -->
-                <div class="topic-card reveal">
+                <!-- Topic: Stellar Mass Black Holes -->
+                <div class="section-block reveal">
+                    <h3>Stellar Mass Black Holes</h3>
                     <div class="topic-image">
                         <img src="../images/tutorials/StellarBlackHole.jpg" alt="Stellar Mass Black Hole">
                     </div>
                     <div class="media-credit">Image Credit: NASA/ESA</div>
-                    <h3>Stellar Mass Black Holes</h3>
+
                     <p>
-                        Stellar mass black holes form when massive stars (typically more than 20 times the mass
-                        of our Sun) reach the end of their lives. When such a star exhausts its nuclear fuel,
-                        it can no longer support itself against its own gravity and collapses. If the remaining
-                        core is massive enough (roughly 3 solar masses or more), nothing can halt the collapse,
-                        and a black hole forms.
+                        When a star more than 20 times the mass of our Sun ends its life, the core collapse is
+                        effectively unstoppable.
+                        If the remnant core exceeds roughly <strong>3 solar masses</strong>, not even neutron degeneracy
+                        pressure can halt gravity.
+                        The object collapses to a point of zero volume—a <a
+                            href="https://en.wikipedia.org/wiki/Gravitational_singularity" class="term-link"
+                            target="_blank">singularity</a>—surrounded by an event horizon.
                     </p>
-                    <div class="key-facts">
-                        <h4>Key Facts</h4>
-                        <ul>
-                            <li><i class="fas fa-check"></i> Mass range: 5 to ~100 solar masses</li>
-                            <li><i class="fas fa-check"></i> Formed from the death of massive stars</li>
-                            <li><i class="fas fa-check"></i> Event horizon radius scales with mass</li>
-                            <li><i class="fas fa-check"></i> Cannot be directly observed—detected by their effects</li>
-                        </ul>
-                    </div>
+                    <p>
+                        Stellar mass black holes typically range from <strong>5 to 100 solar masses</strong>. Since they
+                        emit no light of their own,
+                        we detect them indirectly: either by observing their gravitational influence on a companion star
+                        or by detecting
+                        the X-rays emitted as they devour nearby matter. The size of the event horizon scales linearly
+                        with mass;
+                        a 10-solar-mass black hole has a radius of just ~30 kilometers.
+                    </p>
                 </div>
 
                 <!-- Topic: Binary Black Holes -->
-                <div class="topic-card reveal">
+                <!-- Topic: Binary Black Holes -->
+                <div class="section-block reveal">
+                    <h3>Binary Black Hole Systems</h3>
                     <div class="topic-image">
                         <img src="../images/tutorials/BinaryBlackHole.jpg" alt="Binary Black Hole System">
                     </div>
-                    <div class="media-credit">Image Credit: NASA's Goddard Space Flight Center/Scott Noble; simulation
-                        data, d'Ascoli et al. 2018</div>
-                    <h3>Binary Black Hole Systems</h3>
+                    <div class="media-credit">Image Credit: NASA's Goddard Space Flight Center/Scott Noble</div>
+
                     <p>
-                        A binary black hole is a system consisting of two black holes orbiting around their
-                        common centre of mass. These systems can form in two main ways: from the evolution of
-                        binary star systems where both stars become black holes, or through dynamical capture
-                        in dense stellar environments like globular clusters.
+                        Often, black holes are not alone. A binary black hole system consists of two black holes
+                        orbiting their common center of mass.
+                        These pairings can arise through <strong>isolated binary evolution</strong>, where two massive
+                        stars in a binary system both transform into black holes,
+                        or through <strong>dynamical formation</strong>, where black holes in dense environments (like
+                        <a href="https://en.wikipedia.org/wiki/Globular_cluster" class="term-link"
+                            target="_blank">globular clusters</a>) capture one another gravitationally.
                     </p>
                     <p>
-                        As binary black holes orbit each other, they gradually lose energy by emitting
-                        gravitational waves. This causes their orbit to shrink over time, bringing them
-                        closer together in an ever-tightening spiral that eventually leads to merger.
+                        Once bound, the pair is doomed to spiral inward. As they orbit, they disturb spacetime, emitting
+                        gravitational waves that carry away orbital energy.
+                        This loss of energy causes the orbit to shrink and the black holes to speed up, leading to an
+                        inevitable collision.
+                        In some cases, the product of a merger can find yet another partner, leading to hierarchical
+                        growth of even larger black holes.
                     </p>
-                    <div class="key-facts">
-                        <h4>Formation Channels</h4>
-                        <ul>
-                            <li><i class="fas fa-check"></i> <strong>Isolated binary evolution:</strong> Two massive
-                                stars evolving together</li>
-                            <li><i class="fas fa-check"></i> <strong>Dynamical formation:</strong> Black holes
-                                pairing
-                                up in dense star clusters</li>
-                            <li><i class="fas fa-check"></i> <strong>Hierarchical mergers:</strong> Products of
-                                previous
-                                mergers finding new partners</li>
-                        </ul>
-                    </div>
                 </div>
 
                 <!-- Topic: Mergers -->
-                <div class="topic-card reveal">
+                <!-- Topic: Mergers -->
+                <div class="section-block reveal">
+                    <h3>Black Hole Mergers</h3>
                     <div class="topic-image">
                         <video src="../images/tutorials/binary-bh-merger.webm" autoplay muted loop playsinline
                             width="100%"></video>
                     </div>
                     <div class="media-credit">Video Credit: SXS (Simulating eXtreme Spacetimes) project.</div>
-                    <h3>Black Hole Mergers</h3>
+
                     <p>
-                        When two black holes spiral close enough together, they merge in a violent event
-                        that briefly releases more power than all the stars in the observable universe combined.
-                        The merger process occurs in three distinct phases.
+                        When the black holes finally touch, the event is cataclysmic, briefly releasing more power than
+                        all the stars in the observable universe combined.
+                        The merger unfolds in three distinct phases:
                     </p>
-                    <div class="key-facts">
-                        <h4>Merger Phases</h4>
-                        <ul>
-                            <li><i class="fas fa-1"></i> <strong>Inspiral:</strong> Black holes orbit each other,
-                                gradually getting closer as they emit gravitational waves</li>
-                            <li><i class="fas fa-2"></i> <strong>Merger:</strong> The black holes combine into a
-                                single,
-                                highly distorted black hole</li>
-                            <li><i class="fas fa-3"></i> <strong>Ringdown:</strong> The merged black hole settles
-                                into a
-                                stable state, emitting final gravitational waves</li>
-                        </ul>
-                    </div>
-                    <p style="margin-top: var(--space-4);">
-                        The final black hole has less mass than the sum of the original two—the "missing" mass
-                        (typically 5-10% of the total) is radiated away as gravitational wave energy.
+                    <ul class="highlight-list">
+                        <li><strong>Inspiral:</strong> The black holes spiral closer at increasing speeds, churning up
+                            spacetime and emitting intense gravitational waves.</li>
+                        <li><strong>Merger:</strong> The event horizons touch and coalesce into a single, peanut-shaped,
+                            highly distorted black hole.</li>
+                        <li><strong>Ringdown:</strong> The new, larger black hole vibrates like a struck bell to shed
+                            its distortions, settling into a stable, quiet state.</li>
+                    </ul>
+                    <p>
+                        Crucially, mass is not conserved in this process. Around 5-10% of the total mass is converted
+                        directly into energy (E=mc²)
+                        and radiated away as gravitational waves, leaving the final black hole lighter than the sum of
+                        its parents.
                     </p>
                 </div>
 
                 <!-- Topic: Gravitational Waves -->
-                <div class="topic-card reveal">
+                <!-- Topic: Gravitational Waves -->
+                <div class="section-block reveal">
+                    <h3>Gravitational Waves</h3>
                     <div class="topic-image">
                         <video src="../images/tutorials/gravitational-waves.webm" autoplay muted loop playsinline
                             width="100%"></video>
                     </div>
                     <div class="media-credit">Video Credit: NASA's Goddard Space Flight Center Conceptual Image Lab
                     </div>
-                    <h3>Gravitational Waves</h3>
+
                     <p>
-                        Gravitational waves are ripples in the fabric of spacetime caused by the acceleration
-                        of massive objects. Predicted by Einstein in 1916, they were first directly detected
-                        on September 14, 2015, by the LIGO detectors—from a binary black hole merger about
-                        1.3 billion light-years away.
+                        The ripples tracked by our detectors—<a href="https://en.wikipedia.org/wiki/Gravitational_wave"
+                            class="term-link" target="_blank">gravitational waves</a>—move at the speed of light,
+                        stretching
+                        and squeezing the fabric of reality itself.
+                        Unlike light, which can be blocked by dust, these waves pass unimpeded through matter, carrying
+                        pristine information from the heart of the merger.
                     </p>
                     <p>
-                        These waves travel at the speed of light and carry information about their origins,
-                        as well as valuable clues about the nature of gravity itself. Unlike electromagnetic
-                        radiation, gravitational waves pass through matter almost unimpeded, allowing us to
-                        observe events that would be invisible to traditional telescopes.
+                        We catch these faint signals using a global network of kilometer-scale <a
+                            href="https://en.wikipedia.org/wiki/Interferometry" class="term-link"
+                            target="_blank">interferometers</a>.
+                        <a href="https://www.ligo.caltech.edu/" class="term-link" target="_blank">LIGO</a> (USA) made
+                        the historic first detection in 2015. It is joined by
+                        <a href="https://www.virgo-gw.eu/" class="term-link" target="_blank">Virgo</a> (Italy) and <a
+                            href="https://gwcenter.icrr.u-tokyo.ac.jp/en/" class="term-link" target="_blank">KAGRA</a>
+                        (Japan),
+                        creating a planet-sized "ear" to the cosmos. In the future, the space-based
+                        <a href="https://lisa.nasa.gov/" class="term-link" target="_blank">LISA</a> mission will detect
+                        low-frequency
+                        waves from supermassive black hole mergers, opening yet another window onto the dark universe.
                     </p>
-                    <div class="key-facts">
-                        <h4>Detection & Observatories</h4>
-                        <ul>
-                            <li><i class="fas fa-check"></i> <strong>LIGO (USA):</strong> Two detectors in
-                                Washington
-                                and Louisiana</li>
-                            <li><i class="fas fa-check"></i> <strong>Virgo (Italy):</strong> European detector near
-                                Pisa
-                            </li>
-                            <li><i class="fas fa-check"></i> <strong>KAGRA (Japan):</strong> Underground detector
-                                using
-                                cryogenic mirrors</li>
-                            <li><i class="fas fa-check"></i> <strong>Future LISA (Space):</strong> Planned
-                                space-based
-                                detector for lower frequencies</li>
-                        </ul>
-                    </div>
                 </div>
 
                 <!-- Closing -->
-                <div class="info-card reveal">
+                <!-- Closing -->
+                <div class="section-block reveal">
                     <h3>Why This Matters</h3>
                     <p>
                         The study of black holes and gravitational waves opens new windows to the universe.
@@ -465,6 +464,14 @@
 
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
+
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + "%";
+        });
     </script>
 </body>
 
