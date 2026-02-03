@@ -1034,10 +1034,14 @@
                     input.value = select.value === 'earth' ? newVal.toFixed(4) : newVal.toPrecision(4);
                 });
 
-                input.addEventListener('change', () => {
-                    const val = parseFloat(input.value) || 0;
-                    solarConfig[i].m = convertMass(val, select.value, 'solar');
-                    initSimulation('solar');
+                input.addEventListener('input', () => {
+                    const val = input.value;
+                    const parsed = parseFloat(val);
+                    if (val !== "" && !isNaN(parsed) && parsed >= 0) {
+                        // Use a tiny mass instead of zero to prevent division by zero crashes
+                        solarConfig[i].m = convertMass(Math.max(parsed, 0.0001), select.value, 'solar');
+                        initSimulation('solar');
+                    }
                 });
 
                 row.appendChild(label);
@@ -1582,12 +1586,15 @@
         function readControls() {
             N = parseInt(document.getElementById('nSlider').value);
 
-            // Get masses from textbox inputs with unit conversion
-            const centralDisplay = parseFloat(document.getElementById('centralInput').value) || 1;
+            // Get masses from textbox inputs with unit conversion - handle invalid/empty input
+            // Enforce small positive value to prevent division-by-zero crashes
+            const centralVal = document.getElementById('centralInput').value;
+            const centralDisplay = (centralVal === "" || isNaN(parseFloat(centralVal))) ? 1 : Math.max(parseFloat(centralVal), 0.0001);
             const centralUnit = document.getElementById('centralUnit').value;
             centralMass = displayToInternal(centralDisplay, centralUnit);
 
-            const massDisplay = parseFloat(document.getElementById('massInput').value) || 1;
+            const massVal = document.getElementById('massInput').value;
+            const massDisplay = (massVal === "" || isNaN(parseFloat(massVal))) ? 1 : Math.max(parseFloat(massVal), 0.0001);
             const massUnit = document.getElementById('massUnit').value;
             particleMass = displayToInternal(massDisplay, massUnit);
 
@@ -1624,11 +1631,14 @@
             });
         });
 
-        // Mass inputs
+        // Mass inputs - only re-init if value is a valid positive number
         ['centralInput', 'massInput'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
-                readControls();
-                initSimulation();
+                const val = document.getElementById(id).value;
+                if (val !== "" && !isNaN(parseFloat(val)) && parseFloat(val) >= 0) {
+                    readControls();
+                    initSimulation();
+                }
             });
         });
 

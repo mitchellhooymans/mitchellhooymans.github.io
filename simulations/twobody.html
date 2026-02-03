@@ -1073,9 +1073,13 @@
 
 
         function updateFromControls(source) {
-            // Get display values and convert to internal units
-            const m1Display = parseFloat(m1Input.value) || 0;
-            const m2Display = parseFloat(m2Input.value) || 0;
+            // Get display values and convert to internal units - handle invalid/empty input
+            const m1Val = m1Input.value;
+            const m2Val = m2Input.value;
+
+            const m1Display = (m1Val === "" || isNaN(parseFloat(m1Val))) ? 1 : Math.max(parseFloat(m1Val), 0.0001);
+            const m2Display = (m2Val === "" || isNaN(parseFloat(m2Val))) ? 1 : Math.max(parseFloat(m2Val), 0.0001);
+
             const m1Unit = m1UnitSelect.value;
             const m2Unit = m2UnitSelect.value;
 
@@ -1120,11 +1124,18 @@
             document.getElementById('trailValue').textContent = trailLength;
         }
 
-        // Mass input event listeners
+        // Mass input event listeners - only re-init if value is valid and total mass > 0
         [m1Input, m2Input].forEach(input => {
             input.addEventListener('input', () => {
-                updateFromControls();
-                initSimulation();
+                const val = input.value;
+                if (val !== "" && !isNaN(parseFloat(val))) {
+                    const tempM1 = parseFloat(m1Input.value) || 0;
+                    const tempM2 = parseFloat(m2Input.value) || 0;
+                    if (tempM1 + tempM2 > 0) {
+                        updateFromControls();
+                        initSimulation();
+                    }
+                }
             });
         });
 

@@ -1214,9 +1214,18 @@
         // Get masses from inputs (converting to internal units)
         // Get masses from inputs (converting to internal units)
         function getMassesFromInputs() {
-            const m1 = displayToInternal(parseFloat(document.getElementById('m1Input').value) || 1, document.getElementById('m1Unit').value);
-            const m2 = displayToInternal(parseFloat(document.getElementById('m2Input').value) || 1, document.getElementById('m2Unit').value);
-            const m3 = displayToInternal(parseFloat(document.getElementById('m3Input').value) || 1, document.getElementById('m3Unit').value);
+            const m1Val = document.getElementById('m1Input').value;
+            const m2Val = document.getElementById('m2Input').value;
+            const m3Val = document.getElementById('m3Input').value;
+
+            // Enforce small positive value to prevent division-by-zero crashes
+            const m1Disp = (m1Val === "" || isNaN(parseFloat(m1Val))) ? 1 : Math.max(parseFloat(m1Val), 0.0001);
+            const m2Disp = (m2Val === "" || isNaN(parseFloat(m2Val))) ? 1 : Math.max(parseFloat(m2Val), 0.0001);
+            const m3Disp = (m3Val === "" || isNaN(parseFloat(m3Val))) ? 1 : Math.max(parseFloat(m3Disp), 0.0001);
+
+            const m1 = displayToInternal(m1Disp, document.getElementById('m1Unit').value);
+            const m2 = displayToInternal(m2Disp, document.getElementById('m2Unit').value);
+            const m3 = displayToInternal(m3Disp, document.getElementById('m3Unit').value);
             return [m1, m2, m3];
         }
 
@@ -1231,10 +1240,13 @@
             document.getElementById('zoomValue').textContent = zoom.toFixed(1) + 'x';
         }
 
-        // Mass input event listeners
+        // Mass input event listeners - only re-init if value is valid
         massInputs.forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
-                initSimulation();
+                const val = document.getElementById(id).value;
+                if (val !== "" && !isNaN(parseFloat(val)) && parseFloat(val) >= 0) {
+                    initSimulation();
+                }
             });
         });
 
