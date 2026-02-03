@@ -84,19 +84,28 @@
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/twobody.html</loc>
-  <lastmod>2026-01-30T03:37:00+00:00</lastmod>
+  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/threebody.html</loc>
-  <lastmod>2026-01-30T03:37:00+00:00</lastmod>
+  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/nbodysim.html</loc>
-  <lastmod>2026-01-30T03:37:00+00:00</lastmod>
+  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
-
+<url>
+  <loc>https://mitchellhooymans.com/simulations/projectile.html</loc>
+  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/simulations/pendulum.html</loc>
+  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
 
 </urlset>
