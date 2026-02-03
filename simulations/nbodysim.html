@@ -524,8 +524,7 @@
                         <canvas id="simulationCanvas"></canvas>
                         <div class="sim-overlay">
                             <div>Bodies: <span id="bodyCount">0</span></div>
-                            <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label"
-                                    id="timeUnitLabel">years</span></div>
+                            <div>Time: <span id="timeDisplay">0.00</span></div>
                             <div>FPS: <span id="fpsDisplay">0</span></div>
                         </div>
 
@@ -814,7 +813,7 @@
                 central: 1, centralUnit: 'solar',
                 mass: 1, massUnit: 'earth',
                 spread: 1.0, distUnit: 'AU',
-                vel: 1.0, timeUnit: 'years',
+                vel: 1.0,
                 zoom: 0.08, // Zoom out to see Neptune
                 centralMassType: 'star'
             },
@@ -822,7 +821,7 @@
                 n: 100,
                 mass: 0.01, massUnit: 'solar',
                 spread: 2.0, distUnit: 'pc',
-                vel: 1.0, timeUnit: 'Myr',
+                vel: 1.0,
                 centralMassType: 'none'
             },
             'ring': {
@@ -830,7 +829,7 @@
                 central: 1, centralUnit: 'solar',
                 mass: 1, massUnit: 'earth',
                 spread: 1.2, distUnit: 'kpc',
-                vel: 1.0, timeUnit: 'Myr',
+                vel: 1.0,
                 centralMassType: 'star'
             },
             'binary': {
@@ -838,21 +837,21 @@
                 central: 1, centralUnit: 'solar',
                 mass: 1, massUnit: 'earth',
                 spread: 1.5, distUnit: 'AU',
-                vel: 1.0, timeUnit: 'years',
+                vel: 1.0,
                 centralMassType: 'binary'
             },
             'collision': {
                 n: 100,
                 mass: 1, massUnit: 'solar',
                 spread: 2.0, distUnit: 'pc',
-                vel: 0.8, timeUnit: 'Myr',
+                vel: 0.8,
                 centralMassType: 'none'
             },
             'random': {
                 n: 50,
                 mass: 1, massUnit: 'solar',
                 spread: 2.0, distUnit: 'AU',
-                vel: 1.0, timeUnit: 'years',
+                vel: 1.0,
                 centralMassType: 'none'
             }
         };
@@ -1085,7 +1084,6 @@
 
                 // Update label text
                 document.getElementById('spreadUnitLabel').textContent = p.distUnit;
-                document.getElementById('timeUnitLabel').textContent = p.timeUnit;
 
                 // Update controls visibility
                 toggleControls(presetName);

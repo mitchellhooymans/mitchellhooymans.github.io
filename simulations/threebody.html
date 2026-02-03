@@ -566,7 +566,7 @@
                     <div class="simulation-container">
                         <canvas id="simulationCanvas"></canvas>
                         <div class="sim-overlay">
-                            <div>Time: <span id="timeDisplay">0.00</span> <span class="unit-label">years</span></div>
+                            <div>Time: <span id="timeDisplay">0.00</span></div>
                             <div>Energy: <span id="energyDisplay">0.00</span></div>
                         </div>
                         <div class="chaos-indicator" id="chaosIndicator">
@@ -1221,7 +1221,7 @@
             // Enforce small positive value to prevent division-by-zero crashes
             const m1Disp = (m1Val === "" || isNaN(parseFloat(m1Val))) ? 1 : Math.max(parseFloat(m1Val), 0.0001);
             const m2Disp = (m2Val === "" || isNaN(parseFloat(m2Val))) ? 1 : Math.max(parseFloat(m2Val), 0.0001);
-            const m3Disp = (m3Val === "" || isNaN(parseFloat(m3Val))) ? 1 : Math.max(parseFloat(m3Disp), 0.0001);
+            const m3Disp = (m3Val === "" || isNaN(parseFloat(m3Val))) ? 1 : Math.max(parseFloat(m3Val), 0.0001);
 
             const m1 = displayToInternal(m1Disp, document.getElementById('m1Unit').value);
             const m2 = displayToInternal(m2Disp, document.getElementById('m2Unit').value);
