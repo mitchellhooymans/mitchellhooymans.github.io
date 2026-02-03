@@ -31,6 +31,6 @@ This project includes Python scripts to assist with asset management:
 This project employs a dual-license model:
 
 - **Source Code**: The HTML, CSS, JavaScript, and Python code is licensed under the **MIT License** (see [LICENSE.txt](LICENSE.txt)). You are free to use, modify, and learn from the code.
-- **Content & Assets**: All photography, images, blog posts, and tutorial text are **Copyright © Mitchell Hooymans. All Rights Reserved.**
+- **Content & Assets**: All photography, images, blog posts, and tutorial text are **Copyright © Mitchell Hooymans. All Rights Reserved.** unless stated otherwise.
   - You may **not** use, reproduce, or distribute the photography or written content without explicit written permission.
   - You may **not** use the photos for commercial purposes or in other projects.
