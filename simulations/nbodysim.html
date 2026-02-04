@@ -1669,6 +1669,10 @@
             btn.addEventListener('click', () => {
                 const presetName = btn.dataset.preset;
 
+                // Highlight active button
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
                 initSimulation(presetName);
             });
         });
@@ -1682,7 +1686,11 @@
         // Initialize
         // ========================================
         readControls();
-        initSimulation('solar');
+        // Trigger initial preset
+        const defaultPreset = document.querySelector('.preset-btn[data-preset="solar"]');
+        if (defaultPreset) defaultPreset.click();
+        else initSimulation('solar');
+
         requestAnimationFrame(gameLoop);
     </script>
 </body>

@@ -1307,6 +1307,10 @@
             btn.addEventListener('click', () => {
                 const presetName = btn.dataset.preset;
 
+                // Highlight active button
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
                 // Set display values for the preset
                 const displayMasses = presetDisplayMasses[presetName];
                 if (displayMasses) {
@@ -1328,7 +1332,11 @@
         // Initialize
         // ========================================
         updateDisplayValues();
-        initSimulation('figure8');
+        // Trigger initial preset
+        const defaultPreset = document.querySelector('.preset-btn[data-preset="figure8"]');
+        if (defaultPreset) defaultPreset.click();
+        else initSimulation('figure8');
+
         requestAnimationFrame(gameLoop);
     </script>
 </body>
