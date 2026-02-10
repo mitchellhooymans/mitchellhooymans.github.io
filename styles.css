@@ -347,6 +347,146 @@ p {
     }
 }
 
+/* Dropdown Menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--color-white);
+    min-width: 160px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    border-radius: var(--radius-md);
+    padding: var(--space-2) 0;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding-top: var(--space-2);
+    /* Move spacing to padding to bridge gap */
+}
+
+/* Dropdown link styling */
+.dropdown-content a {
+    color: var(--color-gray-700);
+    padding: var(--space-3) var(--space-4);
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+/* Badge Styles */
+.category-badge.beginner {
+    background: rgba(72, 187, 120, 0.15);
+    color: #48bb78;
+}
+
+.category-badge.intermediate {
+    background: rgba(237, 137, 54, 0.15);
+    color: #ed8936;
+}
+
+.category-badge.advanced {
+    background: rgba(245, 101, 101, 0.15);
+    color: #f56565;
+}
+
+.category-badge.orbital {
+    background: rgba(66, 153, 225, 0.15);
+    color: #4299e1;
+}
+
+.category-badge.chaos {
+    background: rgba(159, 122, 234, 0.15);
+    color: #9f7aea;
+}
+
+.category-badge.kinematics {
+    background: rgba(56, 178, 172, 0.15);
+    color: #38b2ac;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--color-gray-50);
+    color: var(--color-accent);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Landing Cards (Resources Page) */
+.landing-card-section {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+    padding: var(--space-8) 0;
+}
+
+.landing-card {
+    background: var(--color-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-8);
+    width: 350px;
+    text-align: center;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    border: 1px solid var(--color-gray-200);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.landing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-accent);
+}
+
+.landing-card-icon {
+    font-size: 3rem;
+    color: var(--color-accent);
+    margin-bottom: var(--space-4);
+    background: rgba(74, 158, 255, 0.1);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-3);
+    color: var(--color-gray-900);
+}
+
+.landing-card p {
+    color: var(--color-gray-600);
+    margin-bottom: var(--space-6);
+    flex-grow: 1;
+}
+
+/* Animation for dropdown */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
 /* Mobile Menu */
 .mobile-menu {
     display: none;

@@ -18,8 +18,13 @@
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://mitchellhooymans.com/pages/resources.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <loc>https://mitchellhooymans.com/pages/tutorials.html</loc>
+  <lastmod>2026-02-10T12:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/pages/simulations.html</loc>
+  <lastmod>2026-02-10T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>

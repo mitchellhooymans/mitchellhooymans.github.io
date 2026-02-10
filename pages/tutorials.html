@@ -4,25 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | Mitchell Hooymans</title>
+    <title>Tutorials | Mitchell Hooymans</title>
     <meta name="description"
-        content="Get in touch with Mitchell Hooymans - PhD researcher in Astrophysics at The University of Queensland.">
-    <link rel="canonical" href="https://mitchellhooymans.com/pages/contact.html" />
+        content="Physics and programming tutorials by Mitchell Hooymans - Python, black holes, and N-body dynamics.">
+    <link rel="canonical" href="https://mitchellhooymans.com/pages/tutorials.html" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mitchellhooymans.com/pages/contact.html">
-    <meta property="og:title" content="Contact | Mitchell Hooymans">
+    <meta property="og:url" content="https://mitchellhooymans.com/pages/tutorials.html">
+    <meta property="og:title" content="Tutorials | Mitchell Hooymans">
     <meta property="og:description"
-        content="Get in touch with Mitchell Hooymans - PhD researcher in Astrophysics at The University of Queensland.">
+        content="Physics and programming tutorials by Mitchell Hooymans - Python, black holes, and N-body dynamics.">
     <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://mitchellhooymans.com/pages/contact.html">
-    <meta name="twitter:title" content="Contact | Mitchell Hooymans">
+    <meta name="twitter:url" content="https://mitchellhooymans.com/pages/tutorials.html">
+    <meta name="twitter:title" content="Tutorials | Mitchell Hooymans">
     <meta name="twitter:description"
-        content="Get in touch with Mitchell Hooymans - PhD researcher in Astrophysics at The University of Queensland.">
+        content="Physics and programming tutorials by Mitchell Hooymans - Python, black holes, and N-body dynamics.">
     <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
 
     <!-- Fonts -->
@@ -42,111 +42,53 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--space-6);
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .contact-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: var(--space-8);
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .contact-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .contact-card-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+        /* Categories filter */
+        .resource-categories {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto var(--space-5);
-        }
-
-        .contact-card-icon i {
-            font-size: 1.75rem;
-            color: white;
-        }
-
-        .contact-card h3 {
-            color: var(--color-primary);
-            margin-bottom: var(--space-2);
-        }
-
-        .contact-card p {
-            color: var(--color-gray-600);
-            margin-bottom: var(--space-4);
-            margin-top: var(--space-2);
-        }
-
-        .contact-card a {
-            color: var(--color-accent);
-            font-weight: 600;
-            text-decoration: none;
-            display: block;
-            margin-bottom: var(--space-2);
-            min-height: 24px;
-        }
-
-        .contact-card a:hover {
-            text-decoration: underline;
-        }
-
-        .social-grid {
-            display: flex;
-            justify-content: center;
-            gap: var(--space-4);
             flex-wrap: wrap;
-        }
-
-        .social-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: var(--space-5) var(--space-6);
-            display: flex;
-            align-items: center;
             gap: var(--space-3);
-            box-shadow: var(--shadow-md);
-            text-decoration: none;
-            color: var(--color-gray-700);
-            transition: all 0.3s;
+            justify-content: center;
+            margin-bottom: var(--space-8);
         }
 
-        .social-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
+        .category-btn {
+            padding: var(--space-2) var(--space-5);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid var(--color-gray-200);
+            background: var(--color-white);
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
-        .social-card i {
-            font-size: 1.5rem;
+        .category-btn:hover,
+        .category-btn.active {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: var(--color-white);
         }
 
-        .social-card.facebook i {
-            color: #1877f2;
+        /* Category badge */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+            margin-top: 0.25rem;
+            margin-bottom: 0.75rem;
+            width: fit-content;
         }
 
-        .social-card.instagram i {
-            color: #e4405f;
-        }
-
-        .social-card.linkedin i {
-            color: #0a66c2;
-        }
-
-        .social-card.github i {
-            color: #333;
+        .category-badge.tutorial {
+            background: rgba(74, 144, 226, 0.15);
+            color: #4a90e2;
         }
     </style>
 </head>
@@ -171,7 +113,7 @@
                 <li><a href="blog.html">Blog</a></li>
                 <li><a href="photography.html">Photography</a></li>
                 <li><a href="cv.html">CV</a></li>
-                <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="contact.html">Contact</a></li>
             </ul>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <span></span>
@@ -203,66 +145,72 @@
         </div>
         <div class="container" style="position: relative; z-index: 1;">
             <div class="hero-content" style="text-align: center;">
-                <span class="tag tag-accent animate-fade-in-up">Contact</span>
-                <h1 class="animate-fade-in-up delay-100">Get in Touch</h1>
+                <span class="tag tag-accent animate-fade-in-up">Resources</span>
+                <h1 class="animate-fade-in-up delay-100">Tutorials</h1>
                 <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
-                    Feel free to reach out via email or connect with me on social media
+                    Comprehensive guides on Python programming, black hole physics, and N-body dynamics
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Contact Options -->
+    <!-- Tutorials Grid -->
     <section class="section">
         <div class="container">
-            <div class="contact-grid reveal">
-                <div class="contact-card">
-                    <div class="contact-card-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <h3>Email</h3>
-                    <a href="mailto:m.hooymans@uq.edu.au">m.hooymans@uq.edu.au</a>
-                    <p>For academic inquiries, collaborations, or general questions</p>
-                </div>
-
-                <div class="contact-card">
-                    <div class="contact-card-icon">
-                        <i class="fas fa-university"></i>
-                    </div>
-                    <h3>Institution</h3>
-                    <a href="https://smp.uq.edu.au/" target="_blank">The University of Queensland</a>
-                    <p>School of Mathematics and Physics</p>
-                </div>
-
-                <div class="contact-card">
-                    <div class="contact-card-icon">
-                        <i class="fas fa-school"></i>
-                    </div>
-                    <h3>Research Centre</h3>
-                    <a href="https://www.ozgrav.org/" target="_blank">OzGrav</a>
-                    <p>ARC Centre of Excellence for Gravitational Wave Discovery</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Social Media -->
-    <section class="section section-alt">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Connect</span>
-                <h2>Find Me Online</h2>
+            <!-- Category Filter -->
+            <div class="resource-categories reveal">
+                <button class="category-btn active" data-difficulty="all">All</button>
+                <button class="category-btn" data-difficulty="beginner">Beginner</button>
+                <button class="category-btn" data-difficulty="intermediate">Intermediate</button>
+                <button class="category-btn" data-difficulty="advanced">Advanced</button>
             </div>
 
-            <div class="social-grid reveal">
-                <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-card linkedin" target="_blank">
-                    <i class="fab fa-linkedin-in"></i>
-                    <span>LinkedIn</span>
-                </a>
-                <a href="https://github.com/mitchellhooymans" class="social-card github" target="_blank">
-                    <i class="fab fa-github"></i>
-                    <span>GitHub</span>
-                </a>
+            <div class="grid grid-3" id="tutorialGrid">
+                <!-- Python for Physicists -->
+                <div class="card reveal" data-difficulty="beginner">
+                    <div class="card-body">
+                        <h3 class="card-title">Introduction to Python for Physicists</h3>
+                        <span class="category-badge tutorial"><i class="fas fa-book"></i> Beginner</span>
+                        <p class="card-text">
+                            A comprehensive tutorial course designed for anyone who wants to learn the basics of
+                            Python programming. It covers fundamental programming concepts and techniques, with
+                            a focus on applications in physics.
+                        </p>
+                        <a href="../tutorials/pythonphys.html" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> View Tutorial
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Black Holes Intro -->
+                <div class="card reveal delay-100" data-difficulty="beginner">
+                    <div class="card-body">
+                        <h3 class="card-title">Introduction to Black Holes</h3>
+                        <span class="category-badge tutorial"><i class="fas fa-book"></i> Beginner</span>
+                        <p class="card-text">
+                            Explore the fascinating world of black holes, binary systems, mergers, and
+                            gravitational waves. Learn the basics of these amazing astronomical objects.
+                        </p>
+                        <a href="../tutorials/blackholes.html" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i> Explore
+                        </a>
+                    </div>
+                </div>
+
+                <!-- N-Body Problem -->
+                <div class="card reveal delay-200" data-difficulty="intermediate">
+                    <div class="card-body">
+                        <h3 class="card-title">Introduction to the N-Body Problem</h3>
+                        <span class="category-badge tutorial"><i class="fas fa-book"></i> Intermediate</span>
+                        <p class="card-text">
+                            From two bodies to many—explore the basics of gravitational dynamics
+                            including Kepler's laws, three-body chaos, and numerical methods.
+                        </p>
+                        <a href="../tutorials/nbody.html" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i> Learn More
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -334,6 +282,33 @@
 
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
+
+        // Difficulty filter
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const resourceCards = document.querySelectorAll('#tutorialGrid .card');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Get selected difficulty
+                const selectedDifficulty = btn.dataset.difficulty;
+
+                // Filter cards
+                resourceCards.forEach(card => {
+                    const cardDifficulty = card.dataset.difficulty;
+
+                    if (selectedDifficulty === 'all' || cardDifficulty === selectedDifficulty) {
+                        card.style.display = '';
+                        card.classList.add('visible');
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
     </script>
 </body>
 

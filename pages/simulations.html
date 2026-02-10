@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulations | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Interactive physics simulations by Mitchell Hooymans - Orbital mechanics, N-body dynamics, and chaos theory.">
+    <link rel="canonical" href="https://mitchellhooymans.com/pages/simulations.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mitchellhooymans.com/pages/simulations.html">
+    <meta property="og:title" content="Simulations | Mitchell Hooymans">
+    <meta property="og:description"
+        content="Interactive physics simulations by Mitchell Hooymans - Orbital mechanics, N-body dynamics, and chaos theory.">
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://mitchellhooymans.com/pages/simulations.html">
+    <meta name="twitter:title" content="Simulations | Mitchell Hooymans">
+    <meta name="twitter:description"
+        content="Interactive physics simulations by Mitchell Hooymans - Orbital mechanics, N-body dynamics, and chaos theory.">
+    <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Categories filter */
+        .resource-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            justify-content: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .category-btn {
+            padding: var(--space-2) var(--space-5);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid var(--color-gray-200);
+            background: var(--color-white);
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        /* Category badge */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+            margin-top: 0.25rem;
+            margin-bottom: 0.75rem;
+            width: fit-content;
+        }
+
+        .category-badge.simulation {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="../" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="../">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Resources <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="tutorials.html">Tutorials</a>
+                        <a href="simulations.html">Simulations</a>
+                    </div>
+                </li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="photography.html">Photography</a></li>
+                <li><a href="cv.html">CV</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../">Home</a>
+        <a href="about.html">About</a>
+        <a href="tutorials.html">Tutorials</a>
+        <a href="simulations.html">Simulations</a>
+        <a href="blog.html">Blog</a>
+        <a href="photography.html">Photography</a>
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
+        <div
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('../images/general/milkyway.jpg') center/cover no-repeat; opacity: 0.5;">
+        </div>
+        <div
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(30, 58, 95, 0.5) 100%);">
+        </div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <div class="hero-content" style="text-align: center;">
+                <span class="tag tag-accent animate-fade-in-up">Resources</span>
+                <h1 class="animate-fade-in-up delay-100">Simulations</h1>
+                <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
+                    Interactive simulations of gravitational systems, pendulum chaos, and projectile motion
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simulations Grid -->
+    <section class="section">
+        <div class="container">
+            <!-- Category Filter -->
+            <div class="resource-categories reveal">
+                <button class="category-btn active" data-topic="all">All</button>
+                <button class="category-btn" data-topic="orbital">Orbital Mechanics</button>
+                <button class="category-btn" data-topic="chaos">Chaos</button>
+                <button class="category-btn" data-topic="kinematics">Kinematics</button>
+            </div>
+
+            <div class="grid grid-3" id="simulationGrid">
+                <!-- 2-Body Simulation -->
+                <div class="card reveal" data-topic="orbital">
+                    <div class="card-body">
+                        <h3 class="card-title">2-Body Simulation</h3>
+                        <span class="category-badge orbital"><i class="fas fa-globe"></i> Orbital Mechanics</span>
+                        <p class="card-text">
+                            Interactive simulation of two gravitating bodies. Explore orbital mechanics,
+                            elliptical orbits, and Kepler's laws in real-time.
+                        </p>
+                        <a href="../simulations/twobody.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3-Body Simulation -->
+                <div class="card reveal delay-100" data-topic="orbital">
+                    <div class="card-body">
+                        <h3 class="card-title">3-Body Simulation</h3>
+                        <span class="category-badge orbital"><i class="fas fa-globe"></i> Orbital Mechanics</span>
+                        <p class="card-text">
+                            Witness the chaotic dance of three gravitating bodies. Includes famous configurations
+                            like figure-8 orbits and Lagrange points.
+                        </p>
+                        <a href="../simulations/threebody.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- N-Body Simulation -->
+                <div class="card reveal delay-200" data-topic="orbital">
+                    <div class="card-body">
+                        <h3 class="card-title">N-Body Simulation</h3>
+                        <span class="category-badge orbital"><i class="fas fa-globe"></i> Orbital Mechanics</span>
+                        <p class="card-text">
+                            Simulate systems with many gravitating particles. Create solar systems, star clusters,
+                            galaxy collisions, and more.
+                        </p>
+                        <a href="../simulations/nbodysim.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Pendulum Simulation -->
+                <div class="card reveal delay-200" data-topic="chaos">
+                    <div class="card-body">
+                        <h3 class="card-title">Double Pendulum</h3>
+                        <span class="category-badge chaos"><i class="fas fa-random"></i> Chaos</span>
+                        <p class="card-text">
+                            Explore the chaos of the double pendulum. Adjust lengths, masses, and gravity to see
+                            how simple systems become unpredictable.
+                        </p>
+                        <a href="../simulations/pendulum.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Projectile Simulation -->
+                <div class="card reveal delay-200" data-topic="kinematics">
+                    <div class="card-body">
+                        <h3 class="card-title">Projectile Motion</h3>
+                        <span class="category-badge kinematics"><i class="fas fa-rocket"></i> Kinematics</span>
+                        <p class="card-text">
+                            Launch projectiles on Earth, Moon, or Jupiter. Explore kinematics by adjusting speed, angle,
+                            and gravity in real-time.
+                        </p>
+                        <a href="../simulations/projectile.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        navToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+
+        // Scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Topic filter
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const resourceCards = document.querySelectorAll('#simulationGrid .card');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Get selected topic
+                const selectedTopic = btn.dataset.topic;
+
+                // Filter cards
+                resourceCards.forEach(card => {
+                    const cardTopic = card.dataset.topic;
+
+                    if (selectedTopic === 'all' || cardTopic === selectedTopic) {
+                        card.style.display = '';
+                        card.classList.add('visible');
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
