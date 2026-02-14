@@ -23,6 +23,12 @@
 </head>
 
 <body>
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-content">
@@ -164,7 +170,7 @@
                 </div>
 
                 <div class="footer-links">
-                    <h4 style="color: white; margin-bottom: var(--space-4);">Quick Links</h4>
+                    <h4 style="margin-bottom: var(--space-4);">Quick Links</h4>
                     <ul style="list-style: none;">
                         <li class="mb-2"><a href="about.html" style="color: var(--color-gray-400);">About Me</a></li>
                         <li class="mb-2"><a href="tutorials.html" style="color: var(--color-gray-400);">Tutorials</a>
@@ -175,7 +181,7 @@
                 </div>
 
                 <div class="footer-about" style="max-width: 300px;">
-                    <h4 style="color: white; margin-bottom: var(--space-4);">About</h4>
+                    <h4 style="margin-bottom: var(--space-4);">About</h4>
                     <p style="font-size: 0.9rem;">
                         PhD researcher at UQ resolving black hole dynamics in star clusters. Passionate about making
                         complex physics accessible through code and interactive simulations.
@@ -191,7 +197,7 @@
     <!-- JavaScript -->
     <script>
         // Navigation scroll effect
-        const nav = document.getElementById('nav');
+        const nav = document.querySelector('.nav');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
                 nav.classList.add('scrolled');

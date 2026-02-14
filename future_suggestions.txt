@@ -1,0 +1,28 @@
+# Future Enhancements for Mitchell Hooymans' Website
+
+## 1. Interactive Astrophysics Visualizations
+- **Concept:** Embed interactive JavaScript/WebGL simulations directly into the browser.
+- **Why:** Showcases both coding and physics skills instantly.
+- **Ideas:**
+    - **Black Hole Lensing:** A WebGL canvas where users can drag a black hole over a background starfield to see gravitational lensing in real-time.
+    - **Solar System Builder:** Simple N-body integrator where users "fling" planets into orbit.
+    - **Three.js Star Cluster:** A 3D rotatable view of a globular cluster.
+
+## 2. "Live" Coding Blog Series
+- **Concept:** A section of the blog dedicated to "Literate Programming" (e.g., Jupyter Notebooks converted to HTML).
+- **Why:** Demonstrates your workflow and teaching ability.
+- **Implementation:** Tools like `nbconvert` or specific Sphinx themes can render `.ipynb` files beautifully.
+
+## 3. Dark Sky Photography Map
+- **Concept:** An interactive map (Leaflet.js or Mapbox) showing where your astrophotography photos were taken.
+- **Why:** Adds geographical context to your photography portfolio.
+- **Details:** Clicking a pin on "Mt Coot-tha" opens a modal with your photo and camera settings (EXIF data).
+
+## 4. Academic Publication & Citation Tracker
+- **Concept:** A script that auto-fetches your papers from arXiv or NASA ADS.
+- **Why:** Keeps your bibliography up-to-date without manual editing.
+- **Implementation:** A Python script running in GitHub Actions that updates `research.html` daily/weekly.
+
+## 5. "The Lab" (Experimental Playground)
+- **Concept:** A page for half-finished ideas, code snippets, or raw data visualizations.
+- **Why:** Shows curiosity and the "messy" side of research, which can be very humanizing and interesting to recruiters.

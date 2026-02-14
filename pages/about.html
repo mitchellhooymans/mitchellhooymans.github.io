@@ -45,6 +45,12 @@
 </head>
 
 <body>
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-content">
@@ -88,8 +94,8 @@
 
     <!-- Page Header -->
     <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
-        <div
-            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('../images/general/milkyway.jpg') center/cover no-repeat; opacity: 0.5;">
+        <div class="animate-fade-in-up"
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent, var(--color-gray-900)); opacity: 0.5;">
         </div>
         <div
             style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(30, 58, 95, 0.5) 100%);">
@@ -226,7 +232,7 @@
                 </div>
 
                 <div class="footer-links">
-                    <h4 style="color: white; margin-bottom: var(--space-4);">Quick Links</h4>
+                    <h4 style="margin-bottom: var(--space-4);">Quick Links</h4>
                     <ul style="list-style: none;">
                         <li class="mb-2"><a href="about.html" style="color: var(--color-gray-400);">About Me</a></li>
                         <li class="mb-2"><a href="tutorials.html" style="color: var(--color-gray-400);">Tutorials</a>
@@ -238,7 +244,7 @@
                 </div>
 
                 <div class="footer-about" style="max-width: 300px;">
-                    <h4 style="color: white; margin-bottom: var(--space-4);">About</h4>
+                    <h4 style="margin-bottom: var(--space-4);">About</h4>
                     <p style="font-size: 0.9rem;">
                         PhD researcher at UQ resolving black hole dynamics in star clusters. Passionate about making
                         complex physics accessible through code and interactive simulations.
@@ -254,7 +260,28 @@
     <!-- JavaScript -->
     <script>
         // Navigation scroll effect
+        // Navigation scroll effect
+        const nav = document.querySelector('.nav'); // Changed getElementById to querySelector for consistency if id is class
+        // Note: about.html uses id="nav" in line 24 (assumed), but let's check. 
+        // Actually earlier read showed: <nav class="nav" id="nav"> and script used getElementById. 
+        // To be 100% consistent with index (which used class), let's stick to valid selector. 
+        // But getElementById is fine too. Let's just ensure the logic is classList.
+        // The previous code in about.html ALREADY used classList. 
+        // Let's just make sure it matches EXACTLY to avoid any "white" overrides if any existed.
+        // It looked correct:
+        /*
         const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+        */
+        // The issue might be that .nav in CSS was defaulting to something else, but we fixed CSS.
+        // I will re-apply the "standard" version just to be sure.
+
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
                 nav.classList.add('scrolled');

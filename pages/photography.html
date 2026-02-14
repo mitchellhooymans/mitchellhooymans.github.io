@@ -132,6 +132,12 @@
 </head>
 
 <body>
+	<!-- Global Nebula Background -->
+	<div class="global-nebula">
+		<div class="nebula-glow"></div>
+		<div class="nebula-glow"></div>
+	</div>
+
 	<!-- Navigation -->
 	<nav class="nav" id="nav">
 		<div class="nav-content">
@@ -175,8 +181,8 @@
 
 	<!-- Page Header -->
 	<section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
-		<div
-			style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('../images/general/milkyway.jpg') center/cover no-repeat; opacity: 0.5;">
+		<div class="animate-fade-in-up"
+			style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent, var(--color-gray-900)); opacity: 0.5;">
 		</div>
 		<div
 			style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(30, 58, 95, 0.5) 100%);">
@@ -460,7 +466,7 @@
 	<!-- JavaScript -->
 	<script>
 		// Navigation scroll effect
-		const nav = document.getElementById('nav');
+		const nav = document.querySelector('.nav');
 		window.addEventListener('scroll', revealOnScroll);
 		window.addEventListener('load', revealOnScroll);
 
