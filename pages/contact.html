@@ -28,7 +28,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
+        rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
@@ -267,27 +269,89 @@
         </div>
     </section>
 
+    <!-- Contact Form Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Send a Message</h2>
+                <p>Have a question or want to collaborate? Reach out directly.</p>
+            </div>
+
+            <form action="https://formspree.io/f/placeholder" method="POST" class="contact-form reveal"
+                style="max-width: 600px; margin: 0 auto;">
+                <!-- Replace 'placeholder' with your actual Formspree form ID -->
+                <div class="mb-4">
+                    <label for="name"
+                        style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Name</label>
+                    <input type="text" id="name" name="name" required
+                        style="width: 100%; padding: var(--space-3); border: 1px solid var(--color-gray-300); border-radius: var(--radius-md);">
+                </div>
+                <div class="mb-4">
+                    <label for="email"
+                        style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Email</label>
+                    <input type="email" id="email" name="email" required
+                        style="width: 100%; padding: var(--space-3); border: 1px solid var(--color-gray-300); border-radius: var(--radius-md);">
+                </div>
+                <div class="mb-4">
+                    <label for="message"
+                        style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Message</label>
+                    <textarea id="message" name="message" rows="5" required
+                        style="width: 100%; padding: var(--space-3); border: 1px solid var(--color-gray-300); border-radius: var(--radius-md);"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div>
-                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <a href="../" class="footer-brand">Mitchell Hooymans</a>
                     <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                    <div class="social-links" style="margin-top: var(--space-4);">
+                        <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link"
+                            aria-label="LinkedIn" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                            target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="mailto:m.hooymans@uq.edu.au" class="social-link" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="social-links">
-                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
-                        target="_blank">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
-                        target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
+
+                <div class="footer-links">
+                    <h4 style="color: white; margin-bottom: var(--space-4);">Quick Links</h4>
+                    <ul style="list-style: none;">
+                        <li class="mb-2"><a href="about.html" style="color: var(--color-gray-400);">About Me</a></li>
+                        <li class="mb-2"><a href="tutorials.html" style="color: var(--color-gray-400);">Tutorials</a>
+                        </li>
+                        <li class="mb-2"><a href="simulations.html"
+                                style="color: var(--color-gray-400);">Simulations</a></li>
+                        <li class="mb-2"><a href="blog.html" style="color: var(--color-gray-400);">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-about" style="max-width: 300px;">
+                    <h4 style="color: white; margin-bottom: var(--space-4);">About</h4>
+                    <p style="font-size: 0.9rem;">
+                        PhD researcher at UQ resolving black hole dynamics in star clusters. Passionate about making
+                        complex physics accessible through code and interactive simulations.
+                    </p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Mitchell Hooymans. All Rights Reserved.</p>
+                <p>&copy; <span id="year"></span> Mitchell Hooymans. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -334,6 +398,27 @@
 
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
+
+        // Back to top
+        const backToTopBtn = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Update Year
+        document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 </body>
 

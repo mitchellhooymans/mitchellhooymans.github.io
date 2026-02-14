@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Astrophysics research by Mitchell Hooymans: Star Cluster Dynamics and Black Hole Mergers.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-content">
+            <a href="../" class="nav-brand">
+                <span>Mitchell</span>Hooymans
+            </a>
+            <ul class="nav-links">
+                <li><a href="../">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Resources <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="tutorials.html">Tutorials</a>
+                        <a href="simulations.html">Simulations</a>
+                    </div>
+                </li>
+                <li><a href="research.html" class="active">Research</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="photography.html">Photography</a></li>
+                <li><a href="cv.html">CV</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../">Home</a>
+        <a href="about.html">About</a>
+        <a href="tutorials.html">Tutorials</a>
+        <a href="simulations.html">Simulations</a>
+        <a href="research.html">Research</a>
+        <a href="blog.html">Blog</a>
+        <a href="photography.html">Photography</a>
+        <a href="cv.html">CV</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="animate-fade-in-up">Research Projects</h1>
+            <p class="animate-fade-in-up delay-100">Exploring the dynamics of the universe through simulation and
+                theory.</p>
+        </div>
+    </section>
+
+    <!-- Project 1 -->
+    <section class="section">
+        <div class="container">
+            <div class="grid grid-2" style="align-items: center;">
+                <div class="reveal">
+                    <span class="tag tag-accent">Current PhD Project</span>
+                    <h2 class="section-title">Black Hole Dynamics in Star Clusters</h2>
+                    <p class="mb-4">
+                        Investigating how stellar-mass black holes interact within dense globular clusters. Using N-body
+                        simulations, we aim to understand the formation of binary black holes that eventually merge and
+                        emit gravitational waves.
+                    </p>
+                    <ul
+                        style="list-style: disc; margin-left: 1.5rem; margin-bottom: 2rem; color: var(--color-gray-600);">
+                        <li class="mb-2">Developing high-precision N-body codes.</li>
+                        <li class="mb-2">Analyzing merger rates for LIGO/Virgo comparisons.</li>
+                        <li class="mb-2">Studying dynamical friction and mass segregation effects.</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline" onclick="alert('Paper coming soon!')">View Publications</a>
+                </div>
+                <div class="reveal delay-100">
+                    <div
+                        style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);">
+                        <img src="../images/general/blackhole_sim.jpg" alt="Black Hole Simulation"
+                            style="width: 100%; height: auto; display: block;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project 2 -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="grid grid-2" style="align-items: center;">
+                <div class="reveal order-2">
+                    <div
+                        style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);">
+                        <!-- Placeholder for another simulation image -->
+                        <div
+                            style="width: 100%; height: 300px; background: linear-gradient(45deg, #1a2a6c, #b21f1f, #fdbb2d); display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-network-wired" style="font-size: 4rem;"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal delay-100 order-1">
+                    <span class="tag tag-accent">Computational Method</span>
+                    <h2 class="section-title">Parallel N-Body Algorithms</h2>
+                    <p class="mb-4">
+                        Optimizing gravitational force calculations using GPU acceleration and improved tree-code
+                        algorithms. This research focuses on scaling simulations to millions of particles while
+                        maintaining energy conservation.
+                    </p>
+                    <p class="mb-4">
+                        <strong>Tools:</strong> Python, C++, CUDA, MPI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <a href="../" class="footer-brand">Mitchell Hooymans</a>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                    <div class="social-links" style="margin-top: var(--space-4);">
+                        <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link"
+                            aria-label="LinkedIn" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                            target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="mailto:m.hooymans@uq.edu.au" class="social-link" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4 style="color: white; margin-bottom: var(--space-4);">Quick Links</h4>
+                    <ul style="list-style: none;">
+                        <li class="mb-2"><a href="about.html" style="color: var(--color-gray-400);">About Me</a></li>
+                        <li class="mb-2"><a href="tutorials.html" style="color: var(--color-gray-400);">Tutorials</a>
+                        </li>
+                        <li class="mb-2"><a href="research.html" style="color: var(--color-gray-400);">Research</a></li>
+                        <li class="mb-2"><a href="blog.html" style="color: var(--color-gray-400);">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-about" style="max-width: 300px;">
+                    <h4 style="color: white; margin-bottom: var(--space-4);">About</h4>
+                    <p style="font-size: 0.9rem;">
+                        PhD researcher at UQ resolving black hole dynamics in star clusters. Passionate about making
+                        complex physics accessible through code and interactive simulations.
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="year"></span> Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        navToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            const icon = navToggle.querySelector('i');
+        });
+
+        // Scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Back to top
+        const backToTopBtn = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Update Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>
