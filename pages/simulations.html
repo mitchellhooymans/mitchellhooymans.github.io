@@ -58,9 +58,10 @@
             border-radius: var(--radius-full);
             font-size: 0.9rem;
             font-weight: 500;
-            border: 2px solid var(--color-gray-200);
-            background: var(--color-white);
-            color: var(--color-gray-600);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
+            color: var(--color-gray-300);
             cursor: pointer;
             transition: all var(--transition-fast);
         }
@@ -146,10 +147,7 @@
     <!-- Page Header -->
     <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
         <div class="animate-fade-in-up"
-            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent, var(--color-gray-900)); opacity: 0.5;">
-        </div>
-        <div
-            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(30, 58, 95, 0.5) 100%);">
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent, var(--color-gray-50)); opacity: 0.8;">
         </div>
         <div class="container" style="position: relative; z-index: 1;">
             <div class="hero-content" style="text-align: center;">
