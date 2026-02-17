@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | Event Horizon Reached</title>
+    <meta name="description" content="404 Error - Page Not Found. You have crossed the event horizon.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #000;
+            /* Deep void */
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .error-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+            padding: var(--space-4);
+            text-align: center;
+            min-height: 80vh;
+        }
+
+        /* Black Hole Container */
+        .singularity-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: var(--space-8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Black Hole */
+        .black-hole {
+            width: 150px;
+            height: 150px;
+            background: #000;
+            border-radius: 50%;
+            box-shadow:
+                0 0 30px 10px rgba(255, 255, 255, 0.1),
+                /* Inner glow */
+                0 0 60px 20px rgba(129, 140, 248, 0.4),
+                /* Accretion disk inner */
+                0 0 100px 40px rgba(56, 189, 248, 0.2);
+            /* Accretion disk outer */
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Accretion Disk Animation */
+        .accretion-disk {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg,
+                    transparent 0%,
+                    rgba(56, 189, 248, 0.1) 20%,
+                    rgba(129, 140, 248, 0.4) 40%,
+                    rgba(255, 255, 255, 0.6) 50%,
+                    rgba(129, 140, 248, 0.4) 60%,
+                    rgba(56, 189, 248, 0.1) 80%,
+                    transparent 100%);
+            animation: spin 10s linear infinite;
+            filter: blur(10px);
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        @keyframes spin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Glitch Text Effect */
+        .glitch-text {
+            font-family: var(--font-heading);
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--color-white);
+            position: relative;
+            text-shadow: 2px 2px 0px var(--color-accent), -2px -2px 0px var(--color-accent-secondary);
+            animation: glitch 3s infinite;
+            line-height: 1;
+            margin-bottom: var(--space-4);
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 2px 0px var(--color-accent), -2px -2px 0px var(--color-accent-secondary);
+                transform: translate(0);
+            }
+
+            20% {
+                text-shadow: 2px 2px 0px var(--color-accent), -2px -2px 0px var(--color-accent-secondary);
+                transform: translate(0);
+            }
+
+            21% {
+                text-shadow: -2px 2px 0px var(--color-accent), 2px -2px 0px var(--color-accent-secondary);
+                transform: translate(-2px, 2px);
+            }
+
+            22% {
+                text-shadow: 2px -2px 0px var(--color-accent), -2px 2px 0px var(--color-accent-secondary);
+                transform: translate(2px, -2px);
+            }
+
+            23% {
+                text-shadow: 2px 2px 0px var(--color-accent), -2px -2px 0px var(--color-accent-secondary);
+                transform: translate(0);
+            }
+
+            100% {
+                text-shadow: 2px 2px 0px var(--color-accent), -2px -2px 0px var(--color-accent-secondary);
+                transform: translate(0);
+            }
+        }
+
+        /* Terminal Style Logs */
+        .terminal-logs {
+            font-family: var(--font-mono);
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin: var(--space-6) 0;
+            width: 100%;
+            max-width: 500px;
+            text-align: left;
+            color: #d1d5db;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .log-line {
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .log-timestamp {
+            color: var(--color-gray-500);
+        }
+
+        .log-error {
+            color: #ef4444;
+            /* Red */
+        }
+
+        .log-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: var(--color-accent);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .btn-warp {
+            background: linear-gradient(135deg, var(--color-accent-secondary), var(--color-accent));
+            color: var(--color-white);
+            border: none;
+            padding: var(--space-3) var(--space-8);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--color-accent-glow);
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-warp:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 30px var(--color-accent-glow);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Canvas Background */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="starfield"></canvas>
+
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="/js/navbar.js"></script>
+
+    <div class="error-container">
+
+        <div class="singularity-container">
+            <div class="accretion-disk"></div>
+            <div class="black-hole"></div>
+        </div>
+
+        <h1 class="glitch-text">404</h1>
+        <h2 style="color: var(--color-gray-400); font-weight: 400; margin-bottom: var(--space-2);">Event Horizon Reached
+        </h2>
+
+        <div class="terminal-logs">
+            <div class="log-line">
+                <span class="log-timestamp">[timestamp unknown]</span>
+                <span>Searching for file...</span>
+            </div>
+            <div class="log-line">
+                <span class="log-timestamp">[error]</span>
+                <span class="log-error">CRITICAL: Link singularity detected.</span>
+            </div>
+            <div class="log-line">
+                <span class="log-timestamp">[system]</span>
+                <span>Content spaghettified.</span>
+            </div>
+            <div class="log-line">
+                <span class="log-timestamp">[status]</span>
+                <span>Initiating recovery protocol...<span class="log-cursor"></span></span>
+            </div>
+        </div>
+
+        <p style="max-width: 600px; margin-bottom: var(--space-8);">
+            The page you are looking for has been consumed by a black hole or does not exist in this timeline.
+            Return to safe coordinates immediately.
+        </p>
+
+        <a href="/" class="btn-warp">
+            <i class="fas fa-rocket"></i> Initiate Warp Jump
+        </a>
+    </div>
+
+    <!-- JavaScript for Starfield -->
+    <script>
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let stars = [];
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((width * height) / 1000); // Density
+
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    z: Math.random() * 2, // Depth/Speed
+                    size: Math.random() * 1.5,
+                    opacity: Math.random()
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "#fff";
+
+            // Draw center "pull" effect towards the black hole (approx center screen)
+            // But for 404 simple drift is also fine. Let's do a "warp speed" drift towards center
+
+            // For this design, let's just do a slow drift towards the center (singularity)
+            const centerX = width / 2;
+            const centerY = height / 3; // Approx where the black hole is visualised
+
+            stars.forEach(star => {
+                // Move stars towards center
+                const dx = centerX - star.x;
+                const dy = centerY - star.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Acceleration increases as they get closer (gravity)
+                const speed = (1000 / (dist + 10)) * star.z * 0.05;
+
+                star.x += (dx / dist) * speed;
+                star.y += (dy / dist) * speed;
+
+                // Reset if too close (consumed)
+                if (dist < 50) {
+                    // Respawn at edge
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = Math.max(width, height);
+                    star.x = centerX + Math.cos(angle) * radius;
+                    star.y = centerY + Math.sin(angle) * radius;
+                }
+
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+    </script>
+
+    <script src="/js/footer.js"></script>
+    <script>
+        // Initialize footer with correct path (root)
+        new Footer().init('/');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+# Future Website Improvements
+
+## 1. Visual Additions
+- **Custom Cosmic Cursor**: Implement a custom cursor (e.g., a glowing star or crosshair) that trails stardust or light as it moves, enhancing the immersive "cosmic" theme.
+- **Parallax Backgrounds**: Add a parallax effect to the background stars and nebula layers so they move at different speeds when scrolling, creating a sense of 3D depth.
+- **Animated Gradient Borders**: Use moving gradients for the borders of your "glass" cards to make them feel more active and premium.
+- **Scroll Progress Bar**: Add a slim, gradient progress bar at the very top of the window to indicate reading progress, especially useful for long tutorials and blog posts.
+- ** smooth-scroll-behavior**: Ensure `scroll-behavior: smooth;` is applied globally (it is in `styles.css`, but specific anchor link offsets for the fixed navbar can be improved with `scroll-margin-top`).
+
+## 2. New Pages
+- **"/now" Page**: A page titled "What I'm Doing Now" (inspired by Derek Sivers) that gives a high-level update on your current focus, projects, and learning goals.
+- **"/uses" Page**: A standard page for developers/photographers listing your hardware (laptop, camera gear) and software (IDE, apps, tools) stack.
+- **"/guestbook"**: Since this is a static site, you can use a service like **Giscus** (GitHub Discussions driven) or **Utterances** to allow visitors to leave public comments or "sign" your guestbook.
+
+## 3. Functionalities
+- **Site-wide Search**: Implement a client-side search engine (using a library like **Lunr.js** or **Fuse.js**) to allow users to instantly search across your blog posts, tutorials, and research projects.
+- **Code Snippet Improvements**:
+    - **"Copy" Button**: Add a "Copy to Clipboard" button to all code blocks in your tutorials.
+    - **Syntax Highlighting**: Ensure all code blocks use a library like **Prism.js** or **Highlight.js** for beautiful, readable syntax highlighting.
+- **RSS Feed**: Create an `rss.xml` file for your blog. This is crucial for a technical blog so readers can subscribe to your updates.
+- **Table of Contents (Auto-generated)**: For long tutorials (like the "Python for Astrophysics" series), write a script or use a JS library to automatically generate a sticky Table of Contents based on the `<h2>` and `<h3>` headers.
+- **Lazy Loading**: Add `loading="lazy"` to all images, especially in the Photography section. This will significantly improve initial page load times and performance scores.
+- **Related Posts**: At the bottom of blog posts/tutorials, manually or programmatically link to 2-3 "Related Articles" to keep users engaged.

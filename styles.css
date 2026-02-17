@@ -192,7 +192,7 @@ p {
 }
 
 .section {
-    padding: var(--space-20) 0;
+    padding: var(--space-12) 0;
 }
 
 .section-alt {
@@ -646,7 +646,7 @@ p {
     align-items: center;
     text-align: center;
     gap: var(--space-6);
-    padding: var(--space-12) var(--space-6);
+    padding: var(--space-4) var(--space-6);
 }
 
 .hero-image {
@@ -1201,7 +1201,7 @@ p {
 .section-header {
     text-align: center;
     max-width: 700px;
-    margin: 0 auto var(--space-12);
+    margin: 0 auto var(--space-4);
 }
 
 .section-header h2 {
@@ -1301,7 +1301,7 @@ p {
 .page-header {
     background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
     color: var(--color-white);
-    padding: calc(70px + var(--space-16)) 0 var(--space-16);
+    padding: calc(70px + var(--space-10)) 0 var(--space-10);
     text-align: center;
 }
 
@@ -1375,7 +1375,7 @@ p {
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: var(--space-10);
+    padding: var(--space-4);
     max-width: 900px;
 }
 
