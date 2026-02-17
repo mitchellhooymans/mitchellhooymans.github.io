@@ -114,150 +114,25 @@
     </section>
 
     <!-- Research Interests -->
-    <section class="section section-alt">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Research</span>
-                <h2>Research Interests</h2>
-            </div>
 
-            <div class="grid grid-3">
-                <div class="card reveal">
-                    <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-atom"></i>
-                        </div>
-                        <h3 class="card-title">Black Hole Dynamics</h3>
-                        <p class="card-text">
-                            Studying the formation, growth, and dynamical evolution of black holes
-                            in dense stellar environments like globular clusters.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="card reveal delay-100">
-                    <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-meteor"></i>
-                        </div>
-                        <h3 class="card-title">Gravitational Waves</h3>
-                        <p class="card-text">
-                            Exploring the gravitational wave signatures from black hole mergers
-                            and their implications for understanding the universe.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="card reveal delay-200">
-                    <div class="card-body">
-                        <div class="card-icon">
-                            <i class="fas fa-laptop-code"></i>
-                        </div>
-                        <h3 class="card-title">Computational Methods</h3>
-                        <p class="card-text">
-                            Developing and using numerical simulations to model complex
-                            astrophysical systems and analyze observational data.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     </section>
 
-    <!-- Back to Top Button -->
-    <button id="backToTop" class="back-to-top" aria-label="Back to Top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div>
-                    <a href="../" class="footer-brand">Mitchell Hooymans</a>
-                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
-                    <div class="social-links" style="margin-top: var(--space-4);">
-                        <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link"
-                            aria-label="LinkedIn" target="_blank">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
-                            target="_blank">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="mailto:m.hooymans@uq.edu.au" class="social-link" aria-label="Email">
-                            <i class="fas fa-envelope"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="footer-links">
-                    <h4 style="margin-bottom: var(--space-4);">Quick Links</h4>
-                    <ul style="list-style: none;">
-                        <li class="mb-2"><a href="about.html" style="color: var(--color-gray-400);">About Me</a></li>
-                        <li class="mb-2"><a href="tutorials.html" style="color: var(--color-gray-400);">Tutorials</a>
-                        </li>
-                        <li class="mb-2"><a href="simulations.html"
-                                style="color: var(--color-gray-400);">Simulations</a></li>
-                        <li class="mb-2"><a href="blog.html" style="color: var(--color-gray-400);">Blog</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-about" style="max-width: 300px;">
-                    <h4 style="margin-bottom: var(--space-4);">About</h4>
-                    <p style="font-size: 0.9rem;">
-                        PhD researcher at UQ resolving black hole dynamics in star clusters. Passionate about making
-                        complex physics accessible through code and interactive simulations.
-                    </p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="year"></span> Mitchell Hooymans. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 
     <!-- JavaScript -->
     <script>
 
-        // Scroll reveal animation
-        const revealElements = document.querySelectorAll('.reveal');
 
-        const revealOnScroll = () => {
-            const windowHeight = window.innerHeight;
-            revealElements.forEach(el => {
-                const elementTop = el.getBoundingClientRect().top;
-                if (elementTop < windowHeight - 100) {
-                    el.classList.add('visible');
-                }
-            });
-        };
-
-        window.addEventListener('scroll', revealOnScroll);
-        window.addEventListener('load', revealOnScroll);
-
-        // Back to top
-        const backToTopBtn = document.getElementById('backToTop');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add('visible');
-            } else {
-                backToTopBtn.classList.remove('visible');
-            }
-        });
-
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Update Year
-        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/animations.js"></script>
+    <script>
+        new Footer().init('../');
     </script>
 </body>
 

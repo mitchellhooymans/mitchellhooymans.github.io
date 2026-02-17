@@ -61,159 +61,165 @@
         </div>
     </section>
 
-    <!-- Project 1 -->
-    <section class="section">
+    <!-- Research Themes (Navigation) -->
+    <section class="section section-alt" style="padding-bottom: var(--space-10);">
         <div class="container">
-            <div class="grid grid-2" style="align-items: center;">
-                <div class="reveal">
-                    <span class="tag tag-accent">Current PhD Project</span>
-                    <h2 class="section-title">Black Hole Dynamics in Star Clusters</h2>
-                    <p class="mb-4">
-                        Investigating how stellar-mass black holes interact within dense globular clusters. Using N-body
-                        simulations, we aim to understand the formation of binary black holes that eventually merge and
-                        emit gravitational waves.
-                    </p>
-                    <ul
-                        style="list-style: disc; margin-left: 1.5rem; margin-bottom: 2rem; color: var(--color-gray-600);">
-                        <li class="mb-2">Developing high-precision N-body codes.</li>
-                        <li class="mb-2">Analyzing merger rates for LIGO/Virgo comparisons.</li>
-                        <li class="mb-2">Studying dynamical friction and mass segregation effects.</li>
-                    </ul>
-                    <a href="#" class="btn btn-outline" onclick="alert('Paper coming soon!')">View Publications</a>
-                </div>
-                <div class="reveal delay-100">
-                    <div
-                        style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);">
-                        <img src="../images/general/blackhole_sim.jpg" alt="Black Hole Simulation"
-                            style="width: 100%; height: auto; display: block;">
+            <!-- Header Removed -->
+
+            <div class="grid grid-3">
+                <a href="#project-stellar" class="card reveal"
+                    style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-atom"></i>
+                        </div>
+                        <h3 class="card-title">Stellar Dynamics</h3>
+                        <p class="card-text">
+                            Simulating the formation and evolution of black holes in dense star clusters.
+                        </p>
                     </div>
-                </div>
+                </a>
+
+                <a href="#project-gw" class="card reveal delay-100"
+                    style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-wave-square"></i>
+                        </div>
+                        <h3 class="card-title">Gravitational Waves</h3>
+                        <p class="card-text">
+                            Analyzing waveforms to test General Relativity and understand merger properties.
+                        </p>
+                    </div>
+                </a>
+
+                <a href="#project-cosmology" class="card reveal delay-200"
+                    style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-body">
+                        <div class="card-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <h3 class="card-title">Dark Sirens</h3>
+                        <p class="card-text">
+                            Using binary black hole mergers to measure the Universe's expansion rate.
+                        </p>
+                    </div>
+                </a>
             </div>
         </div>
-    </section>
 
-    <!-- Project 2 -->
-    <section class="section section-alt">
-        <div class="container">
-            <div class="grid grid-2" style="align-items: center;">
-                <div class="reveal order-2">
-                    <div
-                        style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);">
-                        <!-- Placeholder for another simulation image -->
-                        <div
-                            style="width: 100%; height: 300px; background: linear-gradient(45deg, #1a2a6c, #b21f1f, #fdbb2d); display: flex; align-items: center; justify-content: center; color: white;">
-                            <i class="fas fa-network-wired" style="font-size: 4rem;"></i>
+        <!-- Project 1 -->
+        <section class="section" id="project-stellar" style="padding-top: var(--space-10);">
+            <div class="container">
+                <div class="grid grid-2" style="align-items: center;">
+                    <div class="reveal">
+                        <span class="tag tag-accent">Current PhD Project</span>
+                        <h2 class="section-title">The formation and dynamics of Stellar black holes in dense star
+                            clusters</h2>
+                        <p class="mb-4">
+                            My research investigates the interplay between stellar evolution and dynamics in dense star
+                            clusters. We explore how the evolution of massive stars and the formation of black holes
+                            influence the cluster's dynamical history. By combining rapid population synthesis with
+                            state of the art N-body simulations, we model the complete lifecycle of these systems to
+                            understand
+                            the origins of compact object mergers.
+                        </p>
+                        <ul
+                            style="list-style: disc; margin-left: 1.5rem; margin-bottom: 2rem; color: var(--color-gray-600);">
+                            <li class="mb-2">Stellar Evolution & Dynamics.</li>
+                            <li class="mb-2">Population Synthesis Codes.</li>
+                            <li class="mb-2">N-body Simulations.</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline" onclick="alert('Paper coming soon!')">View Publications</a>
+                    </div>
+                    <div class="reveal delay-100">
+                        <div id="sim-stellar" class="simulation-placeholder"
+                            style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); position: relative; min-height: 300px;">
+                            <img src="../images/general/blackhole_sim.jpg" alt="Black Hole Simulation"
+                                style="width: 100%; height: auto; display: block;">
                         </div>
                     </div>
                 </div>
-                <div class="reveal delay-100 order-1">
-                    <span class="tag tag-accent">Computational Method</span>
-                    <h2 class="section-title">Parallel N-Body Algorithms</h2>
-                    <p class="mb-4">
-                        Optimizing gravitational force calculations using GPU acceleration and improved tree-code
-                        algorithms. This research focuses on scaling simulations to millions of particles while
-                        maintaining energy conservation.
-                    </p>
-                    <p class="mb-4">
-                        <strong>Tools:</strong> Python, C++, CUDA, MPI
-                    </p>
-                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Back to Top Button -->
-    <button id="backToTop" class="back-to-top" aria-label="Back to Top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div>
-                    <a href="../" class="footer-brand">Mitchell Hooymans</a>
-                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
-                    <div class="social-links" style="margin-top: var(--space-4);">
-                        <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link"
-                            aria-label="LinkedIn" target="_blank">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
-                            target="_blank">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="mailto:m.hooymans@uq.edu.au" class="social-link" aria-label="Email">
-                            <i class="fas fa-envelope"></i>
-                        </a>
+        <!-- Project 2 -->
+        <section class="section section-alt" id="project-gw">
+            <div class="container">
+                <div class="grid grid-2" style="align-items: center;">
+                    <div class="reveal order-2">
+                        <div id="sim-gw" class="simulation-placeholder"
+                            style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); position: relative; min-height: 300px;">
+                            <!-- Placeholder for GW image -->
+                            <div
+                                style="width: 100%; height: 300px; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-wave-square" style="font-size: 4rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reveal delay-100 order-1">
+                        <span class="tag tag-accent">Future Frontier</span>
+                        <h2 class="section-title">Gravitational Wave Physics</h2>
+                        <p class="mb-4">
+                            Complementing the dynamical studies, this research focuses on the gravitational waveforms
+                            emitted during the inspiral and ringdown phases of binary black hole mergers. By analyzing
+                            these signals, we can infer the properties of the progenitor black holes and test the
+                            predictions of General Relativity in the strong-field regime.
+                        </p>
+                        <p class="mb-4">
+                            <strong>Key Areas:</strong> Waveform Analysis, General Relativity Testing, Signal Processing
+                        </p>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="footer-links">
-                    <h4 style="margin-bottom: var(--space-4);">Quick Links</h4>
-                    <ul style="list-style: none;">
-                        <li class="mb-2"><a href="about.html" style="color: var(--color-gray-400);">About Me</a></li>
-                        <li class="mb-2"><a href="tutorials.html" style="color: var(--color-gray-400);">Tutorials</a>
-                        </li>
-                        <li class="mb-2"><a href="research.html" style="color: var(--color-gray-400);">Research</a></li>
-                        <li class="mb-2"><a href="blog.html" style="color: var(--color-gray-400);">Blog</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-about" style="max-width: 300px;">
-                    <h4 style="margin-bottom: var(--space-4);">About</h4>
-                    <p style="font-size: 0.9rem;">
-                        PhD researcher at UQ resolving black hole dynamics in star clusters. Passionate about making
-                        complex physics accessible through code and interactive simulations.
-                    </p>
+        <!-- Project 3 -->
+        <section class="section" id="project-cosmology">
+            <div class="container">
+                <div class="grid grid-2" style="align-items: center;">
+                    <div class="reveal">
+                        <span class="tag tag-accent">Cosmology</span>
+                        <h2 class="section-title">Dark Sirens & The Hubble Tension</h2>
+                        <p class="mb-4">
+                            Using gravitational wave detections of binary black hole mergers—'dark sirens' without
+                            electromagnetic counterparts—to measure the expansion rate of the Universe. This method
+                            offers a novel, independent probe to help resolve the ongoing Hubble tension.
+                        </p>
+                        <p class="mb-4">
+                            <strong>Key Areas:</strong> Cosmology, Bayesian Inference, Gravitational Wave Astronomy
+                        </p>
+                    </div>
+                    <div class="reveal delay-100">
+                        <div id="sim-cosmology" class="simulation-placeholder"
+                            style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); position: relative; min-height: 300px;">
+                            <!-- Placeholder for Cosmology image -->
+                            <div
+                                style="width: 100%; height: 300px; background: linear-gradient(to right, #2b5876, #4e4376); display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-globe-americas" style="font-size: 4rem;"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="year"></span> Mitchell Hooymans. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
+        </section>
 
-    <!-- JavaScript -->
-    <script>
 
-        // Scroll reveal animation
-        const revealElements = document.querySelectorAll('.reveal');
 
-        const revealOnScroll = () => {
-            const windowHeight = window.innerHeight;
-            revealElements.forEach(el => {
-                const elementTop = el.getBoundingClientRect().top;
-                if (elementTop < windowHeight - 100) {
-                    el.classList.add('visible');
-                }
-            });
-        };
+        <!-- Footer -->
+        <div id="footer-placeholder"></div>
 
-        window.addEventListener('scroll', revealOnScroll);
-        window.addEventListener('load', revealOnScroll);
+        <!-- JavaScript -->
+        <script>
 
-        // Back to top
-        const backToTopBtn = document.getElementById('backToTop');
 
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add('visible');
-            } else {
-                backToTopBtn.classList.remove('visible');
-            }
-        });
-
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Update Year
-        document.getElementById('year').textContent = new Date().getFullYear();
-    </script>
+        </script>
+        <script src="../js/footer.js"></script>
+        <script src="../js/back-to-top.js"></script>
+        <script src="../js/animations.js"></script>
+        <script>
+            new Footer().init('../');
+        </script>
 </body>
 
 </html>
