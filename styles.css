@@ -334,32 +334,30 @@ p {
 }
 
 .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 500;
-    color: var(--color-gray-600);
-    transition: color var(--transition-fast);
+    color: var(--color-gray-400);
+    transition: all var(--transition-fast);
     position: relative;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    border: 1px solid transparent;
 }
 
-.nav-links a:hover,
+.nav-links a:hover {
+    color: var(--color-white);
+    background: rgba(255, 255, 255, 0.05);
+}
+
 .nav-links a.active {
-    color: var(--color-primary);
+    color: var(--color-white);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
-.nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--color-accent);
-    transition: width var(--transition-fast);
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-    width: 100%;
-}
+/* Underline removed for pill shape */
 
 .nav-toggle {
     display: flex;
@@ -378,9 +376,10 @@ p {
     transition: transform var(--transition-fast);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .nav-links {
         display: flex;
+        align-items: center;
     }
 
     .nav-toggle {
@@ -397,7 +396,10 @@ p {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: var(--color-white);
+    background-color: rgba(15, 23, 42, 0.95);
+    /* Dark Glass */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     min-width: 160px;
     box-shadow: var(--shadow-lg);
     z-index: 1001;
@@ -407,17 +409,23 @@ p {
     left: 50%;
     transform: translateX(-50%);
     padding-top: var(--space-2);
-    /* Move spacing to padding to bridge gap */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Dropdown link styling */
 .dropdown-content a {
-    color: var(--color-gray-700);
+    color: var(--color-gray-400);
     padding: var(--space-3) var(--space-4);
     text-decoration: none;
     display: block;
     white-space: nowrap;
     font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-white);
 }
 
 /* Badge Styles */
@@ -437,24 +445,26 @@ p {
 }
 
 .category-badge.orbital {
-    background: rgba(66, 153, 225, 0.15);
-    color: #4299e1;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 .category-badge.chaos {
-    background: rgba(159, 122, 234, 0.15);
-    color: #9f7aea;
+    background: rgba(167, 139, 250, 0.15);
+    color: #a78bfa;
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(167, 139, 250, 0.2);
 }
 
 .category-badge.kinematics {
-    background: rgba(56, 178, 172, 0.15);
-    color: #38b2ac;
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+    border: 1px solid rgba(52, 211, 153, 0.2);
 }
 
-.dropdown-content a:hover {
-    background-color: var(--color-gray-50);
-    color: var(--color-accent);
-}
 
 .dropdown:hover .dropdown-content {
     display: block;

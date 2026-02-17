@@ -61,7 +61,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(5px);
-            color: var(--color-gray-300);
+            color: var(--color-gray-400);
             cursor: pointer;
             transition: all var(--transition-fast);
         }
@@ -104,45 +104,11 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="nav" id="nav">
-        <div class="nav-content">
-            <a href="../" class="nav-brand">
-                <span>Mitchell</span>Hooymans
-            </a>
-            <ul class="nav-links">
-                <li><a href="../">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Resources <i class="fas fa-chevron-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="tutorials.html">Tutorials</a>
-                        <a href="simulations.html">Simulations</a>
-                    </div>
-                </li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="photography.html">Photography</a></li>
-                <li><a href="cv.html">CV</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
 
     <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="../">Home</a>
-        <a href="about.html">About</a>
-        <a href="tutorials.html">Tutorials</a>
-        <a href="simulations.html">Simulations</a>
-        <a href="blog.html">Blog</a>
-        <a href="photography.html">Photography</a>
-        <a href="cv.html">CV</a>
-        <a href="contact.html">Contact</a>
-    </div>
 
     <!-- Page Header -->
     <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
@@ -150,7 +116,7 @@
             style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, transparent, var(--color-gray-50)); opacity: 0.8;">
         </div>
         <div class="container" style="position: relative; z-index: 1;">
-            <div class="hero-content" style="text-align: center;">
+            <div class="page-hero-content">
                 <h1 class="animate-fade-in-up delay-100">Interactive Simulations</h1>
                 <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
                     Interactive simulations of gravitational systems, pendulum chaos, and projectile motion
@@ -304,30 +270,6 @@
 
     <!-- JavaScript -->
     <script>
-        // Navigation scroll effect
-        const nav = document.querySelector('.nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        });
-
-        // Mobile menu toggle
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        navToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
-        });
-
-        // Close mobile menu when clicking a link
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('open');
-            });
-        });
 
         // Scroll reveal animation
         const revealElements = document.querySelectorAll('.reveal');

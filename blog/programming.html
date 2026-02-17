@@ -450,45 +450,11 @@
 
 <body>
     <!-- Navigation -->
-    <nav class="nav" id="nav">
-        <div class="nav-content">
-            <a href="../" class="nav-brand">
-                <span>Mitchell</span>Hooymans
-            </a>
-            <ul class="nav-links">
-                <li><a href="../">Home</a></li>
-                <li><a href="../pages/about.html">About</a></li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Resources <i class="fas fa-chevron-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="../pages/tutorials.html">Tutorials</a>
-                        <a href="../pages/simulations.html">Simulations</a>
-                    </div>
-                </li>
-                <li><a href="../pages/blog.html" class="active">Blog</a></li>
-                <li><a href="../pages/photography.html">Photography</a></li>
-                <li><a href="../pages/cv.html">CV</a></li>
-                <li><a href="../pages/contact.html">Contact</a></li>
-            </ul>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
 
     <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="../">Home</a>
-        <a href="../pages/about.html">About</a>
-        <a href="../pages/tutorials.html">Tutorials</a>
-        <a href="../pages/simulations.html">Simulations</a>
-        <a href="../pages/blog.html">Blog</a>
-        <a href="../pages/photography.html">Photography</a>
-        <a href="../pages/cv.html">CV</a>
-        <a href="../pages/contact.html">Contact</a>
-    </div>
 
     <!-- Post Header -->
     <header class="post-header">
@@ -724,30 +690,6 @@
 
     <!-- JavaScript -->
     <script>
-        // Navigation scroll effect
-        const nav = document.getElementById('nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        });
-
-        // Mobile menu toggle
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        navToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
-        });
-
-        // Close mobile menu when clicking a link
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('open');
-            });
-        });
 
         // Copy Link Functionality
         const copyBtn = document.querySelector('a[aria-label="Copy link"]');

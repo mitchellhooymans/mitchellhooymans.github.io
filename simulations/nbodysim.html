@@ -64,6 +64,7 @@
             border-radius: var(--radius-xl);
             overflow: hidden;
             box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             position: relative;
             width: 100%;
         }
@@ -93,8 +94,9 @@
         }
 
         .controls-panel {
-            background: var(--color-white);
-            border: 1px solid var(--color-gray-200);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-xl);
             padding: var(--space-5);
             max-height: 650px;
@@ -103,7 +105,7 @@
 
         .controls-panel h3 {
             margin-bottom: var(--space-4);
-            color: var(--color-primary);
+            color: var(--color-white);
             font-size: 1rem;
         }
 
@@ -123,7 +125,7 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--color-gray-500);
+            color: var(--color-gray-400);
             margin-bottom: var(--space-2);
         }
 
@@ -143,7 +145,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: 500;
-            color: var(--color-gray-700);
+            color: var(--color-white);
             font-size: 0.8rem;
         }
 
@@ -210,12 +212,14 @@
         }
 
         .sim-btn-secondary {
-            background: var(--color-gray-200);
-            color: var(--color-gray-700);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-white);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sim-btn-secondary:hover {
-            background: var(--color-gray-300);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
         }
 
         .info-card {
@@ -251,9 +255,10 @@
 
         .preset-btn {
             padding: var(--space-2);
-            border: 1px solid var(--color-gray-300);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-md);
-            background: var(--color-white);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-white);
             font-size: 0.7rem;
             cursor: pointer;
             transition: all var(--transition-fast);
@@ -286,7 +291,7 @@
 
         .checkbox-group label {
             font-size: 0.8rem;
-            color: var(--color-gray-700);
+            color: var(--color-white);
             cursor: pointer;
         }
 
@@ -346,12 +351,12 @@
         .mass-input {
             flex: 1;
             padding: var(--space-2);
-            border: 1px solid var(--color-gray-300);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-md);
             font-size: 0.85rem;
             font-weight: 500;
-            color: var(--color-gray-700);
-            background: var(--color-white);
+            color: var(--color-white);
+            background: rgba(0, 0, 0, 0.3);
             min-width: 0;
         }
 
@@ -363,12 +368,12 @@
 
         .unit-select {
             padding: var(--space-2);
-            border: 1px solid var(--color-gray-300);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-md);
             font-size: 0.75rem;
             font-weight: 500;
-            color: var(--color-gray-600);
-            background: var(--color-white);
+            color: var(--color-white);
+            background: rgba(0, 0, 0, 0.3);
             cursor: pointer;
             min-width: 65px;
         }
@@ -438,11 +443,11 @@
             width: 320px;
             max-height: calc(100vh - 40px);
             overflow-y: auto;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(10px);
             z-index: 1000;
             box-shadow: var(--shadow-2xl);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         body.full-browser .sim-overlay {
@@ -454,45 +459,11 @@
 
 <body>
     <!-- Navigation -->
-    <nav class="nav" id="nav">
-        <div class="nav-content">
-            <a href="../" class="nav-brand">
-                <span>Mitchell</span>Hooymans
-            </a>
-            <ul class="nav-links">
-                <li><a href="../">Home</a></li>
-                <li><a href="../pages/about.html">About</a></li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Resources <i class="fas fa-chevron-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="../pages/tutorials.html">Tutorials</a>
-                        <a href="../pages/simulations.html">Simulations</a>
-                    </div>
-                </li>
-                <li><a href="../pages/blog.html">Blog</a></li>
-                <li><a href="../pages/photography.html">Photography</a></li>
-                <li><a href="../pages/cv.html">CV</a></li>
-                <li><a href="../pages/contact.html">Contact</a></li>
-            </ul>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
 
     <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="../">Home</a>
-        <a href="../pages/about.html">About</a>
-        <a href="../pages/tutorials.html">Tutorials</a>
-        <a href="../pages/simulations.html">Simulations</a>
-        <a href="../pages/blog.html">Blog</a>
-        <a href="../pages/photography.html">Photography</a>
-        <a href="../pages/cv.html">CV</a>
-        <a href="../pages/contact.html">Contact</a>
-    </div>
 
     <!-- Page Header -->
     <header class="page-header">
@@ -666,20 +637,6 @@
     </footer>
 
     <script>
-        // ========================================
-        // Navigation
-        // ========================================
-        const nav = document.getElementById('nav');
-        window.addEventListener('scroll', () => {
-            nav.classList.toggle('scrolled', window.scrollY > 50);
-        });
-
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        navToggle.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => mobileMenu.classList.remove('open'));
-        });
 
         // ========================================
         // Canvas Setup
