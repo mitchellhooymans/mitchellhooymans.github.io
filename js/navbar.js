@@ -16,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // We use rootPath to ensure links point to the correct location
     const navHTML = `
     <nav class="nav" id="nav">
+        <canvas id="brand-particles"></canvas>
         <div class="nav-content">
             <a href="${rootPath}" class="nav-brand" id="navBrand">
-                <canvas id="brand-particles"></canvas>
                 <span>Mitchell</span>Hooymans
             </a>
             <ul class="nav-links">
@@ -117,18 +117,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // 6. Navbar Particle Effect
+    // 6. Navbar Particle Effect
     const brandCanvas = document.getElementById('brand-particles');
     const brandLink = document.getElementById('navBrand');
+    const navContainer = document.getElementById('nav');
 
-    if (brandCanvas && brandLink) {
+    if (brandCanvas && brandLink && navContainer) {
         const ctx = brandCanvas.getContext('2d');
         let particles = [];
         let animationId;
         let isHovering = false;
 
         function resizeCanvas() {
-            brandCanvas.width = brandLink.offsetWidth;
-            brandCanvas.height = brandLink.offsetHeight;
+            brandCanvas.width = navContainer.offsetWidth;
+            brandCanvas.height = navContainer.offsetHeight;
         }
 
         // Initialize canvas size
@@ -137,22 +139,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         class Particle {
             constructor() {
-                this.x = Math.random() * brandCanvas.width;
-                this.y = brandCanvas.height + Math.random() * 10; // Start slightly below
-                this.vx = (Math.random() - 0.5) * 1.5;
-                this.vy = -Math.random() * 2 - 0.5; // Upward movement
-                this.size = Math.random() * 2 + 0.5;
+                // Get brand position relative to nav
+                const brandRect = brandLink.getBoundingClientRect();
+                const navRect = navContainer.getBoundingClientRect();
+                const relX = brandRect.left - navRect.left;
+                const relY = brandRect.top - navRect.top;
+
+                // Spawn within the brand text area
+                this.x = relX + Math.random() * brandRect.width;
+                this.y = relY + Math.random() * brandRect.height;
+
+                // Random velocity - faster to travel length
+                this.vx = (Math.random() - 0.5) * 6;
+                this.vy = (Math.random() - 0.5) * 6;
+
+                this.size = Math.random() * 3 + 1;
                 this.life = 1.0;
-                this.decay = Math.random() * 0.03 + 0.01;
-                // Randomly choose cyan or purple
-                this.color = Math.random() > 0.5 ? '56, 189, 248' : '167, 139, 250';
+                // Much slower decay to allow travel across full navbar
+                this.decay = Math.random() * 0.002 + 0.001;
+
+                // Randomly choose cyan (Blue) or white
+                this.color = Math.random() > 0.5 ? '56, 189, 248' : '255, 255, 255';
             }
 
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.life -= this.decay;
-                this.size -= 0.05;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > brandCanvas.width) this.vx = -this.vx;
+                if (this.y < 0 || this.y > brandCanvas.height) this.vy = -this.vy;
+
+                if (!isHovering) {
+                    this.life -= 0.05; // Fast fade out when not hovering
+                } else {
+                    this.life -= this.decay;
+                }
+
+                if (this.life < 0) this.life = 0;
             }
 
             draw() {
@@ -168,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Spawn new particles if hovering
             if (isHovering) {
-                for (let i = 0; i < 3; i++) { // Spawn rate
+                for (let i = 0; i < 2; i++) { // Reduced spawn rate
                     particles.push(new Particle());
                 }
             }
@@ -179,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 particles[i].draw();
 
                 // Remove dead particles
-                if (particles[i].life <= 0 || particles[i].size <= 0) {
+                if (particles[i].life <= 0) {
                     particles.splice(i, 1);
                     i--;
                 }
