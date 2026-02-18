@@ -1,23 +1,58 @@
-# Future Website Improvements
+# Comprehensive Website Improvement Plan
 
-## 1. Visual Additions
-- **Custom Cosmic Cursor**: Implement a custom cursor (e.g., a glowing star or crosshair) that trails stardust or light as it moves, enhancing the immersive "cosmic" theme.
-- **Parallax Backgrounds**: Add a parallax effect to the background stars and nebula layers so they move at different speeds when scrolling, creating a sense of 3D depth.
-- **Animated Gradient Borders**: Use moving gradients for the borders of your "glass" cards to make them feel more active and premium.
-- **Scroll Progress Bar**: Add a slim, gradient progress bar at the very top of the window to indicate reading progress, especially useful for long tutorials and blog posts.
-- ** smooth-scroll-behavior**: Ensure `scroll-behavior: smooth;` is applied globally (it is in `styles.css`, but specific anchor link offsets for the fixed navbar can be improved with `scroll-margin-top`).
+## 1. Visual & Immersive Additions
+*Enhancing the "Cosmic" Theme*
+- **Custom Cosmic Cursor**: Implement a glowing star or crosshair cursor that trails stardust or light as it moves.
+- **Parallax Backgrounds**: Add a 3D depth effect to background stars and nebula layers that move at different speeds on scroll.
+- **Animated Gradient Borders**: Use moving gradients for "glass" card borders to make them feel active and premium.
+- **Scroll Progress Bar**: A slim, gradient bar at the top of the window to indicate reading progress.
+- **Dark Mode Refinements**: Ensure high contrast for text overlaid on star fields (already improved, but check all pages).
 
-## 2. New Pages
-- **"/now" Page**: A page titled "What I'm Doing Now" (inspired by Derek Sivers) that gives a high-level update on your current focus, projects, and learning goals.
-- **"/uses" Page**: A standard page for developers/photographers listing your hardware (laptop, camera gear) and software (IDE, apps, tools) stack.
-- **"/guestbook"**: Since this is a static site, you can use a service like **Giscus** (GitHub Discussions driven) or **Utterances** to allow visitors to leave public comments or "sign" your guestbook.
+## 2. New Pages & Sections
+*Expanding Content Offerings*
+- **"/now" Page**: A high-level update on current focus, projects, and learning goals (inspired by Derek Sivers).
+- **"/uses" Page**: A standard developer/photographer page listing hardware (laptop, camera) and software stack.
+- **"The Lab"**: A dedicated page for experimental code, half-finished ideas, and raw data visualizations—showing the "messy" side of research.
+- **"/guestbook"**: A place for visitors to leave public comments (using **Giscus** or **Utterances** for static sites).
+- **Dark Sky Photography Map**: An interactive map (Leaflet.js) showing pin locations of your astrophotography shots.
 
-## 3. Functionalities
-- **Site-wide Search**: Implement a client-side search engine (using a library like **Lunr.js** or **Fuse.js**) to allow users to instantly search across your blog posts, tutorials, and research projects.
-- **Code Snippet Improvements**:
-    - **"Copy" Button**: Add a "Copy to Clipboard" button to all code blocks in your tutorials.
-    - **Syntax Highlighting**: Ensure all code blocks use a library like **Prism.js** or **Highlight.js** for beautiful, readable syntax highlighting.
-- **RSS Feed**: Create an `rss.xml` file for your blog. This is crucial for a technical blog so readers can subscribe to your updates.
-- **Table of Contents (Auto-generated)**: For long tutorials (like the "Python for Astrophysics" series), write a script or use a JS library to automatically generate a sticky Table of Contents based on the `<h2>` and `<h3>` headers.
-- **Lazy Loading**: Add `loading="lazy"` to all images, especially in the Photography section. This will significantly improve initial page load times and performance scores.
-- **Related Posts**: At the bottom of blog posts/tutorials, manually or programmatically link to 2-3 "Related Articles" to keep users engaged.
+## 3. Advanced Functionalities
+*Improving User Experience & Utility*
+- **Site-wide Search**: Client-side search (Lunr.js/Fuse.js) across blog posts, tutorials, and research.
+- **Publication Tracker**: A script (Python/GitHub Actions) to auto-fetch your papers from arXiv/ADS and update `research.html`.
+- **RSS Feed**: Crucial for technical blogs so readers can subscribe to updates.
+- **Auto-generated Table of Contents**: Sticky TOC for long tutorials (like Python for Astrophysics).
+- **Lazy Loading**: Apply `loading="lazy"` to all images for performance.
+- **Code Snippet Enhancements**: Add "Copy to Clipboard" buttons and syntax highlighting (Prism.js).
+
+## 4. Interactive Astrophysics Visualizations
+*High-Impact WebGL/JS Projects*
+- **Black Hole Lensing**: A WebGL simulation where users drag a black hole over a background starfield to see gravitational lensing.
+- **Solar System Builder**: A simple N-body integrator where users "fling" planets into orbit.
+- **3D Star Cluster**: A rotatable Three.js visualization of a globular cluster.
+
+## 5. Educational Resources (Synthesized from mjcowley.github.io)
+* Valuable Content to Host or Link to*
+
+### Tutorials & Guides
+- **Academic Skills**:
+    - "Writing Scientific Papers in Astronomy" (PDF/Guide)
+    - "Tips & Tricks for Writing LaTeX-based Papers"
+    - "Zotero Reference Manager User Guide"
+- **Technical Skills**:
+    - **Matplotlib Cheat Sheets**: Create a dedicated page or downloadable PDF.
+    - **Python Plotting Guide**: "Making Matplotlib Beautiful By Default".
+    - **Linux Basics**: "Low Fat Linux" guide for students.
+    - **"Live" Coding Series**: Jupyter Notebooks converted to HTML (Literate Programming).
+
+### Tools to Build
+*Modern, Dark-Mode Web Tools for Astronomers*
+- **Cosmology Calculator**: Re-implement Ned Wright's calculator with modern UI.
+- **Flux <-> Luminosity Converter**: Simple input form for quick calculations.
+- **Object Visibility Tool**: Check if an object is visible tonight from major observatories.
+- **SVO Filter Profile Viewer**: Visualize telescope filter passbands.
+
+### Career & Student Advice
+- **PhD IDP Template**: Individual Development Plan template for students.
+- **"So you want to be an astronomer?"**: A career path guide or blog post.
+- **Communication Skills**: Resources on presenting science effectively.

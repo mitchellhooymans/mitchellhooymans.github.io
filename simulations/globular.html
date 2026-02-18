@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Globular Cluster | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Interactive 3D visualization of a globular star cluster using Three.js. Rotate and explore thousands of stars.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="3D Globular Cluster | Mitchell Hooymans">
+    <meta property="og:description"
+        content="Interactive 3D visualization of a globular star cluster using Three.js. Rotate and explore thousands of stars.">
+    <meta property="og:image" content="../images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .simulation-container {
+            width: 100%;
+            height: 80vh;
+            background: #000;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(17, 25, 40, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            color: white;
+            width: 300px;
+            max-width: 90%;
+            z-index: 10;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .controls-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+
+        .control-group select,
+        .control-group input[type="number"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group select:focus,
+        .control-group input[type="number"]:focus {
+            border-color: var(--color-accent);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+
+        .value-display {
+            color: var(--color-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-secondary) 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.4);
+        }
+
+        .btn-reset:active {
+            transform: translateY(0);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 20;
+            transition: opacity 0.5s;
+        }
+    </style>
+
+    <!-- Import Map for Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <div class="container" style="padding-top: 120px; padding-bottom: 60px;">
+        <!-- Header -->
+        <div class="section-header" style="margin-bottom: 40px;">
+            <a href="../pages/simulations.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Simulations
+            </a>
+            <h1>3D Globular Cluster</h1>
+            <p style="max-width: 600px; color: var(--color-gray-400);">
+                An interactive WebGL visualization of a globular star cluster. These ancient spherical collections
+                contain hundreds of thousands of stars bound by gravity.
+            </p>
+        </div>
+
+        <!-- Simulation -->
+        <div class="simulation-container">
+            <div id="loading" class="loading-overlay">Initializing Universe...</div>
+            <canvas id="simulationCanvas"></canvas>
+
+            <div class="controls-overlay">
+                <div class="controls-title">
+                    <i class="fas fa-sliders-h"></i> Cluster Parameters
+                </div>
+
+                <div class="control-group">
+                    <label>Star Count: <span id="countVal" class="value-display">100,000</span></label>
+                    <input type="range" id="starCount" min="100000" max="1000000" step="10000" value="100000">
+                </div>
+
+                <div class="control-group">
+                    <label>Mass Function</label>
+                    <select id="massFunction">
+                        <option value="salpeter">Salpeter (α = 2.35)</option>
+                        <option value="kroupa">Kroupa (2001)</option>
+                        <option value="baumgardt">Baumgardt (2023)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Cluster Radius (pc)</label>
+                    <input type="number" id="clusterSize" value="10" min="1" max="100" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>Rotation Speed: <span id="speedVal" class="value-display">0.0</span></label>
+                    <input type="range" id="rotSpeed" min="0" max="5.0" step="0.1" value="0.0">
+                </div>
+
+                <div class="control-group">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="massSegregation">
+                        <span>Mass Segregation</span>
+                    </label>
+                </div>
+
+                <button id="regenerateBtn" class="btn-reset">
+                    <i class="fas fa-sync-alt"></i> Regenerate Cluster
+                </button>
+
+                <p style="margin-top: 15px; font-size: 0.75rem; color: rgba(255,255,255,0.5); text-align: center;">
+                    Left Click: Rotate • Right Click: Pan • Scroll: Zoom
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+    <script src="../js/footer.js"></script>
+    <script>new Footer().init('../');</script>
+
+    <!-- Simulation Script -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // State
+        const state = {
+            count: 100000, // Total N physics
+            massFunction: 'salpeter',
+            radius: 10, // pc (Half-mass radius approx)
+            rotationSpeed: 0.0,
+            massSegregation: false,
+            starSize: 0.8 // Locked optimal size
+        };
+
+        // DOM Elements
+        const container = document.querySelector('.simulation-container');
+        const canvas = document.getElementById('simulationCanvas');
+        const loading = document.getElementById('loading');
+
+        // Three.js Setup
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 30; // Initial zoom
+        camera.position.y = 10;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = state.rotationSpeed;
+
+        // Particles Data
+        let particleSystem;
+        let geometry;
+        let material;
+
+        // Mass Function Helper
+        function generateMass(type) {
+            let mass;
+            const r = Math.random();
+
+            if (type === 'salpeter') {
+                // Salpeter: alpha = 2.35. Range 0.1 to 100.
+                // CDF inversion: M = (Min^(1-a) + r * (Max^(1-a) - Min^(1-a))) ^ (1/(1-a))
+                // 1-a = -1.35.
+                const mMin = 0.1;
+                const mMax = 50.0;
+                const alpha = 2.35;
+                const p = 1 - alpha; // -1.35
+                const term1 = Math.pow(mMin, p);
+                const term2 = Math.pow(mMax, p);
+                mass = Math.pow(term1 + r * (term2 - term1), 1 / p);
+            }
+            else if (type === 'kroupa') {
+                // Kroupa 2001
+                // 0.08 - 0.5: alpha = 1.3
+                // 0.5 - ~100: alpha = 2.3
+                // Need weights.
+                // Integral M^-a dM = [M^(1-a)/(1-a)]
+                // Seg 1: 0.08-0.5, a=1.3 -> p=-0.3. K1=1.
+                // Seg 2: 0.5-50, a=2.3 -> p=-1.3. K2 such that K1*0.5^-1.3 = K2*0.5^-2.3 => K2 = 0.5^(-1.3 - (-2.3)) = 0.5.
+
+                // Weights W1 = K1 * (0.5^-0.3 - 0.08^-0.3)/-0.3
+                // W2 = K2 * (50^-1.3 - 0.5^-1.3)/-1.3
+                // Calculating approx ratios...
+                // Simpler: just rejection sampling or conditional probability.
+                // Probability of being in low mass bin vs high mass bin?
+                // Visual approx is sufficient given limits.
+                // Heuristic: ~50% stars < 0.5Msun in Kroupa.
+                if (Math.random() < 0.48) {
+                    // Low mass: 0.1 - 0.5, alpha=1.3
+                    const mMin = 0.1; const mMax = 0.5; const alpha = 1.3; const p = -0.3;
+                    const term1 = Math.pow(mMin, p); const term2 = Math.pow(mMax, p);
+                    mass = Math.pow(term1 + Math.random() * (term2 - term1), 1 / p);
+                } else {
+                    // High mass: 0.5 - 50, alpha=2.3
+                    const mMin = 0.5; const mMax = 50.0; const alpha = 2.3; const p = -1.3;
+                    const term1 = Math.pow(mMin, p); const term2 = Math.pow(mMax, p);
+                    mass = Math.pow(term1 + Math.random() * (term2 - term1), 1 / p);
+                }
+            }
+            else if (type === 'baumgardt') {
+                // Baumgardt 2023
+                // <0.4: a=0.3
+                // 0.4-1.0: a=1.65
+                // >1.0: a=2.30
+                // Continuity constants (K):
+                // K1=1.
+                // K2 at 0.4: 1*0.4^-0.3 = K2*0.4^-1.65 => K2 = 0.4^1.35
+                // K3 at 1.0: K2*1.0^-1.65 = K3*1.0^-2.3 => K2 = K3 => K3 = 0.4^1.35.
+
+                // Rough probability weights (Area under curve):
+                // A1 (0.1-0.4, a=0.3): (0.4^0.7 - 0.1^0.7)/0.7 ~ 0.4
+                // A2 (0.4-1.0, a=1.65): K2 * (1^-0.65 - 0.4^-0.65)/-0.65.
+                // A3 (1.0-50, a=2.3): K3 * ...
+
+                // Let's use simple conditional logic based on approx population fractions
+                // Low slope (-0.3) means FLATTISH distribution, so relatively fewer tiny stars compared to Salpeter.
+                // 30% low, 40% med, 30% high (Rough visual approx)
+                const r2 = Math.random();
+                if (r2 < 0.3) { // 0.1 - 0.4 M
+                    const mMin = 0.1; const mMax = 0.4; const alpha = 0.3; const p = 0.7; // 1 - 0.3
+                    mass = Math.pow(Math.pow(mMin, p) + Math.random() * (Math.pow(mMax, p) - Math.pow(mMin, p)), 1 / p);
+                } else if (r2 < 0.7) { // 0.4 - 1.0 M
+                    const mMin = 0.4; const mMax = 1.0; const alpha = 1.65; const p = -0.65;
+                    mass = Math.pow(Math.pow(mMin, p) + Math.random() * (Math.pow(mMax, p) - Math.pow(mMin, p)), 1 / p);
+                } else { // > 1.0 M
+                    const mMin = 1.0; const mMax = 50.0; const alpha = 2.3; const p = -1.3;
+                    mass = Math.pow(Math.pow(mMin, p) + Math.random() * (Math.pow(mMax, p) - Math.pow(mMin, p)), 1 / p);
+                }
+            }
+
+            return Math.min(mass, 50.0);
+        }
+
+        function generateCluster() {
+            if (particleSystem) {
+                scene.remove(particleSystem);
+                geometry.dispose();
+                material.dispose();
+            }
+
+            geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            const sizes = [];
+            const colorVar = new THREE.Color();
+
+            // Physics Constants
+            // We simulate 'state.count' stars but only render ~10%
+            const renderFraction = 0.1;
+
+            // Visual Scale: 1 unit = 1 parsec
+            const r_h = state.radius; // Input is effectively half-mass radius
+
+            // Density Profile Parameters
+            // Normal: Plummer Model (approx King W0=6)
+            // Rho(r) ~ (1 + (r/a)^2)^-5/2
+            // a ~ r_h / 1.3
+            const a_plummer = r_h / 1.3;
+
+            // Core Collapsed: Power Law Cusp + Outer Halo
+            // Inner: Rho(r) ~ r^-2 (Singular Isothermal Sphere approx)
+            // Outer: Plummer-like falloff
+            // Transition at r_break (very small, e.g. 0.1 pc)
+            const r_break = 0.5; // Visual break for the cusp
+
+            for (let i = 0; i < state.count; i++) {
+                // Visualization Subsampling
+                if (Math.random() > renderFraction) continue;
+
+                // 1. Mass Generation (Unchanged)
+                const mass = generateMass(state.massFunction);
+
+                // 2. Position Generation
+                let r, theta, phi;
+
+                let a = a_plummer;
+
+                if (state.massSegregation) {
+                    // Energy Equipartition / Mass Segregation
+                    // Heavier stars sink to the center -> smaller scale radius 'a'
+                    // Lighter stars evapourate to halo -> larger scale radius 'a'
+                    // a ~ m^-0.5 is a reasonable dynamical approximation
+                    const avgMass = 0.5; // Reference mass
+                    const segregationFactor = Math.pow(mass / avgMass, -0.5);
+
+                    // Clamp the segregation factor to prevent extreme outcomes
+                    // e.g. 50 Msun -> factor ~0.1 (very dense core)
+                    // 0.1 Msun -> factor ~2.2 (extended halo)
+                    a = a_plummer * segregationFactor;
+                }
+
+                // Standard Plummer Model Sampling
+                // CDF: M(r) = r^3 * (r^2 + a^2)^-1.5
+                // Inverse CDF: r = a / sqrt( P^(-2/3) - 1 )
+                const P = Math.random();
+                r = a / Math.sqrt(Math.pow(P, -2.0 / 3.0) - 1);
+
+                // Soft cutoff to avoid infinite extent
+                if (r > 15 * r_h) r = 15 * r_h;
+
+                theta = Math.random() * Math.PI * 2;
+                phi = Math.acos(2 * Math.random() - 1);
+
+                const x = r * Math.sin(phi) * Math.cos(theta);
+                const y = r * Math.sin(phi) * Math.sin(theta);
+                const z = r * Math.cos(phi);
+
+                positions.push(x, y, z);
+
+                // 3. Colors (Mass-based Temperature)
+                if (mass < 0.4) colorVar.setHSL(0.02, 1.0, 0.5); // Red M-dwarf
+                else if (mass < 0.8) colorVar.setHSL(0.08, 1.0, 0.6); // Orange K
+                else if (mass < 1.2) colorVar.setHSL(0.14, 1.0, 0.7); // Yellow G
+                else if (mass < 2.0) colorVar.setHSL(0.6, 0.1, 0.9); // White F/A
+                else if (mass < 8.0) colorVar.setHSL(0.6, 0.8, 0.8); // Blue B (More saturated)
+                else colorVar.setHSL(0.66, 1.0, 0.7); // Blue-Violet O (Slightly bluer hue)
+
+                colors.push(colorVar.r, colorVar.g, colorVar.b);
+
+                // 4. Size
+                // Locked base size, but scale by mass for realism
+                let s = state.starSize;
+                // Core Collapsed: Make core stars slightly smaller/sharper to resolve density? 
+                // No, actually larger to bloom? Let's keep consistent.
+                if (mass > 2.0) s *= 1.5;
+                if (mass > 10.0) s *= 2.0;
+                sizes.push(s);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+            // Custom Shader Material for glowy dots
+            material = new THREE.PointsMaterial({
+                size: state.starSize,
+                vertexColors: true,
+                map: createCircleTexture(),
+                transparent: true,
+                alphaTest: 0.01,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true,
+                depthWrite: false
+            });
+
+            particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+
+            // Hide loading
+            loading.style.opacity = 0;
+            setTimeout(() => loading.style.display = 'none', 500);
+
+            // Adjust Camera Zoom based on radius
+            if (camera) {
+                // Ensure 1 pc = 1 unit
+                // Fit field.
+                const targetZ = Math.max(20, state.radius * 3.0);
+                // camera.position.z = targetZ; 
+            }
+        }
+
+        function createCircleTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 32, 32);
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Event Listeners
+        document.getElementById('starCount').addEventListener('input', (e) => {
+            document.getElementById('countVal').textContent = e.target.value;
+            state.count = parseInt(e.target.value);
+        });
+
+        document.getElementById('massFunction').addEventListener('change', (e) => {
+            state.massFunction = e.target.value;
+        });
+
+        document.getElementById('clusterSize').addEventListener('input', (e) => {
+            state.radius = parseFloat(e.target.value);
+        });
+
+        document.getElementById('rotSpeed').addEventListener('input', (e) => {
+            document.getElementById('speedVal').textContent = e.target.value;
+            state.rotationSpeed = parseFloat(e.target.value);
+            controls.autoRotateSpeed = state.rotationSpeed;
+        });
+
+        document.getElementById('massSegregation').addEventListener('change', (e) => {
+            state.massSegregation = e.target.checked;
+        });
+
+        document.getElementById('regenerateBtn').addEventListener('click', () => {
+            generateCluster();
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        generateCluster();
+        animate();
+
+    </script>
+</body>
+
+</html>
