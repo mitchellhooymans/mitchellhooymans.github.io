@@ -869,15 +869,18 @@ p {
 }
 
 .btn-primary {
-    background: var(--color-accent);
+    background: var(--color-primary-light);
     color: var(--color-white);
+    border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .btn-primary:hover {
-    background: var(--color-primary);
+    background: rgba(56, 189, 248, 0.2);
     color: var(--color-white);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
+    box-shadow: 0 0 20px var(--color-accent-glow);
+    border-color: var(--color-accent);
+    text-shadow: 0 0 5px rgba(56, 189, 248, 0.5);
 }
 
 .btn-outline {
@@ -2219,7 +2222,7 @@ code {
 /* Intro/Header for Articles */
 .page-header {
     background: transparent;
-    padding: var(--space-12) 0 var(--space-8);
+    padding: 160px 0 var(--space-8);
     text-align: center;
 }
 
@@ -2316,26 +2319,18 @@ code {
 
 .back-link {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    color: var(--color-white);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: var(--space-3) var(--space-6);
-    border-radius: var(--radius-full);
-    margin: 0 auto var(--space-8) auto;
-    font-weight: 500;
     width: fit-content;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-gray-400);
     text-decoration: none;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: var(--space-4);
+    transition: all 0.2s ease;
 }
 
 .back-link:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--color-accent);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: var(--color-accent);
+    transform: translateX(-4px);
 }
