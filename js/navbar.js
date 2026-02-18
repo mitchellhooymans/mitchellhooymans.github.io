@@ -124,6 +124,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (brandCanvas && brandLink && navContainer) {
         const ctx = brandCanvas.getContext('2d');
+
+        // Configuration Options
+        const particleConfig = {
+            sprayAmount: 2,         // Number of particles per frame (Production rate)
+            sizeMin: 0.5,             // Minimum particle size
+            sizeMax: 3,             // Maximum particle size
+            speedFactor: 5,         // Velocity multiplier
+            decayRate: 0.01,       // Base decay rate (lower = longer life)
+            fadeSpeed: 0.05         // How fast they fade when mouse leaves
+        };
+
         let particles = [];
         let animationId;
         let isHovering = false;
@@ -150,13 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.y = relY + Math.random() * brandRect.height;
 
                 // Random velocity - faster to travel length
-                this.vx = (Math.random() - 0.5) * 6;
-                this.vy = (Math.random() - 0.5) * 6;
+                this.vx = (Math.random() - 0.5) * particleConfig.speedFactor;
+                this.vy = (Math.random() - 0.5) * particleConfig.speedFactor;
 
-                this.size = Math.random() * 3 + 1;
+                this.size = Math.random() * (particleConfig.sizeMax - particleConfig.sizeMin) + particleConfig.sizeMin;
                 this.life = 1.0;
                 // Much slower decay to allow travel across full navbar
-                this.decay = Math.random() * 0.002 + 0.001;
+                this.decay = Math.random() * particleConfig.decayRate + 0.001;
 
                 // Randomly choose cyan (Blue) or white
                 this.color = Math.random() > 0.5 ? '56, 189, 248' : '255, 255, 255';
@@ -171,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (this.y < 0 || this.y > brandCanvas.height) this.vy = -this.vy;
 
                 if (!isHovering) {
-                    this.life -= 0.05; // Fast fade out when not hovering
+                    this.life -= particleConfig.fadeSpeed; // Fast fade out when not hovering
                 } else {
                     this.life -= this.decay;
                 }
@@ -192,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Spawn new particles if hovering
             if (isHovering) {
-                for (let i = 0; i < 2; i++) { // Reduced spawn rate
+                for (let i = 0; i < particleConfig.sprayAmount; i++) {
                     particles.push(new Particle());
                 }
             }
