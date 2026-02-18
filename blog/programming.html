@@ -30,7 +30,10 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
 
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
@@ -44,619 +47,280 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* Blog Post Styles */
-        .post-header {
-            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+        .post-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
             color: var(--color-white);
-            padding: calc(70px + var(--space-16)) 0 var(--space-16);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .post-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('../images/general/milkyway.jpg') center/cover no-repeat;
-            opacity: 0.3;
-        }
-
-        .post-header>.container {
-            position: relative;
-            z-index: 1;
-        }
-
-        .post-header-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .post-category {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
-            color: var(--color-white);
-            padding: var(--space-1) var(--space-4);
-            border-radius: var(--radius-full);
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: var(--space-4);
-        }
-
-        .post-header h1 {
-            color: var(--color-white);
-            font-size: 2.5rem;
-            line-height: 1.2;
-            margin-bottom: var(--space-6);
-        }
-
-        @media (min-width: 768px) {
-            .post-header h1 {
-                font-size: 3rem;
-            }
-        }
-
-        .post-meta {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: var(--space-6);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-        }
-
-        .post-meta-item {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .post-author {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-        }
-
-        .post-author-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .post-author-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Featured Image */
-        .post-featured-image {
-            max-width: 900px;
-            margin: var(--space-8) auto var(--space-12);
-            padding: 0 var(--space-6);
-        }
-
-        .post-featured-image img {
-            width: 100%;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .post-featured-image figcaption {
-            text-align: center;
-            color: var(--color-gray-500);
-            font-size: 0.9rem;
-            margin-top: var(--space-3);
-            font-style: italic;
-        }
-
-        /* Article Content */
-        .post-content {
-            max-width: 750px;
-            margin: 0 auto;
-            padding: var(--space-8) var(--space-6);
         }
 
         .post-content h2 {
-            margin-top: var(--space-12);
-            margin-bottom: var(--space-4);
-            color: var(--color-gray-900);
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-white);
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
         }
 
         .post-content h3 {
-            margin-top: var(--space-8);
-            margin-bottom: var(--space-3);
-            color: var(--color-gray-800);
-        }
-
-        .post-content p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--color-gray-700);
-            margin-bottom: var(--space-6);
-        }
-
-        .post-content a {
-            color: var(--color-accent);
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-
-        .post-content a:hover {
-            color: var(--color-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--color-gray-200);
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
         }
 
         .post-content ul,
         .post-content ol {
-            margin-bottom: var(--space-6);
-            padding-left: var(--space-8);
-        }
-
-        .post-content li {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--color-gray-700);
-            margin-bottom: var(--space-2);
-        }
-
-        .post-content blockquote {
-            margin: var(--space-8) 0;
-            padding: var(--space-6);
-            background: var(--color-gray-50);
-            border-left: 4px solid var(--color-accent);
-            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-            font-style: italic;
-            color: var(--color-gray-600);
-        }
-
-        .post-content blockquote p {
-            margin-bottom: 0;
-        }
-
-        .post-content img {
-            max-width: 100%;
-            border-radius: var(--radius-lg);
-            margin: var(--space-8) 0;
-        }
-
-        .post-content code {
-            background: var(--color-gray-100);
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-mono);
-            font-size: 0.9em;
-            color: var(--color-primary);
-        }
-
-        .post-content pre {
-            background: var(--color-gray-900);
-            color: var(--color-gray-100);
-            padding: var(--space-6);
-            border-radius: var(--radius-lg);
-            overflow-x: auto;
-            margin: var(--space-8) 0;
-        }
-
-        .post-content pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-
-        /* Tags */
-        .post-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-            margin-top: var(--space-8);
-            padding-top: var(--space-8);
-            border-top: 1px solid var(--color-gray-200);
-        }
-
-        .post-tag {
-            background: var(--color-gray-100);
-            color: var(--color-gray-600);
-            padding: var(--space-2) var(--space-4);
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all var(--transition-fast);
-        }
-
-        .post-tag:hover {
-            background: var(--color-accent);
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
             color: var(--color-white);
         }
 
-        /* Share Section */
-        .post-share {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            margin-top: var(--space-6);
+        .post-content li {
+            margin-bottom: 0.5rem;
         }
 
-        .post-share-label {
-            font-weight: 600;
-            color: var(--color-gray-700);
+        strong {
+            color: var(--color-gray-200);
         }
 
-        .share-buttons {
-            display: flex;
-            gap: var(--space-2);
-            flex-wrap: wrap;
+        i {
+            /* Italics in content */
+            color: var(--color-gray-500);
         }
 
         .share-btn {
             width: 40px;
             height: 40px;
-            border-radius: var(--radius-full);
-            background: var(--color-gray-100);
-            color: var(--color-gray-600);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all var(--transition-fast);
+            color: var(--color-white);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .share-btn:hover {
-            background: var(--color-primary);
-            color: var(--color-white);
+            background: var(--color-accent);
             transform: translateY(-2px);
         }
 
-        /* Author Bio */
-        .author-bio {
-            background: var(--color-gray-50);
-            border-radius: var(--radius-xl);
-            padding: var(--space-8);
-            margin-top: var(--space-12);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-6);
-        }
-
-        @media (min-width: 640px) {
-            .author-bio {
-                flex-direction: row;
-                align-items: center;
-            }
-        }
-
-        .author-bio-avatar {
-            width: 100px;
-            height: auto;
-            min-width: 100px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .author-bio-avatar img {
-            width: 100%;
-            height: auto;
-            border-radius: 0;
-        }
-
-        .author-bio-content h4 {
-            margin-bottom: var(--space-2);
-        }
-
-        .author-bio-content p {
-            color: var(--color-gray-600);
-            font-size: 0.95rem;
-            margin-bottom: var(--space-4);
-        }
-
-        /* Related Posts */
-        .related-posts {
-            padding: var(--space-16) 0;
-        }
-
-        .related-posts h2 {
-            text-align: center;
-            margin-bottom: var(--space-8);
-        }
-
-        .related-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-6);
-        }
-
-        @media (min-width: 768px) {
-            .related-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .related-card {
-            background: var(--color-white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            transition: transform var(--transition-base), box-shadow var(--transition-base);
-        }
-
-        .related-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .related-card-image {
-            height: 350px;
-            overflow: hidden;
-        }
-
-        .related-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform var(--transition-slow);
-        }
-
-        .related-card:hover .related-card-image img {
-            transform: scale(1.05);
-        }
-
-        .related-card-content {
-            padding: var(--space-5);
-        }
-
-        .related-card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--color-gray-900);
-            line-height: 1.4;
-        }
-
-        .related-card-title a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .related-card-title a:hover {
+        .post-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
             color: var(--color-accent);
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .related-card-date {
-            font-size: 0.8rem;
-            color: var(--color-gray-500);
-            margin-top: var(--space-2);
-        }
-
-        /* Back to Blog */
-        .back-to-blog {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-            margin-bottom: var(--space-6);
-            transition: color var(--transition-fast);
-        }
-
-        .back-to-blog:hover {
-            color: var(--color-white);
+        .post-tag:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--color-accent);
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation -->
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
     <!-- Navigation -->
     <div id="navbar-placeholder"></div>
     <script src="../js/navbar.js"></script>
 
     <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/tutorials.html">Tutorials</a>
+        <a href="../pages/simulations.html">Simulations</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
 
-    <!-- Post Header -->
-    <header class="post-header">
-        <div class="container">
-            <div class="post-header-content">
-                <a href="../pages/blog.html" class="back-to-blog">
+    <!-- Main Content -->
+    <main class="container" style="padding-top: 120px; padding-bottom: 80px;">
+        <div class="glass-card"
+            style="flex-direction: column; align-items: stretch; max-width: 900px; margin: 0 auto; padding: 0; overflow: hidden;">
+
+            <!-- Hero / Header Section -->
+            <div style="padding: var(--space-8) var(--space-8) 0;">
+                <a href="../pages/blog.html" class="back-link"
+                    style="display: inline-flex; align-items: center; gap: 8px; color: var(--color-gray-400); margin-bottom: var(--space-6);">
                     <i class="fas fa-arrow-left"></i> Back to Blog
                 </a>
-                <span class="post-category">Education</span>
-                <h1>Why Every Scientist Should Learn Programming</h1>
-                <div class="post-meta">
-                    <div class="post-author">
-                        <div class="post-author-avatar">
-                            <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans">
+                <header class="post-header" style="text-align: center; margin-bottom: var(--space-8);">
+                    <span class="text-accent"
+                        style="font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: var(--space-4);">Education</span>
+                    <h1 class="animate-fade-in-up"
+                        style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: var(--space-6); line-height: 1.2;">
+                        Why
+                        Every Scientist Should Learn Programming</h1>
+
+                    <div class="post-meta"
+                        style="justify-content: center; color: var(--color-gray-400); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center;">
+                        <div class="post-author" style="display: flex; align-items: center; gap: 10px;">
+                            <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans"
+                                style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--color-accent);">
+                            <span style="color: var(--color-white); font-weight: 500;">Mitchell Hooymans</span>
                         </div>
-                        <span>Mitchell Hooymans</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>January 15, 2026</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-clock"></i>
+                            <span>10 min read</span>
+                        </div>
                     </div>
-                    <div class="post-meta-item">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>January 15, 2026</span>
+                </header>
+            </div>
+
+            <!-- Featured Image -->
+            <figure class="post-featured-image" style="width: 100%; margin: 0; position: relative;">
+                <img src="../images/general/Coding in Python BlogImage.jpg" alt="Programming and Science"
+                    style="width: 100%; height: auto; max-height: 500px; object-fit: cover; display: block;">
+                <figcaption
+                    style="padding: 10px; color: var(--color-gray-500); text-align: center; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                    The intersection of programming and scientific discovery opens new frontiers.</figcaption>
+            </figure>
+
+            <!-- Content Container -->
+            <div style="padding: var(--space-8);">
+                <article class="post-content" style="max-width: 750px; margin: 0 auto;">
+                    <p class="lead"
+                        style="font-size: 1.25rem; color: var(--color-white); margin-bottom: 2rem; line-height: 1.6;">
+                        <strong>Programming is quickly becoming essential in modern science.</strong> Whether you're
+                        analyzing
+                        huge datasets, running simulations, or processing experimental results, the ability to
+                        write code opens up a world of possibilities that would be <i>impossible</i> to achieve without
+                        it.
+                    </p>
+                    <p>
+                        <em>Full blog post coming soon...</em>
+                    </p>
+
+                    <!-- Tags -->
+                    <div class="post-tags"
+                        style="margin-top: 3rem; margin-bottom: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+                        <a href="#" class="post-tag">#Programming</a>
+                        <a href="#" class="post-tag">#Python</a>
+                        <a href="#" class="post-tag">#Science</a>
+                        <a href="#" class="post-tag">#Education</a>
+                        <a href="#" class="post-tag">#DataScience</a>
                     </div>
-                    <div class="post-meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>10 min read</span>
+
+                    <!-- Share & Bio -->
+                    <div class="post-footer" style="display: flex; flex-direction: column; gap: 2rem;">
+                        <!-- Share -->
+                        <div class="post-share" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <span style="color: var(--color-white); font-weight: 500;">Share this post:</span>
+                            <div class="share-buttons" style="display: flex; gap: 10px;">
+                                <!-- Native Share Button (Mobile) -->
+                                <button class="share-btn native-share-btn" aria-label="Share" style="display: none;">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+
+                                <a href="https://twitter.com/intent/tweet?url=https://mitchellhooymans.com/blog/programming.html&text=Why%20Every%20Scientist%20Should%20Learn%20Programming"
+                                    target="_blank" class="share-btn" aria-label="Share on X">
+                                    <i class="fab fa-x-twitter"></i>
+                                </a>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=https://mitchellhooymans.com/blog/programming.html"
+                                    target="_blank" class="share-btn" aria-label="Share on Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.com/blog/programming.html"
+                                    target="_blank" class="share-btn" aria-label="Share on LinkedIn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://www.reddit.com/submit?url=https://mitchellhooymans.com/blog/programming.html&title=Why%20Every%20Scientist%20Should%20Learn%20Programming"
+                                    target="_blank" class="share-btn" aria-label="Share on Reddit">
+                                    <i class="fab fa-reddit-alien"></i>
+                                </a>
+                                <a href="mailto:?subject=Why%20Every%20Scientist%20Should%20Learn%20Programming&body=Check%20out%20this%20post:%20https://mitchellhooymans.com/blog/programming.html"
+                                    class="share-btn" aria-label="Share via Email">
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                                <a href="#" class="share-btn" aria-label="Copy link">
+                                    <i class="fas fa-link"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="author-bio"
+                            style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: var(--radius-lg); display: flex; gap: 1.5rem; align-items: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="author-bio-avatar">
+                                <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans"
+                                    style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;">
+                            </div>
+                            <div class="author-bio-content">
+                                <h4 style="color: var(--color-white); margin-bottom: 0.5rem;">About the Author</h4>
+                                <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--color-gray-400);">
+                                    Mitchell Hooymans is a PhD researcher in Astrophysics at The University of
+                                    Queensland,
+                                    specializing in black hole dynamics and STEM education. When not studying the
+                                    cosmos,
+                                    he enjoys photography and science communication.
+                                </p>
+                                <a href="../pages/about.html"
+                                    style="font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 5px;">
+                                    Learn More <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </article>
             </div>
         </div>
-    </header>
-
-    <!-- Featured Image -->
-    <figure class="post-featured-image">
-        <img src="../images/general/Coding in Python BlogImage.jpg" alt="Programming and Science">
-        <figcaption>The intersection of programming and scientific discovery opens new frontiers.</figcaption>
-    </figure>
-
-    <!-- Post Content -->
-    <article class="post-content">
-        <p>
-            <strong>Programming is quickly becoming essential in modern science.</strong> Whether you're analyzing
-            huge datasets, running simulations, or processing experimental results, the ability to
-            write code opens up a world of possibilities that would be <i>impossible</i> to achieve without it.
-        </p>
-        <p>
-            Full blog post coming soon...
-        </p>
-        <!-- <h2>1. Introduction to Digital Literacy</h2>
-
-        <h3>The Current State of Technology Dependence</h3>
-        <p>A discussion on how society relies on software, yet most individuals lack an understanding of the mechanisms
-            behind it.</p>
-
-        <h3>Reframing the Objective of Learning to Code</h3>
-        <p>Clarifying that the goal is not necessarily to become a professional software engineer, but to achieve
-            fluency in
-            the toolset of the modern world.</p>
-
-        <h2>2. What is Programming?</h2>
-
-        <h3>Core Concepts: Input, Logic, Output</h3>
-        <p>Defining programming as the act of providing a computer with specific instructions to process data and return
-            a
-            result.</p>
-
-        <h3>Syntax vs. Semantics</h3>
-        <p>Explaining the difference between the strict grammar of a coding language (syntax) and the underlying
-            problem-solving intent (semantics/logic).</p>
-
-        <h2>3. Historical Context and Accessibility</h2>
-
-        <h3>The Evolution from Low-Level to High-Level Languages</h3>
-        <p>A brief overview of the transition from complex, hardware-dependent languages (like machine code) to
-            human-readable languages (like Python).</p>
-
-        <h3>The Reduction of Barriers to Entry</h3>
-        <p>An argument that the history of programming is defined by increasing abstraction, making it easier for
-            non-specialists to learn today than at any point in the past.</p>
-
-        <h2>4. Cognitive and Intellectual Benefits</h2>
-
-        <h3>Computational Thinking and Decomposition</h3>
-        <p>How programming trains the brain to break down complex, overwhelming problems into smaller, sequential, and
-            solvable components.</p>
-
-        <h3>Logical Precision and Consequence</h3>
-        <p>The requirement for exactness in coding and how this cultivates a mindset that minimizes ambiguity in general
-            reasoning.</p>
-
-        <h3>The Iterative Process of Failure</h3>
-        <p>Using the concept of "debugging" to illustrate how programming teaches resilience and the treatment of errors
-            as
-            data points rather than failures.</p>
-
-        <h2>5. Practical Applications and Personal Agency</h2>
-
-        <h3>Transitioning from Consumer to Creator</h3>
-        <p>Describing the shift in perspective when a user moves from passively consuming applications to understanding
-            how
-            they are built.</p>
-
-        <h3>Personal Automation</h3>
-        <p>Examples of using basic scripting to automate repetitive tasks (e.g., file management, data sorting) to
-            increase
-            personal efficiency.</p>
-
-        <h2>6. Programming in the Age of Artificial Intelligence</h2>
-
-        <h3>AI as a Force Multiplier, Not a Replacement</h3>
-        <p>An explanation of why AI tools still require a human operator who understands the structure and logic of code
-            to
-            be effective.</p>
-
-        <h3>Verification and Quality Control</h3>
-        <p>The importance of having foundational knowledge to audit, verify, and correct code generated by Large
-            Language
-            Models.</p>
-
-        <h2>7. Conclusion</h2>
-
-        <h3>Summary of Arguments</h3>
-        <p>A recapitulation of programming as a tool for cognitive development and practical utility.</p>
-
-        <h3>Final Statement on Accessibility</h3>
-        <p>A concluding remark emphasizing that the tools exist for anyone to begin learning immediately.</p> -->
-
-        <!-- Tags -->
-        <div class="post-tags">
-            <a href="#" class="post-tag">#Programming</a>
-            <a href="#" class="post-tag">#Python</a>
-            <a href="#" class="post-tag">#Science</a>
-            <a href="#" class="post-tag">#Education</a>
-            <a href="#" class="post-tag">#DataScience</a>
-        </div>
-
-        <!-- Share -->
-        <div class="post-share">
-            <span class="post-share-label">Share this post:</span>
-            <div class="share-buttons">
-                <!-- Native Share Button (Mobile) -->
-                <button class="share-btn native-share-btn" aria-label="Share" style="display: none;">
-                    <i class="fas fa-share-alt"></i>
-                </button>
-
-                <a href="https://twitter.com/intent/tweet?url=https://mitchellhooymans.com/blog/programming.html&text=Why%20Every%20Scientist%20Should%20Learn%20Programming"
-                    target="_blank" class="share-btn" aria-label="Share on X">
-                    <i class="fab fa-x-twitter"></i>
-                </a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u=https://mitchellhooymans.com/blog/programming.html"
-                    target="_blank" class="share-btn" aria-label="Share on Facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.com/blog/programming.html"
-                    target="_blank" class="share-btn" aria-label="Share on LinkedIn">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a href="https://www.reddit.com/submit?url=https://mitchellhooymans.com/blog/programming.html&title=Why%20Every%20Scientist%20Should%20Learn%20Programming"
-                    target="_blank" class="share-btn" aria-label="Share on Reddit">
-                    <i class="fab fa-reddit-alien"></i>
-                </a>
-                <a href="mailto:?subject=Why%20Every%20Scientist%20Should%20Learn%20Programming&body=Check%20out%20this%20post:%20https://mitchellhooymans.com/blog/programming.html"
-                    class="share-btn" aria-label="Share via Email">
-                    <i class="fas fa-envelope"></i>
-                </a>
-                <a href="#" class="share-btn" aria-label="Copy link">
-                    <i class="fas fa-link"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- Author Bio -->
-        <div class="author-bio">
-            <div class="author-bio-avatar">
-                <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans">
-            </div>
-            <div class="author-bio-content">
-                <h4>About the Author</h4>
-                <p>
-                    Mitchell Hooymans is a PhD researcher in Astrophysics at The University of Queensland,
-                    specializing in black hole dynamics and STEM education. When not studying the cosmos,
-                    he enjoys photography and science communication.
-                </p>
-                <a href="../pages/about.html" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-user"></i> Learn More
-                </a>
-            </div>
-        </div>
-    </article>
+    </main>
 
     <!-- Related Posts -->
-    <section class="related-posts section-alt">
+    <section class="section">
         <div class="container">
-            <h2>Related Posts</h2>
-            <div class="related-grid">
-                <article class="related-card">
-                    <div class="related-card-image">
-                        <img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey">
+            <h2 style="text-align: center; margin-bottom: var(--space-8);">Related Posts</h2>
+            <div class="related-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 500px; margin: 0 auto;">
+                <article class="blog-card"
+                    style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: var(--radius-xl); border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden;">
+                    <div class="blog-card-image" style="height: 200px; overflow: hidden; position: relative;">
+                        <img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                        <span class="blog-card-category"
+                            style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; backdrop-filter: blur(4px);">Personal</span>
                     </div>
-                    <div class="related-card-content">
-                        <h3 class="related-card-title">
-                            <a href="phd-journey.html">Reflections on My First Year as a PhD Student</a>
+                    <div class="blog-card-content" style="padding: 1.5rem;">
+                        <div class="blog-card-meta"
+                            style="color: var(--color-gray-500); font-size: 0.85rem; margin-bottom: 0.5rem;">
+                            <span><i class="fas fa-calendar-alt"></i> December 28, 2025</span>
+                        </div>
+                        <h3 class="blog-card-title" style="font-size: 1.25rem; margin-bottom: 0.5rem;">
+                            <a href="phd-journey.html" style="color: var(--color-white);">Reflections on My First Year
+                                as a PhD Student</a>
                         </h3>
-                        <p class="related-card-date">December 28, 2025</p>
+                        <p class="blog-card-excerpt"
+                            style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--color-gray-400); font-size: 0.95rem;">
+                            The highs, the lows, and everything in between. What I've learned
+                            in my first year of doctoral research at UQ.</p>
+                        <div class="blog-card-footer"
+                            style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="phd-journey.html" class="read-more"
+                                style="font-weight: 500; font-size: 0.9rem;">Read More <i
+                                    class="fas fa-arrow-right"></i></a>
+                            <span class="reading-time" style="color: var(--color-gray-500); font-size: 0.85rem;">7
+                                min</span>
+                        </div>
                     </div>
                 </article>
             </div>

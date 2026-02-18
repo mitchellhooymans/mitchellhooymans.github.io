@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const navHTML = `
     <nav class="nav" id="nav">
         <div class="nav-content">
-            <a href="${rootPath}" class="nav-brand">
+            <a href="${rootPath}" class="nav-brand" id="navBrand">
+                <canvas id="brand-particles"></canvas>
                 <span>Mitchell</span>Hooymans
             </a>
             <ul class="nav-links">
@@ -113,6 +114,93 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobileMenu.classList.remove('open');
                 navToggle.classList.remove('active');
             });
+        });
+    }
+    // 6. Navbar Particle Effect
+    const brandCanvas = document.getElementById('brand-particles');
+    const brandLink = document.getElementById('navBrand');
+
+    if (brandCanvas && brandLink) {
+        const ctx = brandCanvas.getContext('2d');
+        let particles = [];
+        let animationId;
+        let isHovering = false;
+
+        function resizeCanvas() {
+            brandCanvas.width = brandLink.offsetWidth;
+            brandCanvas.height = brandLink.offsetHeight;
+        }
+
+        // Initialize canvas size
+        setTimeout(resizeCanvas, 100); // Small delay to ensure rendering
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * brandCanvas.width;
+                this.y = brandCanvas.height + Math.random() * 10; // Start slightly below
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = -Math.random() * 2 - 0.5; // Upward movement
+                this.size = Math.random() * 2 + 0.5;
+                this.life = 1.0;
+                this.decay = Math.random() * 0.03 + 0.01;
+                // Randomly choose cyan or purple
+                this.color = Math.random() > 0.5 ? '56, 189, 248' : '167, 139, 250';
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= this.decay;
+                this.size -= 0.05;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, Math.max(0, this.size), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${this.color}, ${this.life})`;
+                ctx.fill();
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, brandCanvas.width, brandCanvas.height);
+
+            // Spawn new particles if hovering
+            if (isHovering) {
+                for (let i = 0; i < 3; i++) { // Spawn rate
+                    particles.push(new Particle());
+                }
+            }
+
+            // Update and draw existing particles
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Remove dead particles
+                if (particles[i].life <= 0 || particles[i].size <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+
+            // Continue loop if there are particles or hovering
+            if (particles.length > 0 || isHovering) {
+                animationId = requestAnimationFrame(animateParticles);
+            }
+        }
+
+        brandLink.addEventListener('mouseenter', () => {
+            isHovering = true;
+            resizeCanvas(); // Ensure correct size on hover
+            if (!animationId || particles.length === 0) {
+                animateParticles();
+            }
+        });
+
+        brandLink.addEventListener('mouseleave', () => {
+            isHovering = false;
         });
     }
 });

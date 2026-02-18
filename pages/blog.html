@@ -44,249 +44,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* Blog-specific styles */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-8);
-        }
-
-        @media (min-width: 768px) {
-            .blog-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .blog-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .blog-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            transition: transform var(--transition-base), box-shadow var(--transition-base);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .blog-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl), 0 0 15px rgba(56, 189, 248, 0.3);
-            border-color: var(--color-accent);
-        }
-
-        .blog-card-image {
-            position: relative;
-            height: 160px;
-            overflow: hidden;
-        }
-
-        .blog-card-image img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform var(--transition-slow);
-        }
-
-        .blog-card:hover .blog-card-image img {
-            transform: scale(1.05);
-        }
-
-        .blog-card-category {
-            position: absolute;
-            top: var(--space-4);
-            left: var(--space-4);
-            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
-            color: var(--color-white);
-            padding: var(--space-1) var(--space-3);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .blog-card-content {
-            padding: var(--space-6);
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .blog-card-meta {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            margin-bottom: var(--space-3);
-            font-size: 0.85rem;
-            color: var(--color-gray-500);
-        }
-
-        .blog-card-meta span {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .blog-card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--color-gray-900);
-            margin-bottom: var(--space-3);
-            line-height: 1.4;
-        }
-
-        .blog-card-title a {
-            color: var(--color-white);
-            text-decoration: none;
-            transition: color var(--transition-fast);
-        }
-
-        .blog-card-title a:hover {
-            color: var(--color-accent);
-        }
-
-        .blog-card-excerpt {
-            color: var(--color-gray-600);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: var(--space-4);
-            flex-grow: 1;
-        }
-
-        .blog-card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: var(--space-4);
-            padding-top: var(--space-4);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .read-more {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            color: var(--color-accent);
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: gap var(--transition-fast);
-        }
-
-        .read-more:hover {
-            gap: var(--space-3);
-        }
-
-        .reading-time {
-            color: var(--color-gray-500);
-            font-size: 0.85rem;
-        }
-
-        /* Featured post */
-        .featured-post {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            margin-bottom: var(--space-8);
-            transition: transform var(--transition-base), box-shadow var(--transition-base);
-        }
-
-        .featured-post:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl), 0 0 20px rgba(56, 189, 248, 0.4);
-            border-color: var(--color-accent);
-        }
-
-        @media (min-width: 768px) {
-            .featured-post {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .featured-post .blog-card-image {
-            height: 300px;
-        }
-
-        @media (min-width: 768px) {
-            .featured-post .blog-card-image {
-                height: 100%;
-                min-height: 350px;
-            }
-        }
-
-        .featured-post:hover .blog-card-image img {
-            transform: scale(1.05);
-        }
-
-        .featured-post .blog-card-content {
-            padding: var(--space-8);
-            justify-content: center;
-        }
-
-        .featured-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-            color: var(--color-white);
-            padding: var(--space-2) var(--space-4);
-            border-radius: var(--radius-full);
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: var(--space-4);
-            width: fit-content;
-        }
-
-        .featured-post .blog-card-title {
-            font-size: 1.75rem;
-        }
-
-        /* Empty state */
-        .blog-empty {
-            text-align: center;
-            padding: var(--space-16) var(--space-6);
-            background: var(--color-gray-50);
-            border-radius: var(--radius-xl);
-        }
-
-        .blog-empty-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto var(--space-6);
-            font-size: 2rem;
-            color: var(--color-white);
-        }
-
-        .blog-empty h3 {
-            margin-bottom: var(--space-4);
-        }
-
-        .blog-empty p {
-            color: var(--color-gray-600);
-            max-width: 400px;
-            margin: 0 auto;
-        }
+        /* Blog-specific styles moved to styles.css */
     </style>
 
 
@@ -349,6 +107,7 @@
                     </div>
                 </article>
                 <!-- Blog Post - PhD Journey -->
+                <!-- Blog Post - PhD Journey -->
                 <article class="blog-card reveal delay-100" data-category="personal">
                     <div class="blog-card-image"><img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey"><span
                             class="blog-card-category">Personal</span></div>
@@ -365,43 +124,42 @@
                         <div class="blog-card-footer"><a href="../blog/phd-journey.html" class="read-more">Read More <i
                                     class="fas fa-arrow-right"></i></a><span class="reading-time">7 min</span></div>
                     </div>
+                </article>
             </div>
-        </div>
     </section>
 
     <!-- Footer -->
     <div id="footer-placeholder"></div>
     <!-- JavaScript -->
+    <script>
+        // Category filter - actual filtering
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const blogPosts = document.querySelectorAll('#blogGrid article');
 
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
 
-    // Category filter - actual filtering
-    const categoryBtns = document.querySelectorAll('.category-btn');
-    const blogPosts = document.querySelectorAll('#blogGrid article');
+                // Get selected category
+                const selectedCategory = btn.dataset.category;
 
-    categoryBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-    // Update active button
-    categoryBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+                // Filter posts
+                blogPosts.forEach(post => {
+                    const postCategory = post.dataset.category;
 
-    // Get selected category
-    const selectedCategory = btn.dataset.category;
+                    if (selectedCategory === 'all' || postCategory === selectedCategory) {
+                        post.style.display = '';
+                        post.classList.add('visible');
+                    }
 
-    // Filter posts
-    blogPosts.forEach(post => {
-    const postCategory = post.dataset.category;
-
-    if (selectedCategory === 'all' || postCategory === selectedCategory) {
-    post.style.display = '';
-    post.classList.add('visible');
-    }
-
-    else {
-    post.style.display = 'none';
-    }
-    });
-    });
-    });
+                    else {
+                        post.style.display = 'none';
+                    }
+                });
+            });
+        });
     </script>
     <script src="../js/footer.js"></script>
     <script src="../js/back-to-top.js"></script>
