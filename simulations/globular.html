@@ -205,70 +205,74 @@
     <div id="navbar-placeholder"></div>
     <script src="../js/navbar.js"></script>
 
-    <div class="container" style="padding-top: 160px; padding-bottom: 60px;">
-        <!-- Header -->
-        <div class="section-header" style="margin-bottom: 40px;">
-            <a href="../pages/simulations.html" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Simulations
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <a href="javascript:history.back()" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back
             </a>
             <h1>3D Globular Cluster</h1>
-            <p style="max-width: 600px; color: var(--color-gray-400);">
+            <p>
                 An interactive WebGL visualization of a globular star cluster. These ancient spherical collections
                 contain hundreds of thousands of stars bound by gravity.
             </p>
         </div>
+    </header>
 
-        <!-- Simulation -->
-        <div class="simulation-container">
-            <div id="loading" class="loading-overlay">Initializing Universe...</div>
-            <canvas id="simulationCanvas"></canvas>
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Simulation -->
+            <div class="simulation-container">
+                <div id="loading" class="loading-overlay">Initializing Universe...</div>
+                <canvas id="simulationCanvas"></canvas>
 
-            <div class="controls-overlay">
-                <div class="controls-title">
-                    <i class="fas fa-sliders-h"></i> Cluster Parameters
+                <div class="controls-overlay">
+                    <div class="controls-title">
+                        <i class="fas fa-sliders-h"></i> Cluster Parameters
+                    </div>
+
+                    <div class="control-group">
+                        <label>Star Count: <span id="countVal" class="value-display">100,000</span></label>
+                        <input type="range" id="starCount" min="100000" max="1000000" step="10000" value="100000">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Mass Function</label>
+                        <select id="massFunction">
+                            <option value="salpeter">Salpeter (α = 2.35)</option>
+                            <option value="kroupa">Kroupa (2001)</option>
+                            <option value="baumgardt">Baumgardt (2023)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Cluster Radius (pc)</label>
+                        <input type="number" id="clusterSize" value="10" min="1" max="100" step="1">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Rotation Speed: <span id="speedVal" class="value-display">0.0</span></label>
+                        <input type="range" id="rotSpeed" min="0" max="5.0" step="0.1" value="0.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="massSegregation">
+                            <span>Mass Segregation</span>
+                        </label>
+                    </div>
+
+                    <button id="regenerateBtn" class="btn-reset">
+                        <i class="fas fa-sync-alt"></i> Regenerate Cluster
+                    </button>
+
+                    <p style="margin-top: 15px; font-size: 0.75rem; color: rgba(255,255,255,0.5); text-align: center;">
+                        Left Click: Rotate • Right Click: Pan • Scroll: Zoom
+                    </p>
                 </div>
-
-                <div class="control-group">
-                    <label>Star Count: <span id="countVal" class="value-display">100,000</span></label>
-                    <input type="range" id="starCount" min="100000" max="1000000" step="10000" value="100000">
-                </div>
-
-                <div class="control-group">
-                    <label>Mass Function</label>
-                    <select id="massFunction">
-                        <option value="salpeter">Salpeter (α = 2.35)</option>
-                        <option value="kroupa">Kroupa (2001)</option>
-                        <option value="baumgardt">Baumgardt (2023)</option>
-                    </select>
-                </div>
-
-                <div class="control-group">
-                    <label>Cluster Radius (pc)</label>
-                    <input type="number" id="clusterSize" value="10" min="1" max="100" step="1">
-                </div>
-
-                <div class="control-group">
-                    <label>Rotation Speed: <span id="speedVal" class="value-display">0.0</span></label>
-                    <input type="range" id="rotSpeed" min="0" max="5.0" step="0.1" value="0.0">
-                </div>
-
-                <div class="control-group">
-                    <label class="checkbox-group">
-                        <input type="checkbox" id="massSegregation">
-                        <span>Mass Segregation</span>
-                    </label>
-                </div>
-
-                <button id="regenerateBtn" class="btn-reset">
-                    <i class="fas fa-sync-alt"></i> Regenerate Cluster
-                </button>
-
-                <p style="margin-top: 15px; font-size: 0.75rem; color: rgba(255,255,255,0.5); text-align: center;">
-                    Left Click: Rotate • Right Click: Pan • Scroll: Zoom
-                </p>
             </div>
-        </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <div id="footer-placeholder"></div>

@@ -44,7 +44,6 @@
     <!-- Load Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <!-- Load MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
@@ -260,8 +259,8 @@
     <!-- Page Header -->
     <header class="page-header">
         <div class="container">
-            <a href="../pages/simulations.html" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Simulations
+            <a href="javascript:history.back()" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back
             </a>
             <h1>Black Hole Retention Estimator</h1>
             <p>Calculate retention fractions using Hobbs et al. (2005) scaling</p>
