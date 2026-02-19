@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From IT Student to Astrophysicist | Mitchell Hooymans</title>
+    <meta name="description"
+        content="A journey from IT to Astrophysics: insights on navigating a career in science, essential skills, and the future of research.">
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .post-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--color-white);
+        }
+
+        .post-content h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-white);
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+        }
+
+        .post-content h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--color-white);
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            color: var(--color-white);
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: var(--color-white);
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-white);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .share-btn:hover {
+            background: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .post-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            color: var(--color-accent);
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .post-tag:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--color-accent);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/tutorials.html">Tutorials</a>
+        <a href="../pages/simulations.html">Simulations</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" style="padding-top: 120px; padding-bottom: 80px;">
+        <div class="glass-card"
+            style="flex-direction: column; align-items: stretch; max-width: 900px; margin: 0 auto; padding: 0; overflow: hidden;">
+
+            <!-- Hero / Header Section -->
+            <div style="padding: var(--space-8) var(--space-8) 0;">
+                <a href="../pages/blog.html" class="back-link"
+                    style="display: inline-flex; align-items: center; gap: 8px; color: var(--color-gray-400); margin-bottom: var(--space-6);">
+                    <i class="fas fa-arrow-left"></i> Back to Blog
+                </a>
+
+                <header class="post-header" style="text-align: center; margin-bottom: var(--space-8);">
+                    <span class="text-accent"
+                        style="font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: var(--space-4);">Education</span>
+
+                    <h1 class="animate-fade-in-up"
+                        style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: var(--space-6); line-height: 1.2;">
+                        From IT to Astrophysics: Navigating a Career in Science
+                    </h1>
+
+                    <div class="post-meta"
+                        style="justify-content: center; color: var(--color-gray-400); display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center;">
+                        <div class="post-author" style="display: flex; align-items: center; gap: 10px;">
+                            <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans"
+                                style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--color-accent);">
+                            <span style="color: var(--color-white); font-weight: 500;">Mitchell Hooymans</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>February 19, 2026</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-clock"></i>
+                            <span>5 min read</span>
+                        </div>
+                    </div>
+                </header>
+            </div>
+
+            <!-- Featured Image -->
+            <figure class="post-featured-image" style="width: 100%; margin: 0; position: relative;">
+                <img src="../images/general/milkyway.jpg" alt="Galaxy view"
+                    style="width: 100%; height: auto; max-height: 500px; object-fit: cover; display: block;">
+            </figure>
+
+            <!-- Content Container -->
+            <div style="padding: var(--space-8);">
+                <article class="post-content" style="max-width: 750px; margin: 0 auto;">
+                    <p>
+                        Recently, I had the opportunity to return to my old university to speak on a panel for current
+                        science students. It was a chance to reflect on my own journey, one that wasn't exactly a
+                        straight line, and share some of the lessons I've learned along the way. From switching degrees
+                        to discovering a passion for the 'extreme' universe, here are some thoughts on navigating a
+                        career in science.
+                    </p>
+
+                    <h2>The Pivot: Finding the Right Path</h2>
+
+                    <p>
+                        My university experience actually started in a Bachelor of IT. I did that for a year, but I
+                        eventually realized it just wasn't the right fit for me at the time. I took a break, and during
+                        that time away, I read a fascinating book about astronomy that completely sparked a change in
+                        direction.
+                    </p>
+
+                    <p>
+                        I returned to university around 2020 with a new focus: a double degree in Computer Science and
+                        Physics. Toward the end of my undergrad, I knew I wanted to pursue astrophysics, so I completed
+                        my Honours with Dr. Michael Cowley researching supermassive black holes. That path led me to
+                        where I am today, at UQ, undertaking a PhD in Astrophysics. My research now focuses on the
+                        'extreme' end of the universe: specifically, how massive stars explode and collapse into black
+                        holes, which then collide with other black holes to form the gravitational waves we detect
+                        today.
+                    </p>
+
+                    <h2>Thriving in Science Studies</h2>
+
+                    <p>
+                        Looking back at my time as an undergraduate, there are two main tips I always give to students
+                        who want to do more than just survive their degree.
+                    </p>
+
+                    <p>
+                        <strong>First: Master your internal deadlines.</strong> Don't leave things until the last
+                        minute. When you receive an assignment, allocate specific blocks of time to work on it
+                        immediately. I always recommend setting a personal deadline a few days earlier than the actual
+                        due date; it gives you that essential buffer to review your work without the '11:59 PM' stress.
+                    </p>
+
+                    <p>
+                        <strong>Second: Be brave enough to ask for help.</strong> Science is a collaborative effort.
+                        Universities have brilliant tutors and academics, as well as excellent support services.
+                        Utilizing those resources isn't a sign that you're struggling; it's a sign that you're a smart
+                        student who knows how to succeed.
+                    </p>
+
+                    <h2>Essential Skills for the Modern Scientist</h2>
+
+                    <p>
+                        Beyond the coursework, there are technical and professional skills that are absolutely critical
+                        for a career in science.
+                    </p>
+
+                    <p>
+                        Professionally, it comes down to <strong>Time Management</strong>. It sounds simple, but it's
+                        the foundation of everything. It's not just about knowing when assessments are due; it's about
+                        proactively scheduling time to relax and unwind. You can't do good science if you're burnt out.
+                    </p>
+
+                    <p>
+                        Technically, and I'll admit I'm biased here, my top recommendation is to <strong>learn how to
+                            code
+                            well</strong>. Modern science, especially astrophysics, is 'computer-first.' I don't know a
+                        single person in my department who doesn't spend at least part of their day coding. It is the
+                        universal tool of the modern scientist.
+                    </p>
+
+                    <h2>The Creative Frontier</h2>
+
+                    <p>
+                        What excites me most about this field is that science is a creative frontier. You get to explore
+                        incredibly interesting ideas and constantly challenge yourself, but more importantly, you get to
+                        work on things you are genuinely passionate about. Science allows you to push the absolute
+                        boundaries of human knowledge, to explore concepts that no one else has quite mastered yet.
+                        It's
+                        a very different, very exciting way to spend your day-to-day life.
+                    </p>
+
+                    <h2>University as an Operating System</h2>
+
+                    <p>
+                        I see university as being about far more than just imparting subject knowledge. Its real value
+                        for your future career is that it teaches you <em>how to learn</em>. Beyond the equations, you
+                        are learning how to manage your time, how to communicate complex ideas to others, and how to
+                        master the technical tools you'll need in the workforce. University provides the 'operating
+                        system' that allows you to be ready for whatever job the future throws at you.
+                    </p>
+
+                    <!-- Tags -->
+                    <div class="post-tags"
+                        style="margin-top: 3rem; margin-bottom: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+                        <a href="#" class="post-tag">#CareerAdvice</a>
+                        <a href="#" class="post-tag">#Astrophysics</a>
+                        <a href="#" class="post-tag">#StudentLife</a>
+                        <a href="#" class="post-tag">#Programming</a>
+                    </div>
+
+                    <!-- Share & Bio -->
+                    <div class="post-footer" style="display: flex; flex-direction: column; gap: 2rem;">
+                        <!-- Share -->
+                        <div class="post-share" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <span style="color: var(--color-white); font-weight: 500;">Share this post:</span>
+                            <div class="share-buttons" style="display: flex; gap: 10px;">
+                                <button class="share-btn native-share-btn" aria-label="Share" style="display: none;">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <a href="https://twitter.com/intent/tweet?url=https://mitchellhooymans.com/blog/science-career-qa.html&text=From+IT+Student+to+Astrophysicist"
+                                    target="_blank" class="share-btn" aria-label="Share on X">
+                                    <i class="fab fa-x-twitter"></i>
+                                </a>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=https://mitchellhooymans.com/blog/science-career-qa.html"
+                                    target="_blank" class="share-btn" aria-label="Share on Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://mitchellhooymans.com/blog/science-career-qa.html"
+                                    target="_blank" class="share-btn" aria-label="Share on LinkedIn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="share-btn" aria-label="Copy link">
+                                    <i class="fas fa-link"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="author-bio"
+                            style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: var(--radius-lg); display: flex; gap: 1.5rem; align-items: center; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="author-bio-avatar">
+                                <img src="../images/profile/headshot.jpg" alt="Mitchell Hooymans"
+                                    style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;">
+                            </div>
+                            <div class="author-bio-content">
+                                <h4 style="color: var(--color-white); margin-bottom: 0.5rem;">About the Author</h4>
+                                <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--color-gray-400);">
+                                    Mitchell Hooymans is a PhD researcher in Astrophysics at The University of
+                                    Queensland,
+                                    specializing in black hole dynamics and STEM education.
+                                </p>
+                                <a href="../pages/about.html"
+                                    style="font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 5px;">
+                                    Learn More <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- Related Posts -->
+    <section class="section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: var(--space-8);">Related Posts</h2>
+            <div class="blog-grid"
+                style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto;">
+                <article class="blog-card"
+                    style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: var(--radius-xl); border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden;">
+                    <div class="blog-card-image" style="height: 200px; overflow: hidden; position: relative;">
+                        <img src="../images/general/Coding in Python BlogImage.jpg" alt="Programming"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="blog-card-content" style="padding: 1.5rem;">
+                        <div class="blog-card-meta"
+                            style="color: var(--color-gray-500); font-size: 0.85rem; margin-bottom: 0.5rem;">
+                            <span><i class="fas fa-calendar-alt"></i> January 15, 2026</span>
+                        </div>
+                        <h3 class="blog-card-title" style="font-size: 1.25rem; margin-bottom: 0.5rem;">
+                            <a href="../blog/programming.html" style="color: var(--color-white);">Why Every Scientist
+                                Should Learn Programming</a>
+                        </h3>
+                        <p class="blog-card-excerpt"
+                            style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--color-gray-400); font-size: 0.95rem;">
+                            Programming has become an essential skill in modern scientific research.
+                        </p>
+                        <div class="blog-card-footer"
+                            style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="../blog/programming.html" class="read-more"
+                                style="font-weight: 500; font-size: 0.9rem; color: var(--color-accent); text-decoration: none;">Read
+                                Article <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">Mitchell Hooymans</div>
+                    <p class="footer-tagline">Astrophysicist & STEM Communicator</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/mitchell-hooymans/" class="social-link" aria-label="LinkedIn"
+                        target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/mitchellhooymans" class="social-link" aria-label="GitHub"
+                        target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mitchell Hooymans. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Copy Link Functionality
+        const copyBtn = document.querySelector('a[aria-label="Copy link"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    const originalIcon = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalIcon;
+                    }, 2000);
+                });
+            });
+        }
+
+        // Web Share API & Responsive Logic
+        const shareBtn = document.querySelector('.native-share-btn');
+        const socialBtns = document.querySelectorAll('.share-btn:not(.native-share-btn):not([aria-label="Copy link"])');
+
+        const isMobileContext = window.matchMedia('(pointer: coarse)').matches;
+
+        if (navigator.share && isMobileContext) {
+            shareBtn.style.display = 'inline-flex';
+            socialBtns.forEach(btn => btn.style.display = 'none');
+
+            shareBtn.addEventListener('click', () => {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                }).catch(console.error);
+            });
+        }
+    </script>
+</body>
+
+</html>
