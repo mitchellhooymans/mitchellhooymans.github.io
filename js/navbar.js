@@ -127,12 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Configuration Options
         const particleConfig = {
-            sprayAmount: 2,         // Number of particles per frame (Production rate)
+            sprayAmount: 2.25,         // Number of particles per frame (Production rate)
             sizeMin: 0.5,             // Minimum particle size
             sizeMax: 3,             // Maximum particle size
             speedFactor: 5,         // Velocity multiplier
-            decayRate: 0.01,       // Base decay rate (lower = longer life)
-            fadeSpeed: 0.05         // How fast they fade when mouse leaves
+            decayRate: 0.001,       // Base decay rate (lower = longer life)
+            fadeSpeed: 0.025         // How fast they fade when mouse leaves
         };
 
         let particles = [];
