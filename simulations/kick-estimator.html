@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hole Retention Estimator | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Interactive Black Hole Retention Estimator. Calculate retention fractions in star clusters using Hobbs scaling.">
+    <link rel="canonical" href="https://mitchellhooymans.com/simulations/kick-estimator.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mitchellhooymans.com/simulations/kick-estimator.html">
+    <meta property="og:title" content="Black Hole Retention Estimator | Mitchell Hooymans">
+    <meta property="og:description"
+        content="Interactive Black Hole Retention Estimator. Calculate retention fractions in star clusters using Hobbs scaling.">
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://mitchellhooymans.com/simulations/kick-estimator.html">
+    <meta name="twitter:title" content="Black Hole Retention Estimator | Mitchell Hooymans">
+    <meta name="twitter:description"
+        content="Interactive Black Hole Retention Estimator. Calculate retention fractions in star clusters using Hobbs scaling.">
+    <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Load Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Load MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .content-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 900px) {
+            .simulation-wrapper {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+
+        .simulation-container {
+            background: #000;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            width: 100%;
+            min-height: 500px;
+            /* Match the radial gradient from other simulations */
+            background: radial-gradient(ellipse at center, #0d1117 0%, #000 100%);
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            height: fit-content;
+        }
+
+        .controls-panel h3 {
+            margin-bottom: var(--space-4);
+            color: var(--color-white);
+            font-size: 1rem;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .control-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-400);
+            margin-bottom: var(--space-3);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--color-white);
+            font-size: 0.85rem;
+        }
+
+        .control-value {
+            font-weight: 600;
+            color: var(--color-accent);
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-gray-300);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-group input[type="number"] {
+            width: 100%;
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--color-white);
+            font-family: 'Courier New', monospace;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .equation-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: var(--space-3);
+            border-radius: var(--radius-md);
+            margin: var(--space-4) 0;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-box.highlight {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--color-accent);
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: var(--space-1);
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--color-gray-400);
+            margin-top: var(--space-1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/tutorials.html">Tutorials</a>
+        <a href="../pages/simulations.html">Simulations</a>
+        <a href="../pages/research.html">Research</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <a href="../pages/simulations.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Simulations
+            </a>
+            <h1>Black Hole Retention Estimator</h1>
+            <p>Calculate retention fractions using Hobbs et al. (2005) scaling</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <div class="content-section">
+
+                <!-- Info & Stats Card -->
+                <div class="info-card">
+                    <h3><i class="fas fa-calculator"></i> Physics Model</h3>
+                    <p>
+                        This tool estimates the <strong>natal retention fraction</strong> of black holes in a star
+                        cluster.
+                        It assumes black holes receive a natal kick drawn from a Maxwellian distribution, scaled down
+                        from the neutron star distribution ($\sigma_{NS} = 265$ km/s).
+                    </p>
+
+                    <div class="equation-box">
+                        $$ P(v) = \sqrt{\frac{2}{\pi}} \frac{v^2}{\sigma_{bh}^3}
+                        \exp\left(-\frac{v^2}{2\sigma_{bh}^2}\right) $$
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" id="disp-sigma-bh">132.5</div>
+                            <div class="stat-label">Current σ<sub>BH</sub> (km/s)</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="disp-peak-vel">187.4</div>
+                            <div class="stat-label">Peak Velocity (km/s)</div>
+                        </div>
+                        <div class="stat-box highlight">
+                            <div class="stat-value" id="disp-retention-pct">1.2%</div>
+                            <div class="stat-label">Retention %</div>
+                        </div>
+                        <div class="stat-box highlight">
+                            <div class="stat-value" id="disp-retention-count">12</div>
+                            <div class="stat-label">Est. BHs Retained</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simulation-wrapper">
+                    <!-- Plot Area -->
+                    <div class="simulation-container">
+                        <div id="plot" style="width: 100%; height: 100%;"></div>
+                    </div>
+
+                    <!-- Controls Panel -->
+                    <div class="controls-panel">
+                        <h3><i class="fas fa-sliders-h"></i> Parameters</h3>
+
+                        <div class="control-section">
+                            <h4>Scaling Physics</h4>
+                            <div class="control-group">
+                                <label>Scaling Fraction <span class="control-value"
+                                        id="val-fraction">0.50</span></label>
+                                <input type="range" id="slider-fraction" min="0.05" max="1.0" step="0.01" value="0.5">
+                                <span class="helper-text">Ratio σ<sub>BH</sub> / σ<sub>NS</sub> (Ref σ<sub>NS</sub> =
+                                    265 km/s)</span>
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Environment</h4>
+                            <div class="control-group">
+                                <label>Escape Velocity <span class="control-value" id="val-vesc">50 km/s</span></label>
+                                <input type="range" id="slider-vesc" min="10" max="200" step="1" value="50">
+                                <span class="helper-text">Cluster escape threshold (v<sub>esc</sub>)</span>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Total BHs Formed</label>
+                                <input type="number" id="input-total-bhs" value="1000" min="1" step="10">
+                                <span class="helper-text">Initial number of BH progenitors</span>
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <p class="helper-text" style="font-style: italic; opacity: 0.8;">
+                                Note: This estimates natal retention only. It does not account for long-term dynamical
+                                ejection.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JavaScript -->
+    <script src="../js/footer.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/animations.js"></script>
+    <script>
+        new Footer().init('../');
+
+        // ========================================
+        // Kick Estimator Logic
+        // ========================================
+
+        // --- Constants ---
+        const SIGMA_NS = 265.0; // Hobbs et al. 2005
+        const V_MAX = 1500;
+        const POINTS = 1000;
+
+        // --- Math Functions ---
+
+        function maxwellian(v, sigma) {
+            if (sigma <= 0) return 0;
+            const term1 = Math.sqrt(2 / Math.PI);
+            const term2 = (v * v) / Math.pow(sigma, 3);
+            const term3 = Math.exp(-(v * v) / (2 * sigma * sigma));
+            return term1 * term2 * term3;
+        }
+
+        function erf(x) {
+            // Constants for approximation
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+
+            let sign = 1;
+            if (x < 0) sign = -1;
+            x = Math.abs(x);
+
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+            return sign * y;
+        }
+
+        function maxwellianCDF(v, sigma) {
+            if (sigma <= 0) return 1.0;
+            const x = v / (Math.sqrt(2) * sigma);
+            const term1 = erf(x);
+            const term2 = Math.sqrt(2 / Math.PI) * (v / sigma) * Math.exp(-(v * v) / (2 * sigma * sigma));
+            return term1 - term2;
+        }
+
+        // --- Data Generation ---
+        function generatePlotData(fraction, v_esc) {
+            const sigma_bh = SIGMA_NS * fraction;
+
+            const x_ns = [];
+            const y_ns = [];
+            const x_bh = [];
+            const y_bh = [];
+            const x_fill = [];
+            const y_fill = [];
+
+            const step = V_MAX / POINTS;
+
+            for (let i = 0; i <= POINTS; i++) {
+                const v = i * step;
+
+                x_ns.push(v);
+                y_ns.push(maxwellian(v, SIGMA_NS));
+
+                x_bh.push(v);
+                const prob_bh = maxwellian(v, sigma_bh);
+                y_bh.push(prob_bh);
+
+                if (v <= v_esc) {
+                    x_fill.push(v);
+                    y_fill.push(prob_bh);
+                }
+            }
+
+            // Close the fill polygon properly
+            if (x_fill.length > 0 && x_fill[x_fill.length - 1] < v_esc) {
+                x_fill.push(v_esc);
+                y_fill.push(maxwellian(v_esc, sigma_bh));
+            }
+            x_fill.push(v_esc);
+            y_fill.push(0);
+
+            return { x_ns, y_ns, x_bh, y_bh, x_fill, y_fill, sigma_bh };
+        }
+
+        // --- Plot Initialization ---
+        // Dark theme adapted plot layout
+        const layout = {
+            margin: { t: 40, r: 20, b: 60, l: 60 }, // Adjusted for container
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: {
+                title: { text: 'Natal Kick Velocity (km/s)', font: { size: 14, color: '#cbd5e1' }, standoff: 20 },
+                range: [0, 1000],
+                fixedrange: true,
+                gridcolor: 'rgba(255,255,255,0.1)',
+                tickfont: { size: 12, color: '#94a3b8' },
+                zerolinecolor: 'rgba(255,255,255,0.2)'
+            },
+            yaxis: {
+                title: { text: 'Probability Density P(v)', font: { size: 14, color: '#cbd5e1' }, standoff: 20 },
+                range: [0, 0.008],
+                fixedrange: true,
+                gridcolor: 'rgba(255,255,255,0.1)',
+                tickfont: { size: 12, color: '#94a3b8' },
+                zerolinecolor: 'rgba(255,255,255,0.2)'
+            },
+            showlegend: true,
+            legend: {
+                x: 1, xanchor: 'right', y: 1,
+                font: { size: 12, color: '#cbd5e1' },
+                bgcolor: 'rgba(15, 23, 42, 0.8)',
+                bordercolor: 'rgba(255,255,255,0.1)',
+                borderwidth: 1
+            },
+            shapes: []
+        };
+
+        const config = { responsive: true, displayModeBar: false };
+
+        Plotly.newPlot('plot', [], layout, config);
+
+        // --- Update Logic ---
+        function updatePlot() {
+            const fraction = parseFloat(document.getElementById('slider-fraction').value);
+            const v_esc = parseFloat(document.getElementById('slider-vesc').value);
+            const total_bhs = parseInt(document.getElementById('input-total-bhs').value) || 0;
+
+            // Update Text Displays
+            document.getElementById('val-fraction').textContent = fraction.toFixed(2);
+            document.getElementById('val-vesc').textContent = v_esc + ' km/s';
+
+            // Calculate Physics
+            const data = generatePlotData(fraction, v_esc);
+            const retention = maxwellianCDF(v_esc, data.sigma_bh);
+            const peak_vel = Math.sqrt(2) * data.sigma_bh;
+            const retained_count = Math.round(retention * total_bhs);
+
+            // Update Stats Panel
+            document.getElementById('disp-sigma-bh').textContent = data.sigma_bh.toFixed(1);
+            document.getElementById('disp-peak-vel').textContent = peak_vel.toFixed(1);
+            document.getElementById('disp-retention-pct').textContent = (retention * 100).toFixed(1) + '%';
+            document.getElementById('disp-retention-count').textContent = retained_count;
+
+            // Update Plot Traces
+            const traceNS = {
+                x: data.x_ns,
+                y: data.y_ns,
+                mode: 'lines',
+                name: 'NS (Hobbs, σ=265)',
+                line: { color: '#94a3b8', dash: 'dash', width: 2 } // Gray for NS
+            };
+
+            const traceRetention = {
+                x: data.x_fill,
+                y: data.y_fill,
+                mode: 'lines',
+                fill: 'tozeroy',
+                name: 'Retained',
+                line: { width: 0, color: 'rgba(56, 189, 248, 0.5)' }, // Light blue fill
+                fillcolor: 'rgba(56, 189, 248, 0.2)',
+                hoverinfo: 'skip'
+            };
+
+            const traceBH = {
+                x: data.x_bh,
+                y: data.y_bh,
+                mode: 'lines',
+                name: `BH (Scaled)`,
+                line: { color: '#38bdf8', width: 3 } // Accent blue for BH
+            };
+
+            const shapes = [{
+                type: 'line',
+                x0: v_esc,
+                y0: 0,
+                x1: v_esc,
+                y1: 0.02, // Extend high enough
+                line: {
+                    color: '#fbbf24', // Amber for escape velocity
+                    width: 2,
+                    dash: 'dot'
+                }
+            }];
+
+            // Dynamic Y-axis
+            const peak_prob = maxwellian(peak_vel, data.sigma_bh);
+            const new_layout = {
+                ...layout,
+                shapes: shapes,
+                yaxis: {
+                    ...layout.yaxis,
+                    range: [0, Math.max(0.005, peak_prob * 1.1)]
+                }
+            };
+
+            Plotly.react('plot', [traceNS, traceRetention, traceBH], new_layout, config);
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('slider-fraction').addEventListener('input', updatePlot);
+        document.getElementById('slider-vesc').addEventListener('input', updatePlot);
+        document.getElementById('input-total-bhs').addEventListener('input', updatePlot);
+
+        // Trigger initial update in case of reload
+        window.addEventListener('load', updatePlot);
+        // Also handle window resize for Plotly
+        window.addEventListener('resize', () => {
+            Plotly.Plots.resize('plot');
+        });
+
+    </script>
+</body>
+
+</html>
