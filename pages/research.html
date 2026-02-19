@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Research | Mitchell Hooymans</title>
     <meta name="description"
-        content="Astrophysics research by Mitchell Hooymans: Star Cluster Dynamics and Black Hole Mergers.">
+        content="Astrophysics research by Mitchell Hooymans: Star Cluster Dynamics, Stellar Black Holes, AGN, and Gravitational Waves.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,16 +20,76 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="../js/stars.js"></script>
+    <style>
+        .research-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-2xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .research-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-glow), 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (min-width: 1024px) {
+            .research-card {
+                flex-direction: row;
+                align-items: stretch;
+            }
+
+            .research-card.reverse {
+                flex-direction: row-reverse;
+            }
+        }
+
+        .research-card-image {
+            flex: 1;
+            min-height: 300px;
+            position: relative;
+            max-width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .research-card-image {
+                max-width: 50%;
+            }
+        }
+
+        .research-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+        }
+
+        .research-card-content {
+            flex: 1;
+            padding: var(--space-8) var(--space-6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @media (min-width: 1024px) {
+            .research-card-content {
+                padding: var(--space-10) var(--space-12);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Global Nebula Background -->
-    <div class="global-nebula">
-        <div class="nebula-glow"></div>
-        <div class="nebula-glow"></div>
-    </div>
-
-    <!-- Navigation -->
     <!-- Navigation -->
     <div id="navbar-placeholder"></div>
     <script src="../js/navbar.js"></script>
@@ -39,7 +99,7 @@
         <a href="about.html">About</a>
         <a href="tutorials.html">Tutorials</a>
         <a href="simulations.html">Simulations</a>
-        <a href="research.html">Research</a>
+        <a href="research.html" class="active">Research</a>
         <a href="blog.html">Blog</a>
         <a href="photography.html">Photography</a>
         <a href="cv.html">CV</a>
@@ -47,171 +107,162 @@
     </div>
 
     <!-- Header -->
-    <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
-        <!-- Background Elements -->
-
+    <section class="hero"
+        style="min-height: 30vh; padding-top: 120px; position: relative; overflow: hidden; margin-bottom: 0;">
         <div class="container" style="position: relative; z-index: 1;">
             <div class="page-hero-content">
-                <h1 class="animate-fade-in-up">Research Projects</h1>
+                <h1 class="animate-fade-in-up">Research Themes</h1>
                 <p class="animate-fade-in-up delay-100">Exploring the dynamics of the universe through simulation and
                     theory.</p>
             </div>
         </div>
     </section>
 
-    <!-- Research Themes (Navigation) -->
-    <section class="section section-alt" style="padding-bottom: var(--space-10);">
-        <div class="container">
-            <!-- Header Removed -->
-
-            <div class="grid grid-3">
-                <a href="#project-stellar" class="card reveal"
-                    style="text-decoration: none; color: inherit; display: block;">
-                    <div class="card-body">
-                        <!-- Icon removed -->
-                        <h3 class="card-title">Stellar Dynamics</h3>
-                        <p class="card-text">
-                            Simulating the formation and evolution of black holes in dense star clusters.
-                        </p>
-                    </div>
-                </a>
-
-                <a href="#project-gw" class="card reveal delay-100"
-                    style="text-decoration: none; color: inherit; display: block;">
-                    <div class="card-body">
-                        <!-- Icon removed -->
-                        <h3 class="card-title">Gravitational Waves</h3>
-                        <p class="card-text">
-                            Analyzing waveforms to test General Relativity and understand merger properties.
-                        </p>
-                    </div>
-                </a>
-
-                <a href="#project-cosmology" class="card reveal delay-200"
-                    style="text-decoration: none; color: inherit; display: block;">
-                    <div class="card-body">
-                        <!-- Icon removed -->
-                        <h3 class="card-title">Dark Sirens</h3>
-                        <p class="card-text">
-                            Using binary black hole mergers to measure the Universe's expansion rate.
-                        </p>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Project 1 -->
-        <section class="section" id="project-stellar" style="padding-top: var(--space-10);">
+    <div style="padding-bottom: var(--space-20);">
+        <!-- Project 1: Stellar Black Holes (Main, Moved to Top) -->
+        <section class="section" id="project-stellar"
+            style="padding-top: var(--space-4); padding-bottom: var(--space-4);">
             <div class="container">
-                <div class="grid grid-2" style="align-items: center;">
-                    <div class="reveal">
-                        <!-- Tag removed -->
-                        <h2 class="section-title">The formation and dynamics of Stellar black holes in dense star
-                            clusters</h2>
+                <div class="research-card reveal">
+                    <div class="research-card-content">
+                        <h2 class="section-title">Stellar Black Holes</h2>
                         <p class="mb-4">
-                            My research investigates the interplay between stellar evolution and dynamics in dense star
-                            clusters. We explore how the evolution of massive stars and the formation of black holes
-                            influence the cluster's dynamical history. By combining rapid population synthesis with
-                            state of the art N-body simulations, we model the complete lifecycle of these systems to
-                            understand
-                            the origins of compact object mergers.
+                            My primary research focus is the formation and complex dynamics of stellar-mass black holes.
+                            Through detailed investigations of their lifecycles, I model both their isolated evolution
+                            and their behavior in dynamically chaotic environments.
                         </p>
-                        <ul
-                            style="list-style: disc; margin-left: 1.5rem; margin-bottom: 2rem; color: var(--color-gray-600);">
-                            <li class="mb-2">Stellar Evolution & Dynamics.</li>
-                            <li class="mb-2">Population Synthesis Codes.</li>
-                            <li class="mb-2">N-body Simulations.</li>
-                        </ul>
-                        <!-- Button removed -->
+                        <p class="mb-4">
+                            A crucial component of this research explores the resulting "kicks" they receive during
+                            formation supernovae or dynamical interactions, heavily dictating their retention in parent
+                            clusters and their future merger potential.
+                        </p>
+                        <ul style="list-style: disc; margin-left: 1.5rem; color: var(--color-gray-600);">
+                            <li class="mb-2"><strong>Formation & Dynamics</strong> across changing environments.</li>
+                            <li class="mb-2"><strong>Isolated Evolution</strong> vs cluster-driven dynamical evolution.
+                            </li>
+                            <li class="mb-2"><strong>Resulting Kicks</strong> and retention velocity analysis.</li>
+                            <div style="margin-top: var(--space-6);">
+                                <a href="../simulations/kick-estimator.html" class="btn btn-primary"
+                                    style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-play"></i> Try the Kick Estimator
+                                </a>
+                            </div>
                     </div>
-                    <div class="reveal delay-100">
-                        <div id="sim-stellar" class="simulation-placeholder"
-                            style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); position: relative; min-height: 300px;">
-                            <img src="../images/general/milkyway.jpg" alt="Black Hole Simulation"
-                                style="width: 100%; height: auto; display: block;">
-                        </div>
+                    <div class="research-card-image">
+                        <img src="../images/tutorials/StellarBlackHole.jpg" alt="Stellar Black Hole Formation">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Project 2 -->
-        <section class="section section-alt" id="project-gw">
+        <!-- Project 2: Dense Star Clusters -->
+        <section class="section section-alt" id="project-clusters"
+            style="padding-top: var(--space-4); padding-bottom: var(--space-4);">
             <div class="container">
-                <div class="grid grid-2" style="align-items: center;">
-                    <div class="reveal order-2">
-                        <div id="sim-gw" class="simulation-placeholder"
-                            style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); position: relative; min-height: 300px;">
-                            <!-- Placeholder for GW image -->
-                            <div
-                                style="width: 100%; height: 300px; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); display: flex; align-items: center; justify-content: center; color: white;">
-                                <i class="fas fa-wave-square" style="font-size: 4rem;"></i>
-                            </div>
+                <div class="research-card reverse reveal">
+                    <div class="research-card-content">
+                        <h2 class="section-title">Dense Star Clusters</h2>
+                        <p class="mb-4">
+                            My research investigates the deeply complex environments of dense star clusters such as
+                            globular clusters and nuclear star clusters.
+                            I study the interplay between structural evolution and internal dynamics over cosmological
+                            timescales.
+                        </p>
+                        <p class="mb-4">
+                            By accurately modeling these environments, we can trace the fundamental properties that
+                            shape them, resulting in critical insights regarding binary formation and system lifespans.
+                        </p>
+                        <ul style="list-style: disc; margin-left: 1.5rem; color: var(--color-gray-600);">
+                            <li class="mb-2"><strong>Structural Evolution</strong> over billions of years.</li>
+                            <li class="mb-2"><strong>Binary Fractions</strong> and their impact on cluster energy.</li>
+                            <li class="mb-2"><strong>Initial Mass Functions</strong> variations and dependencies.</li>
+                            <li class="mb-2"><strong>Dynamics</strong> within extremely dense stellar environments.</li>
+                        </ul>
+                        <div style="margin-top: var(--space-6);">
+                            <a href="../simulations/globular.html" class="btn btn-primary"
+                                style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-play"></i> View 3D GC Model
+                            </a>
                         </div>
                     </div>
-                    <div class="reveal delay-100 order-1">
-                        <!-- Tag removed -->
+                    <div class="research-card-image">
+                        <img src="../images/tutorials/47Tuc.png" alt="Dense Star Cluster Simulation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project 3: Galaxies and AGN -->
+        <section class="section" id="project-agn" style="padding-top: var(--space-4); padding-bottom: var(--space-4);">
+            <div class="container">
+                <div class="research-card reveal">
+                    <div class="research-card-content">
+                        <h2 class="section-title">Galaxies and AGN</h2>
+                        <p class="mb-4">
+                            Active Galactic Nuclei (AGN) are some of the most luminous and dynamically volatile
+                            phenomena in the universe. My research investigates the vital co-evolution of these
+                            supermassive black holes alongside their host galaxies.
+                        </p>
+                        <p class="mb-4">
+                            By mapping host galaxy properties and simulating AGN dynamics, we can begin to uncover the
+                            mechanisms that trigger their active phases and the feedback loops that regulate internal
+                            star formation.
+                        </p>
+                        <ul style="list-style: disc; margin-left: 1.5rem; color: var(--color-gray-600);">
+                            <li class="mb-2"><strong>Co-evolution</strong> of AGN and their host galaxies.</li>
+                            <li class="mb-2"><strong>Host Galaxy Properties</strong> and environmental dependencies.
+                            </li>
+                            <li class="mb-2"><strong>AGN Dynamics</strong> and supermassive black hole behavior.</li>
+                        </ul>
+                    </div>
+                    <div class="research-card-image">
+                        <img src="../images/tutorials/AGN.jpg" alt="Active Galactic Nuclei">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project 4: Gravitational Wave Physics -->
+        <section class="section section-alt" id="project-gw"
+            style="padding-top: var(--space-4); padding-bottom: var(--space-4);">
+            <div class="container">
+                <div class="research-card reverse reveal">
+                    <div class="research-card-content">
                         <h2 class="section-title">Gravitational Wave Physics</h2>
                         <p class="mb-4">
-                            Complementing the dynamical studies, this research focuses on the gravitational waveforms
-                            emitted during the inspiral and ringdown phases of binary black hole mergers. By analyzing
-                            these signals, we can infer the properties of the progenitor black holes and test the
-                            predictions of General Relativity in the strong-field regime.
+                            Complementing stellar cluster dynamics, this branch of my research focuses on the ultimate
+                            fates of dense binaries: the gravitational waveforms emitted during the inspiral and
+                            ringdown of binary black hole (BBH) or neutron star (NS) mergers.
                         </p>
                         <p class="mb-4">
-                            <strong>Key Areas:</strong> Waveform Analysis, General Relativity Testing, Signal Processing
+                            Through simulated data and waveform modeling, I analyze the varied formation channels that
+                            lead directly to these monumental gravitational wave events.
                         </p>
+                        <ul style="list-style: disc; margin-left: 1.5rem; color: var(--color-gray-600);">
+                            <li class="mb-2"><strong>BBH & NS Mergers</strong> in varying stellar environments.</li>
+                            <li class="mb-2"><strong>Formation Channels</strong> predicting merger rates.</li>
+                            <li class="mb-2"><strong>Waveform Modeling</strong> and signal parameter derivation.</li>
+                        </ul>
+                    </div>
+                    <div class="research-card-image">
+                        <img src="../images/tutorials/BinaryBlackHole.jpg" alt="Binary Black Hole Merger">
                     </div>
                 </div>
             </div>
         </section>
+    </div>
 
-        <!-- Project 3 -->
-        <section class="section" id="project-cosmology">
-            <div class="container">
-                <div class="grid grid-2" style="align-items: center;">
-                    <div class="reveal">
-                        <!-- Tag removed -->
-                        <h2 class="section-title">Dark Sirens & The Hubble Tension</h2>
-                        <p class="mb-4">
-                            Using gravitational wave detections of binary black hole mergers—'dark sirens' without
-                            electromagnetic counterparts—to measure the expansion rate of the Universe. This method
-                            offers a novel, independent probe to help resolve the ongoing Hubble tension.
-                        </p>
-                        <p class="mb-4">
-                            <strong>Key Areas:</strong> Cosmology, Bayesian Inference, Gravitational Wave Astronomy
-                        </p>
-                    </div>
-                    <div class="reveal delay-100">
-                        <div id="sim-cosmology" class="simulation-placeholder"
-                            style="background: var(--color-gray-100); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); position: relative; min-height: 300px;">
-                            <!-- Placeholder for Cosmology image -->
-                            <div
-                                style="width: 100%; height: 300px; background: linear-gradient(to right, #2b5876, #4e4376); display: flex; align-items: center; justify-content: center; color: white;">
-                                <i class="fas fa-globe-americas" style="font-size: 4rem;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
 
-
-
-        <!-- Footer -->
-        <div id="footer-placeholder"></div>
-
-        <!-- JavaScript -->
-        <script>
-
-
-        </script>
-        <script src="../js/footer.js"></script>
-        <script src="../js/back-to-top.js"></script>
-        <script src="../js/animations.js"></script>
-        <script>
-            new Footer().init('../');
-        </script>
+    <!-- JavaScript -->
+    <script src="../js/footer.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/animations.js"></script>
+    <script src="../js/stars.js"></script>
+    <script>
+        new Footer().init('../');
+    </script>
 </body>
 
 </html>
