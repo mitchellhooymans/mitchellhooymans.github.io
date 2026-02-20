@@ -28,6 +28,9 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Prism.js Syntax Highlighting CSS (Okaidia theme for dark mode) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+
     <style>
         .post-content p {
             margin-bottom: 1.5rem;
@@ -100,6 +103,33 @@
         .post-tag:hover {
             background: rgba(56, 189, 248, 0.15);
             border-color: var(--color-accent);
+        }
+
+        /* Prism.js Overrides for Theme Consistency */
+        .post-content pre[class*="language-"] {
+            background: rgba(15, 23, 42, 0.4) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-shadow: none !important;
+        }
+
+        .post-content code[class*="language-"] {
+            font-family: var(--font-body) !important;
+            font-size: 0.95rem;
+            text-shadow: none !important;
+        }
+
+        .post-content :not(pre)>code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 0.85em;
+            color: var(--color-accent);
         }
     </style>
 </head>
@@ -398,6 +428,14 @@
             });
         }
     </script>
+
+    <!-- Prism.js Syntax Highlighting JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-nasm.min.js"></script>
 </body>
 
 </html>

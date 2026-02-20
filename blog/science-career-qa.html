@@ -28,6 +28,9 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Prism.js Syntax Highlighting CSS (Okaidia theme for dark mode) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+
     <style>
         .post-content p {
             margin-bottom: 1.5rem;
@@ -101,6 +104,33 @@
             background: rgba(56, 189, 248, 0.15);
             border-color: var(--color-accent);
         }
+
+        /* Prism.js Overrides for Theme Consistency */
+        .post-content pre[class*="language-"] {
+            background: rgba(15, 23, 42, 0.4) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-shadow: none !important;
+        }
+
+        .post-content code[class*="language-"] {
+            font-family: var(--font-body) !important;
+            font-size: 0.95rem;
+            text-shadow: none !important;
+        }
+
+        .post-content :not(pre)>code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 0.85em;
+            color: var(--color-accent);
+        }
     </style>
 </head>
 
@@ -140,7 +170,7 @@
 
                 <!-- UPDATE: Change category -->
                 <header class="post-header" style="text-align: center; margin-bottom: var(--space-8);">
-                    <span class="text-accent" style="font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: var(--space-4);">Education</span>
+                    <span class="text-accent" style="font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: var(--space-4);">Personal</span>
 
                     <!-- UPDATE: Change title -->
                     <h1 class="animate-fade-in-up" style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: var(--space-6); line-height: 1.2;">From IT to Astrophysics: Navigating a Career in Science</h1>
@@ -182,8 +212,8 @@
 <p>My university experience actually started in a Bachelor of IT. I did that for a year, but I eventually realized it just wasn't the right fit for me at the time. I took a break, and during that time away, I read a fascinating book about astronomy that completely sparked a change in direction.</p>
 <p>I returned to university around 2020 with a new focus: a double degree in Computer Science and Physics. Toward the end of my undergrad, I knew I wanted to pursue astrophysics, so I completed my Honours with Dr. Michael Cowley researching supermassive black holes. That path led me to where I am today, at UQ, undertaking a PhD in Astrophysics. My research now focuses on the 'extreme' end of the universe: specifically, how massive stars explode and collapse into black holes, which then collide with other black holes to form the gravitational waves we detect today.</p>
 <h2>Thriving in Science Studies</h2>
-<p>Looking back at my time as an undergraduate, there are two main tips I always give to students who want to do more than just survive their degree.</p>
-<p>First: Master your internal deadlines. Don't leave things until the last minute. When you receive an assignment, allocate specific blocks of time to work on it immediately. I always recommend setting a personal deadline a few days earlier than the actual due date; it gives you that essential buffer to review your work without the '11:59 PM' stress.</p>
+<p>Looking back at my time as an undergraduate, there are two main tips I always give to students who want to do more than just survive their degree.
+First: Master your internal deadlines. Don't leave things until the last minute. When you receive an assignment, allocate specific blocks of time to work on it immediately. I always recommend setting a personal deadline a few days earlier than the actual due date; it gives you that essential buffer to review your work without the '11:59 PM' stress.</p>
 <p>Second: Be brave enough to ask for help. Science is a collaborative effort. Universities have brilliant tutors and academics, as well as excellent support services. Utilizing those resources isn't a sign that you're struggling; it's a sign that you're a smart student who knows how to succeed.</p>
 <h2>Essential Skills for the Modern Scientist</h2>
 <p>Beyond the coursework, there are technical and professional skills that are absolutely critical for a career in science.</p>
@@ -289,32 +319,6 @@
                         </div>
                     </div>
                 </article>
-
-                <article class="blog-card"
-                    style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border-radius: var(--radius-xl); border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden;">
-                    <div class="blog-card-image" style="height: 200px; overflow: hidden; position: relative;">
-                        <img src="../images/general/UQ_Astrogroup.jpg" alt="PhD Journey"
-                            style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <div class="blog-card-content" style="padding: 1.5rem;">
-                        <div class="blog-card-meta"
-                            style="color: var(--color-gray-500); font-size: 0.85rem; margin-bottom: 0.5rem;">
-                            <span><i class="fas fa-calendar-alt"></i> December 28, 2025</span>
-                        </div>
-                        <h3 class="blog-card-title" style="font-size: 1.25rem; margin-bottom: 0.5rem;">
-                            <a href="phd-journey.html" style="color: var(--color-white);">Reflections on My First Year as a PhD Student</a>
-                        </h3>
-                        <p class="blog-card-excerpt"
-                            style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--color-gray-400); font-size: 0.95rem;">
-                            The highs, the lows, and everything in between. What I've learned in my first year of doctoral research at UQ.</p>
-                        <div class="blog-card-footer"
-                            style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-                            <a href="phd-journey.html" class="read-more"
-                                style="font-weight: 500; font-size: 0.9rem; color: var(--color-accent);">Read Article <i
-                                    class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </article>
             </div>
         </div>
     </section>
@@ -383,6 +387,14 @@
             });
         }
     </script>
+
+    <!-- Prism.js Syntax Highlighting JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-nasm.min.js"></script>
 </body>
 
 </html>

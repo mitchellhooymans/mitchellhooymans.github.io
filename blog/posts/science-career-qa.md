@@ -1,7 +1,7 @@
 ---
 title: "From IT to Astrophysics: Navigating a Career in Science"
 date: "2026-02-19"
-category: "Education"m
+category: "Personal"
 description: "A journey from IT to Astrophysics: insights on navigating a career in science, essential skills, and the future of research."
 image: "../images/general/milkyway.jpg"
 image_alt: "Galaxy view"
@@ -11,7 +11,6 @@ tags: ["CareerAdvice", "Astrophysics", "StudentLife", "Programming"]
 featured: true
 related_posts:
   - "programming.md"
-  - "phd-journey.md"
 ---
 
 Recently, I had the opportunity to return to my old university to speak on a panel for current science students. It was a chance to reflect on my own journey, one that wasn't exactly a straight line, and share some of the lessons I've learned along the way. From switching degrees to discovering a passion for the 'extreme' universe, here are some thoughts on navigating a career in science.

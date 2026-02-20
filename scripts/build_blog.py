@@ -70,7 +70,7 @@ def parse_markdown(md_content):
     # Convert Markdown to HTML
     try:
         import markdown
-        html_content = markdown.markdown(markdown_raw)
+        html_content = markdown.markdown(markdown_raw, extensions=['fenced_code'])
     except ImportError:
         print("Warning: 'markdown' library not found. Using simple fallback parser.")
         html_content = md_text_to_html(markdown_raw)

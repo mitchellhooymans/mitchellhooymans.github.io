@@ -11,11 +11,158 @@ tags: ["Programming", "Python", "Science", "Education", "DataScience"]
 featured: false
 related_posts:
   - "science-career-qa.md"
-  - "phd-journey.md"
 ---
 
-<p class="lead" style="font-size: 1.25rem; color: var(--color-white); margin-bottom: 2rem; line-height: 1.6;">
-    <strong>Programming is quickly becoming essential in modern science.</strong> Whether you're analyzing huge datasets, running simulations, or processing experimental results, the ability to write code opens up a world of possibilities that would be <i>impossible</i> to achieve without it.
-</p>
 
-*Full blog post coming soon...*
+
+## Why Should I Care About Programming?
+
+Picture this: you've spent hours meticulously filling out spreadsheets, carefully organising your data row by row, and you finally send everything off to a collaborator. They do their part and send it back. Except now the formatting is completely different from what you set up, there are input errors scattered across columns you thought were locked down, and half the formulas are broken because they used a different structure. You're now staring at a file that's a strange hybrid of two people's habits, and untangling it without losing either person's work is going to take you the better part of a day. It's frustrating, it's slow, and the worst part is that it's completely avoidable.
+
+Now imagine instead that you open your terminal, run a short script, and within seconds every cell that doesn't match the expected format is flagged, fixed, or ready for your review. Missing values are highlighted. Inconsistencies are logged. What would have taken hours of squinting at a screen is done before you've finished your coffee. That's not magic. That's just a bit of code doing what code does best: following instructions faster and more reliably than any human can.
+
+That example might seem small, but it illustrates something important. We live in a world increasingly run by software. The tools we use every day, from the spreadsheets we fill in at work to the apps we use to track our health, manage our finances, or stay connected with people, all of it runs on code written by someone. And for most people, that someone is a mystery. We interact with the surface of technology without ever seeing what's underneath, which means we're always slightly at the mercy of whoever built the thing we're using. Learning to code changes that relationship fundamentally.
+
+Think a little bigger. A researcher has just finished a months-long data collection process and is now staring at thousands of rows of measurements. Every figure needs to be plotted, every trend needs to be visualised, and the journal she's submitting to has specific requirements for fonts, colours, and axis formatting. Doing this by hand, one graph at a time, tweaking settings in a GUI, exporting, checking, going back and adjusting, would take weeks. With a well-written script, she defines the style once and applies it to every single plot automatically. Change your mind about the colour scheme? One line of code. Need to add a new dataset? The script handles it. What was once an exhausting slog becomes a problem you solve once and then never think about again.
+
+And that's still thinking relatively small. Consider the physicists and astrophysicists who simulate the behaviour of hundreds of stars as they orbit, interact, and collide under the force of gravity. The mathematics involved is real, Newtonian mechanics, numerical integration, conservation laws, but no human could track the position and velocity of five hundred stars across thousands of time steps by hand. It's not just slow; it's categorically impossible without a computer. Code makes it not only possible but approachable. The same tools that help you clean up a messy spreadsheet are, at a grander scale, the tools that let scientists explore the universe from their desks.
+
+This is why learning to code matters. Not because everyone needs to become a software engineer, but because programming is increasingly the difference between being a passive user of technology and being someone who can bend it to their will. The gap between "I wish this could do X" and "I built something that does X" is smaller than most people think, and bridging it starts with understanding the basics.
+
+---
+
+## How Code Actually Works
+
+At its core, code is just a set of instructions you give to a computer. You tell it what to do, step by step, and it executes those steps exactly as written, no more, no less. The computer doesn't guess what you meant. It doesn't fill in gaps or make assumptions. It follows the logic you've given it with absolute precision, which is both its greatest strength and the reason beginners occasionally want to throw their laptop out the window.
+
+That precision is worth dwelling on for a moment, because it's what makes programming both powerful and learnable. When something goes wrong, it's not random. There's always a reason, and that reason is somewhere in the code you wrote. Unlike a lot of real-world problems, programming errors are, in principle, completely solvable. The bug is in there. You just have to find it.
+
+Every programmer, no matter how experienced, starts at the same place: getting the computer to display a message. The traditional first program is called "Hello, World!" and in Python, one of the most beginner-friendly languages available today, it looks like this:
+
+```python
+print("Hello, World!")
+```
+
+One line. You run it, and the words `Hello, World!` appear on your screen. That's the whole thing.
+
+It might seem trivial, but this tiny example captures the essence of what programming is. You gave the computer a specific instruction, `print`, and told it exactly what to print. The computer did it. No ambiguity, no interpretation. You said jump, and it asked how high before you'd even finished the sentence.
+
+From here, the concepts build on each other naturally. You learn about variables, which are named containers for storing information. Setting `x = 5` means you can use `x` throughout your program instead of writing `5` everywhere. You learn about loops, which let you repeat a task hundreds or thousands of times without writing the same line over and over. You learn about functions, which are reusable blocks of code you can call whenever you need them. Think of them as saving a recipe so you don't have to figure it out from scratch every time you want to cook the same dish.
+
+None of these ideas are inherently complex. They're logical, consistent, and with the right introduction, genuinely intuitive. The reason most people assume programming is hard is that they've either never tried it, or they've been thrown into the deep end without a good foundation. Start from the beginning, build slowly, and you'll find that the language of computers isn't as foreign as it first appears.
+
+Which makes sense, because as we'll see, modern programming languages have been deliberately designed to feel as close to natural human language as possible. And getting to that point took a surprisingly long and winding road.
+
+---
+
+## Why It's Easier Coding Today
+
+Programming hasn't always been this accessible, and understanding where it came from makes it easier to appreciate just how far things have come.
+
+In the very earliest days of computing, programming meant working directly with the hardware. There was no screen, no keyboard in the modern sense. Just punch cards. To write a program, you'd use a machine to punch holes into physical cards, with each pattern of holes representing a specific instruction. You'd then feed a stack of these cards into a reader, wait for the computer to process them, and hope you hadn't made a mistake somewhere in the deck, because if you had, finding it meant going through the cards one by one. Writing even a simple program required deep knowledge of the machine's architecture, meticulous attention to detail, and frankly heroic patience. It was computing at its most raw, and it was the exclusive domain of specialists.
+
+The next major step was Assembly language, which replaced physical punch cards with typed instructions that a program called an assembler would translate into the patterns the hardware understood. This was progress. You could at least write and edit your code on a screen. But Assembly was still brutally low-level. A line of Assembly might tell the processor to move a specific value into a specific memory register, and a complete program could run to thousands of these instructions just to do something a modern programmer would accomplish in ten lines. It was more readable than punch cards, but "more readable" is doing a lot of heavy lifting in that sentence. Here's what a basic "Hello, World!" looks like in x86 Assembly:
+
+```asm
+section .data
+    msg db 'Hello, World!', 0
+
+section .text
+    global _start
+_start:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg
+    mov edx, 13
+    int 0x80
+    mov eax, 1
+    int 0x80
+```
+
+Compare that to `print("Hello, World!")` and you start to appreciate just how dramatically the experience has changed.
+
+Higher-level languages emerged through the mid-20th century. FORTRAN for scientific computing, COBOL for business applications, and later C, which became the foundation for much of the software we still use today. Each step brought programming further away from the machine and closer to human thought. But these languages still required a significant investment of time to learn and were primarily the tools of professional developers.
+
+Then came the shift toward truly beginner-friendly languages. Python, released in 1991 but rising to mainstream prominence in the 2000s and 2010s, was designed from the ground up to be readable. Its creator, Guido van Rossum, wanted a language where the code itself would almost read like English, where someone unfamiliar with programming could look at a script and understand roughly what it was doing. JavaScript brought coding into the web browser, making it something anyone with a laptop could experiment with immediately. R gave statisticians and data scientists a language tailored to their specific needs. Each of these opened the door a little wider.
+
+Today, the barrier to entry is lower than it has ever been. Free tutorials, interactive coding platforms, YouTube channels, and structured courses exist for virtually every language and skill level. You can start learning Python in your browser right now, with no installation required, no textbook to buy, and no prior experience needed. For younger learners or those who want to understand programming logic before touching any code, tools like Scratch let you build programs by snapping together visual blocks. The concepts are identical, just dressed up in a way that's immediately approachable.
+
+And the trend is still moving in the same direction. With every new generation of tools, programming gets more expressive, more forgiving, and more powerful. The amount of sophistication you can achieve with relatively simple code today would have seemed extraordinary to a programmer from thirty years ago. If the history of programming is anything to go on, the best is still ahead.
+
+But acquiring a new skill is never just about the skill itself. Learning to code changes something more fundamental. It changes how you think.
+
+---
+
+## Coding Changes The Way You Think
+
+Ask most people why they want to learn to code and they'll give you a practical answer: to get a better job, to automate something at work, to build an app they've had in mind for a while. These are all good reasons. But they undersell the real value, which isn't just what you can do with code. It's what coding does to the way your mind works.
+
+Programming is a deeply logical discipline. It has rules, and those rules are absolute. You can't reason your way around a syntax error or charm a compiler into overlooking a missing bracket. The code either works or it doesn't, and the only path forward is understanding why. This forces a particular kind of rigour: the habit of being precise, of meaning exactly what you say, and of thinking through consequences before you act. Anyone who has debugged a complex program knows the strange, almost meditative focus it requires. Tracing the flow of logic, testing assumptions, narrowing down possibilities until the source of the problem is exposed. That's a genuinely useful mental muscle, and like any muscle, it gets stronger with use.
+
+At the same time, and this surprises many beginners, coding is also deeply creative. There is almost never just one way to solve a problem in code. Two programmers given the same task will frequently produce entirely different solutions, both of which work perfectly well. The craft lies in finding solutions that are not just functional but elegant: readable, efficient, and easy to modify later. Writing code well is a form of design, and the decisions you make along the way reflect your thinking as much as any piece of writing does.
+
+One of the most transferable skills coding builds is the art of decomposition. The ability to take a large, overwhelming problem and break it down into a series of smaller, solvable ones. When you sit down to write a program, you rarely know exactly how you're going to get from start to finish. What you do instead is identify the first thing that needs to happen, then the next, then the next. You solve the pieces, and the whole takes care of itself. This approach, resisting the urge to be paralysed by the big picture and instead finding the first tractable step, turns out to be useful far outside of programming. It applies to research projects, creative work, complex decisions, even difficult conversations.
+
+Debugging specifically deserves its own mention. Every programmer spends a significant portion of their time figuring out why their code isn't doing what they expected. This is not a sign of failure; it's simply part of the process. What debugging teaches you is how to be systematic in the face of uncertainty: form a hypothesis, test it, learn from the result, adjust, and try again. It trains you to treat a problem not as a wall but as a puzzle, something that has an answer, even if you can't see it yet. People who code for long enough tend to bring this same energy to problems in other parts of their lives. The habit of asking "where exactly is this breaking down, and why?" is a surprisingly powerful one.
+
+And then there are the moments when everything comes together. When you've been wrestling with a bug for an hour, tried a dozen things that didn't work, and then suddenly you see it. You make a small change, run the code, and it works. There's a particular quality to that feeling that's hard to describe to someone who hasn't experienced it: a mix of relief, satisfaction, and a slightly embarrassed sense of "oh, of course, it was that." Those moments are addictive in the best possible way. They're part of what keeps programmers coming back.
+
+All of this, the logical rigour, the creative problem-solving, the methodical debugging, adds up to a mindset that pays dividends well beyond your code editor. And when you combine that mindset with the practical power that coding gives you, you arrive somewhere genuinely exciting.
+
+---
+
+## Using Programming to Take Control
+
+There's a phrase that often gets used in discussions about technology: "tools for thought." The idea is that some tools don't just help you do things. They change what you're capable of thinking about in the first place. A spreadsheet isn't just a faster abacus; it enables kinds of analysis that would never occur to someone working with a pen and paper. The same is true of coding, but at a higher level of abstraction. Once you can program, you stop seeing tasks and start seeing systems. And once you see systems, you can build them, modify them, and make them work for you.
+
+The most immediate payoff is autonomy. When you can write code, you stop depending on other people for things that fall within your own domain. You don't need to wait for your IT department to write a custom report. You don't need to hire someone to process your data, or learn obscure Excel features, or hope that the software you're using has a built-in option that does what you need. If the tool doesn't exist, you build it. If the process is clunky, you automate it. That shift from dependency to self-sufficiency is quietly transformative. It affects not just what you can do, but how you approach problems in the first place.
+
+Automation is where this payoff becomes most tangible. Think about the tasks in your working life that are repetitive, predictable, and frankly beneath you. Renaming and reorganising files. Updating a weekly report with fresh data and regenerating all the figures. Pulling information from a series of websites and compiling it into a spreadsheet. Sending a set of personalised emails from a template. Checking a folder for new files and processing them when they appear. Every one of these is something a script can handle in seconds, and once you've written that script, you never have to do the task manually again. It runs while you sleep, while you're in a meeting, while you're on holiday. The script doesn't get tired, doesn't make careless mistakes, and doesn't complain.
+
+There's also something to be said for the quality of the work that code produces. Manual processes are prone to human error. A misplaced decimal, a row that didn't copy across, a formula that silently breaks when the data changes shape. Code, once written and tested correctly, does the same thing every time. It's reproducible: you can run the same analysis on new data and know that the method is identical. In research contexts, this matters enormously for credibility and peer review. In business contexts, it means you can trust your outputs in a way that's hard to guarantee with manual workflows.
+
+And beyond the practical, there's the creative dimension. Knowing how to code means you can build things that didn't exist before. You can create tools tailored precisely to your own workflow, not the one a software company imagined for you. You can visualise your data in ways that actually communicate what you're trying to say, not just what the default settings produce. You can prototype ideas quickly and see whether they work before investing serious time in them. The gap between "I wonder if I could..." and "here's what I built" shrinks to the length of an afternoon.
+
+This is what it means to become a creator rather than just a user. And as the technology around us continues to evolve, that distinction is going to matter more and more, especially given what's currently happening with artificial intelligence.
+
+---
+
+## Programming in the Age of AI
+
+There's an elephant in the room, and it would be dishonest not to address it directly: AI can write code. Increasingly powerful AI tools can take a description in plain English and produce working programs, complete websites, data pipelines, and more. So why bother learning to code yourself?
+
+It's a question worth taking seriously, because the capabilities are real and they're growing fast. Tools like GitHub Copilot can autocomplete entire functions as you type. Newer AI agents can take on larger tasks, building and iterating on a codebase, identifying bugs, suggesting architectural changes, with a level of competence that would have seemed impossible just a few years ago. The landscape has shifted dramatically, and anyone telling you that AI coding tools are irrelevant or overhyped is not paying attention.
+
+But here's what's equally true: AI-generated code is only as good as the person directing it.
+
+This is the part that tends to get glossed over in the more breathless coverage of AI's capabilities. Yes, these tools can produce code that works. But "works" is a low bar. Code that runs without errors can still be doing the wrong thing. It can be inefficient, insecure, hard to maintain, or subtly wrong in ways that only become apparent when the data is a particular shape or the user does something unexpected. AI tools don't know your domain. They don't understand the specific quirks of your dataset, the assumptions baked into your analysis, the business logic your organisation has built up over years. They produce plausible output, and plausible is not the same as correct.
+
+More practically, AI makes mistakes. Sometimes small ones, sometimes significant ones. If you're relying on AI to write code you don't understand, you have no way of catching those mistakes. You're essentially trusting a very confident system that has no stake in whether your results are right. Anyone who has worked with these tools for any length of time will have a story about a bug that slipped through because it looked plausible, sounded reasonable, and was completely wrong.
+
+The programmers who benefit most from AI tools are the ones who already know what they're doing. They use AI to move faster, to handle boilerplate, to suggest implementations they might not have thought of, to accelerate the parts of coding that are repetitive and mechanical. But they remain in control. They review what the AI produces, they understand it well enough to know when something looks off, and they make the architectural decisions that shape the project as a whole. The AI is a powerful assistant; the human is still the one with judgment.
+
+This points to a new and genuinely interesting role for learning to code in the AI era. You don't necessarily need to become the person who writes every line from scratch. You need to become the person who understands what good code looks like, who can articulate what they want clearly enough for an AI to produce it, and who can evaluate the result critically. That's a different skill profile from the traditional software engineer, but it's still grounded in the same fundamentals: logic, structure, problem decomposition, and an understanding of how programs actually work.
+
+There's also a compelling case for using AI as a learning tool. If you're working through a concept and you're stuck, an AI assistant can explain it to you in multiple ways, at whatever level of detail you need, with examples tailored to your specific situation. It's like having access to a patient, knowledgeable tutor at any hour of the day. Used well, which means using it to understand things rather than to avoid understanding them, it can dramatically accelerate the learning process. The key distinction is between using AI to help you think and using it to replace thinking. The former makes you better; the latter keeps you dependent.
+
+The future of programming is not one where AI does everything and humans become passive observers. It's one where the people who understand code become dramatically more capable, because they can combine their own judgment with tools that multiply what a single person can build. The world is, in a real sense, more available to people who can code. That was true before AI, and it's even more true now.
+
+---
+
+## How to Start
+
+If you've made it this far, there's a reasonable chance you're at least a little bit curious. Maybe you've been meaning to try this for years and haven't quite got around to it. Maybe you've always assumed it wasn't for you, that you're not the "technical type," or that you'd need to be better at maths, or that you missed the window to pick it up when you were younger. Let me try to gently dismantle all of that.
+
+You don't need to be good at maths. Seriously. The vast majority of everyday programming involves almost no mathematics beyond basic arithmetic, and even when maths is involved, the computer is doing the calculation. You're just telling it which calculation to do. The skills that actually matter in programming are logical thinking, attention to detail, and the willingness to sit with a problem until you figure it out. All of those are learnable, and all of them improve as you go.
+
+You're not too old. Coding is one of those skills where prior experience in other fields often turns out to be an advantage, not a liability. If you understand your domain deeply, your science, your data, your workflow, you're already ahead of someone who knows how to code but has nothing interesting to build. The technical part is the part you can learn. The domain knowledge and the sense of what problems are worth solving? That's harder to teach.
+
+You also don't need to commit to becoming a programmer. The goal isn't to change careers, unless you want to. It's to add a tool to your toolkit, one that will quietly make dozens of things in your professional and personal life easier, faster, and more under your control. Some people start by automating one annoying task and find that the script takes twenty minutes to write but saves them hours every week. That's a great outcome. It doesn't require a Computer Science degree.
+
+The first step is to think about what you'd actually want to use code for. This is more important than it sounds. Abstract learning is hard to sustain; learning in service of a concrete goal is much stickier. Maybe you want to clean up a particular dataset. Maybe you want to pull data from a website and track it over time. Maybe you're just curious about what programming feels like and want to write something simple that works. Any of those is a perfectly valid entry point, and having a real goal in mind will keep you motivated when you hit the inevitable friction of learning something new.
+
+If you're looking for somewhere to begin, my [Python for Physicists tutorial](#) is designed exactly for this moment, for people who are curious, motivated by real problems, and want to learn by doing rather than by reading dry textbooks. It assumes no prior experience and builds from the ground up at a pace that doesn't leave you behind.
+
+If I could go back and give myself one piece of advice before I wrote my first line of code, it would be this: just start, and don't worry about doing it perfectly. Your first code will be messy. You'll copy things you don't fully understand, you'll make obvious mistakes, and there will be moments where you genuinely wonder if it's worth it. Those moments pass. What's on the other side of them is a skill that compounds. Each thing you learn makes the next thing easier, and before long you're building things you couldn't have imagined tackling when you started.
+
+Almost anything repetitive in your life can be automated. Almost any dataset can be explored. Almost any idea can be prototyped. Programming really is the lazy person's best friend, and there has never been a better time to get started.
