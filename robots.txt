@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /_archive/
 
 Sitemap: https://mitchellhooymans.com/sitemap.xml

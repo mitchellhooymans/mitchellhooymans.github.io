@@ -1,23 +1,48 @@
 # Mitchell Hooymans - Personal Website & Portfolio
 
-Welcome to the source code for my personal website. This repository hosts my portfolio, photography, tutorials, and blog posts.
+Welcome to the source code for my personal website. This repository hosts my academic portfolio, research showcase, astrophotography gallery, educational tutorials, and interactive physics simulations.
 
-## Content & Copyright
+## Features
 
-All content on this website is original unless otherwise noted.
+- **Interactive N-Body Simulations**: Real-time gravitational dynamics simulators built with HTML Canvas and JavaScript (e.g. 2-body, 3-body, and N-body clusters).
+- **Responsive Design Systems**: A unified, modern design system featuring glassmorphism cards, stochastically generated star backgrounds, and interactive hover states.
+- **Dynamic Content Pipelines**: Procedurally generated canvas particle effects and responsive layouts optimized for all device sizes.
+- **Rich Technical Tutorials**: Educational content covering subjects like astrophysical black holes and Python physics guides.
+- **Astrophotography Gallery**: High-resolution image galleries showcasing original astrophotography.
 
-- **Photography**: All images in the gallery and throughout the site are my own original photography and are **strictly copyrighted**.
-- **Tutorials**: All technical guides and tutorials (e.g., Python Physics) are written and created by me.
-- **Blog**: All blog posts and articles are my own original writing and research.
+## Tech Stack
+
+This website is built entirely with fundamental web technologies to ensure maximum performance, accessibility, and longevity without relying on heavy frameworks:
+
+- **Frontend**: HTML5, Vanilla JavaScript, and CSS3 (with CSS Variables for theming).
+- **Styling**: Custom-built responsive grid systems and glassmorphism UI components. Icons provided by FontAwesome.
+- **Animations & Graphics**: HTML `<canvas>` API for interactive simulations and particle effects.
+- **Math Rendering**: MathJax for LaTeX equation rendering in physics tutorials.
+- **Utility Scripts**: Python 3 for asset management and data plotting.
 
 ## Project Structure
 
-- `assets/`: CSS, Javascript and other static assets.
-- `images/`: General website images.
+- `assets/`: External library assets (e.g., fontawesome, older static assets).
+- `blog/`: HTML files containing blog posts and articles.
+- `css/`: Root directory CSS logic is handled in `styles.css`.
+- `images/`: General website images and favicons.
+- `js/`: JavaScript logic for navigation, footers, animations, etc.
+- `pages/`: Core static landing pages (About, CV, Photography, etc.).
 - `photography-images/`: High-resolution photography for the gallery.
-- `tutorials/`: HTML templates for tutorial pages.
-- `blog/`: HTML templates for blog posts.
-- `pages/`: Other static pages.
+- `scripts/`: Python utility scripts (e.g., mass function plotting logic).
+- `simulations/`: Interactive gravitational dynamics and physics HTML canvases.
+- `tutorials/`: Educational guides and coding tutorials.
+
+## Local Development
+
+To run this website locally, you only need a basic local web server to prevent CORS issues when loading local modules or assets. 
+
+If you have Python installed, the easiest way is to use the built-in `http.server`:
+
+1. Clone the repository: `git clone https://github.com/mitchellhooymans/mitchellhooymans.github.io.git`
+2. Navigate to the project folder: `cd mitchellhooymans.github.io`
+3. Start the local server: `python -m http.server 8000`
+4. Open your browser and navigate to `http://localhost:8000`
 
 ## Development Utilities
 
@@ -26,7 +51,7 @@ This project includes Python scripts to assist with asset management:
 - `generate_thumbs.py`: Automatically generates optimized thumbnails for the photography gallery.
 - `analyze_images.py`: Utility for image analysis/metadata.
 
-## License
+## License & Copyright
 
 This project employs a dual-license model:
 
