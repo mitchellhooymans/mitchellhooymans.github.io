@@ -4,112 +4,125 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
 
 <url>
   <loc>https://mitchellhooymans.com/</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/about.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/tutorials.html</loc>
-  <lastmod>2026-02-10T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/simulations.html</loc>
-  <lastmod>2026-02-10T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/blog.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/photography.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/cv.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/pages/contact.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
+  <loc>https://mitchellhooymans.com/pages/research.html</loc>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/blog/programming.html</loc>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/blog/science-career-qa.html</loc>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
   <loc>https://mitchellhooymans.com/tutorials/pythonphys.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/tutorials/blackholes.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/tutorials/nbody.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://mitchellhooymans.com/blog/programming.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://mitchellhooymans.com/blog/phd-journey.html</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://mitchellhooymans.com/documents/cv.pdf</loc>
-  <lastmod>2026-01-29T22:32:51+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/tutorials/pythonpreg.html</loc>
-  <lastmod>2026-01-30T03:37:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/tutorials/pythonphys-interactive.html</loc>
-  <lastmod>2026-01-30T03:37:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/twobody.html</loc>
-  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/threebody.html</loc>
-  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/nbodysim.html</loc>
-  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/projectile.html</loc>
-  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mitchellhooymans.com/simulations/pendulum.html</loc>
-  <lastmod>2026-02-03T12:00:00+00:00</lastmod>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/simulations/kick-estimator.html</loc>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/simulations/globular.html</loc>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/documents/cv.pdf</loc>
+  <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 
