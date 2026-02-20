@@ -384,7 +384,7 @@ p {
     align-items: center;
     gap: 0.5rem;
     font-weight: 500;
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     transition: all var(--transition-fast);
     position: relative;
     padding: 0.5rem 1rem;
@@ -460,7 +460,7 @@ p {
 
 /* Dropdown link styling */
 .dropdown-content a {
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     padding: var(--space-3) var(--space-4);
     text-decoration: none;
     display: block;
@@ -662,14 +662,23 @@ p {
 
 .mobile-menu a {
     display: block;
+    margin: var(--space-2) var(--space-4);
     padding: var(--space-3) var(--space-4);
     color: var(--color-gray-700);
     font-weight: 500;
-    border-radius: var(--radius-md);
+    border-radius: 100px;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
 }
 
 .mobile-menu a:hover {
     background: var(--color-gray-100);
+}
+
+.mobile-menu a.active {
+    color: var(--color-gray-900);
+    background: var(--color-gray-200);
+    border-color: var(--color-gray-300);
 }
 
 /* -------------------- Hero Section -------------------- */
@@ -865,7 +874,7 @@ p {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-full);
     font-size: 0.85rem;
-    color: var(--color-gray-300);
+    color: var(--color-gray-800);
     transition: all var(--transition-fast);
 }
 
@@ -882,7 +891,7 @@ p {
 
 .hero-mission {
     font-size: 1.1rem;
-    color: var(--color-gray-400);
+    color: var(--color-gray-700);
     max-width: 600px;
     line-height: 1.6;
     margin-bottom: var(--space-4);
@@ -1201,7 +1210,7 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     transition: all var(--transition-fast);
 }
 
@@ -1747,12 +1756,18 @@ p {
 }
 
 .mobile-menu a {
-    color: var(--color-gray-300);
+    color: var(--color-gray-400);
 }
 
 .mobile-menu a:hover {
     background: rgba(255, 255, 255, 0.05);
-    color: var(--color-accent);
+    color: var(--color-white);
+}
+
+.mobile-menu a.active {
+    color: var(--color-white);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Stochastic Star Background */
@@ -2101,7 +2116,7 @@ html::before {
 }
 
 .tutorial-content p {
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     font-size: 1.05rem;
     line-height: 1.8;
 }
@@ -2110,7 +2125,7 @@ html::before {
 .tutorial-content ol {
     margin-bottom: var(--space-6);
     padding-left: var(--space-6);
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
 }
 
 .tutorial-content li {
