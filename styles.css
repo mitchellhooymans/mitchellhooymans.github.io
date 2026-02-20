@@ -156,10 +156,7 @@ h6 {
 
 h1 {
     font-size: 3.5rem;
-    background: linear-gradient(to right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--color-white);
 }
 
 h2 {
@@ -829,10 +826,7 @@ p {
 .hero-name-lg {
     font-size: 2.5rem;
     line-height: 1.1;
-    background: linear-gradient(to right, #ffffff, #94a3b8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--color-white);
     margin-bottom: var(--space-2);
 }
 
@@ -1671,6 +1665,14 @@ p {
     transform: scale(1.05);
 }
 
+.bento-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 60%);
+    pointer-events: none;
+}
+
 .bento-content {
     position: relative;
     z-index: 1;
@@ -1678,9 +1680,7 @@ p {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent 80%);
-    margin: -1.5rem;
-    padding: 1.5rem;
+    padding: var(--space-6);
     color: white;
 }
 
@@ -2083,10 +2083,7 @@ html::before {
 .tutorial-content h1 {
     font-size: 2.5rem;
     margin-bottom: var(--space-6);
-    background: linear-gradient(to right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--color-white);
 }
 
 .tutorial-content h2 {
@@ -2273,10 +2270,7 @@ code {
 .page-header h1 {
     font-size: 3rem;
     margin-bottom: var(--space-4);
-    background: linear-gradient(to right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--color-white);
 }
 
 .page-header p {

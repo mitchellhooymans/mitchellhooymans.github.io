@@ -105,14 +105,28 @@
 
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-4);
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-6);
+        }
+
+        @media (max-width: 900px) {
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .skill-category h4 {
-            color: var(--color-accent);
+            color: #0ea5e9;
+            /* Bright neon cyan/blue to match theme */
             margin-bottom: var(--space-3);
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
         }
 
         .skill-list {
@@ -123,14 +137,26 @@
         .skill-list li {
             padding: var(--space-2) 0;
             border-bottom: 1px solid var(--color-gray-200);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            color: #f8fafc;
+            /* specific off-white for skills text */
         }
 
         .skill-list li:last-child {
             border-bottom: none;
         }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--space-8);
+        }
     </style>
-<script src="../js/stars.js"></script>
+    <script src="../js/stars.js"></script>
 </head>
 
 <body>
@@ -164,91 +190,99 @@
     <!-- Education -->
     <section class="section">
         <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Education</span>
-                <h2>Academic Background</h2>
+            <div class="section-header text-center reveal" style="margin-bottom: var(--space-8); width: 100%;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 0;">Academic Background</h2>
             </div>
 
-            <div class="timeline reveal">
-                <div class="timeline-item">
-                    <div class="timeline-date">Jan 2025 – Present</div>
-                    <div class="timeline-title">Doctor of Philosophy (PhD)</div>
-                    <div class="timeline-institution">The University of Queensland</div>
-                    <div class="timeline-description">
-                        Computational and Theoretical Astrophysics. Research focuses on the formation and dynamics of
-                        black holes within dense star clusters.
+            <div class="glass-card reveal">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">Jan 2025 – Present</div>
+                        <div class="timeline-title">Doctor of Philosophy (PhD)</div>
+                        <div class="timeline-institution">The University of Queensland</div>
+                        <div class="timeline-description">
+                            Computational and Theoretical Astrophysics. Research focuses on the formation and dynamics
+                            of
+                            black holes within dense star clusters.
+                        </div>
                     </div>
-                </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">Feb 2024 – Dec 2024</div>
-                    <div class="timeline-title">Bachelor of Science (Honours)</div>
-                    <div class="timeline-institution">Queensland University of Technology</div>
-                    <div class="timeline-description">
-                        Physics Major (Astronomy and Astrophysics). Honours research on the effect of active galactic
-                        nuclei on host galaxies.
+                    <div class="timeline-item">
+                        <div class="timeline-date">Feb 2024 – Dec 2024</div>
+                        <div class="timeline-title">Bachelor of Science (Honours)</div>
+                        <div class="timeline-institution">Queensland University of Technology</div>
+                        <div class="timeline-description">
+                            Physics Major (Astronomy and Astrophysics). Honours research on the effect of active
+                            galactic
+                            nuclei on host galaxies.
+                        </div>
                     </div>
-                </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">2020 – 2023</div>
-                    <div class="timeline-title">Bachelor of Science (Physics Major)</div>
-                    <div class="timeline-institution">Queensland University of Technology</div>
-                    <div class="timeline-description">
-                        Focused on astronomy and astrophysics. Dean's List for Academic Excellence (2020-2023).
+                    <div class="timeline-item">
+                        <div class="timeline-date">2020 – 2023</div>
+                        <div class="timeline-title">Bachelor of Science (Physics Major)</div>
+                        <div class="timeline-institution">Queensland University of Technology</div>
+                        <div class="timeline-description">
+                            Focused on astronomy and astrophysics. Dean's List for Academic Excellence (2020-2023).
+                        </div>
                     </div>
-                </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">2020 – 2023</div>
-                    <div class="timeline-title">Bachelor of Information Technology (Computer Science Major)</div>
-                    <div class="timeline-institution">Queensland University of Technology</div>
-                    <div class="timeline-description">
-                        Completed as a double degree alongside BSc. Dean's List for Academic Excellence (2020-2023).
+                    <div class="timeline-item">
+                        <div class="timeline-date">2020 – 2023</div>
+                        <div class="timeline-title">Bachelor of Information Technology (Computer Science Major)</div>
+                        <div class="timeline-institution">Queensland University of Technology</div>
+                        <div class="timeline-description">
+                            Completed as a double degree alongside BSc. Dean's List for Academic Excellence (2020-2023).
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 
     <!-- Experience -->
     <section class="section section-alt">
         <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Experience</span>
-                <h2>Teaching & Academic Roles</h2>
+            <div class="section-header text-center reveal" style="margin-bottom: var(--space-8); width: 100%;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 0;">Teaching & Academic Roles</h2>
             </div>
 
-            <div class="timeline reveal">
-                <div class="timeline-item">
-                    <div class="timeline-date">July 2025 – Present</div>
-                    <div class="timeline-title">Casual Academic</div>
-                    <div class="timeline-institution">The University of Queensland</div>
-                    <div class="timeline-description">
-                        Tutoring and marking for PHYS3071 - Computational Physics I.
+            <div class="glass-card reveal">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">July 2025 – Present</div>
+                        <div class="timeline-title">Casual Academic</div>
+                        <div class="timeline-institution">The University of Queensland</div>
+                        <div class="timeline-description">
+                            Tutoring and marking for PHYS3071 - Computational Physics I.
+                        </div>
                     </div>
-                </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">Jan 2024 – Present</div>
-                    <div class="timeline-title">Sessional Academic</div>
-                    <div class="timeline-institution">Queensland University of Technology</div>
-                    <div class="timeline-description">
-                        Tutoring and marking in physics courses including PVB220 (Cosmology), SEB122 (Physics in The
-                        Real World), SEB108 (Data Analysis and Visualisation), and PVB102 (Physics of the Very Small).
+                    <div class="timeline-item">
+                        <div class="timeline-date">Jan 2024 – Present</div>
+                        <div class="timeline-title">Sessional Academic</div>
+                        <div class="timeline-institution">Queensland University of Technology</div>
+                        <div class="timeline-description">
+                            Tutoring and marking in physics courses including PVB220 (Cosmology), SEB122 (Physics in The
+                            Real World), SEB108 (Data Analysis and Visualisation), and PVB102 (Physics of the Very
+                            Small).
+                        </div>
                     </div>
-                </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">Jan 2023 – Dec 2024</div>
-                    <div class="timeline-title">Lead Student Success Partner (STEM)</div>
-                    <div class="timeline-institution">Queensland University of Technology</div>
-                    <div class="timeline-description">
-                        Coordinated teams of volunteers for QUT's STIMulate Program. Ran study sessions, academic
-                        workshops, and provided support for science, engineering, mathematics, and IT topics.
+                    <div class="timeline-item">
+                        <div class="timeline-date">Jan 2023 – Dec 2024</div>
+                        <div class="timeline-title">Lead Student Success Partner (STEM)</div>
+                        <div class="timeline-institution">Queensland University of Technology</div>
+                        <div class="timeline-description">
+                            Coordinated teams of volunteers for QUT's STIMulate Program. Ran study sessions, academic
+                            workshops, and provided support for science, engineering, mathematics, and IT topics.
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+        </div>
         </div>
     </section>
 
@@ -256,7 +290,7 @@
     <section class="section">
         <div class="container">
             <div class="section-header reveal">
-                <span class="tag tag-accent">Recognition</span>
+
                 <h2>Awards & Honours</h2>
             </div>
 
@@ -301,58 +335,59 @@
                 </div>
             </div>
         </div>
+        </div>
     </section>
 
     <!-- Skills -->
     <section class="section section-alt">
         <div class="container">
-            <div class="section-header reveal">
-                <span class="tag tag-accent">Skills</span>
-                <h2>Technical & Professional Expertise</h2>
+            <div class="section-header text-center reveal" style="margin-bottom: var(--space-8); width: 100%;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 0;">Technical & Professional Expertise</h2>
             </div>
 
-            <div class="skills-grid reveal">
-                <div class="skill-category">
-                    <h4><i class="fas fa-brain"></i> Research</h4>
-                    <ul class="skill-list">
-                        <li>Problem-Solving</li>
-                        <li>Mathematical Modelling</li>
-                        <li>Data Analysis</li>
-                        <li>Research & Academic Writing</li>
-                    </ul>
-                </div>
+            <div class="glass-card reveal">
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h4><i class="fas fa-brain"></i> Research</h4>
+                        <ul class="skill-list">
+                            <li>Problem-Solving</li>
+                            <li>Mathematical Modelling</li>
+                            <li>Data Analysis</li>
+                            <li>Research & Academic Writing</li>
+                        </ul>
+                    </div>
 
-                <div class="skill-category">
-                    <h4><i class="fas fa-code"></i> Technical</h4>
-                    <ul class="skill-list">
-                        <li>Programming (Python, C++)</li>
-                        <li>N-body Simulations</li>
-                        <li>Data Visualization</li>
-                        <li>Computational Physics</li>
-                    </ul>
-                </div>
+                    <div class="skill-category">
+                        <h4><i class="fas fa-code"></i> Technical</h4>
+                        <ul class="skill-list">
+                            <li>Programming (Python, C++)</li>
+                            <li>N-body Simulations</li>
+                            <li>Data Visualization</li>
+                            <li>Computational Physics</li>
+                        </ul>
+                    </div>
 
-                <div class="skill-category">
-                    <h4><i class="fas fa-chalkboard-teacher"></i> Teaching</h4>
-                    <ul class="skill-list">
-                        <li>Student Learning Facilitation</li>
-                        <li>Student Guidance</li>
-                        <li>Team Building & Leadership</li>
-                        <li>Workshop Coordination</li>
-                    </ul>
-                </div>
+                    <div class="skill-category">
+                        <h4><i class="fas fa-chalkboard-teacher"></i> Teaching</h4>
+                        <ul class="skill-list">
+                            <li>Student Learning Facilitation</li>
+                            <li>Student Guidance</li>
+                            <li>Team Building & Leadership</li>
+                            <li>Workshop Coordination</li>
+                        </ul>
+                    </div>
 
-                <div class="skill-category">
-                    <h4><i class="fas fa-users"></i> Soft Skills</h4>
-                    <ul class="skill-list">
-                        <li>Communication</li>
-                        <li>Adaptability</li>
-                        <li>Science Outreach</li>
-                        <li>Public Speaking</li>
-                    </ul>
+                    <div class="skill-category">
+                        <h4><i class="fas fa-users"></i> Soft Skills</h4>
+                        <ul class="skill-list">
+                            <li>Communication</li>
+                            <li>Adaptability</li>
+                            <li>Science Outreach</li>
+                            <li>Public Speaking</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
     </section>
 
     <!-- Download CTA -->
