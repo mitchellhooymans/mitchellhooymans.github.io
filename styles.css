@@ -1335,6 +1335,87 @@ p {
     animation-delay: 0.4s;
 }
 
+/* Portfolio Hover Animations */
+.bento-item:hover .binary-stars {
+    animation: orbit 3s linear infinite;
+}
+
+.bento-item:hover .tutorial-cursor {
+    animation: blink-cursor 1s steps(2, start) infinite;
+}
+
+.bento-item:hover .blog-constellation {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.bento-item:hover .blog-lines {
+    animation: dash 3s linear infinite;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -10;
+    }
+}
+
+@keyframes blink-cursor {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes orbit {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes orbit-reverse {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes tutorial-flip {
+
+    0%,
+    100% {
+        transform: scaleX(1);
+    }
+
+    50% {
+        transform: scaleX(0.9);
+    }
+}
+
 /* Scroll reveal for elements */
 .reveal {
     opacity: 0;
