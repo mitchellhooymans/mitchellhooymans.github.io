@@ -885,8 +885,85 @@ p {
     transform: translateY(-2px);
 }
 
-.stat-chip i {
+.stat-chip i,
+.stat-chip svg.stat-icon {
     color: var(--color-accent);
+    transition: all 0.3s ease;
+}
+
+/* UQ Icon Animations */
+.stat-chip:hover .uq-icon {
+    transform: translateY(-2px);
+}
+
+.stat-chip:hover .uq-pillar {
+    animation: uq-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes uq-glow {
+    0% {
+        opacity: 0.5;
+        stroke-width: 2;
+    }
+
+    100% {
+        opacity: 1;
+        stroke-width: 2.5;
+        stroke: var(--color-accent-secondary, #38bdf8);
+    }
+}
+
+/* OzGrav Icon Animations */
+.stat-chip:hover .oz-binary {
+    animation: oz-spin 4s linear infinite;
+}
+
+.stat-chip:hover .oz-wave {
+    stroke: var(--color-accent-secondary, #38bdf8);
+    animation: oz-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes oz-spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes oz-glow {
+    0% {
+        stroke-width: 1.5;
+        opacity: 0.7;
+    }
+
+    100% {
+        stroke-width: 2.2;
+        opacity: 1;
+    }
+}
+
+/* Comp Icon Animations */
+.stat-chip:hover .comp-star {
+    animation: comp-spin 3s linear infinite;
+    stroke: var(--color-accent-secondary, #38bdf8);
+}
+
+.stat-chip:hover .bracket-left,
+.stat-chip:hover .bracket-right {
+    transition: transform 0.3s ease;
+}
+
+.stat-chip:hover .bracket-left {
+    transform: translateX(-2px);
+}
+
+.stat-chip:hover .bracket-right {
+    transform: translateX(2px);
+}
+
+@keyframes comp-spin {
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .hero-mission {
@@ -3053,4 +3130,115 @@ code {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* ===========================================
+   Easter Eggs
+   =========================================== */
+
+/* Black Hole Event Horizon */
+.event-horizon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background-color: #000;
+    box-shadow: 0 0 40px 10px rgba(0, 0, 0, 1),
+        0 0 20px 5px rgba(138, 43, 226, 0.4);
+    z-index: 10;
+    animation: consumeImage 5s ease-in forwards;
+}
+
+@keyframes consumeImage {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        box-shadow: 0 0 0px 0px rgba(0, 0, 0, 1);
+    }
+
+    5% {
+        width: 10px;
+        height: 10px;
+        opacity: 1;
+        box-shadow: 0 0 20px 5px rgba(0, 0, 0, 1), 0 0 10px 2px rgba(138, 43, 226, 0.8);
+    }
+
+    70% {
+        width: 100px;
+        height: 100px;
+        box-shadow: 0 0 30px 15px rgba(0, 0, 0, 1), 0 0 20px 8px rgba(138, 43, 226, 0.6);
+    }
+
+    100% {
+        width: 220px;
+        height: 220px;
+        box-shadow: 0 0 60px 30px rgba(0, 0, 0, 1), 0 0 30px 10px rgba(138, 43, 226, 0.2);
+    }
+}
+
+@media (min-width: 1024px) {
+    @keyframes consumeImage {
+        0% {
+            width: 0;
+            height: 0;
+            opacity: 0;
+            box-shadow: 0 0 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        5% {
+            width: 15px;
+            height: 15px;
+            opacity: 1;
+            box-shadow: 0 0 20px 5px rgba(0, 0, 0, 1), 0 0 10px 2px rgba(138, 43, 226, 0.8);
+        }
+
+        70% {
+            width: 150px;
+            height: 150px;
+            box-shadow: 0 0 40px 20px rgba(0, 0, 0, 1), 0 0 30px 10px rgba(138, 43, 226, 0.6);
+        }
+
+        100% {
+            width: 300px;
+            height: 300px;
+            box-shadow: 0 0 80px 40px rgba(0, 0, 0, 1), 0 0 40px 15px rgba(138, 43, 226, 0.2);
+        }
+    }
+}
+
+.getting-eaten {
+    animation: spaghettifySwirl 5s ease-in forwards;
+    transform-origin: center center;
+}
+
+@keyframes spaghettifySwirl {
+    0% {
+        transform: scale(1) rotate(0deg);
+        filter: contrast(1) blur(0px) brightness(1);
+        border-radius: 50%;
+    }
+
+    40% {
+        transform: scale(0.85) rotate(45deg);
+        filter: contrast(1.2) blur(1px) brightness(0.8);
+        border-radius: 50%;
+    }
+
+    80% {
+        transform: scale(0.4) rotate(180deg);
+        filter: contrast(1.5) blur(5px) brightness(0.5);
+        border-radius: 50%;
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(0) rotate(720deg);
+        filter: contrast(2) blur(10px) brightness(0);
+        border-radius: 50%;
+        opacity: 0;
+    }
 }
