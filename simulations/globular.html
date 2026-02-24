@@ -53,21 +53,38 @@
             height: 100%;
         }
 
+        /* Simulation + controls wrapper */
+        .sim-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
         .controls-overlay {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(17, 25, 40, 0.75);
+            background: rgba(17, 25, 40, 0.85);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
-            padding: 24px;
+            padding: 20px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.125);
             color: white;
-            width: 300px;
-            max-width: 90%;
-            z-index: 10;
+            width: 100%;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        @media (min-width: 768px) {
+            .sim-wrapper {
+                position: relative;
+            }
+
+            .controls-overlay {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 300px;
+                max-width: 90%;
+                z-index: 10;
+            }
         }
 
         .controls-title {
@@ -222,11 +239,15 @@
     <!-- Main Content -->
     <section class="section">
         <div class="container">
-            <!-- Simulation -->
-            <div class="simulation-container">
-                <div id="loading" class="loading-overlay">Initializing Universe...</div>
-                <canvas id="simulationCanvas"></canvas>
+            <!-- Simulation + Controls Wrapper -->
+            <div class="sim-wrapper">
+                <!-- Simulation Canvas -->
+                <div class="simulation-container">
+                    <div id="loading" class="loading-overlay">Initializing Universe...</div>
+                    <canvas id="simulationCanvas"></canvas>
+                </div>
 
+                <!-- Controls Panel (below canvas on mobile, overlay on desktop) -->
                 <div class="controls-overlay">
                     <div class="controls-title">
                         <i class="fas fa-sliders-h"></i> Cluster Parameters
