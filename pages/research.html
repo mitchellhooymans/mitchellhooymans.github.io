@@ -87,6 +87,7 @@
             }
         }
     </style>
+
 </head>
 
 <body>
@@ -117,6 +118,7 @@
             </div>
         </div>
     </section>
+
 
     <div style="padding-bottom: var(--space-20);">
         <!-- Project 1: Stellar Black Holes (Main, Moved to Top) -->
@@ -261,6 +263,318 @@
             </div>
         </section>
     </div>
+
+    <!-- Knowledge Graph CTA Card -->
+    <section class="section" style="padding-top: var(--space-8); padding-bottom: var(--space-20);">
+        <div class="container">
+            <div class="kg-cta-card reveal">
+
+                <!-- Animated graph SVG -->
+                <div class="kg-cta-visual" aria-hidden="true">
+                    <svg class="kg-svg" viewBox="0 0 220 185" xmlns="http://www.w3.org/2000/svg" fill="none">
+                        <defs>
+                            <!-- Arrow marker -->
+                            <marker id="cta-arrow" viewBox="-0 -3 7 6" refX="16" refY="0" orient="auto" markerWidth="5"
+                                markerHeight="5">
+                                <path d="M0,-3 L7,0 L0,3" fill="rgba(148,163,184,0.5)" />
+                            </marker>
+                            <!-- Active arrow markers (coloured) -->
+                            <marker id="cta-arrow-cyan" viewBox="-0 -3 7 6" refX="16" refY="0" orient="auto"
+                                markerWidth="5" markerHeight="5">
+                                <path d="M0,-3 L7,0 L0,3" fill="#38bdf8" />
+                            </marker>
+                            <marker id="cta-arrow-amber" viewBox="-0 -3 7 6" refX="16" refY="0" orient="auto"
+                                markerWidth="5" markerHeight="5">
+                                <path d="M0,-3 L7,0 L0,3" fill="#f59e0b" />
+                            </marker>
+                            <marker id="cta-arrow-indigo" viewBox="-0 -3 7 6" refX="16" refY="0" orient="auto"
+                                markerWidth="5" markerHeight="5">
+                                <path d="M0,-3 L7,0 L0,3" fill="#818cf8" />
+                            </marker>
+                            <!-- Motion paths -->
+                            <path id="path-ac" d="M110,88 L168,52" />
+                            <path id="path-ab" d="M110,88 L57,47" />
+                            <path id="path-ae" d="M110,88 L52,140" />
+                        </defs>
+
+                        <!-- ── PASSIVE edges (dim on hover) ── -->
+                        <!-- D-E -->
+                        <line class="kg-e kg-e-passive" x1="163" y1="133" x2="54" y2="140"
+                            stroke="rgba(148,163,184,0.3)" stroke-width="1" />
+                        <!-- B-C dashed inferred -->
+                        <line class="kg-e kg-e-passive" x1="57" y1="47" x2="168" y2="52" stroke="rgba(148,163,184,0.25)"
+                            stroke-width="1" stroke-dasharray="4,3" />
+                        <!-- C-F -->
+                        <line class="kg-e kg-e-passive" x1="168" y1="52" x2="204" y2="22"
+                            stroke="rgba(148,163,184,0.25)" stroke-width="1" />
+                        <!-- A-D -->
+                        <line class="kg-e kg-e-passive" x1="110" y1="88" x2="163" y2="133"
+                            stroke="rgba(148,163,184,0.3)" stroke-width="1" />
+                        <!-- A-G -->
+                        <line class="kg-e kg-e-passive" x1="110" y1="88" x2="110" y2="161"
+                            stroke="rgba(148,163,184,0.25)" stroke-width="1" />
+
+                        <!-- ── ACTIVE edges (brighten on hover) ── -->
+                        <!-- Hub → B (amber) -->
+                        <line class="kg-e kg-e-active kg-e-amber" x1="110" y1="88" x2="57" y2="47"
+                            stroke="rgba(245,158,11,0.45)" stroke-width="1.4" marker-end="url(#cta-arrow)" />
+                        <!-- Hub → C (indigo) -->
+                        <line class="kg-e kg-e-active kg-e-indigo" x1="110" y1="88" x2="168" y2="52"
+                            stroke="rgba(129,140,248,0.45)" stroke-width="1.4" marker-end="url(#cta-arrow)" />
+                        <!-- Hub → E (amber) -->
+                        <line class="kg-e kg-e-active kg-e-emerald" x1="110" y1="88" x2="52" y2="140"
+                            stroke="rgba(52,211,153,0.4)" stroke-width="1.4" marker-end="url(#cta-arrow)" />
+
+                        <!-- ── PASSIVE nodes ── -->
+                        <!-- D: emerald -->
+                        <circle class="kg-n kg-n-passive" cx="163" cy="133" r="7" fill="#34d399" stroke="#0b1121"
+                            stroke-width="1.5" />
+                        <!-- F: violet -->
+                        <circle class="kg-n kg-n-passive" cx="204" cy="22" r="5" fill="#e879f9" stroke="#0b1121"
+                            stroke-width="1.5" />
+                        <!-- G: orange -->
+                        <circle class="kg-n kg-n-passive" cx="110" cy="161" r="5" fill="#fb923c" stroke="#0b1121"
+                            stroke-width="1.5" />
+
+                        <!-- ── ACTIVE nodes (stay bright on hover) ── -->
+                        <!-- B: amber -->
+                        <circle class="kg-n kg-n-active" cx="57" cy="47" r="7" fill="#f59e0b" stroke="#0b1121"
+                            stroke-width="1.5" />
+                        <!-- C: indigo -->
+                        <circle class="kg-n kg-n-active" cx="168" cy="52" r="7" fill="#818cf8" stroke="#0b1121"
+                            stroke-width="1.5" />
+                        <!-- E: emerald -->
+                        <circle class="kg-n kg-n-active" cx="52" cy="140" r="7" fill="#34d399" stroke="#0b1121"
+                            stroke-width="1.5" />
+                        <!-- Hub A: cyan -->
+                        <circle class="kg-n kg-n-hub" cx="110" cy="88" r="10" fill="#38bdf8" stroke="#0b1121"
+                            stroke-width="2" />
+
+                        <!-- ── Travelling pulse dots on active edges ── -->
+                        <circle class="kg-pulse" r="2.5" fill="#818cf8">
+                            <animateMotion dur="2.6s" repeatCount="indefinite" begin="0s">
+                                <mpath href="#path-ac" />
+                            </animateMotion>
+                        </circle>
+                        <circle class="kg-pulse" r="2.5" fill="#f59e0b">
+                            <animateMotion dur="2.2s" repeatCount="indefinite" begin="0.7s">
+                                <mpath href="#path-ab" />
+                            </animateMotion>
+                        </circle>
+                        <circle class="kg-pulse" r="2.5" fill="#34d399">
+                            <animateMotion dur="3s" repeatCount="indefinite" begin="1.3s">
+                                <mpath href="#path-ae" />
+                            </animateMotion>
+                        </circle>
+                    </svg>
+                </div>
+
+                <!-- Edge lines (drawn first, sit beneath nodes) -->
+                <!-- Edge: A-B -->
+                <line class="kg-edge" x1="110" y1="90" x2="55" y2="45" stroke="rgba(56,189,248,0.35)"
+                    stroke-width="1.2" />
+                <!-- Edge: A-C -->
+                <line class="kg-edge" x1="110" y1="90" x2="170" y2="50" stroke="rgba(129,140,248,0.35)" <!-- Text & CTA
+                    -->
+                    <div class="kg-cta-content">
+                        <div class="kg-cta-eyebrow">Interactive Visualisation</div>
+                        <h2 class="kg-cta-heading">Research Knowledge Graph</h2>
+                        <p class="kg-cta-desc">See how all the concepts across my research connect — stellar physics,
+                            dynamical formation channels, gravitational waves, AGN, and more — mapped as an interactive,
+                            explorable network.</p>
+                        <a href="knowledge-graph.html" class="btn btn-primary kg-cta-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3" />
+                                <circle cx="6" cy="12" r="3" />
+                                <circle cx="18" cy="19" r="3" />
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                            </svg>
+                            Explore the Knowledge Graph
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* ---- Knowledge Graph CTA Card ---- */
+        .kg-cta-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-8);
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-10) var(--space-8);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+                0 0 60px -20px rgba(56, 189, 248, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: border-color var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .kg-cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+        }
+
+        .kg-cta-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 80px -20px rgba(56, 189, 248, 0.18);
+        }
+
+        @media (min-width: 768px) {
+            .kg-cta-card {
+                flex-direction: row;
+                align-items: center;
+                padding: var(--space-10) var(--space-12);
+            }
+        }
+
+        /* SVG display */
+        .kg-cta-visual {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kg-svg {
+            width: 200px;
+            height: 165px;
+            filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.2));
+        }
+
+        @media (min-width: 768px) {
+            .kg-svg {
+                width: 240px;
+                height: 196px;
+            }
+        }
+
+        /* ── SVG node & edge interaction ── */
+        .kg-n,
+        .kg-e {
+            transition: opacity 0.45s ease, fill 0.45s ease, stroke 0.45s ease, stroke-width 0.45s ease;
+        }
+
+        /* Hub pulse — subtle, always on */
+        .kg-n-hub {
+            animation: kg-hub-pulse 3.2s ease-in-out infinite;
+        }
+
+        @keyframes kg-hub-pulse {
+
+            0%,
+            100% {
+                filter: none;
+            }
+
+            50% {
+                filter: drop-shadow(0 0 7px rgba(56, 189, 248, 0.75));
+            }
+        }
+
+        /* Passive nodes: dim to grey on card hover */
+        .kg-cta-card:hover .kg-n-passive {
+            opacity: 0.22;
+            fill: #475569;
+        }
+
+        /* Passive edges: dim significantly on card hover */
+        .kg-cta-card:hover .kg-e-passive {
+            opacity: 0.08;
+        }
+
+        /* Active edges: pop to full colour on hover */
+        .kg-cta-card:hover .kg-e-amber {
+            stroke: rgba(245, 158, 11, 0.9);
+            stroke-width: 1.8;
+            opacity: 1;
+        }
+
+        .kg-cta-card:hover .kg-e-indigo {
+            stroke: rgba(129, 140, 248, 0.9);
+            stroke-width: 1.8;
+            opacity: 1;
+        }
+
+        .kg-cta-card:hover .kg-e-emerald {
+            stroke: rgba(52, 211, 153, 0.9);
+            stroke-width: 1.8;
+            opacity: 1;
+        }
+
+        /* Active nodes: add glow on hover */
+        .kg-cta-card:hover .kg-n-active {
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        .kg-cta-card:hover .kg-n-hub {
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9));
+        }
+
+        /* Pulse dot — always visible */
+        .kg-pulse {
+            opacity: 0.9;
+        }
+
+
+        /* Text layout */
+        .kg-cta-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .kg-cta-eyebrow {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-accent);
+        }
+
+        .kg-cta-heading {
+            font-size: 1.8rem;
+            color: var(--color-white);
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .kg-cta-desc {
+            color: var(--color-gray-500);
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin: 0;
+            max-width: 480px;
+        }
+
+        .kg-cta-btn {
+            align-self: flex-start;
+            margin-top: var(--space-2);
+        }
+    </style>
 
     <!-- Footer -->
     <div id="footer-placeholder"></div>
