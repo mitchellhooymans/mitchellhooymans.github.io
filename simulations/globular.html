@@ -246,6 +246,52 @@
             transition: opacity 0.5s;
         }
 
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .info-card h3 {
+            color: var(--color-white);
+            margin-bottom: var(--space-3);
+            font-size: 1.1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-3);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .info-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: var(--space-4);
+            margin-top: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.8rem;
+            color: var(--color-gray-600);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
         /* Full Browser Mode */
         body.full-browser {
             overflow: hidden;
@@ -373,6 +419,32 @@
     <section class="section">
         <div class="container">
             <div class="content-section">
+                <!-- Info Card -->
+                <div class="info-card">
+                    <h3><i class="fas fa-project-diagram"></i> Globular Clusters</h3>
+                    <p>
+                        A <strong>globular cluster</strong> is a spherical collection of stars that orbits a galactic
+                        core.
+                        They are very tightly bound by gravity, which gives them their spherical shapes and relatively
+                        high stellar densities toward their centers.
+                    </p>
+                    <p style="font-size: 0.85rem; opacity: 0.9;">
+                        <strong>Mass Segregation:</strong> When enabled, heavier stars will naturally sink toward the
+                        center of the cluster over time, while lighter stars evaporate to the halo.
+                    </p>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #ff4d4d;"></span> Low Mass
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #fbbf24;"></span> Medium Mass
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #60a5fa;"></span> High Mass
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Simulation + Controls Wrapper -->
                 <div class="simulation-wrapper">
                     <!-- Simulation Canvas -->
