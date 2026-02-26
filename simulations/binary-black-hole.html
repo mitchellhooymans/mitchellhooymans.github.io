@@ -440,15 +440,47 @@
                                     <span class="data-label">Current Eccentricity</span>
                                     <span class="data-value" id="currentE">0.500</span>
                                 </div>
-                                <div class="data-item" style="grid-column: 1 / -1;">
+                                <div class="data-item">
                                     <span class="data-label">GW Frequency</span>
                                     <span class="data-value" id="currentF">0.00 Hz</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Phase</span>
+                                    <span class="data-value" id="currentPhase">Inspiral</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Chirp Mass</span>
+                                    <span class="data-value" id="chirpMassVal">-- M&#x2299;</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Peak Harmonic</span>
+                                    <span class="data-value" id="peakHarmonicVal">n=2</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">GW Power</span>
+                                    <span class="data-value" id="gwPowerVal">--</span>
+                                </div>
+                                <div class="data-item" id="finalSpinItem" style="display: none;">
+                                    <span class="data-label">Final Spin</span>
+                                    <span class="data-value" id="finalSpinVal">--</span>
+                                </div>
+                                <div class="data-item" id="finalMassItem" style="display: none;">
+                                    <span class="data-label">Final Mass</span>
+                                    <span class="data-value" id="finalMassVal">--</span>
                                 </div>
                             </div>
                         </div>
 
                         <button id="resetBtn" class="btn-reset">
                             <i class="fas fa-sync-alt"></i> Reset Simulation
+                        </button>
+
+                        <button id="pauseBtn" class="btn-secondary">
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+
+                        <button id="playChirpBtn" class="btn-secondary">
+                            <i class="fas fa-volume-up"></i> Play Chirp
                         </button>
 
                         <button id="fullBrowserBtn" class="btn-secondary">
@@ -483,14 +515,23 @@
         const state = {
             m1: 30.0,
             m2: 30.0,
-            a0: 1.0,  // Initial semi-major axis (Visual Units ~ AU)
-            e0: 0.5,  // Initial eccentricity
+            a0: 1.0,
+            e0: 0.5,
             timeScale: 1.0,
             // Dynamic variables
             a: 1.0,
             e: 0.5,
             meanAnomaly: 0,
             isMerged: false,
+            isPaused: false,
+            // Ringdown state
+            isRingdown: false,
+            ringdownTime: 0,
+            ringdownFreq: 0,      // quasi-normal mode frequency
+            ringdownTau: 0,       // damping timescale
+            mergerStrainPeak: 0,  // peak strain at merger for ringdown envelope
+            finalMass: 0,         // M_final after energy radiated
+            finalSpin: 0,         // dimensionless spin of final BH
             // Graph Data
             gwHistory: [],
             maxHistory: 300,
@@ -527,8 +568,8 @@
 
         // --- Three.js Setup ---
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x020510);
-        scene.fog = new THREE.FogExp2(0x020510, 0.015);
+        scene.background = new THREE.Color(0x040a1a);
+        scene.fog = new THREE.FogExp2(0x040a1a, 0.012);
 
         const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
         camera.position.set(0, 3, 5);
@@ -625,131 +666,287 @@
 
         // --- Physics & Peters 1964 ---
 
-        // Solve Kepler's equation M = E - e sin(E)
+        // Solve Kepler's equation M = E - e sin(E) via Newton-Raphson
         function solveKepler(M, e) {
             let E = M;
-            for (let i = 0; i < 10; i++) {
-                E = E - (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+            for (let i = 0; i < 15; i++) {
+                const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+                E -= dE;
+                if (Math.abs(dE) < 1e-12) break;
             }
             return E;
         }
 
-        function updatePhysics(dt) {
-            if (state.isMerged) return;
-
-            // Peters (1964) Equations for da/dt and de/dt
-            // da/dt = -(64/5) * (G^3 m1 m2 (m1+m2)) / (c^5 a^3 (1-e^2)^(7/2)) * (1 + 73/24 e^2 + 37/96 e^4)
-            // de/dt = -(304/15) * e * (G^3 m1 m2 (m1+m2)) / (c^5 a^4 (1-e^2)^(5/2)) * (1 + 121/304 e^2)
-
+        // Peters (1964) da/dt and de/dt derivatives
+        function petersDerivatives(a, e) {
             const G = CONSTANTS.G;
             const c = CONSTANTS.c;
             const m1 = state.m1;
             const m2 = state.m2;
             const M = m1 + m2;
+            const e2 = e * e;
+            const oneMinusE2 = 1 - e2;
 
-            // Check for merger based on physical Schwarzschild radii
-            const r1_phys = calculatePhysicalRadius(m1);
-            const r2_phys = calculatePhysicalRadius(m2);
-            const r_isco = (r1_phys + r2_phys) * 3.0; // ~3x sum as ISCO proxy
+            const commonFactor = (Math.pow(G, 3) * m1 * m2 * M) / Math.pow(c, 5);
 
-            if (state.a * (1 - state.e) <= r_isco || state.a <= 0.005) {
+            // da/dt (Peters 1964, Eq. 5.6)
+            const da_dt = -(64.0 / 5.0) * commonFactor
+                / (Math.pow(a, 3) * Math.pow(oneMinusE2, 3.5))
+                * (1 + (73.0 / 24.0) * e2 + (37.0 / 96.0) * e2 * e2);
+
+            // de/dt (Peters 1964, Eq. 5.7)
+            let de_dt = 0;
+            if (e > 1e-6) {
+                de_dt = -(304.0 / 15.0) * e * commonFactor
+                    / (Math.pow(a, 4) * Math.pow(oneMinusE2, 2.5))
+                    * (1 + (121.0 / 304.0) * e2);
+            }
+
+            return [da_dt, de_dt];
+        }
+
+        // RK4 integration of orbital elements with adaptive sub-stepping
+        function integrateOrbit(dt) {
+            // Sub-step to maintain accuracy during late inspiral
+            const N = Math.max(1, Math.ceil(dt / 0.002));
+            const h = dt / N;
+
+            for (let step = 0; step < N; step++) {
+                const a0 = state.a;
+                const e0 = state.e;
+
+                const [k1a, k1e] = petersDerivatives(a0, e0);
+                const [k2a, k2e] = petersDerivatives(
+                    Math.max(0.005, a0 + 0.5 * h * k1a),
+                    Math.max(0, Math.min(0.999, e0 + 0.5 * h * k1e))
+                );
+                const [k3a, k3e] = petersDerivatives(
+                    Math.max(0.005, a0 + 0.5 * h * k2a),
+                    Math.max(0, Math.min(0.999, e0 + 0.5 * h * k2e))
+                );
+                const [k4a, k4e] = petersDerivatives(
+                    Math.max(0.005, a0 + h * k3a),
+                    Math.max(0, Math.min(0.999, e0 + h * k3e))
+                );
+
+                state.a += (h / 6) * (k1a + 2 * k2a + 2 * k3a + k4a);
+                state.e += (h / 6) * (k1e + 2 * k2e + 2 * k3e + k4e);
+
+                // Clamp to physical ranges
+                if (state.e < 0) state.e = 0;
+                if (state.e > 0.99) state.e = 0.99;
+                if (state.a < 0.01) { state.a = 0.01; break; }
+            }
+        }
+
+        // Compute peak GW harmonic number for eccentric orbits
+        // Peters & Mathews (1963): n_peak ~ (1+e)^1.1954 / (1-e^2)^1.5
+        function peakHarmonic(e) {
+            if (e < 0.001) return 2;
+            return 2 * Math.pow(1 + e, 1.1954) / Math.pow(1 - e * e, 1.5);
+        }
+
+        // Chirp mass: M_c = (m1*m2)^(3/5) / (m1+m2)^(1/5)
+        function chirpMass(m1, m2) {
+            return Math.pow(m1 * m2, 3 / 5) / Math.pow(m1 + m2, 1 / 5);
+        }
+
+        // Peters (1964) GW luminosity enhancement factor f(e)
+        function gwEnhancement(e) {
+            const e2 = e * e;
+            return (1 + (73.0 / 24.0) * e2 + (37.0 / 96.0) * e2 * e2)
+                / Math.pow(1 - e2, 3.5);
+        }
+
+        // Hofmann-Barausse-Rezzolla (2016) final spin for non-spinning BBH
+        function computeFinalSpin(nu) {
+            // a_f = sqrt(12)*nu - 3.871*nu^2 + 4.028*nu^3
+            return Math.sqrt(12) * nu - 3.871 * nu * nu + 4.028 * nu * nu * nu;
+        }
+
+        // Barausse-Rezzolla energy radiated fraction for non-spinning BBH
+        function computeRadiatedFraction(nu) {
+            // E_rad/M ~ 0.0559745 * 4*nu^2 + 0.00169 * 4*nu
+            return Math.min(0.0559745 * 4 * nu * nu + 0.00169 * 4 * nu, 0.11);
+        }
+
+        // Echeverria/Leaver QNM frequency for l=2 m=2 mode
+        function qnmFrequency(Mf, af) {
+            const G = CONSTANTS.G;
+            const c = CONSTANTS.c;
+            // f_QNM = c^3/(2*pi*G*Mf) * [1 - 0.63*(1-af)^0.3]
+            return (c * c * c) / (2 * Math.PI * G * Mf) * (1 - 0.63 * Math.pow(1 - af, 0.3));
+        }
+
+        // Echeverria QNM quality factor Q for l=2 m=2 mode
+        function qnmQualityFactor(af) {
+            // Q = 0.7 + 1.4187 * (1-af)^(-0.4990)
+            return 0.7 + 1.4187 * Math.pow(1 - Math.min(af, 0.998), -0.4990);
+        }
+
+        function updatePhysics(dt) {
+            // --- RINGDOWN PHASE: damped QNM oscillation after merger ---
+            if (state.isRingdown) {
+                state.ringdownTime += dt;
+                // Damped quasi-normal mode: h(t) = A * exp(-t/tau) * cos(2*pi*f_QNM*t)
+                const amplitude = state.mergerStrainPeak * Math.exp(-state.ringdownTime / state.ringdownTau);
+                const h = amplitude * Math.cos(2 * Math.PI * state.ringdownFreq * state.ringdownTime);
+
+                // Visual: pulsate the merged BH mesh at QNM frequency
+                if (mergedBH) {
+                    const baseScale = calculateSchwarzschildRadius(state.finalMass);
+                    const pulsate = 1.0 + 0.08 * Math.exp(-state.ringdownTime / state.ringdownTau)
+                        * Math.sin(2 * Math.PI * state.ringdownFreq * state.ringdownTime * 2);
+                    mergedBH.scale.set(baseScale * pulsate, baseScale * pulsate, baseScale * pulsate);
+                }
+
+                // Record ringdown waveform
+                state.gwHistory.push({ time: Date.now(), f: state.ringdownFreq, h: h });
+                if (state.gwHistory.length > state.maxHistory) {
+                    state.gwHistory.shift();
+                }
+
+                // End ringdown when amplitude decays below 1% of peak
+                if (Math.abs(amplitude) < state.mergerStrainPeak * 0.01) {
+                    state.isRingdown = false;
+                    if (mergedBH) {
+                        const finalScale = calculateSchwarzschildRadius(state.finalMass);
+                        mergedBH.scale.set(finalScale, finalScale, finalScale);
+                    }
+                }
+                return;
+            }
+
+            if (state.isMerged) return; // fully settled post-ringdown
+
+            // --- INSPIRAL PHASE: Peters (1964) orbital decay + Keplerian motion ---
+            const G = CONSTANTS.G;
+            const c = CONSTANTS.c;
+            const m1 = state.m1;
+            const m2 = state.m2;
+            const M = m1 + m2;
+            const mu = (m1 * m2) / M; // reduced mass
+
+            // Integrate orbital elements with RK4
+            integrateOrbit(dt);
+
+            // Keplerian mean motion
+            const n = Math.sqrt((G * M) / Math.pow(state.a, 3));
+            state.meanAnomaly += n * dt;
+            if (state.meanAnomaly > Math.PI * 2) {
+                state.meanAnomaly -= Math.PI * 2;
+            }
+
+            // Solve Kepler's equation for eccentric anomaly
+            const E = solveKepler(state.meanAnomaly, state.e);
+            const trueAnomaly = 2 * Math.atan2(
+                Math.sqrt(1 + state.e) * Math.sin(E / 2),
+                Math.sqrt(1 - state.e) * Math.cos(E / 2)
+            );
+
+            // Instantaneous separation
+            const r = state.a * (1 - state.e * Math.cos(E));
+
+            // Positions in orbital plane (barycenter at origin)
+            const x = r * Math.cos(trueAnomaly);
+            const z = r * Math.sin(trueAnomaly);
+            const r1_ratio = m2 / M;
+            const r2_ratio = -m1 / M;
+            const p1 = new THREE.Vector3(x * r1_ratio, 0, z * r1_ratio);
+            const p2 = new THREE.Vector3(x * r2_ratio, 0, z * r2_ratio);
+
+            // --- MERGER CHECK: when visual spheres touch ---
+            const r1_vis = calculateSchwarzschildRadius(m1);
+            const r2_vis = calculateSchwarzschildRadius(m2);
+            if (r <= r1_vis + r2_vis) {
                 state.isMerged = true;
-
-                // Remove individual meshes
                 scene.remove(bh1);
                 scene.remove(bh2);
 
+                // Symmetric mass ratio
+                const nu = (m1 * m2) / (M * M);
+
+                // Barausse-Rezzolla energy radiated fraction (calibrated to NR)
+                const radiatedFraction = computeRadiatedFraction(nu);
+                state.finalMass = M * (1 - radiatedFraction);
+
+                // Hofmann-Barausse-Rezzolla final spin
+                state.finalSpin = Math.max(0, Math.min(0.998, computeFinalSpin(nu)));
+
+                // Create merged BH mesh
                 if (!mergedBH) {
                     mergedBH = new THREE.Mesh(bhGeometry, bhMaterial);
                     scene.add(mergedBH);
                 }
                 mergedBH.visible = true;
                 mergedBH.position.set(0, 0, 0);
-
-                const r_final = calculateSchwarzschildRadius(M);
+                const r_final = calculateSchwarzschildRadius(state.finalMass);
                 mergedBH.scale.set(r_final, r_final, r_final);
+
+                // QNM ringdown parameters
+                // In our scaled-constant system, we derive ringdown params
+                // relative to the simulation's timescales to ensure visibility.
+                const Q = qnmQualityFactor(state.finalSpin);
+
+                // Get the last inspiral GW frequency as our anchor
+                const lastF = state.gwHistory.length > 0
+                    ? state.gwHistory[state.gwHistory.length - 1].f
+                    : 1.0;
+
+                // QNM frequency: physically ~1.5x last GW freq, but capped
+                // so we get enough samples per cycle for the graph to resolve.
+                // At ~30fps with dtScaled~0.03, we need f < ~4 Hz sim-units
+                // to get ~8 samples per cycle for a smooth waveform.
+                const spinFactor = 1 - 0.63 * Math.pow(1 - state.finalSpin, 0.3);
+                const rawFreq = lastF * (1.0 + spinFactor);
+                state.ringdownFreq = Math.min(rawFreq, 4.0);
+
+                // Damping timescale: Q cycles / (pi * f), with a floor
+                // to guarantee the ringdown is visible for ~2 real-time seconds
+                state.ringdownTau = Math.max(Q / (Math.PI * state.ringdownFreq), 0.6);
+
+                // Peak strain at merger (from last inspiral sample, boosted)
+                const lastStrain = state.gwHistory.length > 0
+                    ? Math.abs(state.gwHistory[state.gwHistory.length - 1].h)
+                    : 1.0;
+                state.mergerStrainPeak = lastStrain * 2.5;
+                state.ringdownTime = 0;
+                state.isRingdown = true;
                 return;
             }
 
-            // Orbital evolution
-            const factorA = -(64.0 / 5.0) * (Math.pow(G, 3) * m1 * m2 * M) / (Math.pow(c, 5) * Math.pow(state.a, 3) * Math.pow(1 - state.e * state.e, 3.5));
-            const eTermsA = 1 + (73.0 / 24.0) * state.e * state.e + (37.0 / 96.0) * Math.pow(state.e, 4);
-            const da_dt = factorA * eTermsA;
-
-            let de_dt = 0;
-            if (state.e > 0.0001) {
-                const factorE = -(304.0 / 15.0) * state.e * (Math.pow(G, 3) * m1 * m2 * M) / (Math.pow(c, 5) * Math.pow(state.a, 4) * Math.pow(1 - state.e * state.e, 2.5));
-                const eTermsE = 1 + (121.0 / 304.0) * state.e * state.e;
-                de_dt = factorE * eTermsE;
-            }
-
-            state.a += da_dt * dt;
-            state.e += de_dt * dt;
-
-            if (state.e < 0) state.e = 0;
-            if (state.e > 0.99) state.e = 0.99;
-            if (state.a < 0.01) state.a = 0.01;
-
-            // Keplerian Motion
-            // Mean motion n = sqrt(G(m1+m2)/a^3)
-            const n = Math.sqrt((G * M) / Math.pow(state.a, 3));
-            state.meanAnomaly += n * dt;
-
-            // Normalize anomaly
-            if (state.meanAnomaly > Math.PI * 2) {
-                state.meanAnomaly -= Math.PI * 2;
-            }
-
-            const E = solveKepler(state.meanAnomaly, state.e);
-
-            // True anomaly nu
-            const trueAnomaly = 2 * Math.atan(Math.sqrt((1 + state.e) / (1 - state.e)) * Math.tan(E / 2));
-
-            // Distance r
-            const r = state.a * (1 - state.e * Math.cos(E));
-
-            // Positions in orbital plane
-            const x = r * Math.cos(trueAnomaly);
-            const z = r * Math.sin(trueAnomaly); // using x-z plane for orbit
-
-            // Center of Mass (barycenter) is at origin
-            // r1 = r * (m2/M), r2 = -r * (m1/M)
-            const r1_ratio = m2 / M;
-            const r2_ratio = -m1 / M;
-
-            const p1 = new THREE.Vector3(x * r1_ratio, 0, z * r1_ratio);
-            const p2 = new THREE.Vector3(x * r2_ratio, 0, z * r2_ratio);
-
             bh1.position.copy(p1);
             bh2.position.copy(p2);
-
             updateTrails(p1, p2);
 
-            // Gravitational Wave Frequency
-            // f_GW ~ 2 * f_orbital (dominant harmonic)
+            // --- GW Strain: Peters & Mathews (1963) quadrupole formula ---
+            // h+ for face-on (iota=0) dominant l=2, m=2 mode with eccentric harmonics
+            const semiLatusRectum = state.a * (1 - state.e * state.e);
+            const prefactor = (mu * M) / Math.max(semiLatusRectum, 0.001);
+
+            // Full quadrupole: includes harmonics at f_orb, 2*f_orb, 3*f_orb
+            const hPlus = -prefactor * (
+                2 * Math.cos(2 * trueAnomaly)
+                + (5.0 / 2.0) * state.e * Math.cos(trueAnomaly)
+                + (1.0 / 2.0) * state.e * Math.cos(3 * trueAnomaly)
+                + state.e * state.e
+            );
+
+            // GW Frequency: peak harmonic for eccentric orbits
             const f_orbital = n / (2 * Math.PI);
-            // Higher eccentricities emit at higher harmonics, but we plot the peak
-            const f_gw = 2 * f_orbital; // Simplified
+            const n_peak = peakHarmonic(state.e);
+            const f_gw = n_peak * f_orbital; // dominant GW frequency
 
-            // Calculate strain amplitude (rough proxy for visualization)
-            // h ~ (G / c^4) * (m1*m2/r) * ...
-            const strain = (1.0 / state.a) * (1.0 + state.e * Math.cos(trueAnomaly));
-
-            // Record History
-            state.gwHistory.push({ time: Date.now(), f: f_gw, h: Math.cos(state.meanAnomaly * 2) * strain });
+            state.gwHistory.push({ time: Date.now(), f: f_gw, h: hPlus, n_peak: n_peak });
             if (state.gwHistory.length > state.maxHistory) {
                 state.gwHistory.shift();
             }
         }
 
         function calculateSchwarzschildRadius(mass) {
-            // R_s = 2GM/c^2, scaled up for VISUAL display only
-            return Math.max(0.05, (2 * CONSTANTS.G * mass) / (CONSTANTS.c * CONSTANTS.c) * 30);
-        }
-
-        function calculatePhysicalRadius(mass) {
-            // R_s = 2GM/c^2, true physical scale for merger detection
-            return (2 * CONSTANTS.G * mass) / (CONSTANTS.c * CONSTANTS.c);
+            // R_s = 2GM/c^2, scaled for visual display
+            // Scale factor 6 keeps spheres smaller than orbital separation
+            return Math.max(0.04, (2 * CONSTANTS.G * mass) / (CONSTANTS.c * CONSTANTS.c) * 6);
         }
 
         function updateTrails(p1, p2) {
@@ -813,8 +1010,14 @@
             gwCtx.stroke();
 
             // Frequency overlay text
-            const currentF = state.gwHistory[state.gwHistory.length - 1].f;
-            ui.currentF.innerText = `${currentF.toFixed(3)} Hz`;
+            const lastPt = state.gwHistory[state.gwHistory.length - 1];
+            ui.currentF.innerText = `${lastPt.f.toFixed(3)} Hz`;
+
+            // Update peak harmonic display
+            const peakH = document.getElementById('peakHarmonicVal');
+            if (lastPt.n_peak !== undefined) {
+                peakH.innerText = `n=${lastPt.n_peak.toFixed(1)}`;
+            }
         }
 
         // --- Initialization & Loop ---
@@ -830,6 +1033,11 @@
             state.e = state.e0;
             state.meanAnomaly = 0;
             state.isMerged = false;
+            state.isPaused = false;
+            state.isRingdown = false;
+            state.ringdownTime = 0;
+            state.finalMass = 0;
+            state.finalSpin = 0;
             state.gwHistory = [];
             trailPositions1 = [];
             trailPositions2 = [];
@@ -857,12 +1065,54 @@
             ui.e0Val.innerText = ui.e0.value;
             ui.speedVal.innerText = ui.speed.value;
 
+            // Chirp mass (always valid)
+            const Mc = chirpMass(state.m1, state.m2);
+            document.getElementById('chirpMassVal').innerText = `${Mc.toFixed(1)} M\u2299`;
+
+            // GW Power (during inspiral)
+            if (!state.isMerged) {
+                const G = CONSTANTS.G;
+                const c = CONSTANTS.c;
+                const m1 = state.m1;
+                const m2 = state.m2;
+                const M = m1 + m2;
+                const fe = gwEnhancement(state.e);
+                const Pgw = (32.0 / 5.0) * Math.pow(G, 4) * m1 * m1 * m2 * m2 * M
+                    / (Math.pow(c, 5) * Math.pow(state.a, 5)) * fe;
+                // Format power in scientific notation
+                if (Pgw > 0 && isFinite(Pgw)) {
+                    const exp = Math.floor(Math.log10(Pgw));
+                    const mantissa = Pgw / Math.pow(10, exp);
+                    document.getElementById('gwPowerVal').innerText = `${mantissa.toFixed(1)}e${exp}`;
+                } else {
+                    document.getElementById('gwPowerVal').innerText = '--';
+                }
+            }
+
             if (!state.isMerged) {
                 ui.currentA.innerText = `${state.a.toFixed(3)} AU`;
                 ui.currentE.innerText = state.e.toFixed(3);
+                document.getElementById('currentPhase').innerText = 'Inspiral';
+                document.getElementById('finalMassItem').style.display = 'none';
+                document.getElementById('finalSpinItem').style.display = 'none';
+            } else if (state.isRingdown) {
+                ui.currentA.innerText = 'MERGED';
+                ui.currentE.innerText = 'MERGED';
+                document.getElementById('currentPhase').innerText = 'Ringdown';
+                document.getElementById('finalMassItem').style.display = '';
+                document.getElementById('finalMassVal').innerText = `${state.finalMass.toFixed(1)} M\u2299`;
+                document.getElementById('finalSpinItem').style.display = '';
+                document.getElementById('finalSpinVal').innerText = `a = ${state.finalSpin.toFixed(3)}`;
+                document.getElementById('gwPowerVal').innerText = 'Ringdown';
             } else {
-                ui.currentA.innerText = "MERGED";
-                ui.currentE.innerText = "MERGED";
+                ui.currentA.innerText = 'MERGED';
+                ui.currentE.innerText = 'MERGED';
+                document.getElementById('currentPhase').innerText = 'Complete';
+                document.getElementById('finalMassItem').style.display = '';
+                document.getElementById('finalMassVal').innerText = `${state.finalMass.toFixed(1)} M\u2299`;
+                document.getElementById('finalSpinItem').style.display = '';
+                document.getElementById('finalSpinVal').innerText = `a = ${state.finalSpin.toFixed(3)}`;
+                document.getElementById('gwPowerVal').innerText = '0';
             }
         }
 
@@ -884,6 +1134,78 @@
         });
 
         ui.resetBtn.addEventListener('click', initSimulation);
+
+        // Pause toggle
+        const pauseBtn = document.getElementById('pauseBtn');
+        pauseBtn.addEventListener('click', () => {
+            state.isPaused = !state.isPaused;
+            pauseBtn.innerHTML = state.isPaused
+                ? '<i class="fas fa-play"></i> Resume'
+                : '<i class="fas fa-pause"></i> Pause';
+        });
+
+        // --- Chirp Audio Playback (Web Audio API) ---
+        let audioCtx = null;
+        const playChirpBtn = document.getElementById('playChirpBtn');
+        playChirpBtn.addEventListener('click', () => {
+            if (state.gwHistory.length < 10) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Build frequency curve from recorded GW history
+            const history = state.gwHistory;
+            const duration = 3.5; // playback duration in seconds
+            const sampleRate = audioCtx.sampleRate;
+            const totalSamples = Math.floor(sampleRate * duration);
+
+            const buffer = audioCtx.createBuffer(1, totalSamples, sampleRate);
+            const data = buffer.getChannelData(0);
+
+            // Find frequency extremes and detect merger point
+            let fMin = Infinity, fMax = -Infinity;
+            let mergerIdx = history.length; // default: no merger in history
+            for (let i = 0; i < history.length; i++) {
+                if (history[i].f < fMin) fMin = history[i].f;
+                if (history[i].f > fMax) fMax = history[i].f;
+                // Detect transition to ringdown (frequency plateau after peak)
+                if (i > 0 && history[i].n_peak === undefined && history[i - 1].n_peak !== undefined) {
+                    mergerIdx = i;
+                }
+            }
+            const fRange = Math.max(fMax - fMin, 0.01);
+
+            // Map the recorded strain into a chirp with ringdown
+            let phase = 0;
+            for (let i = 0; i < totalSamples; i++) {
+                const t = i / totalSamples; // normalized 0..1
+                const histIdx = Math.floor(t * (history.length - 1));
+                const pt = history[histIdx];
+
+                // Scale GW frequency to audible range (80-1000 Hz)
+                const fAudio = 80 + ((pt.f - fMin) / fRange) * 920;
+                phase += (2 * Math.PI * fAudio) / sampleRate;
+
+                // Amplitude envelope:
+                // - Inspiral: gradual ramp-up
+                // - Ringdown: exponential decay after merger
+                let envelope;
+                if (histIdx < mergerIdx) {
+                    // Inspiral: amplitude grows ~ t^(1/4) for chirp-like feel
+                    const inspiralFrac = histIdx / Math.max(mergerIdx, 1);
+                    envelope = 0.2 + 0.8 * Math.pow(inspiralFrac, 0.25);
+                } else {
+                    // Ringdown: exponential decay
+                    const ringFrac = (histIdx - mergerIdx) / Math.max(history.length - mergerIdx, 1);
+                    envelope = Math.exp(-3.0 * ringFrac);
+                }
+
+                data[i] = Math.sin(phase) * envelope * 0.5;
+            }
+
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start();
+        });
 
         // Full browser toggle
         document.getElementById('fullBrowserBtn').addEventListener('click', () => {
@@ -912,17 +1234,16 @@
             requestAnimationFrame(animate);
 
             let dt = clock.getDelta();
-            if (dt > 0.1) dt = 0.1; // cap
+            if (dt > 0.1) dt = 0.1;
 
-            // Run physics
-            const dtScaled = Math.min(dt * state.timeScale * 2.0, 0.1);
-
-            updatePhysics(dtScaled);
+            // Only run physics when not paused
+            if (!state.isPaused) {
+                const dtScaled = Math.min(dt * state.timeScale * 2.0, 0.1);
+                updatePhysics(dtScaled);
+            }
 
             controls.update();
-
             renderer.render(scene, camera);
-
             drawGWGraph();
             updateUI();
         }
