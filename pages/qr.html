@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Generator | Mitchell Hooymans</title>
+  <meta name="description" content="Encode any URL or text into a scannable QR code.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="../js/stars.js"></script>
+
+  <style>
+    .qr-bento {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .qr-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      transition: border-color var(--transition-base), background var(--transition-base);
+    }
+
+    .qr-card:hover {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .qr-card-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-gray-500);
+      margin-bottom: var(--space-4);
+    }
+
+    .card-input,
+    .card-actions {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 768px) {
+      .qr-bento {
+        grid-template-columns: 1fr;
+      }
+
+      .card-qr,
+      .card-colours {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .qr-textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      font-family: var(--font-primary);
+      font-size: 1rem;
+      padding: var(--space-4);
+      resize: none;
+      height: 100px;
+      outline: none;
+      transition: border-color var(--transition-base);
+      display: block;
+    }
+
+    .qr-textarea:focus {
+      border-color: var(--color-accent);
+    }
+
+    .qr-textarea::placeholder {
+      color: var(--color-gray-500);
+    }
+
+    .qr-generate-btn {
+      margin-top: var(--space-4);
+      width: 100%;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: var(--radius-md);
+      color: var(--color-accent);
+      padding: var(--space-3);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+
+    .qr-generate-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.8);
+    }
+
+    .card-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 290px;
+    }
+
+    #qrcode img,
+    #qrcode canvas {
+      border-radius: var(--radius-md);
+      margin: 0 auto;
+    }
+
+    .orbit-wrap {
+      width: 72px;
+      height: 72px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--color-accent);
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      animation: spin 6s linear infinite;
+      position: relative;
+    }
+
+    .orbit-wrap::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      opacity: 0.5;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .card-colours {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .colour-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .colour-row label {
+      color: var(--color-gray-400);
+      font-size: 0.9rem;
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 36px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      padding: 0;
+      background: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+      border: none;
+      border-radius: 4px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      flex: 1;
+      min-width: 140px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-gray-400);
+      padding: var(--space-3);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: center;
+    }
+
+    .btn-action:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--color-accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* Settings styles */
+    .settings-row {
+      margin-bottom: var(--space-4);
+    }
+
+    .settings-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .settings-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--color-gray-400);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-2);
+    }
+
+    .settings-value {
+      color: var(--color-accent);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .range-slider {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      height: 4px;
+      border-radius: var(--radius-full);
+      outline: none;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .select-dropdown {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-white);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-family: var(--font-primary);
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px top 50%;
+      background-size: 10px auto;
+    }
+
+    .select-dropdown:focus {
+      border-color: var(--color-accent);
+    }
+
+    .select-dropdown option {
+      background: var(--color-gray-100);
+      color: var(--color-white);
+    }
+
+    /* Toggle Switch */
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: .3s;
+      border-radius: 20px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked+.toggle-slider {
+      background-color: var(--color-accent);
+    }
+
+    input:checked+.toggle-slider:before {
+      transform: translateX(16px);
+    }
+
+    .toggle-label {
+      font-size: 0.85rem;
+      color: var(--color-gray-400);
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Global Nebula Background -->
+  <div class="global-nebula">
+    <div class="nebula-glow"></div>
+    <div class="nebula-glow"></div>
+  </div>
+
+  <!-- Navigation -->
+  <div id="navbar-placeholder"></div>
+  <script src="../js/navbar.js"></script>
+
+  <!-- Page Header -->
+  <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
+    <div class="container" style="position: relative; z-index: 1;">
+      <div class="page-hero-content" style="text-align: center;">
+        <h1 class="animate-fade-in-up delay-100">QR Generator</h1>
+        <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
+          Encode any URL or text into a scannable QR code. Customise colours and download as PNG.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Content -->
+  <section class="section">
+    <div class="container" style="max-width: 820px;">
+      <div class="qr-bento animate-fade-in-up delay-300">
+        <div class="qr-card card-input">
+          <div class="qr-card-label">01 — Input</div>
+          <textarea id="input" class="qr-textarea" placeholder="https://example.com or any text…"
+            spellcheck="false"></textarea>
+
+          <div
+            style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--color-gray-500);">
+            <label class="toggle-wrapper" title="Toggle real-time updates as you type">
+              <div class="toggle-switch">
+                <input type="checkbox" id="liveToggle" checked>
+                <span class="toggle-slider"></span>
+              </div>
+              <span class="toggle-label" id="liveLabel">Live On</span>
+            </label>
+            <span id="char-count">0 chars</span>
+          </div>
+        </div>
+
+        <div class="qr-card card-colours">
+          <div class="qr-card-label">02 — Appearance</div>
+          <div class="colour-row">
+            <label>Foreground</label>
+            <input type="color" id="fgColor" value="#000000">
+          </div>
+          <div class="colour-row">
+            <label>Background</label>
+            <input type="color" id="bgColor" value="#ffffff">
+          </div>
+          <p style="font-size: 0.85rem; color: var(--color-gray-500); margin-top: auto; line-height: 1.5;">
+            High contrast between foreground and background produces the most reliably scannable codes.
+          </p>
+        </div>
+
+        <div class="qr-card card-settings">
+          <div class="qr-card-label">03 — Settings</div>
+
+          <div class="settings-row">
+            <div class="settings-label">
+              <span>Resolution Size</span>
+              <span class="settings-value" id="sizeValue">1024px</span>
+            </div>
+            <input type="range" id="sizeSlider" class="range-slider" min="128" max="1024" step="64" value="1024">
+            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 6px;">Affects downloaded PNG size.
+            </p>
+          </div>
+
+          <div class="settings-row" style="margin-top: var(--space-4);">
+            <div class="settings-label">
+              <span>Quiet Zone (Margin)</span>
+              <span class="settings-value" id="marginValue">4</span>
+            </div>
+            <input type="range" id="marginSlider" class="range-slider" min="0" max="10" step="1" value="4">
+            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 6px;">Empty space padding around the
+              QR code.</p>
+          </div>
+
+          <div class="settings-row" style="margin-top: var(--space-4);">
+            <div class="settings-label">
+              <span>Error Correction</span>
+            </div>
+            <select id="eccLevel" class="select-dropdown">
+              <option value="L">Low (~7% recovery)</option>
+              <option value="M">Medium (~15% recovery)</option>
+              <option value="Q">Quarter (~25% recovery)</option>
+              <option value="H" selected>High (~30% recovery)</option>
+            </select>
+            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 6px;">Higher levels allow adding
+              logos over it.</p>
+          </div>
+        </div>
+
+        <div class="qr-card card-logo" style="display: flex; flex-direction: column;">
+          <div class="qr-card-label">04 — Branding</div>
+          <div style="display: flex; flex-direction: column; gap: var(--space-4); flex-grow: 1;">
+            <label style="color: var(--color-gray-400); font-size: 0.9rem;">Upload Center Logo <span
+                style="font-size: 0.75rem; float: right;">(Optional)</span></label>
+            <div
+              style="position: relative; flex-grow: 1; min-height: 120px; border: 2px dashed rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2);">
+              <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/svg+xml"
+                style="position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10;" />
+              <div id="logoPreviewWrapper"
+                style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,0.4);">
+                <img id="logoPreview"
+                  style="max-width: 60%; max-height: 60%; object-fit: contain; pointer-events: none;" />
+                <button id="clearLogoBtn"
+                  style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; transition: all 0.2s;"><i
+                    class="fas fa-times"></i></button>
+              </div>
+              <div id="logoUploadPrompt"
+                style="text-align: center; color: var(--color-gray-500); padding: var(--space-4); pointer-events: none;">
+                <i class="fas fa-image"
+                  style="font-size: 1.5rem; margin-bottom: 8px; color: var(--color-accent);"></i><br>
+                <span style="font-size: 0.8rem;">Click or drag image</span>
+              </div>
+            </div>
+            <div class="settings-row" style="margin-top: auto;">
+              <div class="settings-label">
+                <span>Logo Scale</span>
+                <span class="settings-value" id="logoScaleValue">22%</span>
+              </div>
+              <input type="range" id="logoScaleSlider" class="range-slider" min="10" max="40" step="1" value="22">
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-2); flex-wrap: wrap; gap: 8px;">
+              <p style="font-size: 0.75rem; color: var(--color-gray-500); margin: 0; max-width: 65%;">Max scale is based
+                on Error Correction.</p>
+              <label class="toggle-wrapper" title="Apply a circular mask to the logo">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="roundedLogoToggle" checked>
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label" style="font-size: 0.75rem;">Rounded</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-card card-qr">
+          <div class="qr-card-label">05 — Preview</div>
+          <div id="qrcode" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+            <div class="qr-placeholder" id="placeholder" style="text-align: center;">
+              <div class="orbit-wrap"></div>
+              <p style="font-size: 0.9rem; color: var(--color-gray-500);">Enter text above<br>to generate your QR code
+              </p>
+            </div>
+          </div>
+          <p id="qrEncoded"
+            style="display:none; margin-top: 16px; font-size: 0.8rem; color: var(--color-gray-500); word-break: break-all; text-align: center;">
+          </p>
+          <button id="manualGenerateBtn" class="qr-generate-btn" style="display: none; margin-top: var(--space-4);"
+            onclick="forceGenerate()">Generate QR Code →</button>
+        </div>
+
+        <div class="qr-card card-actions" id="actionsCard" style="display:none; grid-column: 1 / -1;">
+          <button class="btn-action" onclick="downloadPNG()"><i class="fas fa-image" style="margin-right: 6px;"></i>
+            Download PNG</button>
+          <button class="btn-action" onclick="downloadSVG()"><i class="fas fa-bezier-curve"
+              style="margin-right: 6px;"></i> Download SVG</button>
+          <button class="btn-action" id="copyBtn" onclick="copyText()"><i class="far fa-copy"
+              style="margin-right: 6px;"></i> Copy Text</button>
+          <span id="status"
+            style="font-size: 0.8rem; color: var(--color-gray-500); flex-basis: 100%; text-align: center;"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <!-- JavaScript -->
+  <script>
+    // QR logic
+    let lastText = '';
+    let debounceTimer;
+
+    // Quick hack to expose qrcode.js internal model logic for our custom canvas drawing and SVG
+    let lastQRCodeInstance = null;
+    const OriginalQRCode = window.QRCode;
+    window.QRCode = function (el, vOption) {
+      lastQRCodeInstance = new OriginalQRCode(el, vOption);
+      return lastQRCodeInstance;
+    };
+    Object.assign(window.QRCode, OriginalQRCode);
+
+    // UI Elements
+    const inputEl = document.getElementById('input');
+    const fgColorEl = document.getElementById('fgColor');
+    const bgColorEl = document.getElementById('bgColor');
+    const sizeSliderEl = document.getElementById('sizeSlider');
+    const sizeValueEl = document.getElementById('sizeValue');
+    const marginSliderEl = document.getElementById('marginSlider');
+    const marginValueEl = document.getElementById('marginValue');
+    const eccLevelEl = document.getElementById('eccLevel');
+    const charCountEl = document.getElementById('char-count');
+    const liveToggleEl = document.getElementById('liveToggle');
+    const liveLabelEl = document.getElementById('liveLabel');
+    const manualGenerateBtn = document.getElementById('manualGenerateBtn');
+
+    // Toggle handling
+    liveToggleEl.addEventListener('change', (e) => {
+      const isLive = e.target.checked;
+      liveLabelEl.textContent = isLive ? 'Live On' : 'Live Off';
+      manualGenerateBtn.style.display = isLive ? 'none' : 'block';
+      if (isLive) debouncedGenerate();
+    });
+
+    // Logo Elements
+    const logoUpload = document.getElementById('logoUpload');
+    const logoPreviewWrapper = document.getElementById('logoPreviewWrapper');
+    const logoPreview = document.getElementById('logoPreview');
+    const logoUploadPrompt = document.getElementById('logoUploadPrompt');
+    const clearLogoBtn = document.getElementById('clearLogoBtn');
+    const roundedLogoToggle = document.getElementById('roundedLogoToggle');
+    const logoScaleSlider = document.getElementById('logoScaleSlider');
+    const logoScaleValue = document.getElementById('logoScaleValue');
+    let logoImageObj = null;
+    let logoDataUrl = null;
+
+    logoUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          logoDataUrl = event.target.result;
+          logoPreview.src = logoDataUrl;
+          logoUploadPrompt.style.display = 'none';
+          logoPreviewWrapper.style.display = 'flex';
+
+          logoImageObj = new Image();
+          logoImageObj.onload = debouncedGenerate;
+          logoImageObj.src = logoDataUrl;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    clearLogoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      logoUpload.value = '';
+      logoDataUrl = null;
+      logoImageObj = null;
+      logoPreviewWrapper.style.display = 'none';
+      logoUploadPrompt.style.display = 'block';
+      debouncedGenerate();
+    });
+
+    roundedLogoToggle.addEventListener('change', debouncedGenerate);
+
+    // Update size value display
+    sizeSliderEl.addEventListener('input', (e) => {
+      sizeValueEl.textContent = `${e.target.value}px`;
+      debouncedGenerate();
+    });
+
+    // Update margin value display
+    marginSliderEl.addEventListener('input', (e) => {
+      marginValueEl.textContent = e.target.value;
+      debouncedGenerate();
+    });
+
+    // Event listeners for live generation
+    inputEl.addEventListener('input', () => {
+      charCountEl.textContent = `${inputEl.value.length} chars`;
+      debouncedGenerate();
+    });
+
+    fgColorEl.addEventListener('input', debouncedGenerate);
+    bgColorEl.addEventListener('input', debouncedGenerate);
+    eccLevelEl.addEventListener('change', debouncedGenerate);
+    roundedLogoToggle.addEventListener('change', debouncedGenerate);
+
+    logoScaleSlider.addEventListener('input', (e) => {
+      debouncedGenerate();
+    });
+
+    function debouncedGenerate() {
+      if (!liveToggleEl.checked) return;
+      clearTimeout(debounceTimer);
+      // Fast updates for colors/settings if text is small, slower if typing
+      debounceTimer = setTimeout(generate, 150);
+    }
+
+    function forceGenerate() {
+      generate();
+    }
+
+    function generate() {
+      const text = inputEl.value.trim();
+
+      const container = document.getElementById('qrcode');
+
+      if (!text) {
+        container.innerHTML = `
+          <div class="qr-placeholder" id="placeholder" style="text-align: center;">
+            <div class="orbit-wrap"></div>
+            <p style="font-size: 0.9rem; color: var(--color-gray-500);">Enter text above<br>to generate your QR code</p>
+          </div>
+        `;
+        document.getElementById('qrEncoded').style.display = 'none';
+        document.getElementById('actionsCard').style.display = 'none';
+        return;
+      }
+
+      const fg = fgColorEl.value;
+      const bg = bgColorEl.value;
+      const size = parseInt(sizeSliderEl.value, 10);
+
+      // Map dropdown value to QRCode enum
+      const eccMap = {
+        'L': QRCode.CorrectLevel.L,
+        'M': QRCode.CorrectLevel.M,
+        'Q': QRCode.CorrectLevel.Q,
+        'H': QRCode.CorrectLevel.H
+      };
+      const ecc = eccMap[eccLevelEl.value] || QRCode.CorrectLevel.H;
+
+      // Calculate effective pixel dimensions handling quiet zone scaling natively is difficult with pure qrcode.js.
+      // Easiest approach is generating it without canvas via the hacked model and drawing manually, but we can do a canvas trick:
+      // We'll generate an internal canvas, then draw it centered onto a larger canvas.
+
+      container.innerHTML = '';
+      lastText = text;
+
+      // Internal model instantiation for data tracking via hijacked instance
+      const tempDiv = document.createElement('div');
+      new QRCode(tempDiv, { text: text, correctLevel: ecc });
+      const qrcodeModel = lastQRCodeInstance._oQRCode;
+
+      const moduleCount = qrcodeModel.getModuleCount();
+      const paddingModules = parseInt(marginSliderEl.value, 10);
+      const totalModules = moduleCount + (paddingModules * 2);
+
+      const isRounded = roundedLogoToggle.checked;
+      let maxFinderScale = 40;
+      if (isRounded) {
+        const center = moduleCount / 2;
+        const distToFinder = Math.sqrt(2) * (center - 8.5);
+        const maxScaleRatio = ((distToFinder / moduleCount) - 0.02) * 2;
+        maxFinderScale = Math.floor(maxScaleRatio * 100);
+      } else {
+        const maxScaleRatio = 0.96 - (17 / moduleCount);
+        maxFinderScale = Math.floor(maxScaleRatio * 100);
+      }
+
+      let maxEccScale = 40;
+      if (ecc === QRCode.CorrectLevel.L) maxEccScale = 15;
+      else if (ecc === QRCode.CorrectLevel.M) maxEccScale = 22;
+      else if (ecc === QRCode.CorrectLevel.Q) maxEccScale = 30;
+
+      const absoluteMaxScale = Math.max(10, Math.min(maxEccScale, maxFinderScale));
+      logoScaleSlider.max = absoluteMaxScale;
+
+      let sliderVal = parseInt(logoScaleSlider.value, 10);
+      if (sliderVal > absoluteMaxScale) {
+        sliderVal = absoluteMaxScale;
+        logoScaleSlider.value = absoluteMaxScale;
+      }
+      logoScaleValue.textContent = `${sliderVal}%`;
+
+      const logoScaleRatio = sliderVal / 100;
+
+      // Calculate true pixel scale
+      const pixelPerModule = size / totalModules;
+      const innerSize = Math.floor(pixelPerModule * moduleCount);
+      const trueSize = Math.floor(pixelPerModule * totalModules); // May be slightly off from exact 'size' due to flooring
+
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Fill entire background (acting as quiet zone margin)
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, size, size);
+
+      const offsetPixels = (size - innerSize) / 2;
+
+      // Draw standard inner QR code cells
+      ctx.fillStyle = fg;
+      for (let row = 0; row < moduleCount; row++) {
+        for (let col = 0; col < moduleCount; col++) {
+          if (qrcodeModel.isDark(row, col)) {
+            const x = offsetPixels + Math.floor(col * pixelPerModule);
+            const y = offsetPixels + Math.floor(row * pixelPerModule);
+            // Use ceil for w/h to prevent sub-pixel gaps between cells
+            ctx.fillRect(x, y, Math.ceil(pixelPerModule), Math.ceil(pixelPerModule));
+          }
+        }
+      }
+
+      // If a logo is selected, we draw it onto the internally generated canvas
+      if (logoImageObj) {
+        let drawWidth = innerSize * logoScaleRatio;
+        let drawHeight = innerSize * logoScaleRatio;
+
+        const imgAspect = logoImageObj.width / logoImageObj.height;
+        let bgWidth = drawWidth;
+        let bgHeight = drawHeight;
+
+        if (!isRounded) {
+          if (imgAspect > 1) { // Wide
+            drawHeight = drawWidth / imgAspect;
+            bgHeight = drawHeight;
+          } else { // Tall
+            drawWidth = drawHeight * imgAspect;
+            bgWidth = drawWidth;
+          }
+        } else {
+          if (imgAspect > 1) { // Wide
+            drawWidth = drawHeight * imgAspect;
+          } else { // Tall
+            drawHeight = drawWidth / imgAspect;
+          }
+        }
+
+        const bgOffset = offsetPixels + (innerSize - bgWidth) / 2;
+        const bgOffsetY = offsetPixels + (innerSize - bgHeight) / 2;
+
+        const drawX = offsetPixels + (innerSize - drawWidth) / 2;
+        const drawY = offsetPixels + (innerSize - drawHeight) / 2;
+
+        const padding = innerSize * 0.02;
+
+        ctx.fillStyle = bg;
+        if (isRounded) {
+          ctx.beginPath();
+          ctx.arc(offsetPixels + innerSize / 2, offsetPixels + innerSize / 2, (bgWidth / 2) + padding, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(bgOffset - padding, bgOffsetY - padding, bgWidth + padding * 2, bgHeight + padding * 2);
+        }
+
+        // Draw logo image
+        if (isRounded) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(offsetPixels + innerSize / 2, offsetPixels + innerSize / 2, bgWidth / 2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(logoImageObj, drawX, drawY, drawWidth, drawHeight);
+          ctx.restore();
+        } else {
+          ctx.drawImage(logoImageObj, drawX, drawY, drawWidth, drawHeight);
+        }
+      }
+
+      // Convert to an img tag for responsive display
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL('image/png');
+      img.style.maxWidth = '100%';
+      // Keep canvas around hidden so download function has access to it
+      canvas.style.display = 'none';
+      container.appendChild(img);
+      container.appendChild(canvas);
+
+      const enc = document.getElementById('qrEncoded');
+      enc.textContent = text.length > 55 ? text.slice(0, 52) + '…' : text;
+      enc.style.display = 'block';
+      document.getElementById('actionsCard').style.display = 'flex';
+    }
+
+    function downloadPNG() {
+      if (!lastText) return;
+      const c = document.querySelector('#qrcode canvas');
+      if (!c) return;
+      const a = document.createElement('a');
+      a.download = 'qr-code.png';
+      a.href = c.toDataURL('image/png');
+      a.click();
+    }
+
+    // SVG uses the same logic with custom model
+    function downloadSVG() {
+      if (!lastText) return;
+
+      const eccMapLocal = {
+        'L': QRCode.CorrectLevel.L,
+        'M': QRCode.CorrectLevel.M,
+        'Q': QRCode.CorrectLevel.Q,
+        'H': QRCode.CorrectLevel.H
+      };
+      const ecc = eccMapLocal[eccLevelEl.value] || QRCode.CorrectLevel.H;
+
+      const tempDiv = document.createElement('div');
+      new QRCode(tempDiv, { text: lastText, correctLevel: ecc });
+      const qrcodeModel = lastQRCodeInstance._oQRCode;
+
+      const paddingModules = parseInt(marginSliderEl.value, 10);
+      const totalModules = rawModuleCount + (paddingModules * 2);
+
+      const isRounded = roundedLogoToggle.checked;
+      let maxFinderScale = 40;
+      if (isRounded) {
+        const center = rawModuleCount / 2;
+        const distToFinder = Math.sqrt(2) * (center - 8.5);
+        const maxScaleRatio = ((distToFinder / rawModuleCount) - 0.02) * 2;
+        maxFinderScale = Math.floor(maxScaleRatio * 100);
+      } else {
+        const maxScaleRatio = 0.96 - (17 / rawModuleCount);
+        maxFinderScale = Math.floor(maxScaleRatio * 100);
+      }
+
+      let maxEccScale = 40;
+      if (ecc === QRCode.CorrectLevel.L) maxEccScale = 15;
+      else if (ecc === QRCode.CorrectLevel.M) maxEccScale = 22;
+      else if (ecc === QRCode.CorrectLevel.Q) maxEccScale = 30;
+
+      const absoluteMaxScale = Math.max(10, Math.min(maxEccScale, maxFinderScale));
+      let sliderVal = parseInt(logoScaleSlider.value, 10);
+      if (sliderVal > absoluteMaxScale) sliderVal = absoluteMaxScale;
+
+      const logoScaleRatio = sliderVal / 100;
+
+      const size = parseInt(sizeSliderEl.value, 10);
+      const fg = fgColorEl.value;
+      const bg = bgColorEl.value;
+
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalModules} ${totalModules}" width="${size}" height="${size}">`;
+      svg += `<rect width="${totalModules}" height="${totalModules}" fill="${bg}"/>`;
+
+      // Optimize: Group rects into a single path for cleaner SVG
+      let pathD = '';
+      for (let row = 0; row < rawModuleCount; row++) {
+        for (let col = 0; col < rawModuleCount; col++) {
+          if (qrcodeModel.isDark(row, col)) {
+            pathD += `M${col + paddingModules},${row + paddingModules}h1v1h-1z `;
+          }
+        }
+      }
+      svg += `<path d="${pathD}" fill="${fg}"/>`;
+
+      // Embed logo if present
+      if (logoDataUrl) {
+        const baseLogoDim = rawModuleCount * logoScaleRatio;
+        const padding = rawModuleCount * 0.02;
+
+        const offset = paddingModules + (rawModuleCount - baseLogoDim) / 2;
+
+        if (isRounded) {
+          const cx = offset + baseLogoDim / 2;
+          const cy = offset + baseLogoDim / 2;
+          const rBG = (baseLogoDim / 2) + padding;
+          svg += `<circle cx="${cx}" cy="${cy}" r="${rBG}" fill="${bg}" />`;
+
+          const rLogo = baseLogoDim / 2;
+          const clipId = `rounded-clip-${Math.random().toString(36).substr(2, 9)}`;
+          svg += `<defs><clipPath id="${clipId}"><circle cx="${cx}" cy="${cy}" r="${rLogo}" /></clipPath></defs>`;
+          svg += `<image href="${logoDataUrl}" x="${offset}" y="${offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})" />`;
+        } else {
+          // Native width/height of image will be preserved by meet. We just provide bounding box.
+          svg += `<rect x="${offset - padding}" y="${offset - padding}" width="${baseLogoDim + padding * 2}" height="${baseLogoDim + padding * 2}" fill="${bg}" />`;
+          svg += `<image href="${logoDataUrl}" x="${offset}" y="${offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid meet" />`;
+        }
+      }
+
+      svg += `</svg>`;
+
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'qr-code.svg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function copyText() {
+      if (!lastText) return;
+      navigator.clipboard.writeText(lastText).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const st = document.getElementById('status');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check" style="margin-right: 6px;"></i> Copied';
+        st.textContent = 'Copied to clipboard';
+        setTimeout(() => { btn.innerHTML = originalContent; st.textContent = ''; }, 1800);
+      });
+    }
+  </script>
+  <script src="../js/footer.js"></script>
+  <script src="../js/back-to-top.js"></script>
+  <script src="../js/animations.js"></script>
+  <script>
+    new Footer().init('../');
+  </script>
+</body>
+
+</html>
