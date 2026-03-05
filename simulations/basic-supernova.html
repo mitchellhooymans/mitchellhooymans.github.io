@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supernova Natal Kick Simulation | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Interactive 3D WebGL visualization of a core-collapse supernova and the resulting natal kick on the black hole remnant via Newtonian momentum conservation.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Supernova Natal Kick Simulation | Mitchell Hooymans">
+    <meta property="og:description"
+        content="Interactive 3D WebGL visualization of a core-collapse supernova and the resulting natal kick on the black hole remnant.">
+    <meta property="og:image" content="../images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .content-section {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .simulation-container {
+            background: #000;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            width: 100%;
+        }
+
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 900px) {
+            .simulation-wrapper {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            max-height: 650px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .controls-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+
+        .value-display {
+            color: var(--color-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .data-readout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        .data-value {
+            font-family: monospace;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-secondary) 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-trigger {
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-trigger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(255, 71, 87, 0.5);
+        }
+
+        .btn-trigger:disabled {
+            background: #555;
+            cursor: default;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .info-card h3 {
+            color: var(--color-white);
+            margin-bottom: var(--space-3);
+            font-size: 1.1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-3);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 20;
+            transition: opacity 0.5s;
+        }
+
+        /* Full Browser Mode */
+        /* Full Browser Mode - Match globular.html exactly */
+        body.full-browser {
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        body.full-browser #navbar-placeholder,
+        body.full-browser .page-header,
+        body.full-browser #footer-placeholder,
+        body.full-browser .back-link,
+        body.full-browser .info-card {
+            display: none !important;
+        }
+
+        body.full-browser .section {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        body.full-browser .container {
+            max-width: none !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0 !important;
+        }
+
+        body.full-browser .content-section {
+            max-width: none !important;
+            margin: 0 !important;
+            height: 100% !important;
+        }
+
+        body.full-browser .simulation-wrapper {
+            grid-template-columns: 1fr !important;
+            height: 100% !important;
+            gap: 0 !important;
+        }
+
+        body.full-browser .simulation-container {
+            border-radius: 0 !important;
+            height: 100% !important;
+            border: none !important;
+        }
+
+        body.full-browser #simulationCanvas {
+            aspect-ratio: auto !important;
+            height: 100% !important;
+        }
+
+        body.full-browser .controls-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+
+    <!-- Import Map for Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <a href="javascript:history.back()" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <h1>Supernova Natal Kick</h1>
+            <p>
+                An interactive 3D simulation of a core-collapse supernova demonstrating how asymmetric mass ejection
+                imparts a natal kick to the resulting black hole via Newtonian momentum conservation.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <div class="content-section">
+                <!-- Info Card -->
+                <div class="info-card">
+                    <h3><i class="fas fa-atom"></i> Core-Collapse & Natal Kicks</h3>
+                    <p>
+                        When a massive star exhausts its nuclear fuel, the iron core collapses to form a
+                        <strong>compact remnant</strong> (neutron star or black hole). The outer layers are violently
+                        expelled in a supernova. If this ejection is <strong>asymmetric</strong>, conservation of
+                        momentum demands the remnant recoil:
+                    </p>
+                    <p style="font-size: 0.85rem; opacity: 0.9;">
+                        <strong>Kick Velocity:</strong>
+                        $\vec{v}_{\text{kick}} = -\frac{\sum m_i \vec{v}_i}{M_{\text{BH}}}$
+                        &mdash; the black hole is launched in the direction opposite to the net ejecta momentum.
+                    </p>
+                </div>
+
+                <!-- Simulation + Controls Wrapper -->
+                <div class="simulation-wrapper">
+                    <!-- Simulation Canvas -->
+                    <div class="simulation-container">
+                        <div id="loading" class="loading-overlay">Initializing Cosmos...</div>
+                        <canvas id="simulationCanvas"></canvas>
+                    </div>
+
+                    <!-- Controls Panel -->
+                    <div class="controls-panel">
+                        <div class="controls-title">
+                            <i class="fas fa-sliders-h"></i> System Parameters
+                        </div>
+
+                        <!-- ACTION BUTTONS at top -->
+                        <button id="triggerBtn" class="btn-trigger">
+                            <i class="fas fa-bolt"></i> Trigger Supernova
+                        </button>
+
+                        <button id="resetBtn" class="btn-reset">
+                            <i class="fas fa-sync-alt"></i> Reset System
+                        </button>
+
+                        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 16px 0;"></div>
+
+                        <div class="control-section">
+                            <h4>Masses</h4>
+                            <div class="control-group">
+                                <label>Progenitor Star ($M_{\star}$): <span id="starMassVal"
+                                        class="value-display">20.0</span>
+                                    $M_\odot$</label>
+                                <input type="range" id="starMassInput" min="8" max="80" step="1" value="20">
+                            </div>
+                            <div class="control-group">
+                                <label>Ejecta Mass ($M_{\text{ej}}$): <span id="ejMassVal"
+                                        class="value-display">15.0</span>
+                                    $M_\odot$</label>
+                                <input type="range" id="ejMassInput" min="1" max="70" step="0.5" value="15">
+                            </div>
+                            <div class="control-group" style="margin-top:4px;">
+                                <label style="color: rgba(255,255,255,0.5); font-size:0.8rem;">Remnant BH Mass:
+                                    <span id="bhMassDerived" class="value-display">5.0</span> $M_\odot$</label>
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Asymmetry Bias</h4>
+                            <div class="control-group">
+                                <label>X Bias: <span id="biasXVal" class="value-display">1.5</span></label>
+                                <input type="range" id="biasXInput" min="-3" max="3" step="0.1" value="1.5">
+                            </div>
+                            <div class="control-group">
+                                <label>Y Bias: <span id="biasYVal" class="value-display">0.5</span></label>
+                                <input type="range" id="biasYInput" min="-3" max="3" step="0.1" value="0.5">
+                            </div>
+                            <div class="control-group">
+                                <label>Z Bias: <span id="biasZVal" class="value-display">0.0</span></label>
+                                <input type="range" id="biasZInput" min="-3" max="3" step="0.1" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-section">
+                            <h4>Simulation</h4>
+                            <div class="control-group">
+                                <label>Time Speed: <span id="timeSpeedVal" class="value-display">1.0</span>x</label>
+                                <input type="range" id="timeSpeedInput" min="0.1" max="5" step="0.1" value="1">
+                            </div>
+
+                            <div class="data-readout">
+                                <div class="data-item">
+                                    <span class="data-label">Phase</span>
+                                    <span class="data-value" id="phaseVal">Pre-collapse</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">BH Velocity</span>
+                                    <span class="data-value" id="bhVelVal">0.00 km/s</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Kick Direction</span>
+                                    <span class="data-value" id="kickDirVal">—</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Total Momentum</span>
+                                    <span class="data-value" id="totalMomVal">0.000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="fullBrowserBtn" class="btn-secondary">
+                            <i class="fas fa-expand"></i> Full Browser
+                        </button>
+
+                        <p
+                            style="margin-top: 15px; font-size: 0.75rem; color: rgba(255,255,255,0.5); text-align: center;">
+                            Space: Trigger &bull; R: Reset &bull; Drag: Orbit
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+    <script src="../js/footer.js"></script>
+    <script>new Footer().init('../');</script>
+
+    <!-- Simulation Script -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // ============================================================
+        //  CONFIGURATION & STATE
+        // ============================================================
+        const PARTICLE_COUNT = 15000;
+        const VELOCITY_SCALE = 200; // visual km/s per internal unit
+
+        const params = {
+            starMass: 20.0,
+            ejectaMass: 15.0,
+            biasX: 1.5,
+            biasY: 0.5,
+            biasZ: 0.0,
+            timeSpeed: 1.0,
+        };
+
+        // BH mass is derived: M_BH = M_star - M_ejecta
+        function getBHMass() {
+            return Math.max(0.5, params.starMass - params.ejectaMass);
+        }
+
+        const state = {
+            isExploded: false,
+            isCollapsing: false,
+            collapseTime: 0,
+            collapseDuration: 1.2,
+            elapsedSinceExplosion: 0,
+            bhVelocity: new THREE.Vector3(),
+            totalEjectaMomentum: new THREE.Vector3(),
+            shakeIntensity: 0,
+            shakeTime: 0,
+            bloomTarget: 0.3,
+        };
+
+        // ============================================================
+        //  DOM ELEMENTS
+        // ============================================================
+        const container = document.querySelector('.simulation-container');
+        const canvas = document.getElementById('simulationCanvas');
+        const loading = document.getElementById('loading');
+
+        const uiEls = {
+            starMass: document.getElementById('starMassInput'),
+            starMassVal: document.getElementById('starMassVal'),
+            ejMass: document.getElementById('ejMassInput'),
+            ejMassVal: document.getElementById('ejMassVal'),
+            bhMassDerived: document.getElementById('bhMassDerived'),
+            biasX: document.getElementById('biasXInput'),
+            biasXVal: document.getElementById('biasXVal'),
+            biasY: document.getElementById('biasYInput'),
+            biasYVal: document.getElementById('biasYVal'),
+            biasZ: document.getElementById('biasZInput'),
+            biasZVal: document.getElementById('biasZVal'),
+            timeSpeed: document.getElementById('timeSpeedInput'),
+            timeSpeedVal: document.getElementById('timeSpeedVal'),
+            phaseVal: document.getElementById('phaseVal'),
+            bhVelVal: document.getElementById('bhVelVal'),
+            kickDirVal: document.getElementById('kickDirVal'),
+            totalMomVal: document.getElementById('totalMomVal'),
+            triggerBtn: document.getElementById('triggerBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            fullBrowserBtn: document.getElementById('fullBrowserBtn'),
+        };
+
+        // Update derived BH mass display
+        function updateBHMassDisplay() {
+            uiEls.bhMassDerived.textContent = getBHMass().toFixed(1);
+        }
+
+        // Slider bindings
+        function bindSlider(input, display, key, decimals = 1, onChange) {
+            input.addEventListener('input', () => {
+                params[key] = parseFloat(input.value);
+                display.textContent = params[key].toFixed(decimals);
+                if (onChange) onChange();
+            });
+        }
+        bindSlider(uiEls.starMass, uiEls.starMassVal, 'starMass', 0, updateBHMassDisplay);
+        bindSlider(uiEls.ejMass, uiEls.ejMassVal, 'ejectaMass', 1, updateBHMassDisplay);
+        bindSlider(uiEls.biasX, uiEls.biasXVal, 'biasX');
+        bindSlider(uiEls.biasY, uiEls.biasYVal, 'biasY');
+        bindSlider(uiEls.biasZ, uiEls.biasZVal, 'biasZ');
+        bindSlider(uiEls.timeSpeed, uiEls.timeSpeedVal, 'timeSpeed');
+
+        // ============================================================
+        //  THREE.JS SETUP
+        // ============================================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020617);
+
+        const camera = new THREE.PerspectiveCamera(
+            65, canvas.clientWidth / canvas.clientHeight, 0.1, 2000
+        );
+        camera.position.set(0, 12, 35);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // No tone mapping — shaders output final color directly, bloom handles HDR
+        renderer.toneMapping = THREE.NoToneMapping;
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 0, 0);
+
+        // Post-processing
+        const composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(canvas.clientWidth, canvas.clientHeight),
+            0.6,   // strength
+            0.4,   // radius
+            0.85   // threshold
+        );
+        composer.addPass(bloomPass);
+
+        // ============================================================
+        //  BACKGROUND STARFIELD
+        // ============================================================
+        function createStarfield() {
+            const count = 3000;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+            const col = new Float32Array(count * 3);
+            const c = new THREE.Color();
+            for (let i = 0; i < count; i++) {
+                const r = 200 + Math.random() * 600;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                pos[i * 3 + 2] = r * Math.cos(phi);
+                c.setHSL(0.55 + Math.random() * 0.15, 0.3 + Math.random() * 0.4, 0.5 + Math.random() * 0.5);
+                col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+            }
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+            const mat = new THREE.PointsMaterial({ size: 0.6, vertexColors: true, transparent: true, opacity: 0.9 });
+            scene.add(new THREE.Points(geo, mat));
+        }
+        createStarfield();
+
+        // ============================================================
+        //  PROGENITOR STAR — Procedural Canvas Texture
+        // ============================================================
+        // Create a canvas for dynamic turbulent texture
+        const starTexCanvas = document.createElement('canvas');
+        starTexCanvas.width = 256;
+        starTexCanvas.height = 256;
+        const starTexCtx = starTexCanvas.getContext('2d');
+        const starTexture = new THREE.CanvasTexture(starTexCanvas);
+
+        // Simple seeded pseudo-random for deterministic noise
+        function seededRandom(x, y) {
+            const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+            return n - Math.floor(n);
+        }
+
+        // Paint the star texture each frame
+        function updateStarTexture(time) {
+            const w = starTexCanvas.width;
+            const h = starTexCanvas.height;
+            const cx = w / 2, cy = h / 2;
+            const imgData = starTexCtx.createImageData(w, h);
+            const data = imgData.data;
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const dx = (x - cx) / cx;
+                    const dy = (y - cy) / cy;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    // Turbulence: layered sin waves
+                    const nx = x * 0.03 + time * 0.4;
+                    const ny = y * 0.03 + time * 0.3;
+                    const turb = 0.5
+                        + 0.25 * Math.sin(nx * 3.0 + Math.sin(ny * 2.0))
+                        + 0.15 * Math.sin(nx * 7.0 - time * 1.2)
+                        + 0.10 * Math.sin(ny * 5.0 + time * 0.8);
+
+                    // Limb darkening: bright center, darker edges
+                    const limb = Math.max(0, 1.0 - dist * 0.6);
+
+                    // Blue supergiant color ramp
+                    const t = Math.max(0, Math.min(1, turb));
+                    // Base: deep blue [25, 65, 200] → cyan [100, 210, 255] → white [230, 240, 255]
+                    let r, g, b;
+                    if (t < 0.5) {
+                        const s = t * 2;
+                        r = 25 + s * 75;
+                        g = 65 + s * 145;
+                        b = 200 + s * 55;
+                    } else {
+                        const s = (t - 0.5) * 2;
+                        r = 100 + s * 130;
+                        g = 210 + s * 30;
+                        b = 255;
+                    }
+
+                    // Apply limb darkening and brightness
+                    const brightness = limb * 1.3;
+                    const idx = (y * w + x) * 4;
+                    data[idx] = Math.min(255, r * brightness);
+                    data[idx + 1] = Math.min(255, g * brightness);
+                    data[idx + 2] = Math.min(255, b * brightness);
+                    data[idx + 3] = 255;
+                }
+            }
+            starTexCtx.putImageData(imgData, 0, 0);
+            starTexture.needsUpdate = true;
+        }
+
+        // Initial paint
+        updateStarTexture(0);
+
+        const starMaterial = new THREE.MeshBasicMaterial({ map: starTexture });
+        const starGeometry = new THREE.SphereGeometry(5, 48, 48);
+        const progenitorStar = new THREE.Mesh(starGeometry, starMaterial);
+        scene.add(progenitorStar);
+
+        // Track time for texture animation (throttled)
+        let lastTexUpdate = 0;
+        const TEX_UPDATE_INTERVAL = 1 / 15; // 15fps for texture updates (perf)
+
+        // Glow shell — simple additive blue sphere (no custom shader)
+        const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x3366ff,
+            transparent: true,
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.BackSide,
+        });
+        const glowMesh = new THREE.Mesh(new THREE.SphereGeometry(6.5, 32, 32), glowMaterial);
+        scene.add(glowMesh);
+
+        // ============================================================
+        //  BLACK HOLE REMNANT — FRESNEL LENSING SHADER
+        // ============================================================
+        const bhVertexShader = `
+            varying vec3 vNormal;
+            varying vec3 vViewPosition;
+            void main() {
+                vNormal = normalize(normalMatrix * normal);
+                vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+                vViewPosition = -mvPos.xyz;
+                gl_Position = projectionMatrix * mvPos;
+            }
+        `;
+        const bhFragmentShader = `
+            varying vec3 vNormal;
+            varying vec3 vViewPosition;
+            void main() {
+                vec3 normal = normalize(vNormal);
+                vec3 viewDir = normalize(vViewPosition);
+                float fresnel = 1.0 - dot(viewDir, normal);
+                fresnel = clamp(fresnel, 0.0, 1.0);
+                fresnel = pow(fresnel, 4.0);
+                // Subtle blue-white edge to simulate photon ring / lensing
+                vec3 edgeColor = vec3(0.4, 0.6, 1.0);
+                vec3 color = edgeColor * fresnel * 3.0;
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+        const bhMaterial = new THREE.ShaderMaterial({
+            vertexShader: bhVertexShader,
+            fragmentShader: bhFragmentShader,
+        });
+        const blackHole = new THREE.Mesh(new THREE.SphereGeometry(1.5, 32, 32), bhMaterial);
+        blackHole.visible = false;
+        scene.add(blackHole);
+
+
+        // ============================================================
+        //  EJECTA PARTICLE SYSTEM
+        // ============================================================
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(PARTICLE_COUNT * 3);
+        const particleColors = new Float32Array(PARTICLE_COUNT * 3);
+        const particleAlphas = new Float32Array(PARTICLE_COUNT);
+        const particleVelocities = new Float32Array(PARTICLE_COUNT * 3);
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+            size: 0.35,
+            vertexColors: true,
+            transparent: true,
+            opacity: 1.0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            sizeAttenuation: true,
+        });
+
+        const particles = new THREE.Points(particleGeo, particleMat);
+        particles.visible = false;
+        scene.add(particles);
+
+        // ============================================================
+        //  FLASH SPHERE (shock breakout flash)
+        // ============================================================
+        const flashGeo = new THREE.SphereGeometry(1, 32, 32);
+        const flashMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+        });
+        const flashSphere = new THREE.Mesh(flashGeo, flashMat);
+        scene.add(flashSphere);
+
+        // ============================================================
+        //  LIGHTING
+        // ============================================================
+        scene.add(new THREE.AmbientLight(0x222244, 0.5));
+        const pointLight = new THREE.PointLight(0x6699ff, 3, 80);
+        scene.add(pointLight);
+
+        // ============================================================
+        //  EXPLOSION LOGIC
+        // ============================================================
+        function triggerSupernova() {
+            if (state.isExploded || state.isCollapsing) return;
+            // Phase 1: Collapse / Implosion
+            state.isCollapsing = true;
+            state.collapseTime = 0;
+            uiEls.phaseVal.textContent = 'Core Collapse';
+            uiEls.triggerBtn.disabled = true;
+            uiEls.triggerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Collapsing...';
+
+            // Bloom ramp during collapse
+            state.bloomTarget = 1.5;
+        }
+
+        // Phase 2: Shock breakout — called when collapse completes
+        function detonateSupernova() {
+            state.isCollapsing = false;
+            state.isExploded = true;
+            state.elapsedSinceExplosion = 0;
+
+            // Hide progenitor
+            progenitorStar.visible = false;
+            glowMesh.visible = false;
+
+            // Show black hole at origin
+            blackHole.visible = true;
+            blackHole.position.set(0, 0, 0);
+
+            // Generate ejecta with asymmetric velocities
+            const massPerParticle = params.ejectaMass / PARTICLE_COUNT;
+            const maxSpeed = 2.5;
+            const bias = new THREE.Vector3(params.biasX, params.biasY, params.biasZ);
+            const totalMomentum = new THREE.Vector3();
+            const tempColor = new THREE.Color();
+
+            // Vibrant supernova color palette
+            const snColors = [
+                new THREE.Color(0.2, 0.6, 1.0),   // electric blue
+                new THREE.Color(0.4, 0.9, 1.0),   // cyan
+                new THREE.Color(1.0, 0.3, 0.7),   // hot magenta
+                new THREE.Color(1.0, 0.6, 0.1),   // amber gold
+                new THREE.Color(0.7, 0.3, 1.0),   // violet
+                new THREE.Color(0.1, 1.0, 0.6),   // teal
+                new THREE.Color(1.0, 0.9, 0.4),   // warm yellow
+                new THREE.Color(1.0, 0.1, 0.3),   // crimson
+                new THREE.Color(0.9, 0.95, 1.0),  // white-hot
+            ];
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                // Start near core (tight cluster)
+                particlePositions[i * 3] = (Math.random() - 0.5) * 1.5;
+                particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 1.5;
+                particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
+
+                // Random direction + asymmetry bias
+                let vx = (Math.random() - 0.5) * 2.0 + bias.x;
+                let vy = (Math.random() - 0.5) * 2.0 + bias.y;
+                let vz = (Math.random() - 0.5) * 2.0 + bias.z;
+
+                const speed = Math.random() * maxSpeed + 0.3;
+                const len = Math.sqrt(vx * vx + vy * vy + vz * vz) || 1;
+                vx = (vx / len) * speed;
+                vy = (vy / len) * speed;
+                vz = (vz / len) * speed;
+
+                particleVelocities[i * 3] = vx;
+                particleVelocities[i * 3 + 1] = vy;
+                particleVelocities[i * 3 + 2] = vz;
+
+                // Accumulate momentum
+                totalMomentum.x += massPerParticle * vx;
+                totalMomentum.y += massPerParticle * vy;
+                totalMomentum.z += massPerParticle * vz;
+
+                // Assign vibrant color — mix speed-based and random palette
+                const t = speed / (maxSpeed + 0.3);
+                const baseColor = snColors[Math.floor(Math.random() * snColors.length)];
+                // Hotter (faster) particles shift toward white
+                if (t > 0.75) {
+                    tempColor.copy(baseColor).lerp(new THREE.Color(1.0, 0.95, 1.0), (t - 0.75) * 4.0);
+                } else {
+                    tempColor.copy(baseColor);
+                }
+                particleColors[i * 3] = tempColor.r;
+                particleColors[i * 3 + 1] = tempColor.g;
+                particleColors[i * 3 + 2] = tempColor.b;
+
+                particleAlphas[i] = 1.0;
+            }
+
+            particleGeo.attributes.position.needsUpdate = true;
+            particleGeo.attributes.color.needsUpdate = true;
+            particles.visible = true;
+
+            // Conservation of momentum: V_bh = -P_ejecta / M_bh
+            state.totalEjectaMomentum.copy(totalMomentum);
+            state.bhVelocity.copy(totalMomentum).multiplyScalar(-1.0 / getBHMass());
+
+            // Camera shake — removed to keep angle stable
+
+            // Bloom spike
+            state.bloomTarget = 3.0;
+
+            // Flash
+            flashSphere.scale.set(1, 1, 1);
+            flashMat.opacity = 1.0;
+
+            // Point light boost
+            pointLight.intensity = 20;
+            pointLight.color.setHex(0xccddff);
+
+            // Update UI
+            updateDataReadout();
+
+            uiEls.triggerBtn.innerHTML = '<i class="fas fa-check"></i> Detonated';
+        }
+
+        function resetSystem() {
+            state.isExploded = false;
+            state.isCollapsing = false;
+            state.collapseTime = 0;
+            state.elapsedSinceExplosion = 0;
+            state.bhVelocity.set(0, 0, 0);
+            state.totalEjectaMomentum.set(0, 0, 0);
+            state.shakeIntensity = 0;
+            state.bloomTarget = 0.6;
+
+            // Restore star
+            progenitorStar.visible = true;
+            progenitorStar.position.set(0, 0, 0);
+            progenitorStar.scale.setScalar(1);
+            glowMesh.visible = true;
+            glowMesh.position.set(0, 0, 0);
+            glowMesh.scale.setScalar(1.3);
+
+            // Hide explosion remnants
+            blackHole.visible = false;
+            particles.visible = false;
+            flashMat.opacity = 0;
+            flashSphere.scale.set(1, 1, 1);
+
+            // Reset light
+            pointLight.intensity = 3;
+            pointLight.color.setHex(0x6699ff);
+
+            // Reset particle opacity
+            particleMat.opacity = 1.0;
+
+            // Reset UI
+            uiEls.triggerBtn.disabled = false;
+            uiEls.triggerBtn.innerHTML = '<i class="fas fa-bolt"></i> Trigger Supernova';
+            uiEls.phaseVal.textContent = 'Pre-collapse';
+            uiEls.bhVelVal.textContent = '0.00 km/s';
+            uiEls.kickDirVal.textContent = '—';
+            uiEls.totalMomVal.textContent = '0.000';
+
+            // Reset camera
+            camera.position.set(0, 12, 35);
+            controls.target.set(0, 0, 0);
+        }
+
+        function updateDataReadout() {
+            const speed = state.bhVelocity.length() * VELOCITY_SCALE;
+            uiEls.bhVelVal.textContent = speed.toFixed(1) + ' km/s';
+
+            // Kick direction
+            const dir = state.bhVelocity.clone().normalize();
+            if (state.bhVelocity.length() > 0.001) {
+                uiEls.kickDirVal.textContent = `(${dir.x.toFixed(2)}, ${dir.y.toFixed(2)}, ${dir.z.toFixed(2)})`;
+            }
+
+            // Total system momentum (should be ~0)
+            // P_total = P_ejecta + P_bh = P_ejecta + M_bh * V_bh
+            // By construction this is 0, but we compute it to prove conservation
+            const bhMom = state.bhVelocity.clone().multiplyScalar(getBHMass());
+            const totalP = state.totalEjectaMomentum.clone().add(bhMom);
+            uiEls.totalMomVal.textContent = totalP.length().toFixed(6);
+        }
+
+        // ============================================================
+        //  EVENT LISTENERS
+        // ============================================================
+        uiEls.triggerBtn.addEventListener('click', triggerSupernova);
+        uiEls.resetBtn.addEventListener('click', resetSystem);
+
+        uiEls.fullBrowserBtn.addEventListener('click', () => {
+            document.body.classList.toggle('full-browser');
+            if (document.body.classList.contains('full-browser')) {
+                uiEls.fullBrowserBtn.innerHTML = '<i class="fas fa-compress"></i> Exit Full Screen';
+            } else {
+                uiEls.fullBrowserBtn.innerHTML = '<i class="fas fa-expand"></i> Full Browser';
+            }
+            requestAnimationFrame(() => handleResize());
+        });
+
+        // Escape key exits full browser
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Escape' && document.body.classList.contains('full-browser')) {
+                uiEls.fullBrowserBtn.click();
+            }
+        });
+
+        // ============================================================
+        //  ANIMATION LOOP
+        // ============================================================
+        const clock = new THREE.Clock();
+        let cameraBasePosition = new THREE.Vector3();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const rawDt = clock.getDelta();
+            const dt = rawDt * params.timeSpeed;
+            const elapsed = clock.getElapsedTime();
+
+            // Update star canvas texture (throttled for perf)
+            if (elapsed - lastTexUpdate > TEX_UPDATE_INTERVAL) {
+                updateStarTexture(elapsed);
+                lastTexUpdate = elapsed;
+            }
+
+            // ---- PRE-EXPLOSION: animate star ----
+            if (!state.isExploded && !state.isCollapsing) {
+                // Subtle pulsation
+                const scale = 1.0 + Math.sin(elapsed * 1.2) * 0.03;
+                progenitorStar.scale.setScalar(scale);
+                glowMesh.scale.setScalar(scale * 1.3);
+                progenitorStar.rotation.y += rawDt * 0.05;
+            }
+
+            // ---- COLLAPSE / IMPLOSION PHASE ----
+            if (state.isCollapsing) {
+                state.collapseTime += rawDt;
+                const t = state.collapseTime / state.collapseDuration;
+
+                if (t < 1.0) {
+                    // Star shrinks dramatically — implosion
+                    // Ease-in curve: slow start, rapid collapse at end
+                    const ease = t * t * t;
+                    const scale = Math.max(0.05, 1.0 - ease * 0.95);
+                    progenitorStar.scale.setScalar(scale);
+                    glowMesh.scale.setScalar(scale * 1.3);
+
+                    // Star heats up: shift light toward white as it compresses
+                    const heatT = Math.min(1.0, t * 1.5);
+                    pointLight.intensity = 3 + heatT * 10;
+
+                    // Slight camera rumble during collapse
+                    if (t > 0.5) {
+                        state.shakeIntensity = Math.max(state.shakeIntensity, 0.15);
+                        state.shakeTime = 0;
+                    }
+                } else {
+                    // Collapse complete → shock breakout!
+                    detonateSupernova();
+                }
+            }
+
+            // ---- POST-EXPLOSION ----
+            if (state.isExploded) {
+                state.elapsedSinceExplosion += dt;
+
+                // Phase label
+                if (state.elapsedSinceExplosion < 0.5) {
+                    uiEls.phaseVal.textContent = 'Shock Breakout';
+                } else if (state.elapsedSinceExplosion < 8) {
+                    uiEls.phaseVal.textContent = 'Free Expansion';
+                } else {
+                    uiEls.phaseVal.textContent = 'Coasting';
+                }
+
+                // Move particles
+                const positions = particleGeo.attributes.position.array;
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    positions[i * 3] += particleVelocities[i * 3] * dt;
+                    positions[i * 3 + 1] += particleVelocities[i * 3 + 1] * dt;
+                    positions[i * 3 + 2] += particleVelocities[i * 3 + 2] * dt;
+                }
+                particleGeo.attributes.position.needsUpdate = true;
+
+                // Fade particles
+                if (particleMat.opacity > 0.01) {
+                    particleMat.opacity = Math.max(0, particleMat.opacity - rawDt * 0.06);
+                }
+
+                // Move black hole with kick
+                blackHole.position.addScaledVector(state.bhVelocity, dt);
+
+                // Flash expansion & fade
+                if (flashMat.opacity > 0) {
+                    const flashScale = flashSphere.scale.x + rawDt * 60;
+                    flashSphere.scale.setScalar(flashScale);
+                    flashMat.opacity = Math.max(0, flashMat.opacity - rawDt * 2.5);
+                }
+
+                // Light decay back to ambient
+                if (pointLight.intensity > 3) {
+                    pointLight.intensity = Math.max(3, pointLight.intensity - rawDt * 8);
+                }
+            }
+
+
+            // ---- BLOOM TRANSITION ----
+            const bloomDiff = state.bloomTarget - bloomPass.strength;
+            bloomPass.strength += bloomDiff * rawDt * 3;
+            if (state.isExploded && state.elapsedSinceExplosion > 0.5) {
+                state.bloomTarget = 0.3;
+            }
+
+            controls.update();
+            composer.render();
+        }
+
+        // ============================================================
+        //  RESIZE HANDLER
+        // ============================================================
+        function handleResize() {
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+            if (w === 0 || h === 0) return;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h, false);
+            composer.setSize(w, h);
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        // Defer initial sizing to next frame so CSS layout is settled
+        requestAnimationFrame(() => {
+            handleResize();
+            loading.style.opacity = '0';
+            setTimeout(() => loading.style.display = 'none', 500);
+        });
+
+        // Keyboard shortcut: space to trigger
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !state.isExploded && !state.isCollapsing) {
+                e.preventDefault();
+                triggerSupernova();
+            }
+            if (e.code === 'KeyR') {
+                resetSystem();
+            }
+        });
+
+        animate();
+    </script>
+</body>
+
+</html>
