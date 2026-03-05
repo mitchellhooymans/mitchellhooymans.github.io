@@ -111,7 +111,7 @@
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://mitchellhooymans.com/simulations/kick-estimator.html</loc>
+  <loc>https://mitchellhooymans.com/tools/kick-estimator.html</loc>
   <lastmod>2026-02-20T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
@@ -123,6 +123,16 @@
 <url>
   <loc>https://mitchellhooymans.com/documents/cv.pdf</loc>
   <lastmod>2026-02-20T12:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/pages/tools.html</loc>
+  <lastmod>2026-03-05T12:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchellhooymans.com/tools/qr.html</loc>
+  <lastmod>2026-03-05T12:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 
