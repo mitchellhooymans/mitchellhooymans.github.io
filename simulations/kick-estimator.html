@@ -375,6 +375,7 @@
         const SIGMA_NS = 265.0; // Hobbs et al. 2005
         const V_MAX = 1500;
         const POINTS = 1000;
+        const Y_MAX = 0.006; // Fixed y-axis max (accommodates NS peak ~0.0022 with headroom)
 
         // --- Math Functions ---
 
@@ -461,7 +462,7 @@
             plot_bgcolor: 'rgba(0,0,0,0)',
             xaxis: {
                 title: { text: 'Natal Kick Velocity (km/s)', font: { size: 14, color: '#cbd5e1' }, standoff: 20 },
-                range: [0, 1000],
+                range: [0, V_MAX],
                 fixedrange: true,
                 gridcolor: 'rgba(255,255,255,0.1)',
                 tickfont: { size: 12, color: '#94a3b8' },
@@ -469,7 +470,7 @@
             },
             yaxis: {
                 title: { text: 'Probability Density P(v)', font: { size: 14, color: '#cbd5e1' }, standoff: 20 },
-                range: [0, 0.008],
+                range: [0, Y_MAX],
                 fixedrange: true,
                 gridcolor: 'rgba(255,255,255,0.1)',
                 tickfont: { size: 12, color: '#94a3b8' },
@@ -545,7 +546,7 @@
                 x0: v_esc,
                 y0: 0,
                 x1: v_esc,
-                y1: 0.02, // Extend high enough
+                y1: Y_MAX,
                 line: {
                     color: '#fbbf24', // Amber for escape velocity
                     width: 2,
@@ -553,18 +554,10 @@
                 }
             }];
 
-            // Dynamic Y-axis
-            const peak_prob = maxwellian(peak_vel, data.sigma_bh);
-            const new_layout = {
-                ...layout,
-                shapes: shapes,
-                yaxis: {
-                    ...layout.yaxis,
-                    range: [0, Math.max(0.005, peak_prob * 1.1)]
-                }
-            };
+            // Fixed axes — shapes update only
+            const updatedLayout = { ...layout, shapes: shapes };
 
-            Plotly.react('plot', [traceNS, traceRetention, traceBH], new_layout, config);
+            Plotly.react('plot', [traceNS, traceRetention, traceBH], updatedLayout, config);
         }
 
         // --- Event Listeners ---
