@@ -283,28 +283,28 @@
         }
 
         .info-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 4px solid var(--color-accent);
-            border-radius: var(--radius-lg);
-            padding: var(--space-4);
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
             margin-bottom: var(--space-6);
         }
 
         .info-card h3 {
-            margin-bottom: var(--space-2);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             color: var(--color-white);
+            margin-bottom: var(--space-3);
+            font-size: 1.1rem;
         }
 
         .info-card p {
-            font-size: 0.95rem;
-            color: var(--color-gray-300);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-3);
             line-height: 1.6;
-            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .info-card p:last-child {
+            margin-bottom: 0;
         }
 
         /* Full Browser Mode */
@@ -314,9 +314,9 @@
             width: 100vw;
         }
 
-        body.full-browser .nav,
+        body.full-browser #navbar-placeholder,
         body.full-browser .page-header,
-        body.full-browser .footer,
+        body.full-browser #footer-placeholder,
         body.full-browser .back-link,
         body.full-browser .info-card {
             display: none !important;
@@ -349,6 +349,7 @@
         body.full-browser .simulation-container {
             border-radius: 0 !important;
             height: 100% !important;
+            border: none !important;
         }
 
         body.full-browser #simulationCanvas {
@@ -408,7 +409,7 @@
             <div class="content-section">
                 <!-- Info Card -->
                 <div class="info-card">
-                    <h3><i class="fas fa-info-circle"></i> Understanding Projectile Motion</h3>
+                    <h3>Understanding Projectile Motion</h3>
                     <p>
                         Projectile motion is the motion of an object thrown or projected into the air, subject to only
                         the acceleration of gravity.

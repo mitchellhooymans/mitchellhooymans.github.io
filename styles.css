@@ -535,37 +535,35 @@ p {
 .category-badge.beginner {
     background: rgba(72, 187, 120, 0.15);
     color: #48bb78;
+    border: 1px solid rgba(72, 187, 120, 0.3);
 }
 
 .category-badge.intermediate {
     background: rgba(237, 137, 54, 0.15);
     color: #ed8936;
+    border: 1px solid rgba(237, 137, 54, 0.2);
+    box-shadow: 0 0 10px rgba(237, 137, 54, 0.2);
 }
 
 .category-badge.advanced {
-    background: rgba(245, 101, 101, 0.15);
+    background: rgba(245, 101, 101, 0.25);
     color: #f56565;
+    border: 1px solid rgba(245, 101, 101, 0.4);
+    box-shadow: 0 0 15px rgba(245, 101, 101, 0.4);
 }
 
-.category-badge.orbital {
+.category-badge.astrophysics {
     background: rgba(56, 189, 248, 0.15);
     color: #38bdf8;
     box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
     border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
-.category-badge.chaos {
+.category-badge.classical-mechanics {
     background: rgba(167, 139, 250, 0.15);
     color: #a78bfa;
     box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
     border: 1px solid rgba(167, 139, 250, 0.2);
-}
-
-.category-badge.kinematics {
-    background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
-    box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
-    border: 1px solid rgba(52, 211, 153, 0.2);
 }
 
 .category-badge.utility {
