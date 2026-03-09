@@ -389,9 +389,9 @@
             width: 100vw;
         }
 
-        body.full-browser .nav,
+        body.full-browser #navbar-placeholder,
         body.full-browser .page-header,
-        body.full-browser .footer,
+        body.full-browser #footer-placeholder,
         body.full-browser .back-link,
         body.full-browser .info-card {
             display: none !important;
@@ -424,6 +424,7 @@
         body.full-browser .simulation-container {
             border-radius: 0 !important;
             height: 100% !important;
+            border: none !important;
         }
 
         body.full-browser #simulationCanvas {
@@ -493,7 +494,7 @@
             <div class="content-section">
                 <!-- Info Card -->
                 <div class="info-card">
-                    <h3><i class="fas fa-star"></i> About This Simulation</h3>
+                    <h3>About This Simulation</h3>
                     <p>
                         Watch two bodies orbit their common <strong>centre of mass</strong> (marked with a +).
                         This is a top-down view of a gravitational system. Both bodies move — the heavier one
