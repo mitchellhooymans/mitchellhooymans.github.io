@@ -477,48 +477,87 @@
         </div>
 
         <div class="qr-card card-logo" style="display: flex; flex-direction: column;">
-          <div class="qr-card-label">04 — Branding</div>
+          <div class="qr-card-label">04 — Branding &amp; Text</div>
           <div style="display: flex; flex-direction: column; gap: var(--space-4); flex-grow: 1;">
-            <label style="color: var(--color-gray-400); font-size: 0.9rem;">Upload Center Logo <span
-                style="font-size: 0.75rem; float: right;">(Optional)</span></label>
-            <div
-              style="position: relative; flex-grow: 1; min-height: 120px; border: 2px dashed rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2);">
-              <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/svg+xml"
-                style="position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10;" />
-              <div id="logoPreviewWrapper"
-                style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,0.4);">
-                <img id="logoPreview"
-                  style="max-width: 60%; max-height: 60%; object-fit: contain; pointer-events: none;" />
-                <button id="clearLogoBtn"
-                  style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; transition: all 0.2s;"><i
-                    class="fas fa-times"></i></button>
-              </div>
-              <div id="logoUploadPrompt"
-                style="text-align: center; color: var(--color-gray-500); padding: var(--space-4); pointer-events: none;">
-                <i class="fas fa-image"
-                  style="font-size: 1.5rem; margin-bottom: 8px; color: var(--color-accent);"></i><br>
-                <span style="font-size: 0.8rem;">Click or drag image</span>
-              </div>
-            </div>
-            <div class="settings-row" style="margin-top: auto;">
-              <div class="settings-label">
-                <span>Logo Scale</span>
-                <span class="settings-value" id="logoScaleValue">22%</span>
-              </div>
-              <input type="range" id="logoScaleSlider" class="range-slider" min="10" max="40" step="1" value="22">
-            </div>
-            <div
-              style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-2); flex-wrap: wrap; gap: 8px;">
-              <p style="font-size: 0.75rem; color: var(--color-gray-500); margin: 0; max-width: 65%;">Max scale is based
-                on Error Correction.</p>
-              <label class="toggle-wrapper" title="Apply a circular mask to the logo">
-                <div class="toggle-switch">
-                  <input type="checkbox" id="roundedLogoToggle" checked>
-                  <span class="toggle-slider"></span>
+            
+            <!-- Logo Section -->
+            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <label style="color: var(--color-gray-400); font-size: 0.9rem;">Center Logo <span
+                  style="font-size: 0.75rem; float: right;">(Optional)</span></label>
+              <div
+                style="position: relative; flex-grow: 1; min-height: 100px; border: 2px dashed rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2);">
+                <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/svg+xml"
+                  style="position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10;" />
+                <div id="logoPreviewWrapper"
+                  style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,0.4);">
+                  <img id="logoPreview"
+                    style="max-width: 60%; max-height: 60%; object-fit: contain; pointer-events: none;" />
+                  <button id="clearLogoBtn"
+                    style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; transition: all 0.2s;"><i
+                      class="fas fa-times"></i></button>
                 </div>
-                <span class="toggle-label" style="font-size: 0.75rem;">Rounded</span>
-              </label>
+                <div id="logoUploadPrompt"
+                  style="text-align: center; color: var(--color-gray-500); padding: var(--space-4); pointer-events: none;">
+                  <i class="fas fa-image"
+                    style="font-size: 1.5rem; margin-bottom: 8px; color: var(--color-accent);"></i><br>
+                  <span style="font-size: 0.8rem;">Click or drag image</span>
+                </div>
+              </div>
+              <div class="settings-row" style="margin-top: var(--space-2);">
+                <div class="settings-label">
+                  <span>Logo Scale</span>
+                  <span class="settings-value" id="logoScaleValue">22%</span>
+                </div>
+                <input type="range" id="logoScaleSlider" class="range-slider" min="10" max="40" step="1" value="22">
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; flex-wrap: wrap; gap: 8px;">
+                <p style="font-size: 0.75rem; color: var(--color-gray-500); margin: 0; max-width: 65%;">Max scale is based
+                  on Error Correction.</p>
+                <label class="toggle-wrapper" title="Apply a circular mask to the logo">
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="roundedLogoToggle" checked>
+                    <span class="toggle-slider"></span>
+                  </div>
+                  <span class="toggle-label" style="font-size: 0.75rem;">Rounded</span>
+                </label>
+              </div>
             </div>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 0;">
+
+            <!-- Text Section -->
+            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <label style="color: var(--color-gray-400); font-size: 0.9rem;">Bottom Text <span style="font-size: 0.75rem; float: right;">(Optional)</span></label>
+              <input type="text" id="labelText" class="qr-textarea" style="height: 40px; padding: 0 var(--space-3);" placeholder="e.g. Scan Me!" />
+              
+              <div class="settings-row" style="margin-top: var(--space-2);">
+                <div class="settings-label">
+                  <span>Text Font</span>
+                </div>
+                <select id="textFont" class="select-dropdown">
+                  <option value="Inter, 'Space Grotesk', sans-serif" selected>Inter / Space Grotesk</option>
+                  <option value="Roboto, sans-serif">Roboto</option>
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="'Courier New', monospace">Courier New</option>
+                  <option value="Georgia, serif">Georgia</option>
+                </select>
+              </div>
+
+              <div class="settings-row" style="margin-top: var(--space-2);">
+                <div class="settings-label">
+                  <span>Text Size</span>
+                  <span class="settings-value" id="textSizeValue">5%</span>
+                </div>
+                <input type="range" id="textSizeSlider" class="range-slider" min="2" max="15" step="1" value="5">
+              </div>
+
+              <div class="colour-row" style="padding: var(--space-2) var(--space-3); margin-top: 0;">
+                <label>Text Colour</label>
+                <input type="color" id="textColor" value="#000000">
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -601,6 +640,13 @@
     const roundedLogoToggle = document.getElementById('roundedLogoToggle');
     const logoScaleSlider = document.getElementById('logoScaleSlider');
     const logoScaleValue = document.getElementById('logoScaleValue');
+    
+    const labelTextEl = document.getElementById('labelText');
+    const textSizeSliderEl = document.getElementById('textSizeSlider');
+    const textSizeValueEl = document.getElementById('textSizeValue');
+    const textColorEl = document.getElementById('textColor');
+    const textFontEl = document.getElementById('textFont');
+
     let logoImageObj = null;
     let logoDataUrl = null;
 
@@ -661,6 +707,14 @@
     logoScaleSlider.addEventListener('input', (e) => {
       debouncedGenerate();
     });
+
+    labelTextEl.addEventListener('input', debouncedGenerate);
+    textSizeSliderEl.addEventListener('input', (e) => {
+      textSizeValueEl.textContent = `${e.target.value}%`;
+      debouncedGenerate();
+    });
+    textColorEl.addEventListener('input', debouncedGenerate);
+    textFontEl.addEventListener('change', debouncedGenerate);
 
     function debouncedGenerate() {
       if (!liveToggleEl.checked) return;
@@ -753,14 +807,26 @@
       const innerSize = Math.floor(pixelPerModule * moduleCount);
       const trueSize = Math.floor(pixelPerModule * totalModules); // May be slightly off from exact 'size' due to flooring
 
+      const labelText = document.getElementById('labelText').value.trim();
+      const textSizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10);
+      const textColor = document.getElementById('textColor').value;
+      const textFont = document.getElementById('textFont').value;
+
+      let textHeightAdd = 0;
+      let fontSize = 0;
+      if (labelText) {
+        fontSize = Math.floor(size * (textSizeRatio / 100));
+        textHeightAdd = fontSize + Math.floor(size * 0.08);
+      }
+
       const canvas = document.createElement('canvas');
       canvas.width = size;
-      canvas.height = size;
+      canvas.height = size + textHeightAdd;
       const ctx = canvas.getContext('2d');
 
       // Fill entire background (acting as quiet zone margin)
       ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, size, size);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const offsetPixels = (size - innerSize) / 2;
 
@@ -832,6 +898,24 @@
         }
       }
 
+      // Draw text if present
+      if (labelText) {
+        ctx.fillStyle = textColor;
+        ctx.font = `600 ${fontSize}px ${textFont}`;
+        
+        // Dynamically shrink text if it exceeds 90% of QR width
+        let metrics = ctx.measureText(labelText);
+        if (metrics.width > size * 0.9) {
+          fontSize = Math.floor(fontSize * ((size * 0.9) / metrics.width));
+          ctx.font = `600 ${fontSize}px ${textFont}`;
+        }
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const textY = size + (textHeightAdd / 2);
+        ctx.fillText(labelText, size / 2, textY);
+      }
+
       // Convert to an img tag for responsive display
       const img = document.createElement('img');
       img.src = canvas.toDataURL('image/png');
@@ -873,6 +957,7 @@
       new QRCode(tempDiv, { text: lastText, correctLevel: ecc });
       const qrcodeModel = lastQRCodeInstance._oQRCode;
 
+      const rawModuleCount = qrcodeModel.getModuleCount();
       const paddingModules = parseInt(marginSliderEl.value, 10);
       const totalModules = rawModuleCount + (paddingModules * 2);
 
@@ -903,8 +988,31 @@
       const fg = fgColorEl.value;
       const bg = bgColorEl.value;
 
-      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalModules} ${totalModules}" width="${size}" height="${size}">`;
-      svg += `<rect width="${totalModules}" height="${totalModules}" fill="${bg}"/>`;
+      const labelText = document.getElementById('labelText').value.trim();
+      const textSizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10);
+      const textColor = document.getElementById('textColor').value;
+      const textFont = document.getElementById('textFont').value;
+
+      let textHeightAddModules = 0;
+      let fontSizeModules = 0;
+      if (labelText) {
+        fontSizeModules = totalModules * (textSizeRatio / 100);
+        
+        // Approximate width and scale down if needed
+        let approxWidth = fontSizeModules * 0.6 * labelText.length;
+        if (approxWidth > totalModules * 0.9) {
+          fontSizeModules = fontSizeModules * ((totalModules * 0.9) / approxWidth);
+        }
+
+        textHeightAddModules = fontSizeModules + (totalModules * 0.08);
+      }
+      
+      const totalSvgWidth = totalModules;
+      const totalSvgHeight = totalModules + textHeightAddModules;
+      const svgHeightPx = Math.floor(size * (totalSvgHeight / totalSvgWidth));
+
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSvgWidth} ${totalSvgHeight}" width="${size}" height="${svgHeightPx}">`;
+      svg += `<rect width="${totalSvgWidth}" height="${totalSvgHeight}" fill="${bg}"/>`;
 
       // Optimize: Group rects into a single path for cleaner SVG
       let pathD = '';
@@ -939,6 +1047,13 @@
           svg += `<rect x="${offset - padding}" y="${offset - padding}" width="${baseLogoDim + padding * 2}" height="${baseLogoDim + padding * 2}" fill="${bg}" />`;
           svg += `<image href="${logoDataUrl}" x="${offset}" y="${offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid meet" />`;
         }
+      }
+
+      if (labelText) {
+        // Embed text in SVG
+        const safeText = labelText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const textY = totalModules + (textHeightAddModules / 2);
+        svg += `<text x="${totalSvgWidth / 2}" y="${textY}" font-family="${textFont}" font-weight="600" font-size="${fontSizeModules}" fill="${textColor}" text-anchor="middle" dominant-baseline="middle">${safeText}</text>`;
       }
 
       svg += `</svg>`;
