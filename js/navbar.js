@@ -41,6 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li><a href="${rootPath}pages/blog.html" id="nav-blog">Blog</a></li>
                 <li><a href="${rootPath}pages/photography.html" id="nav-photography">Photography</a></li>
                 <li><a href="${rootPath}pages/contact.html" id="nav-contact">Contact</a></li>
+                <li><button class="nav-search-btn" id="navSearchTrigger" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon-svg">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button></li>
             </ul>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <span></span>
@@ -59,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="${rootPath}pages/blog.html" id="mobile-blog">Blog</a>
         <a href="${rootPath}pages/photography.html" id="mobile-photography">Photography</a>
         <a href="${rootPath}pages/contact.html" id="mobile-contact">Contact</a>
+        <a href="javascript:void(0)" id="mobileSearchTrigger" style="color: var(--color-accent);">Search Site <i class="fas fa-search"></i></a>
     </div>
     `;
 
@@ -240,5 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
         brandLink.addEventListener('mouseleave', () => {
             isHovering = false;
         });
+    }
+
+    // 7. Inject Search Module 
+    if (!document.getElementById('site-search-script')) {
+        const searchScript = document.createElement('script');
+        searchScript.id = 'site-search-script';
+        searchScript.src = `${rootPath}js/search.js`;
+        document.body.appendChild(searchScript);
     }
 });
