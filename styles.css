@@ -1586,7 +1586,8 @@ p {
     background: transparent;
     position: relative;
     overflow: hidden;
-    padding-top: 80px;
+    /* Account for fixed navbar (70px) + top offset */
+    padding-top: calc(70px + var(--space-8));
 }
 
 .cosmic-hero::before {
