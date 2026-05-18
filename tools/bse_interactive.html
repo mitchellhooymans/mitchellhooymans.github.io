@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BSE Stellar Evolution Explorer</title>
+<meta name="description" content="Interactive explorer for the 16 BSE stellar types from Hurley et al. (2000, 2002)" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: #080c12;
+    color: #c0d0e0;
+    font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0e15; }
+  ::-webkit-scrollbar-thumb { background: #2a3545; border-radius: 3px; }
+  button { font-family: inherit; }
+  input[type="range"] { accent-color: #50e0a0; }
+  input[type="checkbox"] { accent-color: #995533; }
+
+  /* Mono utility */
+  .mono { font-family: 'DM Mono', 'Consolas', monospace; }
+
+  /* Layout */
+  .app-header {
+    border-bottom: 1px solid #1a2535;
+    padding: 16px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .app-body {
+    display: flex; min-height: calc(100vh - 64px);
+  }
+  .main-panel {
+    flex: 1; padding: 16px 20px; overflow: auto; min-width: 0;
+  }
+  .side-panel {
+    width: 360px; flex-shrink: 0;
+    border-left: 1px solid #1a2535; background: #0a0e16;
+    overflow-y: auto; padding: 16px;
+  }
+  @media (max-width: 900px) {
+    .app-body { flex-direction: column; }
+    .side-panel { width: 100%; border-left: none; border-top: 1px solid #1a2535; }
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex; gap: 2px;
+    background: #0d1520; border-radius: 6px; padding: 3px;
+    border: 1px solid #1a2535;
+  }
+  .tab-btn {
+    padding: 6px 14px; border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent; color: #667788;
+    font-size: 12px; cursor: pointer; white-space: nowrap;
+    font-family: 'DM Mono', monospace; letter-spacing: 0.3px;
+    transition: color 0.15s;
+  }
+  .tab-btn:hover { color: #99aabb; }
+  .tab-btn.active { color: #e0f0e8; border-bottom-color: #50e0a0; }
+
+  /* Info sub-tabs */
+  .info-tab {
+    padding: 3px 10px; border: 1px solid transparent;
+    border-radius: 4px; background: transparent;
+    color: #556677; font-size: 11px; cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    transition: all 0.15s;
+  }
+  .info-tab:hover { color: #889; }
+  .info-tab.active {
+    border-color: #334455; background: #0d1520; color: #c0d0e0;
+  }
+
+  /* Card */
+  .card {
+    background: #0a0e16; border: 1px solid #1a2535; border-radius: 8px;
+    overflow: hidden;
+  }
+  .card-inner { padding: 20px; }
+
+  /* Controls bar */
+  .controls-bar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px; padding: 8px 14px;
+    background: #0a0e16; border: 1px solid #1a2535; border-radius: 8px;
+    flex-wrap: wrap;
+  }
+  .controls-bar label { font-size: 11px; color: #556677; display: flex; align-items: center; gap: 5px; }
+
+  /* Type button */
+  .type-btn {
+    font-size: 10px; padding: 4px 8px; border-radius: 3px; text-align: left;
+    background: transparent; border: 1px solid transparent;
+    color: #667788; cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.12s;
+  }
+  .type-btn:hover { color: #99aabb; background: #111820; }
+  .type-btn.active { background: #1a2535; border-color: #2a3545; color: #e0f0e8; }
+
+  /* Connection button */
+  .conn-btn {
+    font-size: 11px; padding: 4px 10px; border-radius: 4px;
+    background: #0d1520; border: 1px solid #1a2535;
+    color: #99aabb; cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: all 0.12s;
+  }
+  .conn-btn:hover { border-color: #3a4555; color: #c0d0e0; }
+  .conn-btn.binary { background: #1a1510; border-color: #332a20; color: #cc9966; }
+  .conn-btn.binary:hover { border-color: #554433; }
+
+  /* Dot */
+  .dot {
+    display: inline-block; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* Process card */
+  .process-card {
+    padding: 14px 16px; background: #0d1520;
+    border: 1px solid #1a2535; border-radius: 6px;
+  }
+  .process-card h3 {
+    font-size: 13px; color: #50e0a0;
+    font-family: 'DM Mono', monospace; margin-bottom: 6px;
+  }
+  .process-card p { font-size: 12px; color: #889; line-height: 1.6; }
+
+  /* Legend */
+  .legend {
+    display: flex; gap: 20px; margin-top: 8px; padding: 6px 14px;
+    font-size: 10px; color: #556677;
+    font-family: 'DM Mono', monospace; flex-wrap: wrap;
+  }
+
+  /* SVG interaction */
+  .node-group { cursor: pointer; }
+  .node-group:hover rect { stroke: #88aacc !important; }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useMemo, useCallback } = React;
+
+/*
+ * BSE Stellar Evolution Explorer
+ * Hurley, Pols & Tout (2000) MNRAS 315, 543
+ * Hurley, Tout & Pols (2002) MNRAS 329, 897
+ * Breivik et al. (2020) ApJ 898, 71 — COSMIC
+ */
+
+const BSE = [
+  {
+    id:0, name:'Deeply/Fully Convective MS', short:'MS (≤0.7)',
+    mass:'M ≤ 0.7 M☉', burn:'Core H→He (pp)',
+    col:'#E84040', hr:{t:3.55,l:-1.5}, fp:{x:80,y:380},
+    sTo:[], bTo:[10], from:[],
+    desc:'Stars with M ≤ 0.7 M☉ are deeply or fully convective, fusing hydrogen via the pp chain extremely slowly. Their MS lifetimes exceed the age of the universe for the lowest masses. Thorough internal mixing prevents development of a core–envelope boundary needed to ascend the giant branch. In isolation, they never leave the MS within a Hubble time.',
+    phys:'Separated from k=1 because fully convective stars respond differently to mass loss — the entire star contracts homologously. The MS is split at 0.7 M☉ in BSE Section 4 (Hurley+2000). ZAMS luminosity and radius from Tout et al. (1996). For M < 0.1 M☉, significant degeneracy: R_MS = max(R_MS, 0.0258(1+X)^{5/3} M^{−1/3}) [Eq. 24].',
+    bse:'Can only form a He WD (k=10) through binary envelope stripping before He ignition — the primary formation channel for He WDs, since single stars cannot produce them within a Hubble time. Dynamical mass transfer occurs if q₁ > 0.695 [Section 2.6.4, Hurley+2002].',
+  },
+  {
+    id:1, name:'Main-Sequence Star', short:'MS (>0.7)',
+    mass:'M > 0.7 M☉', burn:'Core H→He (pp/CNO)',
+    col:'#4D9EF7', hr:{t:4.3,l:3.5}, fp:{x:80,y:160},
+    sTo:[2], bTo:[], from:[],
+    desc:'Stars with M > 0.7 M☉ on the main sequence. Lower-mass stars have radiative cores (M < 1.1 M☉), while higher-mass stars develop convective cores from CNO-cycle burning. MS lifetime decreases steeply: ~10 Gyr for 1 M☉, ~1 Gyr for 2 M☉, ~30 Myr for 10 M☉.',
+    phys:'Luminosity and radius evolve as polynomials in τ = t/t_MS [Eqs. 12–13, Hurley+2000]. Stars with M > M_hook show a "hook" feature near MS end caused by sudden fuel depletion over the convective core. The hook is modeled by perturbation functions ΔL and ΔR [Eqs. 16–17]. t_MS = max(t_hook, x·t_BGB) [Eq. 5].',
+    bse:'When losing mass on the MS, M₀ is kept equal to current mass — the star evolves down the MS and is "aged" so fractional MS lifetime remains constant [Section 7.1, Hurley+2000]. For massive stars (M > 15 M☉), strong winds can strip the envelope even without a companion.',
+  },
+  {
+    id:2, name:'Hertzsprung Gap', short:'HG',
+    mass:'Post-MS, pre-GB', burn:'Shell H burning',
+    col:'#F0D050', hr:{t:3.95,l:3.2}, fp:{x:230,y:160},
+    sTo:[3], bTo:[7,10], from:[1],
+    desc:'A brief transitional phase after core H exhaustion. The star crosses the HRD rapidly on a thermal (Kelvin–Helmholtz) timescale as the core contracts and the envelope expands. Very few stars are observed here — the eponymous "gap". For M ≥ M_FGB, He ignites before reaching the GB, so the HG ends at He ignition.',
+    phys:'Spans t_MS to t_BGB [Eqs. 4–5]. L and R evolve as power laws: L_HG = L_TMS·(L_EHG/L_TMS)^τ [Eq. 26]. Core mass grows linearly from ρ·M_c,EHG to M_c,EHG [Eq. 30]. t_BGB is fitted by Eq. 4 with rms error 1.9%, max error 4.8%.',
+    bse:'HG stars respond to mass loss on a thermal timescale — M₀ = M_t. If stripped with M < M_HeF (degenerate core) → He WD (k=10). If stripped with M ≥ M_HeF → naked He star (k=7). HG donors in CE are uncertain: the core–envelope boundary is not well-defined [Ivanova & Taam 2004]. ζ_ad ≈ 6.85, q_crit = 4 [Section 2.6.3, Hurley+2002].',
+  },
+  {
+    id:3, name:'First Giant Branch', short:'RGB',
+    mass:'Red giants', burn:'Shell H, growing He core',
+    col:'#F07020', hr:{t:3.60,l:3.0}, fp:{x:380,y:160},
+    sTo:[4], bTo:[7,10], from:[2],
+    desc:'Ascending the Hayashi track with a deep convective envelope and H-burning shell surrounding a growing He core. For M < M_HeF ≈ 2 M☉, the core becomes degenerate. He ignites at the GB tip — degenerately (flash) for low-mass, non-degenerately for intermediate-mass stars.',
+    phys:'Evolution driven by core mass–luminosity relation L = min(B·Mc^q, D·Mc^p) [Eq. 37]. GB radius: R_GB = A(L^{b₁} + b₂·L^{b₃}) [Eq. 46]. Time evolution via Mc integration [Eqs. 34–36, 39–43]. For Z=0.02: R_GB ≈ 1.1M^{−0.3}(L^{0.4} + 0.383L^{0.76}) [Eq. 48].',
+    bse:'Deep convective envelope → very efficient tidal circularization. If stripped: M < M_HeF → He WD (k=10); M ≥ M_HeF → He star (k=7). CE triggered when q₁ > q_crit where q_crit = [1.67 − x + 2(Mc₁/M₁)^5]/2.13 [Eq. 57, Hurley+2002]. Dredge-up can occur.',
+  },
+  {
+    id:4, name:'Core Helium Burning', short:'CHeB',
+    mass:'HB / blue loop', burn:'Core He→C,O + Shell H',
+    col:'#E8C820', hr:{t:3.85,l:2.2}, fp:{x:530,y:160},
+    sTo:[5], bTo:[7], from:[3],
+    desc:'After He ignition, the star stably fuses He→C,O while continuing shell H burning. Low-mass stars: horizontal branch (red clump). Intermediate-mass: blue loops. High-mass (He ignited on HG): blue phase then red supergiant.',
+    phys:'Three mass regimes [Section 5.3]: LM (M < M_HeF) — ZAHB luminosity depends on Mc and M via Eq. 53; IM (M_HeF ≤ M ≤ M_FGB) — descent along GB then blue loop, controlled by τ_bl [Eq. 58]; HM (M > M_FGB) — blue then red. Core mass grows linearly: Mc = (1−τ)Mc,HeI + τ·Mc,BAGB [Eq. 67].',
+    bse:'If envelope stripped → naked He star (k=7) with age preserving fractional He-burning progress: t = ((t′−t′_HeI)/t′_He)·t_HeMS [Eq. 76, Hurley+2002]. The Roche lobe is filled at R_mHe during blue loop.',
+  },
+  {
+    id:5, name:'Early AGB', short:'E-AGB',
+    mass:'Post-CHeB giants', burn:'Shell He + Shell H',
+    col:'#E05030', hr:{t:3.55,l:3.6}, fp:{x:680,y:160},
+    sTo:[6], bTo:[7], from:[4],
+    desc:'After core He exhaustion: inert C/O core, He-burning shell, H-burning shell. Envelope expands again. Second dredge-up occurs for sufficiently massive stars (0.8 < Mc,BAGB < 2.25), reducing the core mass.',
+    phys:'Mc,He stays constant at Mc,BAGB; Mc,CO grows by He-shell burning using AHe [Eq. 68]. EAGB ends when Mc,CO reaches Mc,DU. Second dredge-up reduces core: Mc,DU = 0.44·Mc,BAGB + 0.448 for 0.8 < Mc,BAGB < 2.25. Stars with Mc,BAGB > 2.25 ignite C before TPAGB [Section 5.4].',
+    bse:'If envelope lost so M = Mc,He: a naked He giant (k=9) forms with unburnt He around the CO core. Age set by Mc = Mc,CO and M = Mc,He in the HeGB Mc–t relation [Section 6, Hurley+2000].',
+  },
+  {
+    id:6, name:'Thermally Pulsing AGB', short:'TP-AGB',
+    mass:'Late AGB', burn:'Double shell, thermal pulses',
+    col:'#C01818', hr:{t:3.45,l:4.2}, fp:{x:830,y:160},
+    sTo:[11,12], bTo:[7,13,14,15], from:[5],
+    desc:'Violent thermal pulses from He-shell flashes drive third dredge-up events. Intense mass loss (superwind) eventually strips the envelope → planetary nebula → white dwarf. For M_c,BAGB > 2.25, carbon burning terminates the AGB before the TPAGB begins.',
+    phys:'Third dredge-up reduces core growth by (1−λ), λ = min(0.9, 0.3+0.001M^5) [Eq. 73]. AGB terminates when envelope lost (→WD) or Mc reaches Mc,SN = max(M_Ch, 0.773·Mc,BAGB − 0.35) [Eq. 75]. Mass loss: Vassiliadis & Wood (1993) AGB superwind.',
+    bse:'Mc,BAGB < 1.6 → CO WD (k=11). 1.6 ≤ Mc,BAGB ≤ 2.25 → ONe WD (k=12). Mc,BAGB > 2.25 → SN → NS (k=13) or BH (k=14). If CO WD reaches M_Ch via accretion: Type Ia SN (k=15). ONe WD → electron-capture collapse → NS (k=13).',
+  },
+  {
+    id:7, name:'Naked Helium MS', short:'He-MS',
+    mass:'Stripped He cores', burn:'Core He→C,O',
+    col:'#28C8D8', hr:{t:4.75,l:4.5}, fp:{x:380,y:340},
+    sTo:[8], bTo:[], from:[],
+    desc:'Stars stripped of their entire H envelope by binary interaction (RLOF/CE) or extreme winds. The exposed He core fuses He→C,O. Observationally: Wolf–Rayet stars (massive) or sdB/sdO stars (low-mass).',
+    phys:'He-ZAMS: L_ZHe = 15262M^{10.25}/(M^9 + 29.54M^{7.5} + 31.18M^6 + 0.0469) [Eq. 77]. R_ZHe from Eq. 78. Lifetime: t_HeMS = (0.4129 + 18.81M^4 + 1.853M^6)/M^{6.5} [Eq. 79]. L evolves as L = L_ZHe(1+0.45τ+aτ²) [Eq. 80].',
+    bse:'Formed via binary stripping from k∈{2,3,4,5,6}. Case BB mass transfer (He star → compact object) is critical for forming tight compact binaries. COSMIC includes stable mass transfer following Tauris et al. (2015) as an option.',
+  },
+  {
+    id:8, name:'Naked Helium HG', short:'He-HG',
+    mass:'Post-HeMS', burn:'Shell He, contracting CO core',
+    col:'#20B080', hr:{t:4.55,l:4.7}, fp:{x:530,y:340},
+    sTo:[9], bTo:[], from:[7],
+    desc:'He-star analog of the Hertzsprung gap. After core He depletion, the CO core contracts while the He envelope expands on a thermal timescale. Very brief.',
+    phys:'Post-HeMS evolution follows HeGB Mc–L relation: L = min(B·Mc³, D·Mc⁵) with B=4.1×10⁴, D=5.5×10⁴/(1+0.4M⁴) [Eq. 84]. HeHG/HeGB boundary: whether R follows R₁ (modest expansion, Eq. 86) or R₂ = 0.08L^{0.75} (Hayashi track, Eq. 88).',
+    bse:'ζ_ad ≈ 0 → q_crit = 0.784. Unstable MT → CE. In BSE collision matrix, HeHG stars have a dense core that survives coalescence [Table 2, Hurley+2002].',
+  },
+  {
+    id:9, name:'Naked Helium Giant', short:'He-GB',
+    mass:'He shell-burning giant', burn:'Shell He, growing CO core',
+    col:'#48C848', hr:{t:4.35,l:4.9}, fp:{x:680,y:340},
+    sTo:[11,12,13,14], bTo:[], from:[8],
+    desc:'Naked He giant with growing degenerate CO core and He-burning shell. For M < 0.7 M☉: shell burning stops → CO WD. For higher M: core collapse → NS or BH.',
+    phys:'For M < 0.7: CO WD when Mc reaches Mc,max = min(1.45M−0.31, M) [Eq. 89]. For higher M: Mc,SN determined by Eq. 75 with Mc,BAGB replaced by He-star initial mass. NS if Mc,SN < 7; BH if Mc,SN > 7.',
+    bse:'HeGB stars have deep convective He envelopes → tidal friction similar to normal giants. Endpoints mirror TPAGB but for He-rich composition.',
+  },
+  {
+    id:10, name:'Helium White Dwarf', short:'He WD',
+    mass:'M < ~0.5 M☉', burn:'Cooling',
+    col:'#F0E8E0', hr:{t:4.05,l:-1.5}, fp:{x:830,y:380},
+    sTo:[], bTo:[15], from:[0,2,3],
+    desc:'Electron-degenerate He remnants. Formed when a low-mass star loses its H envelope before He ignition. Since single low-mass stars take longer than a Hubble time, He WDs are almost exclusively binary products.',
+    phys:'Cooling: L_WD = 635·M·Z^{0.4}/(A(t+0.1))^{1.4}, A=4 [Eq. 90]. Radius: R_WD from Eq. 91, bounded below by R_NS. The (t+0.1) term mimics initially rapid cooling.',
+    bse:'If accreted mass reaches 0.7 M☉ → thermonuclear detonation (k=15). At high accretion rates (Ṁ ≥ 2.71×10⁻⁷ M☉/yr), He WD swells to become a GB star (k=3) [Section 2.6.6, Hurley+2002].',
+  },
+  {
+    id:11, name:'C/O White Dwarf', short:'CO WD',
+    mass:'M < ~1.4 M☉', burn:'Cooling',
+    col:'#D8D8E0', hr:{t:4.25,l:-2.5}, fp:{x:830,y:260},
+    sTo:[], bTo:[13,15], from:[6,9],
+    desc:'Most common WD type — degenerate CO core of low/intermediate-mass star (initial M < ~8 M☉) that shed its AGB envelope. Potential Type Ia SN progenitor via accretion or merger.',
+    phys:'Cooling: A=15 in Mestel formula [Eq. 90]. M_Ch = 1.44 M☉. Mc,BAGB < 1.6 → CO WD. WD mass–radius relation from Eq. 91.',
+    bse:'Accreting He: edge-lit detonation (ELD SNIa) after 0.15 M☉ accumulated. Accreting H: novae if Ṁ < 1.03×10⁻⁷; supersoft source otherwise. If M → M_Ch: Type Ia SN (k=15). CO+CO WD merger above M_Ch → Type Ia SN. At high Ṁ: swells to TPAGB star (k=6).',
+  },
+  {
+    id:12, name:'O/Ne White Dwarf', short:'ONe WD',
+    mass:'M ~ 1.1–1.4 M☉', burn:'Cooling',
+    col:'#B0B0C0', hr:{t:4.35,l:-3.0}, fp:{x:830,y:310},
+    sTo:[], bTo:[13,15], from:[6,9],
+    desc:'WDs of O/Ne/Mg composition from intermediate-mass stars (M_up ≤ M ≤ M_ec, ~8–10 M☉) that ignited carbon off-center under semi-degenerate conditions. Near the Chandrasekhar limit.',
+    phys:'Carbon ignites off-center at Mc,CO ≈ 1.08 [Pols+1998] → ONe core (Nomoto 1984). 1.6 ≤ Mc,BAGB ≤ 2.25 defines the ONe WD regime [Section 6, Hurley+2000].',
+    bse:'Unlike CO WDs: when ONe WD reaches M_Ch → accretion-induced collapse (AIC) via e⁻ capture on ²⁴Mg → NS (k=13), not Type Ia SN. M_NS = 1.17 + 0.09(M_WD + M_acc) [Section 6.2.1].',
+  },
+  {
+    id:13, name:'Neutron Star', short:'NS',
+    mass:'M ~ 1.1–2.5 M☉', burn:'None',
+    col:'#B090F0', hr:{t:5.2,l:-4.5}, fp:{x:830,y:70},
+    sTo:[], bTo:[14], from:[6,9,12],
+    desc:'Ultra-compact remnant supported by neutron degeneracy pressure, from core collapse (initial M ~ 8–25 M☉) or AIC of ONe WD. ~1.4 M☉ in ~20 km diameter. Pulsars, magnetars, X-ray binaries.',
+    phys:'Mass: M_NS = 1.17 + 0.09·Mc,SN [Eq. 92]. Max NS mass 1.8 M☉ (BSE default). Cooling: L_NS = 0.02M^{2/3}/max(t,0.1) [Eq. 93]. R_NS = 1.4×10⁻⁵ R☉ (10 km). NS/BH boundary at Mc,SN = 7.0.',
+    bse:'Natal kicks: Maxwellian σ=265 km/s (CCSNe), σ≈20 km/s (ECSNe). COSMIC: kicks reduced by fallback (1−f_fb). NS accreting past max mass → BH (k=14). NS+NS mergers → GW sources (LIGO) and γ-ray bursts.',
+  },
+  {
+    id:14, name:'Black Hole', short:'BH',
+    mass:'M > ~3 M☉', burn:'None',
+    col:'#303038', hr:{t:5.4,l:-5.0}, fp:{x:830,y:20},
+    sTo:[], bTo:[], from:[6,9,13],
+    desc:'Final endpoint for the most massive stars (initial M > ~25 M☉). Gravity overwhelms all degeneracy pressure. Interacts via gravity and accretion only. In binaries: luminous X-ray emission from accretion.',
+    phys:'Forms when Mc,SN > 7.0 (Mc,BAGB > 9.52). R_BH = 2GM/(c²) = 4.24×10⁻⁶ M (Schwarzschild). L_BH set to 10⁻¹⁰ (negligible). COSMIC: Fryer+(2012) rapid/delayed models with pair-instability gap at He core ~45–135 M☉.',
+    bse:'BH kicks reduced by fallback: v_kick × (1−f_fb). Heavy BHs with complete fallback get ~zero kicks. BH+BH mergers are primary LIGO/Virgo sources. BH spin prescriptions available in COSMIC: fixed, uniform, or mass-dependent [Belczynski+2020].',
+  },
+  {
+    id:15, name:'Massless Remnant', short:'—',
+    mass:'Destroyed', burn:'None',
+    col:'#606070', hr:{t:5.0,l:-2.0}, fp:{x:960,y:200},
+    sTo:[], bTo:[], from:[10,11,12],
+    desc:'Bookkeeping flag for a completely destroyed/disrupted star: pair-instability SN, Type Ia thermonuclear SN (no bound remnant), or dynamical ejection.',
+    phys:'Not a physical stellar type. Represents absence of a star. In BSE, allows tracking the remaining binary component after one is destroyed.',
+    bse:'Produced when: CO WD exceeds M_Ch → SNIa; He WD exceeds 0.7 M☉ → detonation; pair-instability SN (He core 45–135 M☉); WD+WD merger exceeds M_Ch.',
+  }
+];
+
+const massTracks = [
+  { label:'0.3 M☉', path:[0], note:'Fully convective, stays on MS for >10¹² yr.' },
+  { label:'0.8 M☉', path:[1,2,3,4,5,6,11], note:'Low-mass. He flash → HB → AGB → CO WD.' },
+  { label:'1.0 M☉', path:[1,2,3,4,5,6,11], note:'Solar analog. t_MS ≈ 10 Gyr. → ~0.6 M☉ CO WD.' },
+  { label:'2.0 M☉', path:[1,2,3,4,5,6,11], note:'Near M_HeF. Non-degenerate He ignition at GB tip.' },
+  { label:'5.0 M☉', path:[1,2,3,4,5,6,11], note:'Intermediate. Extended blue loop. → CO WD.' },
+  { label:'8.0 M☉', path:[1,2,3,4,5,6,12], note:'Near M_up. Off-center C ignition → ONe WD or ECSN → NS.' },
+  { label:'15 M☉',  path:[1,2,4,5,6,13], note:'He ignites on HG (skips GB). Winds may strip → WR star.' },
+  { label:'25 M☉',  path:[1,2,4,7,8,9,13], note:'Envelope stripped by winds → naked He → CCSN → NS.' },
+  { label:'40 M☉',  path:[1,2,4,7,8,9,14], note:'Very massive → naked He star → BH with fallback.' },
+  { label:'80 M☉',  path:[1,2,7,8,9,14], note:'Extreme mass loss on HG. May encounter pair-instability.' },
+];
+
+const critMasses = [
+  { n:'M_hook', v:'~1.0', d:'Above which MS hook feature appears' },
+  { n:'M_HeF',  v:'~2.0', d:'Max mass for degenerate He flash (LM/IM boundary)' },
+  { n:'M_FGB',  v:'~13',  d:'Max mass for He ignition on GB (IM/HM boundary)' },
+  { n:'M_up',   v:'~8',   d:'Min mass for off-center C ignition → ONe WD' },
+  { n:'M_ec',   v:'~10',  d:'Min mass for non-degenerate C → core collapse' },
+  { n:'M_Ch',   v:'1.44', d:'Chandrasekhar limit for white dwarfs' },
+];
+
+const binaryProcs = [
+  { n:'Roche Lobe Overflow (RLOF)', d:'Star fills Roche lobe → mass flows through L₁. Stability: q₁ vs q_crit. Stable RLOF on nuclear/thermal timescales; unstable → dynamical MT or CE. Nuclear: Ṁ = F(M)[ln(R/R_L)]³ [Eq. 58]; thermal: Ṁ_KH = M/τ_KH [Eq. 60].' },
+  { n:'Common Envelope (CE)', d:'Unstable MT engulfs both stars. Cores spiral in, depositing orbital energy with efficiency α_CE. α·λ formalism: E_bind = α(E_orb,f − E_orb,i) [Eqs. 69–72]. Outcome: tighter binary or coalescence. λ varies with stellar structure.' },
+  { n:'Wind Accretion', d:'Bondi–Hoyle accretion from stellar wind. ⟨Ṁ_2A⟩ ∝ (GM₂/v_w)² · (1/(2a²)) · Ṁ_1w [Eq. 6, Hurley+2002]. Important for symbiotic stars and massive X-ray binaries. Wind velocity: v²_w = 2β_w·GM/R.' },
+  { n:'Tidal Evolution', d:'Convective damping (equilibrium tide): τ_circ from Rasio+(1996), using eddy turnover timescale [Eq. 31]. Radiative damping (dynamical tide): Zahn (1977), τ_circ from E₂ coefficient [Eq. 41]. Degenerate: Campbell (1984) synchronization [Eq. 46].' },
+  { n:'Supernova Kicks', d:'Natal kicks from asymmetric explosion. Standard: Maxwellian σ=265 km/s [Hobbs+2005]. ECSN: σ≈20 km/s. COSMIC: fallback reduction v_k × (1−f_fb). Post-SN orbital parameters from Appendix A1, Hurley+2002.' },
+  { n:'Magnetic Braking', d:'J̇_mb = −5.83×10⁻¹⁶ (M_env/M)(RΩ_spin)³ [Eq. 50, Hurley+2002]. Shut off for fully convective stars (M < 0.35) → explains CV period gap between 2–3 hr.' },
+];
+
+const phases = [
+  { l:'Core H', ids:[0,1], c:'#4D9EF7' },
+  { l:'Shell H', ids:[2,3], c:'#F0D050' },
+  { l:'Core He', ids:[4,7], c:'#E8C820' },
+  { l:'Shell He', ids:[5,8], c:'#E05030' },
+  { l:'Double shell', ids:[6,9], c:'#C01818' },
+  { l:'Remnants', ids:[10,11,12,13,14,15], c:'#B090F0' },
+];
+
+// ─── Components ───
+function FlowChart({ selected, setSelected, massIdx, showBin }) {
+  const W=1060, H=440;
+  const track = massTracks[massIdx].path;
+  const onTrack = id => track.includes(id);
+
+  const edges = [];
+  BSE.forEach(s => {
+    s.sTo.forEach(tid => { const t=BSE.find(x=>x.id===tid); if(t) edges.push({f:s,t,type:'single'}); });
+    if(showBin) s.bTo.forEach(tid => { const t=BSE.find(x=>x.id===tid); if(t) edges.push({f:s,t,type:'binary'}); });
+  });
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%',minHeight:380}}>
+      <defs>
+        <marker id="as" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M0,1 L10,5 L0,9" fill="none" stroke="#667" strokeWidth="1.5"/>
+        </marker>
+        <marker id="ab" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M0,1 L10,5 L0,9" fill="none" stroke="#964" strokeWidth="1.5"/>
+        </marker>
+        <marker id="at" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="#50e0a0"/>
+        </marker>
+      </defs>
+      {/* Phase labels */}
+      {[['Core H',80],['Shell H',305],['Core He',455],['Shell He',605],['Dbl Shell',755],['Remnants',895]].map(([l,x])=>(
+        <text key={l} x={x} y={435} fill="#445" fontSize="9" textAnchor="middle" className="mono">{l}</text>
+      ))}
+      {/* Edges */}
+      {edges.map((e,i) => {
+        const fx=e.f.fp.x, fy=e.f.fp.y, tx=e.t.fp.x, ty=e.t.fp.y;
+        const single = e.type==='single';
+        const isTE = onTrack(e.f.id) && onTrack(e.t.id) &&
+          track.indexOf(e.t.id) === track.indexOf(e.f.id)+1;
+        const dx=tx-fx, dy=ty-fy, len=Math.sqrt(dx*dx+dy*dy)||1;
+        const mx=(fx+tx)/2, my=(fy+ty)/2;
+        const ox=-dy/len*(single?0:15), oy=dx/len*(single?0:15);
+        return <path key={i}
+          d={`M${fx},${fy} Q${mx+ox},${my+oy} ${tx},${ty}`}
+          fill="none"
+          stroke={isTE?'#50e0a0':single?'#445':'#753'}
+          strokeWidth={isTE?2.5:1.1}
+          strokeDasharray={single?'none':'6,3'}
+          markerEnd={`url(#${isTE?'at':single?'as':'ab'})`}
+          opacity={isTE?1:0.45}
+        />;
+      })}
+      {/* Nodes */}
+      {BSE.map(s => {
+        const x=s.fp.x, y=s.fp.y, sel=s.id===selected, ot=onTrack(s.id);
+        return (
+          <g key={s.id} className="node-group" onClick={()=>setSelected(s.id)}>
+            {ot && <circle cx={x} cy={y} r={24} fill="#50e0a018" stroke="#50e0a040" strokeWidth={1}/>}
+            <rect x={x-40} y={y-18} width={80} height={36} rx={6}
+              fill={sel?'#1a2535':'#0c1118'}
+              stroke={sel?s.col:ot?'#50e0a050':'#1a2535'}
+              strokeWidth={sel?2:1}
+            />
+            <circle cx={x-24} cy={y-3} r={5}
+              fill={s.id===14?'#000':s.col}
+              stroke={s.id===14?'#555':'none'}
+            />
+            <text x={x+4} y={y-4} fill={sel?'#fff':'#889'} fontSize="8" textAnchor="middle" className="mono">
+              k={s.id}
+            </text>
+            <text x={x} y={y+11} fill={sel?'#bcc':'#556'} fontSize="7.5" textAnchor="middle" className="mono">
+              {s.short}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function HRDiagram({ selected, setSelected, massIdx }) {
+  const W=500, H=500, pad=50;
+  const tMin=3.3, tMax=5.6, lMin=-5.5, lMax=6.0;
+  const toX = t => pad + ((tMax-t)/(tMax-tMin))*(W-2*pad);
+  const toY = l => pad + ((lMax-l)/(lMax-lMin))*(H-2*pad);
+  const track = massTracks[massIdx].path;
+  const onTrack = id => track.includes(id);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%',minHeight:380}}>
+      {/* Grid */}
+      {[3.5,4.0,4.5,5.0].map(t=><line key={t} x1={toX(t)} y1={pad} x2={toX(t)} y2={H-pad} stroke="#151e2a"/>)}
+      {[-4,-2,0,2,4].map(l=><line key={l} x1={pad} y1={toY(l)} x2={W-pad} y2={toY(l)} stroke="#151e2a"/>)}
+      {/* Axis labels */}
+      {[3.5,4.0,4.5,5.0].map(t=><text key={t} x={toX(t)} y={H-pad+16} fill="#556" fontSize="10" textAnchor="middle" className="mono">{t.toFixed(1)}</text>)}
+      {[-4,-2,0,2,4].map(l=><text key={l} x={pad-8} y={toY(l)+4} fill="#556" fontSize="10" textAnchor="end" className="mono">{l}</text>)}
+      <text x={W/2} y={H-8} fill="#667" fontSize="11" textAnchor="middle" className="mono">log T_eff (K)  ← hotter</text>
+      <text x={12} y={H/2} fill="#667" fontSize="11" textAnchor="middle" className="mono" transform={`rotate(-90,12,${H/2})`}>log L/L☉ ↑</text>
+      {/* MS band */}
+      <path d={`M${toX(3.5)},${toY(-1.5)} Q${toX(3.9)},${toY(1)} ${toX(4.6)},${toY(4)} L${toX(5.0)},${toY(5.5)}`}
+        stroke="#4D9EF715" strokeWidth={28} fill="none"/>
+      {/* Track connections */}
+      {track.length > 1 && track.slice(0,-1).map((id,i) => {
+        const a=BSE.find(s=>s.id===id), b=BSE.find(s=>s.id===track[i+1]);
+        if(!a||!b) return null;
+        const ax=toX(a.hr.t), ay=toY(a.hr.l), bx=toX(b.hr.t), by=toY(b.hr.l);
+        return <line key={i} x1={ax} y1={ay} x2={bx} y2={by} stroke="#50e0a030" strokeWidth={2}/>;
+      })}
+      {/* Stars */}
+      {BSE.map(s => {
+        const cx=toX(s.hr.t), cy=toY(s.hr.l);
+        if(cx<pad-5||cx>W-pad+5||cy<pad-5||cy>H-pad+5) return null;
+        const sel=s.id===selected, ot=onTrack(s.id);
+        return (
+          <g key={s.id} className="node-group" onClick={()=>setSelected(s.id)}>
+            {sel && <circle cx={cx} cy={cy} r={18} fill={s.col} opacity={0.12}/>}
+            {ot && <circle cx={cx} cy={cy} r={14} fill="#50e0a0" opacity={0.1}/>}
+            <circle cx={cx} cy={cy} r={sel?7:4.5}
+              fill={s.id===14?'#000':s.col}
+              stroke={sel?'#fff':ot?'#50e0a0':'none'}
+              strokeWidth={sel?2:1} opacity={sel||ot?1:0.55}
+            />
+            <text x={cx} y={cy-(sel?12:9)} fill={sel?'#ddd':'#778'} fontSize="7.5" textAnchor="middle" className="mono">
+              {s.short}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function App() {
+  const [sel, setSel] = useState(1);
+  const [tab, setTab] = useState('flow');
+  const [mIdx, setMIdx] = useState(3);
+  const [showBin, setShowBin] = useState(true);
+  const [iTab, setITab] = useState('overview');
+
+  const star = BSE.find(s=>s.id===sel);
+
+  return (
+    <div>
+      {/* Header */}
+      <header className="app-header">
+        <div>
+          <h1 style={{fontSize:20,fontWeight:700,letterSpacing:'-0.3px',color:'#e0f0e8'}} className="mono">
+            <span style={{color:'#50e0a0'}}>BSE</span> Stellar Evolution Explorer
+          </h1>
+          <p style={{fontSize:11,color:'#556',marginTop:3}} className="mono">
+            Hurley, Pols & Tout (2000) · Hurley, Tout & Pols (2002) · k = 0–15
+          </p>
+        </div>
+        <div className="tab-bar">
+          {[['flow','Evolution Flow'],['hr','H-R Diagram'],['binary','Binary Physics'],['masses','Critical Masses']].map(([k,l])=>(
+            <button key={k} className={`tab-btn${tab===k?' active':''}`} onClick={()=>setTab(k)}>{l}</button>
+          ))}
+        </div>
+      </header>
+
+      <div className="app-body">
+        {/* Main */}
+        <div className="main-panel">
+          {(tab==='flow'||tab==='hr') && (
+            <div className="controls-bar">
+              <span className="mono" style={{fontSize:11,color:'#556',whiteSpace:'nowrap'}}>MASS TRACK</span>
+              <input type="range" min={0} max={massTracks.length-1} value={mIdx}
+                onChange={e=>setMIdx(+e.target.value)} style={{flex:'0 0 160px'}}/>
+              <span className="mono" style={{fontSize:13,color:'#50e0a0',fontWeight:500,minWidth:55}}>
+                {massTracks[mIdx].label}
+              </span>
+              <span className="mono" style={{fontSize:11,color:'#667'}}>
+                {massTracks[mIdx].note}
+              </span>
+              {tab==='flow' && (
+                <label className="mono" style={{marginLeft:'auto'}}>
+                  <input type="checkbox" checked={showBin} onChange={e=>setShowBin(e.target.checked)}/> Binary paths
+                </label>
+              )}
+            </div>
+          )}
+
+          <div className="card">
+            {tab==='flow' && <FlowChart selected={sel} setSelected={setSel} massIdx={mIdx} showBin={showBin}/>}
+            {tab==='hr' && <HRDiagram selected={sel} setSelected={setSel} massIdx={mIdx}/>}
+
+            {tab==='binary' && (
+              <div className="card-inner">
+                <h2 className="mono" style={{fontSize:15,color:'#e0f0e8',marginBottom:14}}>Binary Interaction Processes</h2>
+                <div style={{display:'grid',gap:10}}>
+                  {binaryProcs.map((p,i)=>(
+                    <div key={i} className="process-card"><h3>{p.n}</h3><p>{p.d}</p></div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {tab==='masses' && (
+              <div className="card-inner">
+                <h2 className="mono" style={{fontSize:15,color:'#e0f0e8',marginBottom:6}}>Critical Masses (Z = 0.02)</h2>
+                <p style={{fontSize:12,color:'#667',marginBottom:14,lineHeight:1.6}}>
+                  Boundary masses dividing distinct evolutionary regimes. Functions of Z (Eqs. 1–3, Hurley+2000).
+                </p>
+                <div style={{display:'grid',gap:6}}>
+                  {critMasses.map((m,i)=>(
+                    <div key={i} className="process-card" style={{display:'flex',alignItems:'center',gap:14,padding:'8px 14px'}}>
+                      <span className="mono" style={{fontSize:13,color:'#50e0a0',fontWeight:500,minWidth:60}}>{m.n}</span>
+                      <span className="mono" style={{fontSize:13,color:'#e0f0e8',minWidth:65}}>{m.v} M☉</span>
+                      <span style={{fontSize:12,color:'#778'}}>{m.d}</span>
+                    </div>
+                  ))}
+                </div>
+                <h3 className="mono" style={{fontSize:13,color:'#e0f0e8',marginTop:20,marginBottom:10}}>Burning Phase Categories</h3>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:6}}>
+                  {phases.map((p,i)=>(
+                    <div key={i} className="process-card" style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px'}}>
+                      <span className="dot" style={{width:8,height:8,background:p.c}}/>
+                      <div>
+                        <div className="mono" style={{fontSize:11,color:'#bcc'}}>{p.l}</div>
+                        <div className="mono" style={{fontSize:9,color:'#445'}}>k = {p.ids.join(', ')}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {tab==='flow' && (
+            <div className="legend">
+              <span>── Single-star path</span>
+              <span style={{color:'#964'}}>- - Binary-only path</span>
+              <span style={{color:'#50e0a0'}}>━ Active mass track</span>
+              <span>Based on Fig. 19, Hurley et al. (2002)</span>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="side-panel">
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+            <span className="dot" style={{width:12,height:12,
+              background:star.id===14?'#000':star.col,
+              border:star.id===14?'1.5px solid #555':'none'}}/>
+            <span className="mono" style={{fontSize:11,color:'#556',padding:'1px 7px',background:'#0d1520',border:'1px solid #1a2535',borderRadius:4}}>
+              k = {star.id}
+            </span>
+          </div>
+          <h2 style={{fontSize:16,fontWeight:700,color:'#e0f0e8',lineHeight:1.2,marginBottom:3}}>{star.name}</h2>
+          <div style={{display:'flex',gap:10,marginBottom:14,flexWrap:'wrap'}}>
+            <span className="mono" style={{fontSize:11,color:'#50e0a0'}}>{star.mass}</span>
+            <span className="mono" style={{fontSize:11,color:'#667'}}>{star.burn}</span>
+          </div>
+
+          <div style={{display:'flex',gap:3,marginBottom:12,flexWrap:'wrap'}}>
+            {[['overview','Overview'],['phys','SSE Physics'],['bse','Binary (BSE)']].map(([k,l])=>(
+              <button key={k} className={`info-tab${iTab===k?' active':''}`} onClick={()=>setITab(k)}>{l}</button>
+            ))}
+          </div>
+
+          <p style={{fontSize:12.5,color:'#99aabb',lineHeight:1.7,marginBottom:18}}>
+            {iTab==='overview'?star.desc:iTab==='phys'?star.phys:star.bse}
+          </p>
+
+          <div style={{borderTop:'1px solid #1a2535',paddingTop:12}}>
+            {star.from.length>0 && (
+              <div style={{marginBottom:10}}>
+                <div className="mono" style={{fontSize:10,color:'#556',letterSpacing:1,marginBottom:5}}>← EVOLVES FROM</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:3}}>
+                  {star.from.map(id=>{const s=BSE.find(x=>x.id===id); return(
+                    <button key={id} className="conn-btn" onClick={()=>setSel(id)}>
+                      <span className="dot" style={{width:5,height:5,background:s.col}}/>{s.short}
+                    </button>
+                  );})}
+                </div>
+              </div>
+            )}
+            {star.sTo.length>0 && (
+              <div style={{marginBottom:10}}>
+                <div className="mono" style={{fontSize:10,color:'#556',letterSpacing:1,marginBottom:5}}>SINGLE-STAR →</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:3}}>
+                  {star.sTo.map(id=>{const s=BSE.find(x=>x.id===id); return(
+                    <button key={id} className="conn-btn" onClick={()=>setSel(id)}>
+                      <span className="dot" style={{width:5,height:5,background:s.col}}/>{s.short}
+                    </button>
+                  );})}
+                </div>
+              </div>
+            )}
+            {star.bTo.length>0 && (
+              <div style={{marginBottom:10}}>
+                <div className="mono" style={{fontSize:10,color:'#964',letterSpacing:1,marginBottom:5}}>BINARY-ONLY →</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:3}}>
+                  {star.bTo.map(id=>{const s=BSE.find(x=>x.id===id); return(
+                    <button key={id} className="conn-btn binary" onClick={()=>setSel(id)}>
+                      <span className="dot" style={{width:5,height:5,background:s.col}}/>{s.short}
+                    </button>
+                  );})}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div style={{borderTop:'1px solid #1a2535',paddingTop:12,marginTop:6}}>
+            <div className="mono" style={{fontSize:10,color:'#556',letterSpacing:1,marginBottom:6}}>ALL TYPES</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:2}}>
+              {BSE.map(s=>(
+                <button key={s.id} className={`type-btn${s.id===sel?' active':''}`} onClick={()=>setSel(s.id)}>
+                  <span className="dot" style={{width:5,height:5,
+                    background:s.id===14?'#000':s.col,
+                    border:s.id===14?'1px solid #555':'none'}}/>
+                  <span style={{opacity:0.5}}>{s.id}</span> {s.short}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
