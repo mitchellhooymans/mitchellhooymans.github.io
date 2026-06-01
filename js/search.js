@@ -27,6 +27,7 @@ function initSearch() {
 
         // Tools
         { title: "Kick Estimator", url: "tools/kick-estimator.html", icon: "fa-wrench", keywords: "kick estimator tool" },
+        { title: "King (1966) Profile Viewer", url: "tools/king66-viewer.html", icon: "fa-chart-line", keywords: "king 1966 globular cluster density profile" },
         { title: "QR Code Generator", url: "tools/qr.html", icon: "fa-qrcode", keywords: "qr code generator" },
         { title: "Steganography", url: "tools/steg.html", icon: "fa-lock", keywords: "steganography tool encryption" },
 

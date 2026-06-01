@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King (1966) Profile Viewer | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Preview King (1966) globular cluster density profiles before running simulations. Compare two models with adjustable W0, r0, and central density.">
+    <link rel="canonical" href="https://mitchellhooymans.com/tools/king66-viewer.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mitchellhooymans.com/tools/king66-viewer.html">
+    <meta property="og:title" content="King (1966) Profile Viewer | Mitchell Hooymans">
+    <meta property="og:description"
+        content="Preview King (1966) globular cluster density profiles before running simulations. Compare two models with adjustable W0, r0, and central density.">
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://mitchellhooymans.com/tools/king66-viewer.html">
+    <meta name="twitter:title" content="King (1966) Profile Viewer | Mitchell Hooymans">
+    <meta name="twitter:description"
+        content="Preview King (1966) globular cluster density profiles before running simulations. Compare two models with adjustable W0, r0, and central density.">
+    <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <style>
+        .content-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 900px) {
+            .simulation-wrapper {
+                grid-template-columns: 1fr 320px;
+            }
+        }
+
+        .simulation-container {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            width: 100%;
+            height: 520px;
+            min-height: 420px;
+            background: radial-gradient(ellipse at center, #0d1117 0%, #000 100%);
+        }
+
+        @media (max-width: 899px) {
+            .simulation-container {
+                height: min(480px, 65vh);
+            }
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            height: fit-content;
+        }
+
+        .controls-panel h3 {
+            margin-bottom: var(--space-4);
+            color: var(--color-white);
+            font-size: 1rem;
+        }
+
+        .control-section {
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-400);
+            margin-bottom: var(--space-3);
+        }
+
+        .model-2-controls.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .section-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+        }
+
+        .section-header-row h4 {
+            margin-bottom: 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: var(--color-white);
+            font-size: 0.85rem;
+        }
+
+        .control-value {
+            font-weight: 600;
+            color: var(--color-accent);
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .control-value.model-2-accent {
+            color: #fbbf24;
+        }
+
+        .slider-number-row {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .slider-number-row input[type="range"] {
+            flex: 1;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-gray-300);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .model-2-section input[type="range"]::-webkit-slider-thumb {
+            background: #fbbf24;
+        }
+
+        .control-group input[type="number"] {
+            width: 72px;
+            flex-shrink: 0;
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--color-white);
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-box.model-1-stat {
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+
+        .stat-box.model-2-stat {
+            border-color: rgba(251, 191, 36, 0.35);
+        }
+
+        .stat-box.dimmed {
+            opacity: 0.35;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: var(--space-1);
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--color-gray-400);
+            margin-top: var(--space-1);
+        }
+
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: var(--color-accent);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(16px);
+        }
+
+        .toggle-label {
+            font-size: 0.75rem;
+            color: var(--color-gray-400);
+            user-select: none;
+        }
+
+        .btn-reset {
+            width: 100%;
+            margin-top: var(--space-3);
+            padding: var(--space-3);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--color-gray-400);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-reset:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .scale-control {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .model-2-section .scale-control {
+            background: rgba(251, 191, 36, 0.08);
+            border-color: rgba(251, 191, 36, 0.25);
+        }
+
+        .scale-control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .scale-select {
+            flex: 1;
+            min-width: 0;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--color-white);
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-family: var(--font-primary);
+            cursor: pointer;
+        }
+
+        .scale-select:focus {
+            border-color: var(--color-accent);
+            outline: none;
+        }
+
+        .scale-control input[type="number"] {
+            width: 64px;
+        }
+
+        #plot {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .info-note {
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--color-accent);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .info-note strong {
+            color: var(--color-white);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../pages/about.html">About</a>
+        <a href="../pages/tutorials.html">Tutorials</a>
+        <a href="../pages/simulations.html">Simulations</a>
+        <a href="../pages/research.html">Research</a>
+        <a href="../pages/blog.html">Blog</a>
+        <a href="../pages/photography.html">Photography</a>
+        <a href="../pages/cv.html">CV</a>
+        <a href="../pages/contact.html">Contact</a>
+    </div>
+
+    <header class="page-header">
+        <div class="container">
+            <a href="../pages/tools.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <h1>King (1966) Profile Viewer</h1>
+            <p>Preview tidally truncated cluster density profiles before you run a simulation</p>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="container">
+            <div class="content-section">
+
+                <div class="info-card">
+                    <h3><i class="fas fa-chart-line"></i> King (1966) model</h3>
+                    <p>
+                        This tool solves the Poisson equation for the <strong>King (1966) model</strong>, which
+                        describes the density profile of relaxed, tidally truncated star clusters (such as globular
+                        clusters). The dimensionless central potential <em>W<sub>0</sub></em> sets the shape; scale
+                        parameters <em>r<sub>0</sub></em>, half-mass radius <em>r<sub>h</sub></em>, or virial radius
+                        <em>r<sub>v</sub></em> map the profile to physical units.
+                    </p>
+
+                    <div class="info-note">
+                        <strong>Density &rho;<sub>0</sub> vs your N-body setup.</strong>
+                        The curve is a smooth <em>mass density</em> &rho;(r) (fluid limit). In simulations you usually
+                        set <strong>N</strong>, an <strong>IMF</strong> (stellar masses), and structural scales
+                        (e.g. virial radius, <em>r</em><sub>h</sub>, tides) — not &rho;<sub>0</sub> directly. Total mass
+                        is M &asymp; N &times; &lang;m&rang;<sub>IMF</sub>; the IMF sets how that mass is split among
+                        stars, while &rho;(r) sets where they sit. Here &rho;<sub>0</sub> only rescales the vertical axis
+                        (same shape if you change W<sub>0</sub> or radii). Use this page to preview <em>structure</em>;
+                        use N + IMF + radii when you build ICs.
+                        <br><br>
+                        <strong>Virial radius.</strong> For each W<sub>0</sub>, r<sub>v</sub> is found from the solved
+                        King model (local virial balance M(&lt;r)/r &asymp; &lang;v<sup>2</sup>&rang;), with
+                        r<sub>h</sub>/r<sub>v</sub> &asymp; 0.78 for concentrated models (W<sub>0</sub> &gtrsim; 5), rising
+                        toward ~0.95 when W<sub>0</sub> is small — close to the ~0.78 factor used in cluster IC tools at
+                        typical W<sub>0</sub>.
+                    </div>
+
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-box model-1-stat">
+                            <div class="stat-value" id="m1-rh">—</div>
+                            <div class="stat-label">M1: r<sub>h</sub></div>
+                        </div>
+                        <div class="stat-box model-1-stat">
+                            <div class="stat-value" id="m1-rv">—</div>
+                            <div class="stat-label">M1: r<sub>v</sub></div>
+                        </div>
+                        <div class="stat-box model-1-stat">
+                            <div class="stat-value" id="m1-rt">—</div>
+                            <div class="stat-label">M1: r<sub>t</sub></div>
+                        </div>
+                        <div class="stat-box model-1-stat">
+                            <div class="stat-value" id="m1-r0">—</div>
+                            <div class="stat-label">M1: r<sub>0</sub></div>
+                        </div>
+                        <div class="stat-box model-2-stat m2-stat">
+                            <div class="stat-value" id="m2-rh">—</div>
+                            <div class="stat-label">M2: r<sub>h</sub></div>
+                        </div>
+                        <div class="stat-box model-2-stat m2-stat">
+                            <div class="stat-value" id="m2-rv">—</div>
+                            <div class="stat-label">M2: r<sub>v</sub></div>
+                        </div>
+                        <div class="stat-box model-2-stat m2-stat">
+                            <div class="stat-value" id="m2-rt">—</div>
+                            <div class="stat-label">M2: r<sub>t</sub></div>
+                        </div>
+                        <div class="stat-box model-2-stat m2-stat">
+                            <div class="stat-value" id="m2-r0">—</div>
+                            <div class="stat-label">M2: r<sub>0</sub></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simulation-wrapper">
+                    <div class="simulation-container">
+                        <div id="plot"></div>
+                    </div>
+
+                    <div class="controls-panel">
+                        <h3><i class="fas fa-sliders-h"></i> Parameters</h3>
+
+                        <div class="control-section">
+                            <h4>Model 1</h4>
+                            <div class="control-group">
+                                <label>W<sub>0</sub> <span class="control-value" id="val-m1-w0">5.0</span></label>
+                                <div class="slider-number-row">
+                                    <input type="range" id="slider-m1-w0" min="1" max="15" step="0.5" value="5">
+                                    <input type="number" id="num-m1-w0" min="1" max="15" step="0.5" value="5">
+                                </div>
+                            </div>
+                            <div class="scale-control" id="scale-m1">
+                                <div class="scale-control-header">
+                                    <select id="mode-m1" class="scale-select" aria-label="Model 1 scale type">
+                                        <option value="rh">Half-mass radius (r<sub>h</sub>)</option>
+                                        <option value="rv">Virial radius (r<sub>v</sub>)</option>
+                                        <option value="r0">Scale radius (r<sub>0</sub>)</option>
+                                    </select>
+                                    <input type="number" id="num-m1-scale" min="0.1" step="0.1" value="2">
+                                </div>
+                                <div class="slider-number-row">
+                                    <input type="range" id="slider-m1-scale" min="0.1" max="25" step="0.1" value="2">
+                                </div>
+                                <p class="helper-text" id="hint-m1-scale">Sets the radius containing half the cluster mass.</p>
+                            </div>
+                            <div class="control-group">
+                                <label>&rho;<sub>0</sub> <span class="control-value" id="val-m1-rho0">1.0</span></label>
+                                <div class="slider-number-row">
+                                    <input type="range" id="slider-m1-rho0" min="0.1" max="100" step="0.1" value="1">
+                                    <input type="number" id="num-m1-rho0" min="0.1" max="100" step="0.1" value="1">
+                                </div>
+                                <p class="helper-text">Central mass density — normalizes the plot only; does not set N or IMF.</p>
+                            </div>
+                        </div>
+
+                        <div class="control-section model-2-section" id="model2Section">
+                            <div class="section-header-row">
+                                <h4>Model 2 (comparison)</h4>
+                                <label class="toggle-wrapper" title="Show second profile">
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="showModel2" checked>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <span class="toggle-label">On</span>
+                                </label>
+                            </div>
+                            <div class="model-2-controls" id="model2Controls">
+                            <div class="control-group">
+                                <label>W<sub>0</sub> <span class="control-value model-2-accent"
+                                        id="val-m2-w0">9.0</span></label>
+                                <div class="slider-number-row">
+                                    <input type="range" id="slider-m2-w0" min="1" max="15" step="0.5" value="9">
+                                    <input type="number" id="num-m2-w0" min="1" max="15" step="0.5" value="9">
+                                </div>
+                            </div>
+                            <div class="scale-control" id="scale-m2">
+                                <div class="scale-control-header">
+                                    <select id="mode-m2" class="scale-select" aria-label="Model 2 scale type">
+                                        <option value="rh">Half-mass radius (r<sub>h</sub>)</option>
+                                        <option value="rv">Virial radius (r<sub>v</sub>)</option>
+                                        <option value="r0">Scale radius (r<sub>0</sub>)</option>
+                                    </select>
+                                    <input type="number" id="num-m2-scale" min="0.1" step="0.1" value="2">
+                                </div>
+                                <div class="slider-number-row">
+                                    <input type="range" id="slider-m2-scale" min="0.1" max="25" step="0.1" value="2">
+                                </div>
+                                <p class="helper-text" id="hint-m2-scale">Sets the radius containing half the cluster mass.</p>
+                            </div>
+                            <div class="control-group">
+                                <label>&rho;<sub>0</sub> <span class="control-value model-2-accent"
+                                        id="val-m2-rho0">1.0</span></label>
+                                <div class="slider-number-row">
+                                    <input type="range" id="slider-m2-rho0" min="0.1" max="100" step="0.1" value="1">
+                                    <input type="number" id="num-m2-rho0" min="0.1" max="100" step="0.1" value="1">
+                                </div>
+                                <p class="helper-text">Central mass density — normalizes the plot only; does not set N or IMF.</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-reset" id="btnReset">
+                            <i class="fas fa-undo"></i> Reset to defaults
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="../js/footer.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/animations.js"></script>
+    <script>
+        new Footer().init('../');
+
+        // --- Physics (King 1966) ---
+
+        function erf(x) {
+            const sign = x >= 0 ? 1 : -1;
+            x = Math.abs(x);
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+            return sign * y;
+        }
+
+        function kingDensity(W) {
+            if (W <= 0) return 0;
+            return Math.exp(W) * erf(Math.sqrt(W)) - Math.sqrt((4 * W) / Math.PI) * (1 + (2 * W) / 3);
+        }
+
+        function interpolate(x, xArr, yArr) {
+            let low = 0;
+            let high = xArr.length - 1;
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2);
+                if (xArr[mid] < x) low = mid + 1;
+                else if (xArr[mid] > x) high = mid - 1;
+                else return yArr[mid];
+            }
+            if (high < 0) return yArr[0];
+            if (low >= xArr.length) return yArr[xArr.length - 1];
+            const x0 = xArr[high];
+            const x1 = xArr[low];
+            const y0 = yArr[high];
+            const y1 = yArr[low];
+            return y0 + ((x - x0) * (y1 - y0)) / (x1 - x0);
+        }
+
+        function solveKingModel(W0) {
+            const rho0_unnorm = kingDensity(W0);
+            let R = 1e-5;
+            let W = W0 - 1.5 * R * R;
+            let dWdR = -3.0 * R;
+            let M = (4.0 / 3.0) * Math.PI * Math.pow(R, 3) * 1.0;
+
+            const R_vals = [R];
+            const W_vals = [W];
+            const M_vals = [M];
+            const max_steps = 100000;
+            let steps = 0;
+
+            while (W > 0 && R < 1e5 && steps < max_steps) {
+                steps++;
+                const dR = Math.max(1e-5, Math.min(R * 0.05, 0.5));
+
+                const k1_w = dWdR;
+                let rho_tilde1 = kingDensity(W) / rho0_unnorm;
+                const k1_dw = -(2 / R) * dWdR - 9 * rho_tilde1;
+                const k1_m = 4 * Math.PI * R * R * rho_tilde1;
+
+                const W2 = W + (k1_w * dR) / 2;
+                const dWdR2 = dWdR + (k1_dw * dR) / 2;
+                const R2 = R + dR / 2;
+                const rho_tilde2 = kingDensity(Math.max(0, W2)) / rho0_unnorm;
+                const k2_w = dWdR2;
+                const k2_dw = -(2 / R2) * dWdR2 - 9 * rho_tilde2;
+                const k2_m = 4 * Math.PI * R2 * R2 * rho_tilde2;
+
+                const W3 = W + (k2_w * dR) / 2;
+                const dWdR3 = dWdR + (k2_dw * dR) / 2;
+                const R3 = R + dR / 2;
+                const rho_tilde3 = kingDensity(Math.max(0, W3)) / rho0_unnorm;
+                const k3_w = dWdR3;
+                const k3_dw = -(2 / R3) * dWdR3 - 9 * rho_tilde3;
+                const k3_m = 4 * Math.PI * R3 * R3 * rho_tilde3;
+
+                const W4 = W + k3_w * dR;
+                const dWdR4 = dWdR + k3_dw * dR;
+                const R4 = R + dR;
+                const rho_tilde4 = kingDensity(Math.max(0, W4)) / rho0_unnorm;
+                const k4_w = dWdR4;
+                const k4_dw = -(2 / R4) * dWdR4 - 9 * rho_tilde4;
+                const k4_m = 4 * Math.PI * R4 * R4 * rho_tilde4;
+
+                const nW = W + (dR / 6) * (k1_w + 2 * k2_w + 2 * k3_w + k4_w);
+                const ndW = dWdR + (dR / 6) * (k1_dw + 2 * k2_dw + 2 * k3_dw + k4_dw);
+                const nM = M + (dR / 6) * (k1_m + 2 * k2_m + 2 * k3_m + k4_m);
+
+                if (nW <= 0) {
+                    const fraction = W / (W - nW);
+                    R += fraction * dR;
+                    W = 0;
+                    M += fraction * (nM - M);
+                    R_vals.push(R);
+                    W_vals.push(W);
+                    M_vals.push(M);
+                    break;
+                }
+
+                W = nW;
+                dWdR = ndW;
+                M = nM;
+                R += dR;
+                R_vals.push(R);
+                W_vals.push(W);
+                M_vals.push(M);
+            }
+
+            const M_tot = M_vals[M_vals.length - 1];
+            const targetM = M_tot / 2.0;
+            let Rh = R;
+            for (let i = 0; i < M_vals.length - 1; i++) {
+                if (M_vals[i] <= targetM && M_vals[i + 1] >= targetM) {
+                    Rh = R_vals[i] + (targetM - M_vals[i]) * (R_vals[i + 1] - R_vals[i]) / (M_vals[i + 1] - M_vals[i]);
+                    break;
+                }
+            }
+
+            const rhRvRatio = rhToRvRatio(W0, R_vals, W_vals, M_vals, Rh);
+            const Rv = Rh / rhRvRatio;
+            return { R: R_vals, W: W_vals, Rt: R, Rh, Rv, rhRvRatio };
+        }
+
+        /** Mean-square speed for isotropic King DF at potential depth W (dimensionless units). */
+        function meanSqSpeed(W) {
+            if (W <= 1e-14) return 0;
+            const expW = Math.exp(-W);
+            const vmax = Math.sqrt(2 * W);
+            let rhoInt = 0;
+            let v2Int = 0;
+            const n = 200;
+            for (let i = 0; i < n; i++) {
+                const v = (i + 0.5) * vmax / n;
+                const E = 0.5 * v * v - W;
+                const f = Math.exp(E) - expW;
+                if (f <= 0) continue;
+                const shell = 4 * Math.PI * v * v * (vmax / n);
+                rhoInt += f * shell;
+                v2Int += f * v * v * shell;
+            }
+            return rhoInt > 0 ? v2Int / rhoInt : 0;
+        }
+
+        /** Precomputed r_h/r_v at select W0 (local virial crossing); interpolated between knots. */
+        const RH_RV_TABLE = [
+            [1, 0.9484], [1.5, 0.9313], [2, 0.895], [2.5, 0.865], [3, 0.838],
+            [4, 0.802], [5, 0.78], [7, 0.78], [9, 0.78], [12, 0.78], [15, 0.78]
+        ];
+
+        function rhRvFromTable(W0) {
+            if (W0 <= RH_RV_TABLE[0][0]) return RH_RV_TABLE[0][1];
+            const last = RH_RV_TABLE[RH_RV_TABLE.length - 1];
+            if (W0 >= last[0]) return last[1];
+            for (let i = 0; i < RH_RV_TABLE.length - 1; i++) {
+                const [w0a, ra] = RH_RV_TABLE[i];
+                const [w0b, rb] = RH_RV_TABLE[i + 1];
+                if (W0 >= w0a && W0 <= w0b) {
+                    const t = (W0 - w0a) / (w0b - w0a);
+                    return ra + t * (rb - ra);
+                }
+            }
+            return 0.78;
+        }
+
+        /** r_h/r_v: solve M(<r)/r = <v²>(W) for first r > r_h; fallback to table if no crossing. */
+        function rhToRvRatio(W0, R_vals, W_vals, M_vals, Rh) {
+            for (let i = 1; i < R_vals.length; i++) {
+                const Wm = Math.max(0, 0.5 * (W_vals[i - 1] + W_vals[i]));
+                const v2 = meanSqSpeed(Wm);
+                const f0 = M_vals[i - 1] / R_vals[i - 1] - v2;
+                const f1 = M_vals[i] / R_vals[i] - v2;
+                if (R_vals[i] > Rh && f0 <= 0 && f1 >= 0) {
+                    const t = f0 / (f0 - f1);
+                    const Rv = R_vals[i - 1] + t * (R_vals[i] - R_vals[i - 1]);
+                    return Rh / Rv;
+                }
+            }
+            return rhRvFromTable(W0);
+        }
+
+        function scaleToR0(scaleMode, scaleVal, sol) {
+            if (scaleMode === 'r0') return scaleVal;
+            if (scaleMode === 'rh') return scaleVal / sol.Rh;
+            return scaleVal / sol.Rv;
+        }
+
+        function physicalRadii(sol, r0) {
+            return {
+                r0,
+                rh: sol.Rh * r0,
+                rv: sol.Rv * r0,
+                rt: sol.Rt * r0,
+                rhRvRatio: sol.rhRvRatio
+            };
+        }
+
+        function generatePlotPoints(sol, w0, r0, rho0) {
+            const { R, W, Rt } = sol;
+            const rho0_unnorm = kingDensity(w0);
+            const num_points = 300;
+            const min_log = Math.log10(Math.max(1e-2, Rt / 1000));
+            const max_log = Math.log10(Rt);
+            const r_phys = [];
+            const rho_phys = [];
+
+            for (let i = 0; i < num_points; i++) {
+                const current_r = Math.pow(10, min_log + (i * (max_log - min_log)) / (num_points - 1));
+                if (current_r > Rt) break;
+                let interpolated_W = interpolate(current_r, R, W);
+                if (interpolated_W < 0) interpolated_W = 0;
+                const rho_tilde = kingDensity(interpolated_W) / rho0_unnorm;
+                r_phys.push(current_r * r0);
+                rho_phys.push(Math.max(rho_tilde * rho0, 1e-12));
+            }
+
+            return { r_phys, rho_phys, c: Math.log10(Rt), rt_phys: Rt * r0 };
+        }
+
+        // --- Defaults ---
+        const DEFAULTS = {
+            m1: { w0: 5, scaleMode: 'rh', scaleVal: 2, rho0: 1 },
+            m2: { w0: 9, scaleMode: 'rh', scaleVal: 2, rho0: 1 },
+            showModel2: true
+        };
+
+        const AXIS_LIMITS = {
+            x: [Math.log10(1e-4), Math.log10(1e5)],
+            y: [Math.log10(1e-14), Math.log10(1e6)]
+        };
+        const MIN_LOG_SPAN = 1.25;
+        const AXIS_PAD = 0.08;
+
+        const SCALE_HINTS = {
+            rh: 'Sets the radius containing half the cluster mass (useful for N-body structural ICs).',
+            rv: 'Sets the virial radius r_v from the solved King model. r_h/r_v depends on W₀ (~0.78 at high W₀).',
+            r0: 'Standard King model mathematical scaling parameter.'
+        };
+
+        const SCALE_SLIDER_MAX = { rh: 25, rv: 25, r0: 10 };
+
+        function computeAxisRanges(traces) {
+            let xMin = Infinity;
+            let xMax = 0;
+            let yMin = Infinity;
+            let yMax = 0;
+
+            traces.forEach((trace) => {
+                for (let i = 0; i < trace.x.length; i++) {
+                    const x = trace.x[i];
+                    const y = trace.y[i];
+                    if (x > 0) {
+                        xMin = Math.min(xMin, x);
+                        xMax = Math.max(xMax, x);
+                    }
+                    if (y > 0) {
+                        yMin = Math.min(yMin, y);
+                        yMax = Math.max(yMax, y);
+                    }
+                }
+            });
+
+            if (!isFinite(xMin) || xMax <= 0) {
+                xMin = 0.01;
+                xMax = 100;
+            }
+            if (!isFinite(yMin) || yMax <= 0) {
+                yMin = 1e-6;
+                yMax = 1;
+            }
+
+            function logRange(minVal, maxVal, limits) {
+                let lo = Math.log10(minVal);
+                let hi = Math.log10(maxVal);
+                if (hi - lo < MIN_LOG_SPAN) {
+                    const mid = (lo + hi) / 2;
+                    lo = mid - MIN_LOG_SPAN / 2;
+                    hi = mid + MIN_LOG_SPAN / 2;
+                }
+                const span = hi - lo;
+                lo -= span * AXIS_PAD;
+                hi += span * AXIS_PAD;
+                return [
+                    Math.max(limits[0], lo),
+                    Math.min(limits[1], hi)
+                ];
+            }
+
+            return {
+                x: logRange(xMin, xMax, AXIS_LIMITS.x),
+                y: logRange(yMin, yMax, AXIS_LIMITS.y)
+            };
+        }
+
+        function buildPlotLayout(axisRanges) {
+            return {
+                autosize: true,
+                title: {
+                    text: 'King (1966) Density Profiles',
+                    font: { size: 17, color: '#e2e8f0' }
+                },
+                margin: { t: 48, r: 16, b: 56, l: 64 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                xaxis: {
+                    title: { text: 'Radius (r)', font: { size: 13, color: '#cbd5e1' }, standoff: 12 },
+                    type: 'log',
+                    range: axisRanges.x,
+                    autorange: false,
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    tickfont: { size: 11, color: '#94a3b8' },
+                    zeroline: false
+                },
+                yaxis: {
+                    title: { text: 'Density ρ(r)', font: { size: 13, color: '#cbd5e1' }, standoff: 12 },
+                    type: 'log',
+                    range: axisRanges.y,
+                    autorange: false,
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    tickfont: { size: 11, color: '#94a3b8' },
+                    zeroline: false
+                },
+                legend: {
+                    x: 0.98,
+                    y: 0.98,
+                    xanchor: 'right',
+                    yanchor: 'top',
+                    font: { size: 10, color: '#cbd5e1' },
+                    bgcolor: 'rgba(15, 23, 42, 0.85)',
+                    bordercolor: 'rgba(255,255,255,0.1)',
+                    borderwidth: 1
+                },
+                hovermode: 'x'
+            };
+        }
+
+        const plotConfig = { responsive: true, displayModeBar: false, scrollZoom: false };
+
+        let debounceTimer = null;
+
+        function clamp(val, min, max) {
+            return Math.min(max, Math.max(min, val));
+        }
+
+        function getModelParams(prefix) {
+            return {
+                w0: parseFloat(document.getElementById(`num-${prefix}-w0`).value),
+                scaleMode: document.getElementById(`mode-${prefix}`).value,
+                scaleVal: parseFloat(document.getElementById(`num-${prefix}-scale`).value),
+                rho0: parseFloat(document.getElementById(`num-${prefix}-rho0`).value)
+            };
+        }
+
+        function syncDisplay(prefix, params) {
+            document.getElementById(`val-${prefix}-w0`).textContent = params.w0.toFixed(1);
+            document.getElementById(`val-${prefix}-rho0`).textContent = params.rho0.toFixed(1);
+        }
+
+        function updateScaleSliderMax(prefix, mode) {
+            const max = SCALE_SLIDER_MAX[mode] || 25;
+            const slider = document.getElementById(`slider-${prefix}-scale`);
+            const num = document.getElementById(`num-${prefix}-scale`);
+            slider.max = max;
+            num.max = max;
+            const v = clamp(parseFloat(num.value) || 0.1, 0.1, max);
+            slider.value = v;
+            num.value = v;
+        }
+
+        function updateScaleHint(prefix, mode) {
+            document.getElementById(`hint-${prefix}-scale`).textContent = SCALE_HINTS[mode] || '';
+        }
+
+        function convertScaleValue(w0, oldMode, newMode, currentVal) {
+            const sol = solveKingModel(w0);
+            const r0Old = scaleToR0(oldMode, currentVal, sol);
+            if (newMode === 'r0') return r0Old;
+            if (newMode === 'rh') return sol.Rh * r0Old;
+            return sol.Rv * r0Old;
+        }
+
+        function handleScaleModeChange(prefix, oldMode, newMode) {
+            if (oldMode === newMode) return;
+            const modeEl = document.getElementById(`mode-${prefix}`);
+            const w0 = parseFloat(document.getElementById(`num-${prefix}-w0`).value);
+            const numScale = document.getElementById(`num-${prefix}-scale`);
+            const newVal = convertScaleValue(w0, oldMode, newMode, parseFloat(numScale.value));
+            modeEl.value = newMode;
+            modeEl.dataset.prevMode = newMode;
+            updateScaleSliderMax(prefix, newMode);
+            updateScaleHint(prefix, newMode);
+            numScale.value = newVal.toFixed(2);
+            document.getElementById(`slider-${prefix}-scale`).value = newVal;
+            scheduleUpdate();
+        }
+
+        function bindParamPair(prefix, minMax) {
+            const sliderW0 = document.getElementById(`slider-${prefix}-w0`);
+            const numW0 = document.getElementById(`num-${prefix}-w0`);
+            const sliderScale = document.getElementById(`slider-${prefix}-scale`);
+            const numScale = document.getElementById(`num-${prefix}-scale`);
+            const sliderRho0 = document.getElementById(`slider-${prefix}-rho0`);
+            const numRho0 = document.getElementById(`num-${prefix}-rho0`);
+            const modeEl = document.getElementById(`mode-${prefix}`);
+
+            function link(slider, num, min, max) {
+                slider.addEventListener('input', () => {
+                    num.value = slider.value;
+                    scheduleUpdate();
+                });
+                num.addEventListener('input', () => {
+                    const v = clamp(parseFloat(num.value) || min, min, max);
+                    num.value = v;
+                    slider.value = v;
+                    scheduleUpdate();
+                });
+            }
+
+            link(sliderW0, numW0, minMax.w0.min, minMax.w0.max);
+            link(sliderRho0, numRho0, minMax.rho0.min, minMax.rho0.max);
+
+            sliderScale.addEventListener('input', () => {
+                numScale.value = sliderScale.value;
+                scheduleUpdate();
+            });
+            numScale.addEventListener('input', () => {
+                const max = parseFloat(sliderScale.max);
+                const v = clamp(parseFloat(numScale.value) || 0.1, 0.1, max);
+                numScale.value = v;
+                sliderScale.value = v;
+                scheduleUpdate();
+            });
+
+            modeEl.addEventListener('change', () => {
+                const newMode = modeEl.value;
+                const oldMode = modeEl.dataset.prevMode || newMode;
+                handleScaleModeChange(prefix, oldMode, newMode);
+            });
+            modeEl.dataset.prevMode = modeEl.value;
+        }
+
+        function setModelParams(prefix, p) {
+            document.getElementById(`slider-${prefix}-w0`).value = p.w0;
+            document.getElementById(`num-${prefix}-w0`).value = p.w0;
+            const modeEl = document.getElementById(`mode-${prefix}`);
+            modeEl.value = p.scaleMode;
+            modeEl.dataset.prevMode = p.scaleMode;
+            updateScaleSliderMax(prefix, p.scaleMode);
+            updateScaleHint(prefix, p.scaleMode);
+            document.getElementById(`slider-${prefix}-scale`).value = p.scaleVal;
+            document.getElementById(`num-${prefix}-scale`).value = p.scaleVal;
+            document.getElementById(`slider-${prefix}-rho0`).value = p.rho0;
+            document.getElementById(`num-${prefix}-rho0`).value = p.rho0;
+            syncDisplay(prefix, p);
+        }
+
+        function updateModelStats(prefix, sol, radii, dimmed) {
+            document.querySelectorAll(`.m2-stat`).forEach((el) => {
+                if (prefix === 'm2') el.classList.toggle('dimmed', dimmed);
+            });
+            const ids = ['rh', 'rv', 'rt', 'r0'];
+            ids.forEach((key) => {
+                const el = document.getElementById(`${prefix}-${key}`);
+                el.textContent = dimmed ? '—' : radii[key].toFixed(2);
+            });
+        }
+
+        function buildTrace(label, data, color) {
+            return {
+                x: data.r_phys,
+                y: data.rho_phys,
+                mode: 'lines',
+                name: label,
+                line: { color, width: 3 },
+                hovertemplate: 'r=%{x:.3g}<br>ρ=%{y:.3g}<extra></extra>'
+            };
+        }
+
+        function updatePlot() {
+            const p1 = getModelParams('m1');
+            const showM2 = document.getElementById('showModel2').checked;
+            const p2 = getModelParams('m2');
+
+            syncDisplay('m1', p1);
+            if (showM2) syncDisplay('m2', p2);
+
+            document.getElementById('model2Controls').classList.toggle('disabled', !showM2);
+
+            const sol1 = solveKingModel(p1.w0);
+            const r0_1 = scaleToR0(p1.scaleMode, p1.scaleVal, sol1);
+            const rad1 = physicalRadii(sol1, r0_1);
+            const data1 = generatePlotPoints(sol1, p1.w0, r0_1, p1.rho0);
+            updateModelStats('m1', sol1, rad1, false);
+
+            const traces = [
+                buildTrace(
+                    `Model 1 (W₀=${p1.w0.toFixed(1)}, r_h=${rad1.rh.toFixed(2)}, r_h/r_v=${rad1.rhRvRatio.toFixed(2)})`,
+                    data1,
+                    '#38bdf8'
+                )
+            ];
+
+            if (showM2) {
+                const sol2 = solveKingModel(p2.w0);
+                const r0_2 = scaleToR0(p2.scaleMode, p2.scaleVal, sol2);
+                const rad2 = physicalRadii(sol2, r0_2);
+                const data2 = generatePlotPoints(sol2, p2.w0, r0_2, p2.rho0);
+                updateModelStats('m2', sol2, rad2, false);
+                traces.push(
+                    buildTrace(
+                        `Model 2 (W₀=${p2.w0.toFixed(1)}, r_h=${rad2.rh.toFixed(2)}, r_h/r_v=${rad2.rhRvRatio.toFixed(2)})`,
+                        data2,
+                        '#fbbf24'
+                    )
+                );
+            } else {
+                updateModelStats('m2', null, null, true);
+            }
+
+            const layout = buildPlotLayout(computeAxisRanges(traces));
+            Plotly.react('plot', traces, layout, plotConfig);
+            requestAnimationFrame(() => {
+                const plotEl = document.getElementById('plot');
+                if (plotEl && plotEl.offsetParent !== null) {
+                    Plotly.Plots.resize(plotEl);
+                }
+            });
+        }
+
+        function scheduleUpdate() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updatePlot, 40);
+        }
+
+        bindParamPair('m1', {
+            w0: { min: 1, max: 15 },
+            rho0: { min: 0.1, max: 100 }
+        });
+        bindParamPair('m2', {
+            w0: { min: 1, max: 15 },
+            rho0: { min: 0.1, max: 100 }
+        });
+
+        document.getElementById('showModel2').addEventListener('change', updatePlot);
+
+        document.getElementById('btnReset').addEventListener('click', () => {
+            setModelParams('m1', DEFAULTS.m1);
+            setModelParams('m2', DEFAULTS.m2);
+            document.getElementById('showModel2').checked = DEFAULTS.showModel2;
+            updatePlot();
+        });
+
+        function resizePlot() {
+            const plotEl = document.getElementById('plot');
+            if (plotEl) Plotly.Plots.resize(plotEl);
+        }
+
+        setModelParams('m1', DEFAULTS.m1);
+        setModelParams('m2', DEFAULTS.m2);
+        Plotly.newPlot('plot', [], buildPlotLayout({
+            x: [Math.log10(0.01), Math.log10(100)],
+            y: [Math.log10(1e-8), Math.log10(10)]
+        }), plotConfig);
+
+        window.addEventListener('load', () => {
+            updatePlot();
+            resizePlot();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(resizePlot, 120);
+        });
+
+        if (typeof ResizeObserver !== 'undefined') {
+            const ro = new ResizeObserver(() => resizePlot());
+            ro.observe(document.querySelector('.simulation-container'));
+        }
+    </script>
+</body>
+
+</html>
