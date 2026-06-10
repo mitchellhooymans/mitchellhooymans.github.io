@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmology Calculator | Mitchell Hooymans</title>
+  <meta name="description" content="Modern cosmology calculator. Compute distances, lookback times, ages, and observational quantities for any redshift, with curvature, dark energy, and visualizations.">
+  <link rel="canonical" href="https://mitchellhooymans.com/tools/cosmology.html" />
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mitchellhooymans.com/tools/cosmology.html">
+  <meta property="og:title" content="Cosmology Calculator | Mitchell Hooymans">
+  <meta property="og:description" content="Compute cosmological distances, ages, and observational quantities. Supports curvature, dark energy w, batch processing, and reverse lookups.">
+  <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cosmology Calculator | Mitchell Hooymans">
+  <meta name="twitter:description" content="Compute cosmological distances, ages, and observational quantities.">
+  <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ======== Cosmology Calculator: layout ======== */
+    .cosmo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .cosmo-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: var(--space-2);
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cosmo-tab-btn {
+      flex: 1 1 140px;
+      min-width: 0;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-gray-400);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-family: var(--font-primary);
+    }
+
+    .cosmo-tab-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--color-accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .cosmo-tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--color-white);
+    }
+
+    .cosmo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 768px) {
+      .cosmo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cosmo-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      transition: border-color var(--transition-base), background var(--transition-base);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cosmo-card:hover {
+      background: rgba(15, 23, 42, 0.75);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .cosmo-card.span-2 {
+      grid-column: 1 / -1;
+    }
+
+    .card-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-gray-500);
+      margin-bottom: var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .card-label .label-num {
+      color: var(--color-accent);
+    }
+
+    /* ======== Inputs & sliders ======== */
+    .param-row {
+      margin-bottom: var(--space-4);
+    }
+
+    .param-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .param-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: var(--space-2);
+      gap: var(--space-2);
+    }
+
+    .param-name {
+      color: var(--color-gray-300);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .param-name code {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--color-gray-400);
+    }
+
+    .param-row .info-icon {
+      color: var(--color-gray-500);
+      font-size: 0.75rem;
+      cursor: help;
+      transition: color var(--transition-fast);
+    }
+
+    .param-row .info-icon:hover {
+      color: var(--color-accent);
+    }
+
+    .param-input-wrap {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .num-field {
+      width: 90px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      padding: 6px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color var(--transition-fast);
+      text-align: right;
+    }
+
+    .num-field:focus {
+      border-color: var(--color-accent);
+    }
+
+    .num-field.readonly {
+      background: rgba(0, 0, 0, 0.15);
+      color: var(--color-accent);
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+
+    .slider-thin {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      height: 6px;
+      border-radius: var(--radius-full);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-thin::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .slider-thin::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider-thin::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    /* ======== Presets ======== */
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .preset-row .preset-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-gray-400);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .preset-select {
+      flex: 1 1 260px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      padding: 10px 36px 10px 12px;
+      font-family: var(--font-primary);
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px top 50%;
+      background-size: 10px auto;
+      transition: border-color var(--transition-fast);
+    }
+
+    .preset-select:focus {
+      border-color: var(--color-accent);
+    }
+
+    .preset-select option,
+    .preset-select optgroup {
+      background: var(--color-gray-100);
+      color: var(--color-white);
+    }
+
+    .preset-reset {
+      padding: 9px 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--color-gray-300);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: var(--font-primary);
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .preset-reset:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      color: var(--color-accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .preset-caption {
+      font-size: 0.78rem;
+      color: var(--color-gray-400);
+      margin-bottom: var(--space-5);
+      padding: 0 4px;
+      min-height: 1.2em;
+      line-height: 1.5;
+    }
+
+    .preset-caption a {
+      color: var(--color-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(56, 189, 248, 0.4);
+    }
+
+    .preset-caption a:hover {
+      border-bottom-color: var(--color-accent);
+    }
+
+    .preset-caption .custom-tag {
+      color: var(--color-gray-500);
+      font-style: italic;
+    }
+
+    /* ======== Output stat boxes ======== */
+    .stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: var(--space-3) var(--space-3);
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      gap: var(--space-3);
+    }
+
+    .stat-row.highlight {
+      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .stat-label {
+      color: var(--color-gray-300);
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .stat-value {
+      color: var(--color-white);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: right;
+      min-width: 0;
+      word-break: break-all;
+    }
+
+    .stat-value .unit {
+      color: var(--color-gray-500);
+      font-weight: 400;
+      margin-left: 4px;
+      font-size: 0.8rem;
+    }
+
+    .stat-value .alt-unit {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--color-gray-500);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ======== Action bar ======== */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      justify-content: center;
+    }
+
+    .action-pill {
+      flex: 1 1 auto;
+      min-width: 160px;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-gray-300);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-family: var(--font-primary);
+    }
+
+    .action-pill:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      color: var(--color-accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .action-pill.primary {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: var(--color-accent);
+    }
+
+    .action-pill.primary:hover {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: rgba(56, 189, 248, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .action-pill.success {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .action-pill.success:hover {
+      background: rgba(16, 185, 129, 0.22);
+    }
+
+    /* ======== Plot containers ========
+       Explicit `height` (not min-height) so Plotly's responsive auto-sizing has
+       a concrete box to measure. No background or border on the container
+       itself: the card behind it provides the visual frame, so there's never
+       an inner shadow-box that could fail to fill the card width.
+     */
+    .plot-container {
+      width: 100%;
+      height: 340px;
+      position: relative;
+      background: transparent;
+    }
+
+    /* Force the Plotly inner wrapper to fully occupy the container. */
+    .plot-container > .js-plotly-plot,
+    .plot-container > .js-plotly-plot > .plot-container {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ======== Tables ======== */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .cosmo-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+
+    .cosmo-table th, .cosmo-table td {
+      text-align: right;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--color-gray-200);
+    }
+
+    .cosmo-table th {
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--color-gray-400);
+      font-weight: 600;
+      font-family: var(--font-primary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      position: sticky;
+      top: 0;
+    }
+
+    .cosmo-table td.col-z {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    /* ======== Status / messages ======== */
+    .status-msg {
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+      font-size: 0.9rem;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      border-left: 4px solid transparent;
+    }
+
+    .status-msg.show { display: flex; }
+
+    .status-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-left-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .status-success {
+      background: rgba(16, 185, 129, 0.1);
+      border-left-color: #10b981;
+      color: #6ee7b7;
+    }
+
+    /* ======== Misc ======== */
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--color-gray-500);
+      margin-top: 6px;
+    }
+
+    .equation-box {
+      background: rgba(0, 0, 0, 0.25);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      margin: var(--space-3) 0;
+      text-align: center;
+      font-size: 0.95rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--color-gray-200);
+      overflow-x: auto;
+    }
+
+    /* ======== Energy budget bar ======== */
+    .energy-bar-track {
+      display: flex;
+      width: 100%;
+      height: 64px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .energy-bar-seg {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-right: 1px solid rgba(15, 23, 42, 0.6);
+      font-family: var(--font-mono);
+      color: var(--color-white);
+      transition: width 0.35s ease;
+      min-width: 0;
+      padding: 0 6px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .energy-bar-seg:last-child { border-right: none; }
+
+    .energy-bar-seg .seg-name {
+      font-family: var(--font-primary);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      opacity: 0.95;
+      white-space: nowrap;
+    }
+
+    .energy-bar-seg .seg-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .energy-budget {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .budget-pill {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .budget-pill .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .budget-pill .name {
+      color: var(--color-gray-300);
+      font-family: var(--font-primary);
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .budget-status {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--color-gray-300);
+      margin-top: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .budget-status .geom-tag {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      margin: 0 4px;
+    }
+
+    .geom-flat   { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .geom-open   { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    .geom-closed { background: rgba(239, 68, 68, 0.15);  color: #f87171; }
+
+    /* ======== Method & References ======== */
+    .method-intro {
+      color: var(--color-gray-300);
+      line-height: 1.7;
+      margin-bottom: var(--space-4);
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .method-grid .span-full { grid-column: 1 / -1; }
+
+    .method-section {
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+    }
+
+    .method-h {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .method-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      color: var(--color-gray-300);
+      font-size: 0.88rem;
+    }
+
+    .method-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      line-height: 1.55;
+    }
+
+    .method-list li:last-child { border-bottom: none; padding-bottom: 0; }
+    .method-list li:first-child { padding-top: 0; }
+    .method-list li strong { color: var(--color-white); font-weight: 600; }
+
+    .method-table {
+      width: 100%;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      border-collapse: collapse;
+    }
+
+    .method-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--color-gray-200);
+    }
+
+    .method-table tr:last-child td { border-bottom: none; }
+
+    .method-table td:first-child {
+      color: var(--color-accent);
+      font-weight: 600;
+      width: 45%;
+      white-space: nowrap;
+    }
+
+    .method-table td:last-child {
+      text-align: right;
+    }
+
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .ref-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .ref-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .ref-card .ref-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--color-gray-500);
+      font-weight: 600;
+    }
+
+    .ref-card .ref-title {
+      font-weight: 600;
+      color: var(--color-white);
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .ref-card .ref-desc {
+      font-size: 0.85rem;
+      color: var(--color-gray-400);
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .ref-card .ref-link {
+      font-size: 0.82rem;
+      color: var(--color-accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-family: var(--font-mono);
+    }
+
+    .ref-card .ref-link:hover {
+      text-decoration: underline;
+    }
+
+    .method-footer {
+      margin-top: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--color-gray-400);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .method-footer p { margin-bottom: var(--space-2); }
+    .method-footer p:last-child { margin-bottom: 0; }
+
+    .plot-container.tall { height: 420px; }
+
+    @media (max-width: 768px) {
+      .plot-container       { height: 320px; }
+      .plot-container.tall  { height: 360px; }
+    }
+
+    .reverse-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .input-group {
+      display: flex;
+      gap: var(--space-2);
+      align-items: stretch;
+    }
+
+    .input-group select,
+    .input-group input {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .input-group select {
+      font-family: var(--font-primary);
+    }
+
+    .input-group input {
+      flex: 1;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: var(--color-accent);
+    }
+
+    .reverse-result {
+      display: none;
+      padding: var(--space-3) var(--space-4);
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 3px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      font-family: var(--font-mono);
+      margin-top: var(--space-3);
+    }
+
+    .reverse-result.show { display: block; }
+
+    .batch-area {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      padding: var(--space-3);
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: border-color var(--transition-base);
+    }
+
+    .batch-area:focus {
+      border-color: var(--color-accent);
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+  </style>
+</head>
+
+<body>
+  <div class="global-nebula">
+    <div class="nebula-glow"></div>
+    <div class="nebula-glow"></div>
+  </div>
+
+  <div id="navbar-placeholder"></div>
+
+  <header class="page-header" style="position: relative; z-index: 10;">
+    <div class="container">
+      <a href="../pages/tools.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+  </header>
+
+  <section class="hero" style="min-height: 18vh; padding-top: 20px; position: relative; overflow: hidden;">
+    <div class="container" style="position: relative; z-index: 1;">
+      <div class="page-hero-content" style="text-align: center;">
+        <h1 class="animate-fade-in-up delay-100">Cosmology Calculator</h1>
+        <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 720px; margin: 0 auto;">
+          A modern, interactive tool for cosmological distances, lookback times, ages, and observational quantities. Supports curvature, dark energy equation of state, batch processing, and reverse lookups.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section pt-0">
+    <div class="container cosmo-container">
+
+      <div class="cosmo-tabs animate-fade-in-up delay-300" role="tablist" aria-label="Cosmology calculator views">
+        <button class="cosmo-tab-btn active" data-tab="calculator" role="tab" aria-selected="true">
+          <i class="fas fa-calculator"></i> Calculator
+        </button>
+        <button class="cosmo-tab-btn" data-tab="visualize" role="tab" aria-selected="false">
+          <i class="fas fa-chart-line"></i> Visualize
+        </button>
+        <button class="cosmo-tab-btn" data-tab="batch" role="tab" aria-selected="false">
+          <i class="fas fa-table"></i> Batch
+        </button>
+        <button class="cosmo-tab-btn" data-tab="advanced" role="tab" aria-selected="false">
+          <i class="fas fa-tools"></i> Advanced
+        </button>
+      </div>
+
+      <div id="status" class="status-msg" role="status" aria-live="polite"></div>
+
+      <!-- =================== CALCULATOR TAB =================== -->
+      <div id="tab-calculator" class="tab-pane active" role="tabpanel">
+        <div class="cosmo-grid">
+
+          <!-- 01. Cosmological Model -->
+          <div class="cosmo-card span-2">
+            <div class="card-label">
+              <span><span class="label-num">01</span> &mdash; Cosmological Model</span>
+              <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;">Live updates as you adjust parameters</span>
+            </div>
+
+            <div class="preset-row">
+              <span class="preset-label"><i class="fas fa-bookmark"></i> Cosmology preset</span>
+              <select id="preset-select" class="preset-select" aria-label="Cosmology preset selector">
+                <option value="custom">Custom (current values)</option>
+                <optgroup label="CMB experiments">
+                  <option value="planck18">Planck 2018 (Aghanim+20)</option>
+                  <option value="wmap9">WMAP 9-year (Hinshaw+13)</option>
+                </optgroup>
+                <optgroup label="Supernovae &amp; late universe">
+                  <option value="pantheon">Pantheon+ &amp; SH0ES (Brout+22)</option>
+                  <option value="desy5">DES SN5YR (Vincenzi+24)</option>
+                </optgroup>
+                <optgroup label="BAO">
+                  <option value="desi">DESI BAO Y1 + CMB (Adame+24)</option>
+                </optgroup>
+                <optgroup label="Toy / pedagogical">
+                  <option value="eds">Einstein-de Sitter</option>
+                  <option value="open">Open (matter only, no DE)</option>
+                </optgroup>
+              </select>
+              <button class="preset-reset" id="btn-preset-reset" title="Restore the Planck 2018 defaults and reset z&#8321;, z&#8322;.">
+                <i class="fas fa-undo"></i> Reset
+              </button>
+            </div>
+            <div class="preset-caption" id="preset-caption"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5);">
+              <div>
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Hubble Constant <code>H&#8320;</code>
+                      <i class="fas fa-info-circle info-icon" title="Present-day expansion rate of the universe in km/s/Mpc."></i>
+                    </span>
+                    <span class="helper-text" style="margin: 0; color: var(--color-gray-400);">km/s/Mpc</span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="range" class="slider-thin" id="H0-slider" min="20" max="100" step="0.1" value="67.4">
+                    <input type="number" class="num-field" id="H0-input" min="20" max="100" step="0.1" value="67.4" aria-label="Hubble constant value">
+                  </div>
+                </div>
+
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Matter Density <code>&#937;<sub>M</sub></code>
+                      <i class="fas fa-info-circle info-icon" title="Present-day density of matter (baryons + cold dark matter) relative to critical density."></i>
+                    </span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="range" class="slider-thin" id="OmegaM-slider" min="0" max="2" step="0.001" value="0.315">
+                    <input type="number" class="num-field" id="OmegaM-input" min="0" max="2" step="0.001" value="0.315" aria-label="Matter density value">
+                  </div>
+                </div>
+
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Vacuum Energy <code>&#937;<sub>&#923;</sub></code>
+                      <i class="fas fa-info-circle info-icon" title="Present-day dark energy / cosmological constant density relative to critical density."></i>
+                    </span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="range" class="slider-thin" id="OmegaL-slider" min="0" max="2" step="0.001" value="0.685">
+                    <input type="number" class="num-field" id="OmegaL-input" min="0" max="2" step="0.001" value="0.685" aria-label="Dark energy density value">
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Curvature <code>&#937;<sub>K</sub></code>
+                      <i class="fas fa-info-circle info-icon" title="Curvature density: 1 - &#937;&#7504; - &#937;&#923;. Positive: open, zero: flat, negative: closed."></i>
+                    </span>
+                    <span class="helper-text" style="margin: 0;" id="curvature-label">flat</span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="number" class="num-field readonly" id="OmegaK-display" value="0.000" readonly aria-label="Curvature value (auto)">
+                    <span class="helper-text" style="margin: 0;">auto: 1 &minus; &#937;&#7504; &minus; &#937;&#923;</span>
+                  </div>
+                </div>
+
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Dark Energy EoS <code>w</code>
+                      <i class="fas fa-info-circle info-icon" title="Equation of state for dark energy: P = w&#x3C1;c&#xb2;. w = -1 corresponds to a cosmological constant."></i>
+                    </span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="range" class="slider-thin" id="w-slider" min="-2" max="0" step="0.01" value="-1">
+                    <input type="number" class="num-field" id="w-input" min="-3" max="1" step="0.01" value="-1" aria-label="Dark energy equation of state">
+                  </div>
+                </div>
+
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Redshift <code>z&#8321;</code> (observer)
+                      <i class="fas fa-info-circle info-icon" title="Redshift of the observer. Default 0 = on Earth today."></i>
+                    </span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="number" class="num-field" id="z1-input" min="0" max="1100" step="0.001" value="0" style="width: 100%;" aria-label="Redshift z1">
+                  </div>
+                </div>
+
+                <div class="param-row">
+                  <div class="param-head">
+                    <span class="param-name">Redshift <code>z&#8322;</code> (target)
+                      <i class="fas fa-info-circle info-icon" title="Redshift of the target object you are calculating distances to."></i>
+                    </span>
+                  </div>
+                  <div class="param-input-wrap">
+                    <input type="number" class="num-field" id="z2-input" min="0" max="1100" step="0.001" value="1.5" style="width: 100%;" aria-label="Redshift z2">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 02. Hubble & E(z) -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">02</span> &mdash; Expansion at z&#8322;</span></div>
+            <div class="stat-list">
+              <div class="stat-row">
+                <span class="stat-label">E(z&#8322;)
+                  <i class="fas fa-info-circle info-icon" title="Dimensionless expansion function: H(z)/H&#8320;."></i>
+                </span>
+                <span class="stat-value" id="out-Ez">&mdash;</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">H(z&#8322;)
+                  <i class="fas fa-info-circle info-icon" title="Hubble parameter at the time the light was emitted."></i>
+                </span>
+                <span class="stat-value" id="out-Hz">&mdash; <span class="unit">km/s/Mpc</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Hubble distance D&#7488;
+                  <i class="fas fa-info-circle info-icon" title="c / H&#8320;. Sets the natural length scale of the universe."></i>
+                </span>
+                <span class="stat-value" id="out-DH">&mdash; <span class="unit">Mpc</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Hubble time t&#7488;
+                  <i class="fas fa-info-circle info-icon" title="1 / H&#8320;. Approximate age scale; not the actual age unless empty universe."></i>
+                </span>
+                <span class="stat-value" id="out-tH">&mdash; <span class="unit">Gyr</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03. Standard Distances -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">03</span> &mdash; Standard Distances (Earth &rarr; z&#8322;)</span></div>
+            <div class="stat-list">
+              <div class="stat-row">
+                <span class="stat-label">Comoving D<sub>C</sub>
+                  <i class="fas fa-info-circle info-icon" title="Line-of-sight comoving distance: integrates (c/H) dz from 0 to z."></i>
+                </span>
+                <span class="stat-value">
+                  <span id="out-DC">&mdash;</span> <span class="unit">Mpc</span>
+                  <span class="alt-unit"><span id="out-DC-gly">&mdash;</span> Gly</span>
+                </span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Transverse D<sub>M</sub>
+                  <i class="fas fa-info-circle info-icon" title="Comoving transverse distance, identical to D&#x1d04; in a flat universe; differs in curved cases."></i>
+                </span>
+                <span class="stat-value">
+                  <span id="out-DM">&mdash;</span> <span class="unit">Mpc</span>
+                </span>
+              </div>
+              <div class="stat-row highlight">
+                <span class="stat-label">Angular Diameter D<sub>A</sub>
+                  <i class="fas fa-info-circle info-icon" title="Distance that converts angular size into physical size. D&#x1d00; = D&#x2098; / (1+z)."></i>
+                </span>
+                <span class="stat-value">
+                  <span id="out-DA">&mdash;</span> <span class="unit">Mpc</span>
+                  <span class="alt-unit"><span id="out-DA-gly">&mdash;</span> Gly</span>
+                </span>
+              </div>
+              <div class="stat-row highlight">
+                <span class="stat-label">Luminosity D<sub>L</sub>
+                  <i class="fas fa-info-circle info-icon" title="Distance that converts intrinsic luminosity into observed flux. D&#x029F; = D&#x2098; (1+z)."></i>
+                </span>
+                <span class="stat-value">
+                  <span id="out-DL">&mdash;</span> <span class="unit">Mpc</span>
+                  <span class="alt-unit"><span id="out-DL-gly">&mdash;</span> Gly</span>
+                </span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Light Travel Distance
+                  <i class="fas fa-info-circle info-icon" title="Distance light has actually traveled = c &times; lookback time."></i>
+                </span>
+                <span class="stat-value">
+                  <span id="out-DLT">&mdash;</span> <span class="unit">Mpc</span>
+                  <span class="alt-unit"><span id="out-DLT-gly">&mdash;</span> Gly</span>
+                </span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Comoving Volume V<sub>C</sub>
+                  <i class="fas fa-info-circle info-icon" title="Total comoving volume enclosed within redshift z (sphere up to D&#x2098;)."></i>
+                </span>
+                <span class="stat-value">
+                  <span id="out-VC">&mdash;</span> <span class="unit">Gpc&sup3;</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 04. Times -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">04</span> &mdash; Times</span></div>
+            <div class="stat-list">
+              <div class="stat-row highlight">
+                <span class="stat-label">Age of Universe today (t&#8320;)
+                  <i class="fas fa-info-circle info-icon" title="Integrate dz / [(1+z) H&#8320; E(z)] from 0 to infinity."></i>
+                </span>
+                <span class="stat-value"><span id="out-t0">&mdash;</span> <span class="unit">Gyr</span></span>
+              </div>
+              <div class="stat-row highlight">
+                <span class="stat-label">Lookback Time to z&#8322;
+                  <i class="fas fa-info-circle info-icon" title="Time light has been traveling from the source at z&#8322; to us."></i>
+                </span>
+                <span class="stat-value"><span id="out-tL">&mdash;</span> <span class="unit">Gyr</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Age of Universe at z&#8322;
+                  <i class="fas fa-info-circle info-icon" title="t&#8320; minus the lookback time. Age when the photons were emitted."></i>
+                </span>
+                <span class="stat-value"><span id="out-tz">&mdash;</span> <span class="unit">Gyr</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Lookback / t&#8320;
+                  <i class="fas fa-info-circle info-icon" title="Lookback time as a percentage of t&#8320; (i.e. 100 &times; t_L / t&#8320;). Not to be confused with conformal time."></i>
+                </span>
+                <span class="stat-value"><span id="out-tfrac">&mdash;</span> <span class="unit">%</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 05. Observational Quantities -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">05</span> &mdash; Observational Quantities</span></div>
+            <div class="stat-list">
+              <div class="stat-row">
+                <span class="stat-label">Physical Scale
+                  <i class="fas fa-info-circle info-icon" title="Physical size corresponding to one arcsecond at z&#8322;: D&#x1d00; / 206265."></i>
+                </span>
+                <span class="stat-value"><span id="out-scale">&mdash;</span> <span class="unit">kpc/arcsec</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Distance Modulus &mu;
+                  <i class="fas fa-info-circle info-icon" title="&mu; = 5 log&#8321;&#8320;(D&#x029F;/pc) - 5. Used in supernova cosmology."></i>
+                </span>
+                <span class="stat-value"><span id="out-mu">&mdash;</span> <span class="unit">mag</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Surface Brightness Dimming
+                  <i class="fas fa-info-circle info-icon" title="(1+z)&#8308; factor by which surface brightness is dimmed in an expanding universe."></i>
+                </span>
+                <span class="stat-value">&times;<span id="out-sbd">&mdash;</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">CMB Temperature at z&#8322;
+                  <i class="fas fa-info-circle info-icon" title="T(z) = 2.7255 &times; (1+z) K. CMB temperature at the epoch of emission."></i>
+                </span>
+                <span class="stat-value"><span id="out-Tcmb">&mdash;</span> <span class="unit">K</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 06. Relative -->
+          <div class="cosmo-card span-2" id="relative-card">
+            <div class="card-label"><span><span class="label-num">06</span> &mdash; Relative Distances (z&#8321; &rarr; z&#8322;)</span>
+              <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;" id="relative-status">Set z&#8321; &gt; 0 to view</span>
+            </div>
+            <div class="stat-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-3);">
+              <div class="stat-row">
+                <span class="stat-label">D<sub>C</sub>(z&#8321;,z&#8322;)
+                  <i class="fas fa-info-circle info-icon" title="Comoving distance between the two redshifts."></i>
+                </span>
+                <span class="stat-value"><span id="out-DC12">&mdash;</span> <span class="unit">Mpc</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">D<sub>M</sub>(z&#8321;,z&#8322;)
+                  <i class="fas fa-info-circle info-icon" title="Transverse comoving distance between the two redshifts (Hogg 1999, Eq. 19 for curved universes)."></i>
+                </span>
+                <span class="stat-value"><span id="out-DM12">&mdash;</span> <span class="unit">Mpc</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">D<sub>A</sub>(z&#8321;,z&#8322;)
+                  <i class="fas fa-info-circle info-icon" title="Angular diameter distance between the two redshifts: D&#x2098;&#x2081;&#x2082; / (1+z&#8322;)."></i>
+                </span>
+                <span class="stat-value"><span id="out-DA12">&mdash;</span> <span class="unit">Mpc</span></span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">D<sub>L</sub>(z&#8321;,z&#8322;)
+                  <i class="fas fa-info-circle info-icon" title="Luminosity distance between the two redshifts: D&#x2098;&#x2081;&#x2082; (1+z&#8322;)/(1+z&#8321;)."></i>
+                </span>
+                <span class="stat-value"><span id="out-DL12">&mdash;</span> <span class="unit">Mpc</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 07. Action bar -->
+          <div class="cosmo-card span-2">
+            <div class="card-label"><span><span class="label-num">07</span> &mdash; Share &amp; Export</span></div>
+            <div class="action-bar">
+              <button class="action-pill primary" id="btn-copy-json"><i class="fas fa-clipboard"></i> Copy as JSON</button>
+              <button class="action-pill" id="btn-share-url"><i class="fas fa-link"></i> Copy Shareable URL</button>
+              <button class="action-pill" id="btn-toggle-eq"><i class="fas fa-square-root-alt"></i> Show Equations</button>
+            </div>
+
+            <div id="equations-block" style="display: none; margin-top: var(--space-5);">
+              <p class="helper-text" style="margin-bottom: var(--space-3);">Numerical integration uses Simpson's rule with n = 1000 steps. The expansion function used is:</p>
+              <div class="equation-box">
+                $$ E(z) = \sqrt{\Omega_M (1+z)^3 + \Omega_K (1+z)^2 + \Omega_\Lambda (1+z)^{3(1+w)}} $$
+              </div>
+              <div class="equation-box">
+                $$ D_C(z) = \frac{c}{H_0}\int_0^z \frac{dz'}{E(z')}, \qquad t_L(z) = \frac{1}{H_0}\int_0^z \frac{dz'}{(1+z')\,E(z')} $$
+              </div>
+              <p class="helper-text">Curvature handling for the transverse comoving distance follows Hogg (1999), with the generalized addition formula (Eq. 19) used for relative distances in non-flat cosmologies.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =================== VISUALIZE TAB =================== -->
+      <div id="tab-visualize" class="tab-pane" role="tabpanel">
+        <div class="cosmo-grid">
+
+          <!-- A. Energy Budget -->
+          <div class="cosmo-card span-2">
+            <div class="card-label">
+              <span><span class="label-num">A</span> &mdash; Energy Budget at z = 0</span>
+              <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;">Friedmann constraint: &Omega;<sub>M</sub> + &Omega;<sub>&Lambda;</sub> + &Omega;<sub>K</sub> = 1</span>
+            </div>
+            <div id="energy-bar"></div>
+            <div class="budget-status" id="energy-status"></div>
+            <div class="energy-budget" id="budget-pills"></div>
+          </div>
+
+          <!-- B. Hubble Diagram -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">B</span> &mdash; Hubble Diagram &mdash; D<sub>L</sub>(z)</span></div>
+            <div id="plot-hubble" class="plot-container tall"></div>
+            <p class="helper-text">Luminosity distance vs redshift. Amber marker is your current z&#8322;.</p>
+          </div>
+
+          <!-- C. Distance Modulus -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">C</span> &mdash; Distance Modulus &mu;(z)</span></div>
+            <div id="plot-mu" class="plot-container tall"></div>
+            <p class="helper-text">&mu; = 5 log&#8321;&#8320;(D<sub>L</sub>/Mpc) + 25. Standard SN Ia plotting space.</p>
+          </div>
+
+          <!-- D. Scale Factor -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">D</span> &mdash; Scale Factor a(t)</span></div>
+            <div id="plot-scale" class="plot-container tall"></div>
+            <p class="helper-text">Size of the universe vs cosmic time. Markers show today (a = 1) and the epoch of z&#8322;.</p>
+          </div>
+
+          <!-- E. Lookback Time -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">E</span> &mdash; Lookback Time t<sub>L</sub>(z)</span></div>
+            <div id="plot-lookback" class="plot-container tall"></div>
+            <p class="helper-text">Time light has been travelling from each redshift. Approaches t&#8320; as z &rarr; &infin;.</p>
+          </div>
+
+          <!-- Cross-link to the dedicated spacetime tool -->
+          <div class="cosmo-card span-2" style="display: flex; flex-direction: row; align-items: center; gap: var(--space-5); flex-wrap: wrap; justify-content: space-between;">
+            <div style="flex: 1 1 320px; min-width: 240px;">
+              <div class="card-label" style="margin-bottom: var(--space-2);">
+                <span>Looking for the spacetime diagram?</span>
+              </div>
+              <p class="helper-text" style="margin: 0;">
+                The Davis &amp; Lineweaver-style spacetime diagram (past/future light cones, particle horizon, event horizon, Hubble sphere, comoving worldlines) now lives in its own dedicated tool so it has the room it deserves.
+              </p>
+            </div>
+            <a href="spacetime.html" class="btn btn-primary sim-btn" style="flex: 0 0 auto;">
+              <i class="fas fa-project-diagram" style="margin-right: 8px;"></i>
+              Open Spacetime Diagram
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =================== BATCH TAB =================== -->
+      <div id="tab-batch" class="tab-pane" role="tabpanel">
+        <div class="cosmo-grid">
+          <div class="cosmo-card span-2">
+            <div class="card-label"><span><span class="label-num">A</span> &mdash; Batch Redshifts</span></div>
+            <p class="helper-text" style="margin-bottom: var(--space-3); color: var(--color-gray-300);">
+              Paste a column of redshifts (one per line, or comma-separated). The current cosmological model in the Calculator tab is used. Output uses km/s/Mpc, Mpc, and Gyr.
+            </p>
+            <textarea class="batch-area" id="batch-input" placeholder="0.1&#10;0.5&#10;1.0&#10;1.5&#10;2.0&#10;3.0"></textarea>
+            <div class="action-bar" style="margin-top: var(--space-4);">
+              <button class="action-pill primary" id="btn-batch-run"><i class="fas fa-play"></i> Run Batch</button>
+              <button class="action-pill" id="btn-batch-csv"><i class="fas fa-file-csv"></i> Download CSV</button>
+              <button class="action-pill" id="btn-batch-clear"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+          </div>
+
+          <div class="cosmo-card span-2" id="batch-result-card" style="display: none;">
+            <div class="card-label"><span><span class="label-num">B</span> &mdash; Results</span></div>
+            <div class="table-wrap" style="max-height: 480px; overflow-y: auto;">
+              <table class="cosmo-table" id="batch-table">
+                <thead>
+                  <tr>
+                    <th>z</th>
+                    <th>D<sub>C</sub> (Mpc)</th>
+                    <th>D<sub>M</sub> (Mpc)</th>
+                    <th>D<sub>A</sub> (Mpc)</th>
+                    <th>D<sub>L</sub> (Mpc)</th>
+                    <th>t<sub>L</sub> (Gyr)</th>
+                    <th>t(z) (Gyr)</th>
+                    <th>&mu; (mag)</th>
+                    <th>kpc/&Prime;</th>
+                  </tr>
+                </thead>
+                <tbody id="batch-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== ADVANCED TAB =================== -->
+      <div id="tab-advanced" class="tab-pane" role="tabpanel">
+        <div class="cosmo-grid">
+
+          <!-- Reverse lookup -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">A</span> &mdash; Reverse Lookup (find z)</span></div>
+            <div class="reverse-form">
+              <div>
+                <label class="param-name" style="margin-bottom: 6px; display: block;">Quantity</label>
+                <div class="input-group">
+                  <select id="rev-type">
+                    <option value="tL">Lookback time (Gyr)</option>
+                    <option value="DL">Luminosity distance D&#x029F; (Mpc)</option>
+                    <option value="DC">Comoving distance D&#x1d04; (Mpc)</option>
+                    <option value="DA">Angular distance D&#x1d00; (Mpc)</option>
+                    <option value="age">Age at z (Gyr)</option>
+                  </select>
+                  <input type="number" id="rev-value" placeholder="e.g. 10" step="any">
+                </div>
+              </div>
+              <button class="action-pill primary" id="btn-reverse"><i class="fas fa-search"></i> Solve for z</button>
+              <div class="reverse-result" id="rev-out"></div>
+              <p class="helper-text">Uses bisection on the current cosmological model from the Calculator tab.</p>
+            </div>
+          </div>
+
+          <!-- Wavelength converter -->
+          <div class="cosmo-card">
+            <div class="card-label"><span><span class="label-num">B</span> &mdash; Wavelength Converter</span></div>
+            <p class="helper-text" style="margin-bottom: var(--space-3); color: var(--color-gray-300);">
+              &lambda;<sub>obs</sub> = &lambda;<sub>emit</sub> &times; (1 + z). Edit either field; the other updates. Uses z&#8322; from Calculator.
+            </p>
+            <div class="param-row">
+              <div class="param-head">
+                <span class="param-name">Emitted (rest-frame)</span>
+                <span class="helper-text" style="margin: 0;">&lambda;<sub>emit</sub></span>
+              </div>
+              <div class="input-group">
+                <input type="number" id="lam-emit" placeholder="e.g. 656.3" step="any">
+                <select id="lam-unit">
+                  <option value="nm">nm</option>
+                  <option value="A">&Aring;</option>
+                  <option value="um">&mu;m</option>
+                  <option value="mm">mm</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+            </div>
+            <div class="param-row">
+              <div class="param-head">
+                <span class="param-name">Observed</span>
+                <span class="helper-text" style="margin: 0;">&lambda;<sub>obs</sub></span>
+              </div>
+              <div class="input-group">
+                <input type="number" id="lam-obs" placeholder="will fill in" step="any">
+              </div>
+            </div>
+            <div class="action-bar" style="margin-top: var(--space-3);">
+              <button class="action-pill" id="btn-lam-halpha">H&alpha; preset (656.3 nm)</button>
+              <button class="action-pill" id="btn-lam-lyman">Ly&alpha; preset (121.6 nm)</button>
+            </div>
+          </div>
+
+          <!-- Method -->
+          <div class="cosmo-card span-2">
+            <div class="card-label"><span><span class="label-num">C</span> &mdash; Method</span></div>
+            <p class="method-intro">
+              The expansion history is a flat- or curved-space wCDM model with constant dark-energy equation of state. All integrals are computed in the browser with composite Simpson's rule; reverse lookups use bisection. Sub-second performance for the full Calculator panel.
+            </p>
+            <div class="method-grid">
+              <div class="method-section">
+                <div class="method-h"><i class="fas fa-square-root-alt"></i> Numerical methods</div>
+                <ul class="method-list">
+                  <li><strong>Comoving distance &amp; lookback:</strong> Simpson's rule, n = 1000.</li>
+                  <li><strong>Lookback substitution:</strong> u = ln(1+z) for stability at high z.</li>
+                  <li><strong>Age of the universe:</strong> u = ln(a) substitution over a &isin; [10<sup>&minus;11</sup>, 1].</li>
+                  <li><strong>Reverse lookups:</strong> bisection, tolerance 10<sup>&minus;5</sup>.</li>
+                  <li><strong>Visualisations:</strong> 60&ndash;80 sample points per curve, recomputed live.</li>
+                </ul>
+              </div>
+
+              <div class="method-section">
+                <div class="method-h"><i class="fas fa-ruler-combined"></i> Distance formulas</div>
+                <ul class="method-list">
+                  <li><strong>Comoving:</strong> D<sub>C</sub>(z) = (c/H&#8320;) &int; dz'/E(z').</li>
+                  <li><strong>Transverse:</strong> sinh / linear / sin in D<sub>C</sub>, by sign of &Omega;<sub>K</sub>.</li>
+                  <li><strong>Angular diameter:</strong> D<sub>A</sub> = D<sub>M</sub> / (1+z).</li>
+                  <li><strong>Luminosity:</strong> D<sub>L</sub> = D<sub>M</sub> &middot; (1+z).</li>
+                  <li><strong>Relative D<sub>M</sub>(z<sub>1</sub>, z<sub>2</sub>):</strong> Hogg 1999, Eq. 19.</li>
+                  <li><strong>Comoving volume:</strong> closed form per curvature (Hogg 1999, Eq. 29).</li>
+                </ul>
+              </div>
+
+              <div class="method-section">
+                <div class="method-h"><i class="fas fa-atom"></i> Constants used</div>
+                <table class="method-table">
+                  <tr><td>c</td><td>299 792.458 km/s</td></tr>
+                  <tr><td>T<sub>CMB,0</sub></td><td>2.7255 K</td></tr>
+                  <tr><td>1 Gly</td><td>306.601 Mpc</td></tr>
+                  <tr><td>1/H&#8320;</td><td>977.792 / H&#8320; Gyr</td></tr>
+                  <tr><td>1 pc</td><td>3.0857 &times; 10<sup>13</sup> km</td></tr>
+                  <tr><td>1 Gyr</td><td>3.1557 &times; 10<sup>16</sup> s</td></tr>
+                </table>
+              </div>
+
+              <div class="method-section span-full">
+                <div class="method-h"><i class="fas fa-info-circle"></i> Limitations</div>
+                <ul class="method-list">
+                  <li><strong>No radiation term:</strong> &Omega;<sub>R</sub> is omitted (subdominant for z &lt;&lt; 1000; relevant only near recombination).</li>
+                  <li><strong>Constant w only:</strong> the DESI Y1 evolving dark-energy hint uses the CPL parameterisation w(z) = w<sub>0</sub> + w<sub>a</sub> z/(1+z); this engine treats w as a constant. Setting w = w<sub>0</sub> recovers the "today" value but not the time evolution.</li>
+                  <li><strong>Fixed CMB temperature:</strong> T<sub>CMB,0</sub> is hard-coded at 2.7255 K (Fixsen 2009).</li>
+                  <li><strong>Privacy:</strong> all computation runs locally in your browser. No data leaves your machine.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- References -->
+          <div class="cosmo-card span-2">
+            <div class="card-label"><span><span class="label-num">D</span> &mdash; References</span></div>
+            <div class="ref-grid">
+
+              <div class="ref-card">
+                <span class="ref-tag">Distance formulas</span>
+                <span class="ref-title">Hogg 1999</span>
+                <span class="ref-desc">Distance measures in cosmology. The canonical reference; every distance formula in this calculator (including the Eq. 19 curvature correction for relative D<sub>M</sub>) is from this paper.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/astro-ph/9905116" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:astro-ph/9905116</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">Pedagogical</span>
+                <span class="ref-title">Wright 2006</span>
+                <span class="ref-desc">A cosmology calculator for the world wide web. The original web cosmology calculator that inspired the genre; useful cross-check for distance values.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/astro-ph/0609593" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:astro-ph/0609593</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">CMB &mdash; Planck 2018</span>
+                <span class="ref-title">Aghanim et al. 2020</span>
+                <span class="ref-desc">Planck 2018 results. VI. Cosmological parameters. Source of the Planck 2018 preset.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/1807.06209" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:1807.06209</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">CMB &mdash; WMAP9</span>
+                <span class="ref-title">Hinshaw et al. 2013</span>
+                <span class="ref-desc">Nine-year WMAP observations: cosmological parameter results. Source of the WMAP9 preset.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/1212.5226" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:1212.5226</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">SN Ia &mdash; Pantheon+</span>
+                <span class="ref-title">Brout et al. 2022</span>
+                <span class="ref-desc">Pantheon+ analysis: cosmological constraints from 1701 SN Ia light curves anchored by SH0ES. Late-universe / high-H&#8320; reference.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/2202.04077" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:2202.04077</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">SN Ia &mdash; SH0ES</span>
+                <span class="ref-title">Riess et al. 2022</span>
+                <span class="ref-desc">A comprehensive measurement of the local value of the Hubble constant: H&#8320; = 73.04 &plusmn; 1.04 km/s/Mpc.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/2112.04510" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:2112.04510</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">SN Ia &mdash; DES SN5YR</span>
+                <span class="ref-title">Vincenzi et al. 2024</span>
+                <span class="ref-desc">The Dark Energy Survey Supernova Programme: cosmological analysis and systematic uncertainties. Source of the DES SN5YR preset.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/2401.02929" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:2401.02929</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">BAO &mdash; DESI Y1</span>
+                <span class="ref-title">Adame et al. (DESI) 2024</span>
+                <span class="ref-desc">DESI 2024 cosmological constraints from BAO measurements. ΛCDM and w&#8320;w&#8336;CDM joint fits with CMB and SN.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/2404.03002" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:2404.03002</a>
+              </div>
+
+              <div class="ref-card">
+                <span class="ref-tag">CMB temperature</span>
+                <span class="ref-title">Fixsen 2009</span>
+                <span class="ref-desc">The temperature of the cosmic microwave background: T<sub>CMB,0</sub> = 2.7255 &plusmn; 0.0006 K. Used in the T<sub>CMB</sub>(z) output.</span>
+                <a class="ref-link" href="https://arxiv.org/abs/0911.1955" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> arXiv:0911.1955</a>
+              </div>
+
+            </div>
+            <div class="method-footer">
+              <p>If you spot an error in the calculations or want a citation added, please <a href="../pages/contact.html" style="color: var(--color-accent);">get in touch</a>.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../js/navbar.js"></script>
+  <script src="../js/footer.js"></script>
+  <script src="../js/back-to-top.js"></script>
+  <script src="../js/animations.js"></script>
+  <script>new Footer().init('../');</script>
+
+  <!-- Shared cosmology math engine (also used by tools/spacetime.html). -->
+  <script src="cosmo-engine.js"></script>
+
+  <script>
+    /* =====================================================
+       Cosmology Calculator - State, UI bindings, and tabs
+       ===================================================== */
+
+    const state = {
+      H0: 67.4,
+      OmegaM: 0.315,
+      OmegaL: 0.685,
+      w: -1,
+      z1: 0,
+      z2: 1.5,
+      OmegaK: 0,
+      results: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const fmt = (val, digits = 3) => {
+      if (!isFinite(val)) return '\u2014';
+      if (val === 0) return '0';
+      const abs = Math.abs(val);
+      if (abs < 1e-3 || abs >= 1e6) return val.toExponential(digits);
+      return val.toLocaleString('en-US', { maximumFractionDigits: digits, minimumFractionDigits: digits });
+    };
+    const fmtInt = (val) => isFinite(val) ? Math.round(val).toLocaleString('en-US') : '\u2014';
+
+    function bindParam(name, sliderId, inputId, sliderMin, sliderMax) {
+      const slider = $(sliderId);
+      const input = $(inputId);
+      const setBoth = (v) => {
+        const num = Number(v);
+        if (!isFinite(num)) return;
+        state[name] = num;
+        if (slider) {
+          const clamped = Math.max(sliderMin, Math.min(sliderMax, num));
+          slider.value = clamped;
+        }
+        input.value = num;
+      };
+      if (slider) {
+        slider.addEventListener('input', () => { state[name] = parseFloat(slider.value); input.value = slider.value; recompute(); });
+      }
+      input.addEventListener('input', () => {
+        const v = parseFloat(input.value);
+        if (!isFinite(v)) return;
+        state[name] = v;
+        if (slider) {
+          const clamped = Math.max(sliderMin, Math.min(sliderMax, v));
+          slider.value = clamped;
+        }
+        recompute();
+      });
+      return setBoth;
+    }
+
+    const setH0 = bindParam('H0', 'H0-slider', 'H0-input', 20, 100);
+    const setOmegaM = bindParam('OmegaM', 'OmegaM-slider', 'OmegaM-input', 0, 2);
+    const setOmegaL = bindParam('OmegaL', 'OmegaL-slider', 'OmegaL-input', 0, 2);
+    const setW = bindParam('w', 'w-slider', 'w-input', -2, 0);
+
+    $('z1-input').addEventListener('input', () => { state.z1 = Math.max(0, parseFloat($('z1-input').value) || 0); recompute(); });
+    $('z2-input').addEventListener('input', () => { state.z2 = Math.max(0, parseFloat($('z2-input').value) || 0); recompute(); });
+
+    const presetSelect = $('preset-select');
+    presetSelect.addEventListener('change', () => {
+      if (presetSelect.value === 'custom') {
+        updatePresetCaption('custom');
+        return;
+      }
+      applyPreset(presetSelect.value);
+    });
+
+    $('btn-preset-reset').addEventListener('click', () => {
+      applyPreset('planck18');
+      setZ(0, 1.5);
+    });
+
+    function applyPreset(name) {
+      const p = PRESETS[name];
+      if (!p) return;
+      setH0(p.H0); setOmegaM(p.OmegaM); setOmegaL(p.OmegaL); setW(p.w);
+      presetSelect.value = name;
+      updatePresetCaption(name);
+      recompute();
+    }
+
+    function updatePresetCaption(name) {
+      const cap = $('preset-caption');
+      if (!cap) return;
+      if (name === 'custom') {
+        cap.innerHTML = '<span class="custom-tag">Custom values \u2014 adjust the sliders below or pick a preset above.</span>';
+        return;
+      }
+      const p = PRESETS[name];
+      if (!p) { cap.innerHTML = ''; return; }
+      const refHtml = p.ref
+        ? (p.refUrl
+            ? '<a href="' + p.refUrl + '" target="_blank" rel="noopener">' + p.ref + '</a>'
+            : p.ref)
+        : '';
+      cap.innerHTML = (refHtml ? refHtml + ' &mdash; ' : '') + (p.desc || '');
+    }
+
+    function presetMatchesState() {
+      for (const [name, p] of Object.entries(PRESETS)) {
+        if (Math.abs(p.H0 - state.H0) < 1e-3
+          && Math.abs(p.OmegaM - state.OmegaM) < 1e-4
+          && Math.abs(p.OmegaL - state.OmegaL) < 1e-4
+          && Math.abs(p.w - state.w) < 1e-4) {
+          return name;
+        }
+      }
+      return 'custom';
+    }
+
+    function syncPresetSelector() {
+      const name = presetMatchesState();
+      if (presetSelect.value !== name) presetSelect.value = name;
+      updatePresetCaption(name);
+    }
+
+    function setZ(z1, z2) {
+      state.z1 = z1; state.z2 = z2;
+      $('z1-input').value = z1; $('z2-input').value = z2;
+      recompute();
+    }
+
+    /* ========== Tabs ========== */
+    document.querySelectorAll('.cosmo-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    function switchTab(name) {
+      document.querySelectorAll('.cosmo-tab-btn').forEach(b => {
+        const active = b.dataset.tab === name;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      document.querySelectorAll('.tab-pane').forEach(p => {
+        p.classList.toggle('active', p.id === 'tab-' + name);
+      });
+      if (name === 'visualize') {
+        // The containers were display:none until now, so the first
+        // render had no box to measure. Defer one frame, then redraw.
+        requestAnimationFrame(() => requestAnimationFrame(refreshVisualizations));
+      }
+    }
+
+    /* ========== Equations toggle ========== */
+    $('btn-toggle-eq').addEventListener('click', () => {
+      const block = $('equations-block');
+      const visible = block.style.display !== 'none';
+      block.style.display = visible ? 'none' : 'block';
+      $('btn-toggle-eq').innerHTML = visible
+        ? '<i class="fas fa-square-root-alt"></i> Show Equations'
+        : '<i class="fas fa-square-root-alt"></i> Hide Equations';
+      if (!visible && window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([block]).catch(() => {});
+      }
+    });
+
+    /* ========== Status messages ========== */
+    function setStatus(msg, kind) {
+      const el = $('status');
+      if (!msg) { el.classList.remove('show'); return; }
+      el.className = 'status-msg show ' + (kind === 'success' ? 'status-success' : 'status-error');
+      el.innerHTML = (kind === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>') + ' <span>' + msg + '</span>';
+      clearTimeout(setStatus._t);
+      setStatus._t = setTimeout(() => el.classList.remove('show'), 4000);
+    }
+
+    /* ========== Compute everything ========== */
+    function computeAll(params, z1, z2) {
+      const p = Object.assign({}, params);
+      p.OmegaK = 1 - p.OmegaM - p.OmegaL;
+
+      const dH = C_KM_S / p.H0;
+      const tH = HUBBLE_TIME_GYR_FACTOR / p.H0;
+      const Ez2 = E(z2, p);
+      const Hz2 = p.H0 * Ez2;
+
+      const DC1 = comovingDistance(z1, p);
+      const DC2 = comovingDistance(z2, p);
+      const DM1 = transverseDistance(DC1, p);
+      const DM2 = transverseDistance(DC2, p);
+      const DA2 = DM2 / (1 + z2);
+      const DL2 = DM2 * (1 + z2);
+      const VC2 = comovingVolume(DM2, p);
+
+      const t0 = ageOfUniverse(p);
+      const tL2 = lookbackTime(z2, p);
+      const tz2 = t0 - tL2;
+      const lightTravelDist = (C_KM_S * 3.1557e16 * tL2 * 1e9) / (3.0857e19);
+
+      const mu = distanceModulus(DL2);
+      const sbd = Math.pow(1 + z2, 4);
+      const Tcmb = T_CMB_0 * (1 + z2);
+      const scale_kpc_per_arcsec = (DA2 * 1000) / 206264.80624709636;
+
+      let DC12 = NaN, DM12 = NaN, DA12 = NaN, DL12 = NaN;
+      if (z1 > 0) {
+        DC12 = DC2 - DC1;
+        DM12 = relativeDM(DM1, DM2, p);
+        DA12 = DM12 / (1 + z2);
+        DL12 = DM12 * (1 + z2) / (1 + z1);
+      }
+
+      return {
+        params: p, z1, z2,
+        Ez2, Hz2, dH, tH,
+        DC1, DC2, DM1, DM2, DA2, DL2, VC2,
+        lightTravelDist,
+        t0, tL2, tz2, tfrac: t0 > 0 ? 100 * tL2 / t0 : 0,
+        mu, sbd, Tcmb, scale_kpc_per_arcsec,
+        DC12, DM12, DA12, DL12
+      };
+    }
+
+    /* ========== Recompute and update UI ========== */
+    function recompute() {
+      try {
+        const params = { H0: state.H0, OmegaM: state.OmegaM, OmegaL: state.OmegaL, w: state.w };
+        const ok = 1 - params.OmegaM - params.OmegaL;
+        state.OmegaK = ok;
+
+        $('OmegaK-display').value = ok.toFixed(3);
+        $('curvature-label').textContent = Math.abs(ok) < 1e-6 ? 'flat' : (ok > 0 ? 'open (k = -1)' : 'closed (k = +1)');
+
+        if (params.H0 <= 0) { setStatus('H&#8320; must be positive.'); return; }
+        if (state.z2 < 0 || state.z1 < 0) { setStatus('Redshifts must be non-negative.'); return; }
+        if (state.z2 < state.z1) { setStatus('z\u2082 must be greater than or equal to z\u2081.'); return; }
+        setStatus('');
+
+        const r = computeAll(params, state.z1, state.z2);
+        state.results = r;
+
+        $('out-Ez').textContent = fmt(r.Ez2, 4);
+        $('out-Hz').firstChild.textContent = fmt(r.Hz2, 2) + ' ';
+        $('out-DH').firstChild.textContent = fmt(r.dH, 2) + ' ';
+        $('out-tH').firstChild.textContent = fmt(r.tH, 3) + ' ';
+
+        $('out-DC').textContent = fmt(r.DC2, 2);
+        $('out-DC-gly').textContent = fmt(r.DC2 / MPC_PER_GLY, 3);
+        $('out-DM').textContent = fmt(r.DM2, 2);
+        $('out-DA').textContent = fmt(r.DA2, 2);
+        $('out-DA-gly').textContent = fmt(r.DA2 / MPC_PER_GLY, 3);
+        $('out-DL').textContent = fmt(r.DL2, 2);
+        $('out-DL-gly').textContent = fmt(r.DL2 / MPC_PER_GLY, 3);
+        $('out-DLT').textContent = fmt(r.lightTravelDist, 2);
+        $('out-DLT-gly').textContent = fmt(r.lightTravelDist / MPC_PER_GLY, 3);
+        $('out-VC').textContent = fmt(r.VC2 / 1e9, 3);
+
+        $('out-t0').textContent = fmt(r.t0, 3);
+        $('out-tL').textContent = fmt(r.tL2, 3);
+        $('out-tz').textContent = fmt(r.tz2, 3);
+        $('out-tfrac').textContent = fmt(r.tfrac, 2);
+
+        $('out-scale').textContent = fmt(r.scale_kpc_per_arcsec, 3);
+        $('out-mu').textContent = isFinite(r.mu) ? fmt(r.mu, 3) : '\u2014';
+        $('out-sbd').textContent = fmt(r.sbd, 3);
+        $('out-Tcmb').textContent = fmt(r.Tcmb, 3);
+
+        const showRel = state.z1 > 0;
+        const relCard = $('relative-card');
+        relCard.style.opacity = showRel ? '1' : '0.55';
+        $('relative-status').textContent = showRel ? 'z\u2081 = ' + state.z1 + ',  z\u2082 = ' + state.z2 : 'Set z\u2081 > 0 to view';
+        $('out-DC12').textContent = showRel ? fmt(r.DC12, 2) : '\u2014';
+        $('out-DM12').textContent = showRel ? fmt(r.DM12, 2) : '\u2014';
+        $('out-DA12').textContent = showRel ? fmt(r.DA12, 2) : '\u2014';
+        $('out-DL12').textContent = showRel ? fmt(r.DL12, 2) : '\u2014';
+
+        syncPresetSelector();
+        updateWavelength();
+        pushUrlState();
+        const visTab = $('tab-visualize');
+        if (visTab && visTab.classList.contains('active')) refreshVisualizations();
+      } catch (err) {
+        console.error(err);
+        setStatus('Computation error: ' + err.message);
+      }
+    }
+
+    /* ========== URL deep-linking ========== */
+    function pushUrlState() {
+      const params = new URLSearchParams();
+      params.set('H0', state.H0);
+      params.set('OmegaM', state.OmegaM);
+      params.set('OmegaL', state.OmegaL);
+      params.set('w', state.w);
+      params.set('z1', state.z1);
+      params.set('z2', state.z2);
+      const url = window.location.pathname + '?' + params.toString();
+      window.history.replaceState({}, '', url);
+    }
+
+    function loadUrlState() {
+      const params = new URLSearchParams(window.location.search);
+      const num = (k, d) => {
+        const v = parseFloat(params.get(k));
+        return isFinite(v) ? v : d;
+      };
+      setH0(num('H0', 67.4));
+      setOmegaM(num('OmegaM', 0.315));
+      setOmegaL(num('OmegaL', 0.685));
+      setW(num('w', -1));
+      const z1 = num('z1', 0); const z2 = num('z2', 1.5);
+      $('z1-input').value = z1; $('z2-input').value = z2;
+      state.z1 = z1; state.z2 = z2;
+    }
+
+    /* ========== Copy as JSON ========== */
+    $('btn-copy-json').addEventListener('click', () => {
+      if (!state.results) return;
+      const r = state.results;
+      const out = {
+        inputs: {
+          H0_kmsMpc: state.H0,
+          OmegaM: state.OmegaM,
+          OmegaLambda: state.OmegaL,
+          OmegaK: state.OmegaK,
+          w: state.w,
+          z1: state.z1,
+          z2: state.z2
+        },
+        outputs: {
+          E_z2: r.Ez2,
+          H_z2_kmsMpc: r.Hz2,
+          HubbleDistance_Mpc: r.dH,
+          HubbleTime_Gyr: r.tH,
+          ComovingDistance_Mpc: r.DC2,
+          TransverseDistance_Mpc: r.DM2,
+          AngularDiameterDistance_Mpc: r.DA2,
+          LuminosityDistance_Mpc: r.DL2,
+          LightTravelDistance_Mpc: r.lightTravelDist,
+          ComovingVolume_Gpc3: r.VC2 / 1e9,
+          AgeOfUniverse_Gyr: r.t0,
+          LookbackTime_Gyr: r.tL2,
+          AgeAt_z2_Gyr: r.tz2,
+          DistanceModulus_mag: r.mu,
+          SurfaceBrightnessDimming: r.sbd,
+          PhysicalScale_kpcPerArcsec: r.scale_kpc_per_arcsec,
+          T_CMB_at_z2_K: r.Tcmb,
+          Relative_DC12_Mpc: state.z1 > 0 ? r.DC12 : null,
+          Relative_DM12_Mpc: state.z1 > 0 ? r.DM12 : null,
+          Relative_DA12_Mpc: state.z1 > 0 ? r.DA12 : null,
+          Relative_DL12_Mpc: state.z1 > 0 ? r.DL12 : null
+        }
+      };
+      const text = JSON.stringify(out, null, 2);
+      navigator.clipboard.writeText(text).then(
+        () => setStatus('Copied JSON to clipboard.', 'success'),
+        () => setStatus('Could not access clipboard.')
+      );
+    });
+
+    $('btn-share-url').addEventListener('click', () => {
+      pushUrlState();
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(
+        () => setStatus('Shareable URL copied.', 'success'),
+        () => setStatus('Could not access clipboard.')
+      );
+    });
+  </script>
+
+  <script>
+    /* =====================================================
+       Cosmology Calculator - Visualizations
+       ===================================================== */
+
+    const PLOT_LAYOUT = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      font: { color: '#cbd5e1', family: 'Inter, sans-serif' },
+      margin: { t: 30, r: 20, b: 50, l: 60 },
+      xaxis: { gridcolor: 'rgba(255,255,255,0.07)', zerolinecolor: 'rgba(255,255,255,0.15)', tickfont: { color: '#94a3b8' } },
+      yaxis: { gridcolor: 'rgba(255,255,255,0.07)', zerolinecolor: 'rgba(255,255,255,0.15)', tickfont: { color: '#94a3b8' } },
+      legend: { font: { color: '#cbd5e1' }, bgcolor: 'rgba(15,23,42,0.7)' }
+    };
+    const PLOT_CONFIG = { responsive: true, displayModeBar: false };
+
+    const COLORS = {
+      matter: '#38bdf8',
+      lambda: '#a78bfa',
+      curvature: '#fbbf24',
+      accent: '#38bdf8',
+      muted: '#64748b'
+    };
+
+    function refreshVisualizations() {
+      drawBudget();
+      drawHubbleDiagram();
+      drawDistanceModulus();
+      drawScaleFactor();
+      drawLookback();
+    }
+
+    function currentParams() {
+      return { H0: state.H0, OmegaM: state.OmegaM, OmegaL: state.OmegaL, w: state.w, OmegaK: 1 - state.OmegaM - state.OmegaL };
+    }
+
+    // Plot margin: more room at the bottom (axis title + tick labels + standoff)
+    // and a little more on the left for vertical axis title.
+    function plotMargin() { return { t: 28, r: 32, b: 72, l: 80 }; }
+
+    function snapPlotSize(id) {
+      const el = document.getElementById(id);
+      if (el && el._fullLayout) {
+        try { Plotly.Plots.resize(el); } catch (e) { /* ignore */ }
+      }
+    }
+
+    /* ----- A. Energy budget as a stacked horizontal bar ----- */
+    function drawBudget() {
+      const m = state.OmegaM, l = state.OmegaL, k = 1 - m - l;
+
+      // Build segments using absolute values so curvature can be drawn even when
+      // negative; the legend / pills below clearly carry the signed value.
+      const segs = [];
+      const total = Math.abs(m) + Math.abs(l) + Math.abs(k);
+      if (m > 1e-6) segs.push({ name: '\u03A9_M', val: m, color: COLORS.matter });
+      if (l > 1e-6) segs.push({ name: '\u03A9_\u039B', val: l, color: COLORS.lambda });
+      if (Math.abs(k) > 1e-6) segs.push({ name: '\u03A9_K', val: k, color: COLORS.curvature });
+
+      let bar = '<div class="energy-bar-track" role="img" aria-label="Energy density bar">';
+      if (total < 1e-9) {
+        bar += '<div class="energy-bar-seg" style="width: 100%; background: rgba(255,255,255,0.08); color: var(--color-gray-400);"><span class="seg-name">empty</span><span class="seg-val">0</span></div>';
+      } else {
+        for (const s of segs) {
+          const pct = Math.abs(s.val) / total * 100;
+          const tooSmall = pct < 8;
+          bar += '<div class="energy-bar-seg" style="width: ' + pct.toFixed(2) + '%; background: ' + s.color + '33; border-bottom: 3px solid ' + s.color + ';">'
+            + (tooSmall ? '' : '<span class="seg-name">' + s.name + '</span><span class="seg-val">' + s.val.toFixed(3) + '</span>')
+            + '</div>';
+        }
+      }
+      bar += '</div>';
+      $('energy-bar').innerHTML = bar;
+
+      // Geometry status
+      let geomCls, geomTxt;
+      if (Math.abs(k) < 1e-6)      { geomCls = 'geom-flat';   geomTxt = 'flat (k = 0)'; }
+      else if (k > 0)               { geomCls = 'geom-open';   geomTxt = 'open (k = -1)'; }
+      else                          { geomCls = 'geom-closed'; geomTxt = 'closed (k = +1)'; }
+      const sumTxt = (m + l).toFixed(4);
+      $('energy-status').innerHTML = 'Geometry: <span class="geom-tag ' + geomCls + '">' + geomTxt + '</span>'
+        + ' &middot; \u03A9<sub>M</sub> + \u03A9<sub>\u039B</sub> = ' + sumTxt
+        + ' &middot; \u03A9<sub>K</sub> = ' + k.toFixed(4)
+        + ' (sum is exactly 1 by construction).';
+
+      // Pills with signed values
+      const addPill = (name, val, color) => '<div class="budget-pill" style="border-color: ' + color + '33;">'
+        + '<span class="name"><span class="swatch" style="background: ' + color + '"></span>' + name + '</span>'
+        + '<span style="color: ' + color + '; font-weight: 700;">' + val.toFixed(4) + '</span></div>';
+      $('budget-pills').innerHTML = ''
+        + addPill('\u03A9_M (matter)', m, COLORS.matter)
+        + addPill('\u03A9_\u039B (vacuum)', l, COLORS.lambda)
+        + addPill('\u03A9_K (curvature)', k, COLORS.curvature)
+        + addPill('w (DE eq. of state)', state.w, '#94a3b8');
+    }
+
+    /* ----- B. Hubble diagram ----- */
+    function drawHubbleDiagram() {
+      const p = currentParams();
+      const N = 120;
+      const zMax = Math.max(3, state.z2 * 1.25 + 0.2);
+      const zs = new Array(N + 1);
+      const DLs = new Array(N + 1);
+      for (let i = 0; i <= N; i++) {
+        const z = (i / N) * zMax;
+        zs[i] = z;
+        if (z === 0) { DLs[i] = 0; continue; }
+        const dc = comovingDistance(z, p);
+        const dm = transverseDistance(dc, p);
+        DLs[i] = dm * (1 + z);
+      }
+      const dcZ2 = comovingDistance(state.z2, p);
+      const dmZ2 = transverseDistance(dcZ2, p);
+      const dlZ2 = dmZ2 * (1 + state.z2);
+
+      const traces = [
+        {
+          x: zs, y: DLs, mode: 'lines', name: 'D_L(z)',
+          line: { color: COLORS.accent, width: 3 },
+          hovertemplate: 'z = %{x:.3f}<br>D_L = %{y:,.0f} Mpc<extra></extra>'
+        },
+        {
+          x: [state.z2], y: [dlZ2], mode: 'markers', name: 'z\u2082',
+          marker: { color: '#fbbf24', size: 12, line: { color: '#fff', width: 1.5 } },
+          hovertemplate: 'z\u2082 = %{x:.3f}<br>D_L = %{y:,.0f} Mpc<extra></extra>'
+        }
+      ];
+      const dlMax = Math.max.apply(null, DLs);
+      const layout = Object.assign({}, PLOT_LAYOUT, {
+        margin: plotMargin(),
+        xaxis: Object.assign({}, PLOT_LAYOUT.xaxis, {
+          title: { text: 'Redshift z', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, zMax],
+          zeroline: true
+        }),
+        yaxis: Object.assign({}, PLOT_LAYOUT.yaxis, {
+          title: { text: 'Luminosity distance D<sub>L</sub> (Mpc)', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, dlMax * 1.08],
+          zeroline: true
+        }),
+        showlegend: false
+      });
+      Plotly.react('plot-hubble', traces, layout, PLOT_CONFIG);
+      snapPlotSize('plot-hubble');
+    }
+
+    /* ----- C. Distance modulus mu(z) ----- */
+    function drawDistanceModulus() {
+      const p = currentParams();
+      const N = 200;
+      const zMin = 1e-3; // mu(0) = -infinity, so start curve a hair above zero
+      const zMax = Math.max(3, state.z2 * 1.25 + 0.2);
+      const zs = [], mus = [];
+      // Log-spaced data sampling (denser at low z) but the AXIS is linear, so
+      // the x-axis cleanly reaches z = 0 like the other redshift plots.
+      for (let i = 0; i <= N; i++) {
+        const t = i / N;
+        const z = Math.exp(Math.log(zMin) * (1 - t) + Math.log(zMax) * t);
+        const dc = comovingDistance(z, p);
+        const dm = transverseDistance(dc, p);
+        const dl = dm * (1 + z);
+        const mu = 5 * Math.log10(dl) + 25;
+        zs.push(z);
+        mus.push(mu);
+      }
+
+      let muZ2 = null;
+      if (state.z2 > 0) {
+        const dcZ2 = comovingDistance(state.z2, p);
+        const dmZ2 = transverseDistance(dcZ2, p);
+        const dlZ2 = dmZ2 * (1 + state.z2);
+        muZ2 = 5 * Math.log10(dlZ2) + 25;
+      }
+
+      const muMin = mus[0];
+      const muMax = mus[mus.length - 1];
+      const muSpan = muMax - muMin;
+      const yLo = muMin - 0.05 * muSpan;
+      const yHi = muMax + 0.05 * muSpan;
+
+      const traces = [
+        {
+          x: zs, y: mus, mode: 'lines', name: '\u03BC(z)',
+          line: { color: COLORS.lambda, width: 3 },
+          hovertemplate: 'z = %{x:.4f}<br>\u03BC = %{y:.3f} mag<extra></extra>'
+        }
+      ];
+      if (muZ2 !== null) {
+        traces.push({
+          x: [state.z2], y: [muZ2], mode: 'markers', name: 'z\u2082',
+          marker: { color: '#fbbf24', size: 12, line: { color: '#fff', width: 1.5 } },
+          hovertemplate: 'z\u2082 = %{x:.3f}<br>\u03BC = %{y:.3f} mag<extra></extra>'
+        });
+      }
+      const layout = Object.assign({}, PLOT_LAYOUT, {
+        margin: plotMargin(),
+        xaxis: Object.assign({}, PLOT_LAYOUT.xaxis, {
+          title: { text: 'Redshift z', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, zMax],
+          zeroline: true
+        }),
+        yaxis: Object.assign({}, PLOT_LAYOUT.yaxis, {
+          title: { text: 'Distance modulus \u03BC (mag)', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [yLo, yHi]
+        }),
+        showlegend: false
+      });
+      Plotly.react('plot-mu', traces, layout, PLOT_CONFIG);
+      snapPlotSize('plot-mu');
+    }
+
+    /* ----- D. Scale factor a(t) ----- */
+    function drawScaleFactor() {
+      const p = currentParams();
+      const t0 = ageOfUniverse(p);
+
+      // Sample a from a small value upward; densify near a=0 with log spacing
+      const N = 80;
+      const aMin = 1e-3;
+      const xs = [0];
+      const ys = [0];
+      for (let i = 0; i <= N; i++) {
+        const t = i / N;
+        const a = Math.exp(Math.log(aMin) * (1 - t) + Math.log(1.0) * t);
+        const tA = ageAtScaleFactor(a, p);
+        xs.push(tA);
+        ys.push(a);
+      }
+
+      const traceA = {
+        x: xs, y: ys, mode: 'lines', name: 'a(t)',
+        line: { color: COLORS.matter, width: 3 },
+        hovertemplate: 't = %{x:.3f} Gyr<br>a = %{y:.4f}<extra></extra>'
+      };
+
+      const todayMarker = {
+        x: [t0], y: [1], mode: 'markers+text',
+        marker: { color: '#10b981', size: 12, line: { color: '#fff', width: 2 } },
+        text: ['today'], textposition: 'top left',
+        textfont: { color: '#a7f3d0', size: 11 },
+        hovertemplate: 't\u2080 = %{x:.3f} Gyr, a = 1<extra></extra>',
+        showlegend: false
+      };
+
+      const traces = [traceA, todayMarker];
+      if (state.z2 > 0) {
+        const aZ2 = 1 / (1 + state.z2);
+        const tAtZ2 = ageAtScaleFactor(aZ2, p);
+        traces.push({
+          x: [tAtZ2], y: [aZ2], mode: 'markers+text',
+          marker: { color: '#fbbf24', size: 12, line: { color: '#fff', width: 2 } },
+          text: ['z\u2082'], textposition: 'top right',
+          textfont: { color: '#fde68a', size: 11 },
+          hovertemplate: 't = %{x:.3f} Gyr<br>a = %{y:.4f}<extra></extra>',
+          showlegend: false
+        });
+      }
+
+      const layout = Object.assign({}, PLOT_LAYOUT, {
+        margin: plotMargin(),
+        xaxis: Object.assign({}, PLOT_LAYOUT.xaxis, {
+          title: { text: 'Cosmic time (Gyr)', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, t0 * 1.05],
+          zeroline: true
+        }),
+        yaxis: Object.assign({}, PLOT_LAYOUT.yaxis, {
+          title: { text: 'Scale factor a', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, 1.08],
+          zeroline: true
+        }),
+        showlegend: false
+      });
+      Plotly.react('plot-scale', traces, layout, PLOT_CONFIG);
+      snapPlotSize('plot-scale');
+    }
+
+    /* ----- E. Lookback time t_L(z) ----- */
+    function drawLookback() {
+      const p = currentParams();
+      const N = 120;
+      const zMax = Math.max(3, state.z2 * 1.25 + 0.2);
+      const zs = new Array(N + 1);
+      const tLs = new Array(N + 1);
+      for (let i = 0; i <= N; i++) {
+        const z = (i / N) * zMax;
+        zs[i] = z;
+        tLs[i] = lookbackTime(z, p);
+      }
+      const t0 = ageOfUniverse(p);
+      const traces = [
+        {
+          x: zs, y: tLs, mode: 'lines', name: 't_L(z)',
+          line: { color: COLORS.curvature, width: 3 },
+          hovertemplate: 'z = %{x:.3f}<br>t_L = %{y:.3f} Gyr<extra></extra>'
+        },
+        {
+          x: [0, zMax], y: [t0, t0], mode: 'lines', name: 't\u2080',
+          line: { color: '#10b981', width: 1.5, dash: 'dash' },
+          hoverinfo: 'skip', showlegend: false
+        }
+      ];
+      if (state.z2 > 0) {
+        traces.push({
+          x: [state.z2], y: [lookbackTime(state.z2, p)], mode: 'markers',
+          marker: { color: '#fbbf24', size: 12, line: { color: '#fff', width: 1.5 } },
+          hovertemplate: 'z\u2082 = %{x:.3f}<br>t_L = %{y:.3f} Gyr<extra></extra>',
+          showlegend: false
+        });
+      }
+      const layout = Object.assign({}, PLOT_LAYOUT, {
+        margin: plotMargin(),
+        xaxis: Object.assign({}, PLOT_LAYOUT.xaxis, {
+          title: { text: 'Redshift z', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, zMax],
+          zeroline: true
+        }),
+        yaxis: Object.assign({}, PLOT_LAYOUT.yaxis, {
+          title: { text: 'Lookback time (Gyr)', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, t0 * 1.08],
+          zeroline: true
+        }),
+        annotations: [{
+          x: zMax, y: t0, xref: 'x', yref: 'y',
+          text: 't\u2080 = ' + t0.toFixed(2) + ' Gyr',
+          showarrow: false, xanchor: 'right', yanchor: 'bottom',
+          font: { color: '#34d399', size: 11 }
+        }],
+        showlegend: false
+      });
+      Plotly.react('plot-lookback', traces, layout, PLOT_CONFIG);
+      snapPlotSize('plot-lookback');
+    }
+
+    /* The Davis & Lineweaver spacetime diagram lives in
+       tools/spacetime.html now -- see the cross-link card on the Visualize
+       tab. The shared cosmology engine in cosmo-engine.js powers both. */
+  </script>
+
+  <script>
+    /* =====================================================
+       Batch processing
+       ===================================================== */
+    let batchRows = null;
+
+    function parseBatchInput(text) {
+      const tokens = text.split(/[\s,;\n\t]+/).map(t => t.trim()).filter(t => t.length > 0);
+      const out = [];
+      const skipped = [];
+      for (const tok of tokens) {
+        const v = parseFloat(tok);
+        if (isFinite(v) && v >= 0) out.push(v);
+        else skipped.push(tok);
+      }
+      return { values: out, skipped };
+    }
+
+    function runBatch() {
+      const text = $('batch-input').value;
+      const { values, skipped } = parseBatchInput(text);
+      if (values.length === 0) {
+        setStatus('No valid redshifts found. Paste numbers (one per line, or comma/space-separated).');
+        $('batch-result-card').style.display = 'none';
+        return;
+      }
+      const params = { H0: state.H0, OmegaM: state.OmegaM, OmegaL: state.OmegaL, w: state.w, OmegaK: 1 - state.OmegaM - state.OmegaL };
+      const t0 = ageOfUniverse(params);
+
+      const tbody = $('batch-tbody');
+      tbody.innerHTML = '';
+      batchRows = [];
+
+      values.forEach(z => {
+        const dc = comovingDistance(z, params);
+        const dm = transverseDistance(dc, params);
+        const da = z > 0 ? dm / (1 + z) : 0;
+        const dl = dm * (1 + z);
+        const tL = lookbackTime(z, params);
+        const tz = t0 - tL;
+        const mu = z > 0 ? distanceModulus(dl) : -Infinity;
+        const kpcArc = (da * 1000) / 206264.80624709636;
+
+        batchRows.push({ z, DC: dc, DM: dm, DA: da, DL: dl, tL, tz, mu, kpcArc });
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td class="col-z">' + z.toFixed(4) + '</td>'
+          + '<td>' + fmt(dc, 2) + '</td>'
+          + '<td>' + fmt(dm, 2) + '</td>'
+          + '<td>' + fmt(da, 2) + '</td>'
+          + '<td>' + fmt(dl, 2) + '</td>'
+          + '<td>' + fmt(tL, 4) + '</td>'
+          + '<td>' + fmt(tz, 4) + '</td>'
+          + '<td>' + (isFinite(mu) ? fmt(mu, 3) : '\u2014') + '</td>'
+          + '<td>' + fmt(kpcArc, 4) + '</td>';
+        tbody.appendChild(tr);
+      });
+      $('batch-result-card').style.display = 'flex';
+      const msg = 'Computed ' + values.length + ' redshift' + (values.length === 1 ? '' : 's')
+        + (skipped.length ? ', ignored ' + skipped.length + ' invalid token' + (skipped.length === 1 ? '' : 's') + '.' : '.');
+      setStatus(msg, 'success');
+    }
+
+    function downloadBatchCsv() {
+      if (!batchRows || batchRows.length === 0) { setStatus('Run the batch first.'); return; }
+      const header = ['z', 'D_C_Mpc', 'D_M_Mpc', 'D_A_Mpc', 'D_L_Mpc', 't_L_Gyr', 't_at_z_Gyr', 'distance_modulus_mag', 'kpc_per_arcsec'];
+      const lines = [header.join(',')];
+      const meta = [
+        '# Cosmology Calculator - Batch Output',
+        '# H0=' + state.H0 + ' km/s/Mpc',
+        '# OmegaM=' + state.OmegaM,
+        '# OmegaLambda=' + state.OmegaL,
+        '# OmegaK=' + (1 - state.OmegaM - state.OmegaL),
+        '# w=' + state.w,
+        '# Generated: ' + new Date().toISOString()
+      ].join('\n');
+      batchRows.forEach(r => {
+        lines.push([
+          r.z, r.DC, r.DM, r.DA, r.DL, r.tL, r.tz, isFinite(r.mu) ? r.mu : '', r.kpcArc
+        ].map(v => typeof v === 'number' ? v.toExponential(8) : v).join(','));
+      });
+      const csv = meta + '\n' + lines.join('\n') + '\n';
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'cosmology_batch.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    $('btn-batch-run').addEventListener('click', runBatch);
+    $('btn-batch-csv').addEventListener('click', downloadBatchCsv);
+    $('btn-batch-clear').addEventListener('click', () => {
+      $('batch-input').value = '';
+      $('batch-tbody').innerHTML = '';
+      $('batch-result-card').style.display = 'none';
+      batchRows = null;
+    });
+  </script>
+
+  <script>
+    /* =====================================================
+       Reverse lookup and wavelength converter
+       ===================================================== */
+    $('btn-reverse').addEventListener('click', () => {
+      const type = $('rev-type').value;
+      const value = parseFloat($('rev-value').value);
+      const out = $('rev-out');
+      out.classList.remove('show');
+      if (!isFinite(value)) { setStatus('Enter a numeric target value.'); return; }
+      const params = { H0: state.H0, OmegaM: state.OmegaM, OmegaL: state.OmegaL, w: state.w, OmegaK: 1 - state.OmegaM - state.OmegaL };
+      let calcFn;
+      const zMaxFor = (type === 'tL' || type === 'age') ? 1500 : 1500;
+      if (type === 'tL')      calcFn = (z) => lookbackTime(z, params);
+      else if (type === 'age') calcFn = (z) => ageOfUniverse(params) - lookbackTime(z, params);
+      else if (type === 'DL') calcFn = (z) => transverseDistance(comovingDistance(z, params), params) * (1 + z);
+      else if (type === 'DC') calcFn = (z) => comovingDistance(z, params);
+      else if (type === 'DA') calcFn = (z) => z === 0 ? 0 : transverseDistance(comovingDistance(z, params), params) / (1 + z);
+
+      const tol = 1e-5;
+      let lo = 0, hi = zMaxFor;
+      const fLo = calcFn(lo) - value;
+      let fHi = calcFn(hi) - value;
+      let monotonic = true;
+      if (type === 'age') {
+        if (fHi > 0 || fLo < 0) monotonic = false;
+        for (let i = 0; i < 80; i++) {
+          const mid = 0.5 * (lo + hi);
+          const fMid = calcFn(mid) - value;
+          if (Math.abs(fMid) < tol || (hi - lo) < 1e-9) {
+            showRev(mid, calcFn, type, value);
+            return;
+          }
+          if (fMid > 0) lo = mid; else hi = mid;
+        }
+        showRev(0.5 * (lo + hi), calcFn, type, value);
+        return;
+      }
+
+      if (fLo > 0) { setStatus('Target value is below the minimum at z = 0.'); return; }
+      if (fHi < 0) { setStatus('Target value is too large for the search range.'); return; }
+      for (let i = 0; i < 80; i++) {
+        const mid = 0.5 * (lo + hi);
+        const fMid = calcFn(mid) - value;
+        if (Math.abs(fMid) < tol || (hi - lo) < 1e-9) { showRev(mid, calcFn, type, value); return; }
+        if (fMid < 0) lo = mid; else hi = mid;
+      }
+      showRev(0.5 * (lo + hi), calcFn, type, value);
+    });
+
+    function showRev(zSol, calcFn, type, value) {
+      const out = $('rev-out');
+      const recovered = calcFn(zSol);
+      const labelMap = { tL: 'Lookback time', age: 'Age at z', DL: 'Luminosity distance', DC: 'Comoving distance', DA: 'Angular distance' };
+      const unitMap  = { tL: 'Gyr', age: 'Gyr', DL: 'Mpc', DC: 'Mpc', DA: 'Mpc' };
+      out.innerHTML = '<div style="font-size:1rem;">z = <strong style="color: var(--color-accent); font-size: 1.15rem;">' + zSol.toFixed(5) + '</strong></div>'
+        + '<div class="helper-text" style="margin-top:6px;">Target: ' + labelMap[type] + ' = ' + value + ' ' + unitMap[type] + '</div>'
+        + '<div class="helper-text">Recovered: ' + recovered.toExponential(4) + ' ' + unitMap[type] + '</div>'
+        + '<button class="action-pill" style="margin-top:10px;" onclick="setZ(0,' + zSol.toFixed(6) + ')"><i class="fas fa-arrow-right"></i> Use as z\u2082</button>';
+      out.classList.add('show');
+    }
+
+    /* ----- Wavelength ----- */
+    function getLamScale() {
+      const u = $('lam-unit').value;
+      return { nm: 1, A: 0.1, um: 1000, mm: 1e6, m: 1e9 }[u] || 1;
+    }
+    function updateWavelength() {
+      const lamE = parseFloat($('lam-emit').value);
+      if (isFinite(lamE)) {
+        const obs = lamE * (1 + state.z2);
+        $('lam-obs').value = obs;
+      }
+    }
+    $('lam-emit').addEventListener('input', () => {
+      const lamE = parseFloat($('lam-emit').value);
+      if (isFinite(lamE)) $('lam-obs').value = lamE * (1 + state.z2);
+    });
+    $('lam-obs').addEventListener('input', () => {
+      const lamO = parseFloat($('lam-obs').value);
+      if (isFinite(lamO) && (1 + state.z2) > 0) $('lam-emit').value = lamO / (1 + state.z2);
+    });
+    $('lam-unit').addEventListener('change', updateWavelength);
+    $('btn-lam-halpha').addEventListener('click', () => {
+      $('lam-unit').value = 'nm';
+      $('lam-emit').value = 656.281;
+      updateWavelength();
+    });
+    $('btn-lam-lyman').addEventListener('click', () => {
+      $('lam-unit').value = 'nm';
+      $('lam-emit').value = 121.567;
+      updateWavelength();
+    });
+
+    /* ========== Init ========== */
+    loadUrlState();
+    recompute();
+
+    // Resize handler so Plotly plots redraw cleanly when the layout changes.
+    window.addEventListener('resize', () => {
+      ['plot-hubble', 'plot-mu', 'plot-scale', 'plot-lookback'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.layout) Plotly.Plots.resize(el);
+      });
+    });
+  </script>
+</body>
+
+</html>

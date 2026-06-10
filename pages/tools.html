@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tools | Mitchell Hooymans</title>
     <meta name="description"
-        content="Free tools and utilities developed by Mitchell Hooymans, including a customizable QR Code Generator.">
+        content="Free tools and utilities developed by Mitchell Hooymans, including a QR Code Generator, Black Hole Retention Estimator, and Steganography Encoder.">
     <link rel="canonical" href="https://mitchellhooymans.com/pages/tools.html" />
 
     <!-- Open Graph / Facebook -->
@@ -80,6 +80,82 @@
             </div>
 
             <div class="grid grid-3" id="toolGrid">
+                <!--
+                    TEMPORARILY HIDDEN: Cosmology Calculator + Spacetime Diagram.
+                    These tools are still in development and are not yet ready to be
+                    published. To restore them, simply delete the <div hidden ...>
+                    wrapper and its matching closing </div> below.
+                -->
+                <div hidden data-staging="cosmology-tools">
+
+                <!-- Cosmology Calculator -->
+                <div class="card reveal" data-topic="utilities">
+                    <div class="card-body">
+                        <h3 class="card-title">Cosmology Calculator</h3>
+                        <span class="category-badge utility">
+                            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" stroke="var(--color-accent)" />
+                                <ellipse cx="12" cy="12" rx="9" ry="3.5" stroke="var(--color-accent-secondary)" />
+                                <ellipse cx="12" cy="12" rx="3.5" ry="9" stroke="var(--color-accent-secondary)" />
+                                <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                            </svg>
+                            Utility
+                        </span>
+                        <p class="card-text">
+                            Compute distances, lookback times, ages, and observational quantities for any redshift.
+                            Supports curvature, dark energy w, batch processing, reverse lookups, and live visualisations.
+                        </p>
+                        <a href="../tools/cosmology.html" class="btn btn-primary sim-btn">
+                            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                            Launch Tool
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Spacetime Diagram -->
+                <div class="card reveal" data-topic="utilities">
+                    <div class="card-body">
+                        <h3 class="card-title">Spacetime Diagram</h3>
+                        <span class="category-badge utility">
+                            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="2" y1="22" x2="22" y2="22" stroke="var(--color-accent)" />
+                                <line x1="2" y1="22" x2="12" y2="2" stroke="var(--color-accent-secondary)" />
+                                <line x1="22" y1="22" x2="12" y2="2" stroke="var(--color-accent-secondary)" />
+                                <line x1="12" y1="22" x2="12" y2="2" stroke="var(--color-accent)" stroke-dasharray="2 2" />
+                                <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                            </svg>
+                            Utility
+                        </span>
+                        <p class="card-text">
+                            Interactive Davis &amp; Lineweaver (2004) spacetime diagram: past and future light cones,
+                            particle and event horizons, the Hubble sphere, and galaxy worldlines for any wCDM
+                            cosmology.
+                        </p>
+                        <a href="../tools/spacetime.html" class="btn btn-primary sim-btn">
+                            <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                            Launch Tool
+                        </a>
+                    </div>
+                </div>
+
+                </div> <!-- /staging:cosmology-tools -->
+
                 <!-- QR Code Generator -->
                 <div class="card reveal" data-topic="utilities">
                     <div class="card-body">

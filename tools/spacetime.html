@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spacetime Diagram | Mitchell Hooymans</title>
+  <meta name="description" content="Interactive Davis & Lineweaver-style spacetime diagram. Visualise the past and future light cones, particle horizon, event horizon, Hubble sphere, and galaxy worldlines for any wCDM cosmology.">
+  <link rel="canonical" href="https://mitchellhooymans.com/tools/spacetime.html" />
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mitchellhooymans.com/tools/spacetime.html">
+  <meta property="og:title" content="Spacetime Diagram | Mitchell Hooymans">
+  <meta property="og:description" content="Past/future light cones, particle and event horizons, Hubble sphere, and comoving worldlines for any wCDM cosmology.">
+  <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spacetime Diagram | Mitchell Hooymans">
+  <meta name="twitter:description" content="Past/future light cones, horizons, and worldlines for any wCDM cosmology.">
+  <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+  <style>
+    /* ======== Spacetime tool: layout ======== */
+    .cosmo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .cosmo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    @media (max-width: 768px) {
+      .cosmo-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Split layout: diagram on the left, controls sidebar on the right.
+       align-items: start so the plot keeps its natural height and the
+       sidebar is whatever height it needs — neither stretches to match. */
+    .cosmo-split {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .cosmo-split { grid-template-columns: 1fr; }
+    }
+
+    .cosmo-split-side {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      min-width: 0;
+    }
+    .cosmo-split-main { min-width: 0; }
+
+    /* Compact the sidebar cards: smaller padding, tighter rows, smaller toggles
+       so the controls fit a narrow column without feeling cramped. */
+    .cosmo-split-side .cosmo-card {
+      margin-top: 0;
+      padding: var(--space-4);
+    }
+    .cosmo-split-side .card-label { margin-bottom: var(--space-3); }
+    .cosmo-split-side .param-row { margin-bottom: var(--space-3); }
+    .cosmo-split-side .param-head { margin-bottom: 4px; }
+    .cosmo-split-side .param-name { font-size: 0.85rem; }
+    .cosmo-split-side .num-field {
+      width: 78px;
+      padding: 5px 8px;
+      font-size: 0.83rem;
+    }
+    .cosmo-split-side .preset-row { gap: var(--space-2); margin-bottom: var(--space-2); }
+    .cosmo-split-side .preset-select {
+      padding: 6px 30px 6px 10px;
+      font-size: 0.85rem;
+    }
+    .cosmo-split-side .preset-reset {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+    }
+    .cosmo-split-side .toggle {
+      padding: 6px 10px;
+      gap: 8px;
+    }
+    .cosmo-split-side .toggle-label { font-size: 0.8rem; }
+    .cosmo-split-side .toggle-grid { gap: 6px; }
+    .cosmo-split-side .action-bar { margin-top: var(--space-3); }
+    .cosmo-split-side .action-btn { padding: 6px 10px; font-size: 0.78rem; }
+
+    .cosmo-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      transition: border-color var(--transition-base), background var(--transition-base);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cosmo-card:hover {
+      background: rgba(15, 23, 42, 0.75);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .cosmo-card + .cosmo-card { margin-top: var(--space-4); }
+
+    .card-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-gray-400);
+      margin-bottom: var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .card-label .label-num {
+      color: var(--color-accent);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .helper-text {
+      font-size: 0.82rem;
+      color: var(--color-gray-400);
+      line-height: 1.55;
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    /* ======== Parameter inputs ======== */
+    .param-row { margin-bottom: var(--space-4); }
+    .param-row:last-child { margin-bottom: 0; }
+
+    .param-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: var(--space-2);
+      gap: var(--space-2);
+    }
+
+    .param-name {
+      color: var(--color-gray-300);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .param-name code {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--color-accent);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      margin-left: 4px;
+    }
+
+    .param-row .info-icon {
+      color: var(--color-gray-500);
+      font-size: 0.75rem;
+      cursor: help;
+      transition: color var(--transition-fast);
+    }
+
+    .param-row .info-icon:hover { color: var(--color-accent); }
+
+    .param-input-wrap {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .num-field {
+      width: 90px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      padding: 6px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    .num-field:focus { border-color: var(--color-accent); }
+
+    .num-field.readonly {
+      background: rgba(0, 0, 0, 0.15);
+      color: var(--color-accent);
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+
+    .slider-thin {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      height: 6px;
+      border-radius: var(--radius-full);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-thin::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+    .slider-thin::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    .slider-thin::-moz-range-thumb {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      cursor: pointer; border: none;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    /* ======== Presets ======== */
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .preset-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-gray-400);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .preset-select {
+      flex: 1 1 240px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      padding: 10px 36px 10px 12px;
+      font-family: var(--font-primary);
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px top 50%;
+      background-size: 10px auto;
+      transition: border-color var(--transition-fast);
+    }
+    .preset-select:focus { border-color: var(--color-accent); }
+    .preset-select option,
+    .preset-select optgroup {
+      background: var(--color-gray-100);
+      color: var(--color-white);
+    }
+
+    .preset-reset {
+      padding: 9px 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--color-gray-300);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      font-family: var(--font-primary);
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .preset-reset:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      color: var(--color-accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .preset-caption {
+      font-size: 0.78rem;
+      color: var(--color-gray-400);
+      margin-bottom: var(--space-5);
+      padding: 0 4px;
+      min-height: 1.2em;
+      line-height: 1.5;
+    }
+    .preset-caption a {
+      color: var(--color-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(56, 189, 248, 0.4);
+    }
+    .preset-caption a:hover { border-bottom-color: var(--color-accent); }
+    .preset-caption .custom-tag { color: var(--color-gray-500); font-style: italic; }
+
+    /* ======== Toggle controls ======== */
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-2);
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+      user-select: none;
+    }
+
+    .toggle:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(0, 0, 0, 0.32);
+    }
+
+    .toggle input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
+    .toggle-swatch {
+      width: 18px; height: 4px;
+      border-radius: 2px;
+      flex: 0 0 auto;
+    }
+
+    .toggle-label {
+      font-size: 0.85rem;
+      color: var(--color-gray-300);
+      font-weight: 500;
+    }
+
+    .toggle.dashed .toggle-swatch {
+      background: transparent !important;
+      border-top: 2px dashed currentColor;
+      height: 0;
+      margin-top: 2px;
+    }
+
+    .toggle.dotted .toggle-swatch {
+      background: transparent !important;
+      border-top: 2px dotted currentColor;
+      height: 0;
+      margin-top: 2px;
+    }
+
+    /* ======== Status messages ======== */
+    .status-msg {
+      min-height: 1.4em;
+      padding: 8px 16px;
+      margin-bottom: var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      transition: opacity var(--transition-fast);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .status-msg.show { opacity: 1; pointer-events: auto; }
+
+    .status-msg.info {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--color-accent);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .status-msg.warn {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    /* ======== Plot container ======== */
+    .plot-container {
+      width: 100%;
+      height: 560px;
+      position: relative;
+      background: transparent;
+    }
+
+    /* Force Plotly's inner wrappers to fill the box. */
+    .plot-container > .js-plotly-plot,
+    .plot-container > .js-plotly-plot > .plot-container {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    @media (max-width: 900px) {
+      .plot-container { height: 460px; }
+    }
+
+    /* When the diagram sits beside the controls sidebar, keep a fixed
+       comfortable height instead of stretching to the sidebar's full height. */
+    .cosmo-split-main .plot-container {
+      flex: 0 0 auto;
+      height: 620px;
+      min-height: 0;
+    }
+
+    @media (max-width: 900px) {
+      .cosmo-split-main .plot-container { height: 460px; }
+    }
+
+    /* ======== Reading-the-diagram explainer cards ======== */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .info-card {
+      padding: var(--space-4);
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-left: 3px solid var(--color-accent);
+      border-radius: var(--radius-md);
+    }
+
+    .info-card h4 {
+      margin: 0 0 var(--space-2) 0;
+      font-size: 0.95rem;
+      color: var(--color-white);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card .swatch {
+      width: 14px; height: 4px; border-radius: 2px;
+      display: inline-block;
+    }
+
+    .info-card p {
+      margin: 0;
+      font-size: 0.83rem;
+      color: var(--color-gray-300);
+      line-height: 1.6;
+    }
+
+    /* ======== Method / references ======== */
+    .eq-block {
+      padding: var(--space-3);
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--color-gray-200);
+      margin-bottom: var(--space-3);
+      overflow-x: auto;
+    }
+
+    .ref-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+
+    .ref-list li {
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: var(--radius-md);
+      font-size: 0.83rem;
+      color: var(--color-gray-300);
+    }
+
+    .ref-list li a {
+      color: var(--color-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(56, 189, 248, 0.35);
+    }
+    .ref-list li a:hover { border-bottom-color: var(--color-accent); }
+
+    /* ======== Live diagnostics row ======== */
+    .diagnostics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .diag-pill {
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .diag-pill .label {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-gray-500);
+    }
+
+    .diag-pill .val {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--color-white);
+      font-weight: 600;
+    }
+
+    .diag-pill .unit {
+      color: var(--color-gray-500);
+      font-size: 0.78rem;
+      margin-left: 3px;
+      font-weight: 400;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .action-btn {
+      padding: 8px 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--color-gray-300);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: var(--font-primary);
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .action-btn:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      color: var(--color-accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="global-nebula">
+    <div class="nebula-glow"></div>
+    <div class="nebula-glow"></div>
+  </div>
+
+  <div id="navbar-placeholder"></div>
+
+  <header class="page-header" style="position: relative; z-index: 10;">
+    <div class="container">
+      <a href="../pages/tools.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+  </header>
+
+  <section class="hero" style="min-height: 18vh; padding-top: 20px; position: relative; overflow: hidden;">
+    <div class="container" style="position: relative; z-index: 1;">
+      <div class="page-hero-content" style="text-align: center;">
+        <h1 class="animate-fade-in-up delay-100">Spacetime Diagram</h1>
+        <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 760px; margin: 0 auto;">
+          The Davis &amp; Lineweaver (2004) view of an expanding universe. Past and future light cones, particle horizon, event horizon, the Hubble sphere, and galaxy worldlines &mdash; all on one plot, for any wCDM cosmology you like.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section pt-0">
+    <div class="container cosmo-container">
+
+      <div id="status" class="status-msg" role="status" aria-live="polite"></div>
+
+      <!-- Diagram on the left, controls sidebar on the right. -->
+      <div class="cosmo-split animate-fade-in-up delay-300">
+
+        <!-- LEFT: the diagram -->
+        <div class="cosmo-card cosmo-split-main">
+          <div class="card-label">
+            <span>The Spacetime Diagram &mdash; Comoving distance vs Cosmic time</span>
+            <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;">After Davis &amp; Lineweaver (2004)</span>
+          </div>
+          <div id="plot-spacetime" class="plot-container"></div>
+
+          <div class="diagnostics" id="diagnostics"></div>
+        </div>
+
+        <!-- RIGHT: model + display controls stacked -->
+        <div class="cosmo-split-side">
+
+      <!-- 01. Cosmological Model (sidebar, top) -->
+      <div class="cosmo-card animate-fade-in-up delay-400">
+        <div class="card-label">
+          <span><span class="label-num">01</span> &mdash; Cosmological Model</span>
+          <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;">Live updates &mdash; diagram redraws as you drag</span>
+        </div>
+
+        <div class="preset-row">
+            <span class="preset-label"><i class="fas fa-bookmark"></i> Preset</span>
+            <select id="preset-select" class="preset-select" aria-label="Cosmology preset selector">
+              <option value="custom">Custom (current values)</option>
+              <optgroup label="CMB experiments">
+                <option value="planck18">Planck 2018 (Aghanim+20)</option>
+                <option value="wmap9">WMAP 9-year (Hinshaw+13)</option>
+              </optgroup>
+              <optgroup label="Supernovae &amp; late universe">
+                <option value="pantheon">Pantheon+ &amp; SH0ES (Brout+22)</option>
+                <option value="desy5">DES SN5YR (Vincenzi+24)</option>
+              </optgroup>
+              <optgroup label="BAO">
+                <option value="desi">DESI BAO Y1 + CMB (Adame+24)</option>
+              </optgroup>
+              <optgroup label="Toy / pedagogical">
+                <option value="eds">Einstein-de Sitter</option>
+                <option value="open">Open (matter only, no DE)</option>
+              </optgroup>
+            </select>
+            <button class="preset-reset" id="btn-preset-reset" title="Restore the Planck 2018 defaults.">
+              <i class="fas fa-undo"></i> Reset
+            </button>
+          </div>
+          <div class="preset-caption" id="preset-caption"></div>
+
+          <div class="param-row">
+            <div class="param-head">
+              <span class="param-name">Hubble Constant <code>H&#8320;</code>
+                <i class="fas fa-info-circle info-icon" title="Present-day expansion rate (km/s/Mpc)."></i>
+              </span>
+              <span class="helper-text" style="margin: 0; color: var(--color-gray-400);">km/s/Mpc</span>
+            </div>
+            <div class="param-input-wrap">
+              <input type="range" class="slider-thin" id="H0-slider" min="20" max="100" step="0.1" value="67.4">
+              <input type="number" class="num-field" id="H0-input" min="20" max="100" step="0.1" value="67.4" aria-label="Hubble constant">
+            </div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-head">
+              <span class="param-name">Matter Density <code>&#937;<sub>M</sub></code>
+                <i class="fas fa-info-circle info-icon" title="Total matter (baryons + CDM) density today."></i>
+              </span>
+            </div>
+            <div class="param-input-wrap">
+              <input type="range" class="slider-thin" id="OmegaM-slider" min="0" max="2" step="0.001" value="0.315">
+              <input type="number" class="num-field" id="OmegaM-input" min="0" max="2" step="0.001" value="0.315" aria-label="Matter density">
+            </div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-head">
+              <span class="param-name">Vacuum Energy <code>&#937;<sub>&#923;</sub></code>
+                <i class="fas fa-info-circle info-icon" title="Dark energy / cosmological constant density today."></i>
+              </span>
+            </div>
+            <div class="param-input-wrap">
+              <input type="range" class="slider-thin" id="OmegaL-slider" min="0" max="2" step="0.001" value="0.685">
+              <input type="number" class="num-field" id="OmegaL-input" min="0" max="2" step="0.001" value="0.685" aria-label="Dark energy density">
+            </div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-head">
+              <span class="param-name">Curvature <code>&#937;<sub>K</sub></code>
+                <i class="fas fa-info-circle info-icon" title="Curvature density: 1 - &#937;&#7504; - &#937;&#923;. Positive open, zero flat, negative closed."></i>
+              </span>
+              <span class="helper-text" style="margin: 0;" id="curvature-label">flat</span>
+            </div>
+            <div class="param-input-wrap">
+              <input type="number" class="num-field readonly" id="OmegaK-display" value="0.000" readonly aria-label="Curvature value">
+              <span class="helper-text" style="margin: 0;">auto: 1 &minus; &#937;&#7504; &minus; &#937;&#923;</span>
+            </div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-head">
+              <span class="param-name">Dark Energy EoS <code>w</code>
+                <i class="fas fa-info-circle info-icon" title="Equation of state P = w &#x3C1; c&#xb2;. w = -1 is a cosmological constant."></i>
+              </span>
+            </div>
+            <div class="param-input-wrap">
+              <input type="range" class="slider-thin" id="w-slider" min="-2" max="0" step="0.01" value="-1">
+              <input type="number" class="num-field" id="w-input" min="-3" max="1" step="0.01" value="-1" aria-label="Dark energy equation of state">
+            </div>
+          </div>
+        </div>
+
+      <!-- 02. Display Controls (sidebar, bottom) -->
+      <div class="cosmo-card animate-fade-in-up delay-500">
+        <div class="card-label">
+          <span><span class="label-num">02</span> &mdash; Display Controls</span>
+          <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;">Toggle layers on / off</span>
+        </div>
+
+          <div class="param-row">
+            <div class="param-head">
+              <span class="param-name">Emission redshift <code>z&#8322;</code>
+                <i class="fas fa-info-circle info-icon" title="Redshift of a galaxy we observe today. Marked on the diagram at its emission event."></i>
+              </span>
+              <span class="helper-text" style="margin: 0;">amber dot on diagram</span>
+            </div>
+            <div class="param-input-wrap">
+              <input type="range" class="slider-thin" id="z2-slider" min="0" max="20" step="0.01" value="1.5">
+              <input type="number" class="num-field" id="z2-input" min="0" max="1100" step="0.001" value="1.5" aria-label="Emission redshift z2">
+            </div>
+          </div>
+
+          <div class="toggle-grid" style="margin-top: var(--space-3);">
+            <label class="toggle">
+              <input type="checkbox" id="tg-particle" checked>
+              <span class="toggle-swatch" style="background: #fbbf24;"></span>
+              <span class="toggle-label">Particle horizon</span>
+            </label>
+            <label class="toggle dashed">
+              <input type="checkbox" id="tg-event" checked>
+              <span class="toggle-swatch" style="color: #60a5fa;"></span>
+              <span class="toggle-label">Event horizon</span>
+            </label>
+            <label class="toggle dotted">
+              <input type="checkbox" id="tg-hubble" checked>
+              <span class="toggle-swatch" style="color: #34d399;"></span>
+              <span class="toggle-label">Hubble sphere</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="tg-past" checked>
+              <span class="toggle-swatch" style="background: #f472b6;"></span>
+              <span class="toggle-label">Past light cone</span>
+            </label>
+            <label class="toggle dotted">
+              <input type="checkbox" id="tg-future" checked>
+              <span class="toggle-swatch" style="color: #f472b6;"></span>
+              <span class="toggle-label">Future light cone</span>
+            </label>
+            <label class="toggle dotted">
+              <input type="checkbox" id="tg-worldlines" checked>
+              <span class="toggle-swatch" style="color: #94a3b8;"></span>
+              <span class="toggle-label">Worldlines (z = 1, 3, 10, CMB)</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="tg-z2" checked>
+              <span class="toggle-swatch" style="background: #fbbf24;"></span>
+              <span class="toggle-label">z&#8322; emission event</span>
+            </label>
+            <label class="toggle dashed">
+              <input type="checkbox" id="tg-now" checked>
+              <span class="toggle-swatch" style="color: #a3e635;"></span>
+              <span class="toggle-label">&ldquo;Now&rdquo; line (t = t&#8320;)</span>
+            </label>
+          </div>
+
+          <div class="action-bar">
+            <button class="action-btn" id="btn-copy-url" title="Copy a deep-link to the current configuration">
+              <i class="fas fa-link"></i> Copy share link
+            </button>
+            <button class="action-btn" id="btn-copy-state" title="Copy parameters + key distances as JSON">
+              <i class="fas fa-code"></i> Copy as JSON
+            </button>
+          </div>
+      </div>
+
+        </div> <!-- /.cosmo-split-side -->
+      </div> <!-- /.cosmo-split -->
+
+      <!-- Reading the diagram -->
+      <div class="cosmo-card animate-fade-in-up delay-500">
+        <div class="card-label">
+          <span>Reading the Diagram</span>
+          <span style="text-transform: none; letter-spacing: 0; color: var(--color-gray-400); font-size: 0.78rem; font-weight: 500;">What every line is telling you</span>
+        </div>
+        <div class="info-grid">
+
+          <div class="info-card" style="border-left-color: #fbbf24;">
+            <h4><span class="swatch" style="background: #fbbf24;"></span>Particle horizon</h4>
+            <p>The comoving distance light has had time to travel <em>since the Big Bang</em>. At each cosmic time on the y-axis, anything outside this curve is causally disconnected from us &mdash; light from it hasn&#8217;t reached us yet.</p>
+          </div>
+
+          <div class="info-card" style="border-left-color: #60a5fa;">
+            <h4><span class="swatch" style="background: #60a5fa;"></span>Event horizon</h4>
+            <p>The comoving distance from which light emitted <em>now</em> could ever reach us in the future. In an accelerating universe this is finite (about 16&ndash;17 Glyr for Planck 2018) &mdash; galaxies beyond it will redshift out of contact forever.</p>
+          </div>
+
+          <div class="info-card" style="border-left-color: #34d399;">
+            <h4><span class="swatch" style="background: #34d399;"></span>Hubble sphere</h4>
+            <p>The surface where the recession velocity v<sub>rec</sub> = H(t) D equals c. In comoving coordinates the Hubble sphere <em>shrinks</em> in the de Sitter era &mdash; one of the more counter-intuitive features Davis &amp; Lineweaver use this diagram to clarify.</p>
+          </div>
+
+          <div class="info-card" style="border-left-color: #f472b6;">
+            <h4><span class="swatch" style="background: #f472b6;"></span>Light cones</h4>
+            <p>The <strong>past</strong> light cone (solid) traces the worldline of every photon arriving at us right now. The <strong>future</strong> light cone (dotted) traces every photon we emit today &mdash; it asymptotes to the event horizon, never crossing it.</p>
+          </div>
+
+          <div class="info-card" style="border-left-color: #94a3b8;">
+            <h4><span class="swatch" style="background: #94a3b8;"></span>Worldlines</h4>
+            <p>Galaxies sit at <em>constant comoving distance</em>, so their worldlines are vertical lines in this view. We mark the worldlines for objects we observe today at z = 1, 3, 10, and the cosmic microwave background last-scattering surface at z &asymp; 1100.</p>
+          </div>
+
+          <div class="info-card" style="border-left-color: #a3e635;">
+            <h4><span class="swatch" style="background: #a3e635;"></span>&ldquo;Now&rdquo; line and us</h4>
+            <p>The horizontal dashed line at t = t&#8320; is the present epoch. The white star at (0, t&#8320;) is our worldline crossing &ldquo;now&rdquo;. Following the past light cone down from that point traces back every direction in the sky.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Method & References -->
+      <div class="cosmo-card animate-fade-in-up delay-500">
+        <div class="card-label">
+          <span>Method &amp; References</span>
+        </div>
+
+        <p class="helper-text">
+          Everything is computed from the wCDM expansion function
+          <code>E(z) = &radic;[&#937;<sub>M</sub>(1+z)<sup>3</sup> + &#937;<sub>K</sub>(1+z)<sup>2</sup> + &#937;<sub>&#923;</sub>(1+z)<sup>3(1+w)</sup>]</code>.
+          The diagram requires four integrals, each evaluated with Simpson&#8217;s rule:
+        </p>
+
+        <div class="eq-block">
+Particle horizon today  D_p(0)  =  (c/H&#8320;) &middot; &int;&#8320;<sup>&infin;</sup> dz/E(z)
+Event horizon today     D_e(0)  =  (c/H&#8320;) &middot; &int;<sub>-1</sub><sup>0</sup> dz/E(z)
+Comoving D_C(z)         from us  =  (c/H&#8320;) &middot; &int;&#8320;<sup>z</sup> dz/E(z)
+Cosmic time t(a)        =  (1/H&#8320;) &middot; &int;&#8320;<sup>a</sup> da&#8242;/[a&#8242; E(a&#8242;)]
+        </div>
+
+        <p class="helper-text">
+          For the high-z particle-horizon integral the calculator substitutes <code>u = ln(1+z)</code> so Simpson&#8217;s rule samples both the low-z bulk and the high-z tail evenly &mdash; without that change, the linear-z rule undersamples z &lt; 5 and the particle horizon comes out roughly 3&times; too large. Cross-check (Planck 2018): D<sub>p</sub>(0) &approx; 46.8 Glyr, D<sub>e</sub>(0) &approx; 16.7 Glyr, D<sub>H</sub>(0) = c/H&#8320; &approx; 14.5 Glyr.
+        </p>
+
+        <ul class="ref-list">
+          <li>
+            T. M. Davis &amp; C. H. Lineweaver, &ldquo;Expanding Confusion: Common Misconceptions of Cosmological Horizons and the Superluminal Expansion of the Universe,&rdquo; PASA 21, 97 (2004).
+            <a href="https://arxiv.org/abs/astro-ph/0310808" target="_blank" rel="noopener">arXiv:astro-ph/0310808</a>
+          </li>
+          <li>
+            D. W. Hogg, &ldquo;Distance measures in cosmology,&rdquo; (1999). Used for the transverse-distance / sinh-sin curvature handling.
+            <a href="https://arxiv.org/abs/astro-ph/9905116" target="_blank" rel="noopener">arXiv:astro-ph/9905116</a>
+          </li>
+          <li>
+            E. F. Bunn &amp; D. W. Hogg, &ldquo;The kinematic origin of the cosmological redshift,&rdquo; AJP 77, 688 (2009). For follow-up on the kinematic / GR interpretation of the recession-velocity surface.
+            <a href="https://arxiv.org/abs/0808.1081" target="_blank" rel="noopener">arXiv:0808.1081</a>
+          </li>
+          <li>
+            See also <a href="cosmology.html">the Cosmology Calculator</a> for the full set of distance / time / observational outputs (D<sub>C</sub>, D<sub>A</sub>, D<sub>L</sub>, &mu;, batch processing, reverse lookups, etc.).
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../js/navbar.js"></script>
+  <script src="../js/footer.js"></script>
+  <script src="../js/back-to-top.js"></script>
+  <script src="../js/animations.js"></script>
+  <script>new Footer().init('../');</script>
+
+  <!-- Shared cosmology math engine. -->
+  <script src="cosmo-engine.js"></script>
+
+  <script>
+    /* =====================================================
+       Spacetime Diagram - UI state, drawing, and bindings
+       ===================================================== */
+
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      H0: 67.4,
+      OmegaM: 0.315,
+      OmegaL: 0.685,
+      w: -1,
+      z2: 1.5,
+      preset: 'planck18',
+      // Layer toggles
+      sParticle: true,
+      sEvent: true,
+      sHubble: true,
+      sPast: true,
+      sFuture: true,
+      sWorldlines: true,
+      sZ2: true,
+      sNow: true
+    };
+
+    function currentParams() {
+      return {
+        H0: state.H0,
+        OmegaM: state.OmegaM,
+        OmegaL: state.OmegaL,
+        w: state.w,
+        OmegaK: 1 - state.OmegaM - state.OmegaL
+      };
+    }
+
+    /* ---------- Status bar helpers ---------- */
+    let statusTimer = null;
+    function showStatus(msg, level) {
+      const el = $('status');
+      el.className = 'status-msg show ' + (level || 'info');
+      el.textContent = msg;
+      if (statusTimer) clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => { el.className = 'status-msg'; }, 3500);
+    }
+
+    /* ---------- Parameter input binding ---------- */
+    function bindParam(name, sliderId, inputId, min, max, onChange) {
+      const slider = $(sliderId);
+      const input = $(inputId);
+      slider.addEventListener('input', () => {
+        let v = parseFloat(slider.value);
+        if (!isFinite(v)) return;
+        v = Math.max(min, Math.min(max, v));
+        state[name] = v;
+        input.value = v;
+        onChange();
+      });
+      input.addEventListener('input', () => {
+        let v = parseFloat(input.value);
+        if (!isFinite(v)) return;
+        v = Math.max(min, Math.min(max, v));
+        state[name] = v;
+        if (parseFloat(slider.value) !== v) {
+          slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), v));
+        }
+        onChange();
+      });
+    }
+
+    /* ---------- Preset handling ---------- */
+    function applyPreset(key, silent) {
+      if (key === 'custom') return;
+      const preset = PRESETS[key];
+      if (!preset) return;
+      state.H0 = preset.H0;
+      state.OmegaM = preset.OmegaM;
+      state.OmegaL = preset.OmegaL;
+      state.w = preset.w;
+      state.preset = key;
+      // Push to UI
+      $('H0-slider').value = state.H0;       $('H0-input').value = state.H0;
+      $('OmegaM-slider').value = state.OmegaM; $('OmegaM-input').value = state.OmegaM;
+      $('OmegaL-slider').value = state.OmegaL; $('OmegaL-input').value = state.OmegaL;
+      $('w-slider').value = state.w;         $('w-input').value = state.w;
+      updatePresetCaption();
+      if (!silent) showStatus('Applied preset: ' + key, 'info');
+      recompute();
+    }
+
+    function updatePresetCaption() {
+      const caption = $('preset-caption');
+      const key = $('preset-select').value;
+      if (key === 'custom') {
+        caption.innerHTML = '<span class="custom-tag">Custom values &mdash; not a published cosmology.</span>';
+        return;
+      }
+      const p = PRESETS[key];
+      if (!p) { caption.innerHTML = ''; return; }
+      let bits = [];
+      if (p.ref) {
+        const linked = p.refUrl
+          ? '<a href="' + p.refUrl + '" target="_blank" rel="noopener">' + p.ref + '</a>'
+          : p.ref;
+        bits.push(linked);
+      }
+      if (p.desc) bits.push(p.desc);
+      caption.innerHTML = bits.join(' &middot; ');
+    }
+
+    function detectPresetFromState() {
+      // Pick "custom" if the values don't match any preset within tolerance.
+      const tol = 1e-3;
+      for (const key of Object.keys(PRESETS)) {
+        const p = PRESETS[key];
+        if (Math.abs(p.H0 - state.H0) < tol
+          && Math.abs(p.OmegaM - state.OmegaM) < tol
+          && Math.abs(p.OmegaL - state.OmegaL) < tol
+          && Math.abs(p.w - state.w) < tol) {
+          return key;
+        }
+      }
+      return 'custom';
+    }
+
+    /* ---------- URL deep linking ---------- */
+    function syncUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('H0', state.H0);
+      url.searchParams.set('OmegaM', state.OmegaM);
+      url.searchParams.set('OmegaL', state.OmegaL);
+      url.searchParams.set('w', state.w);
+      url.searchParams.set('z2', state.z2);
+      window.history.replaceState({}, '', url);
+    }
+
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const ks = ['H0', 'OmegaM', 'OmegaL', 'w', 'z2'];
+      let touched = false;
+      for (const k of ks) {
+        if (params.has(k)) {
+          const v = parseFloat(params.get(k));
+          if (isFinite(v)) { state[k] = v; touched = true; }
+        }
+      }
+      if (params.has('preset')) {
+        const key = params.get('preset');
+        if (PRESETS[key]) {
+          applyPreset(key, true);
+          return true;
+        }
+      }
+      if (touched) {
+        // Push parameter state into the inputs
+        $('H0-slider').value = state.H0;       $('H0-input').value = state.H0;
+        $('OmegaM-slider').value = state.OmegaM; $('OmegaM-input').value = state.OmegaM;
+        $('OmegaL-slider').value = state.OmegaL; $('OmegaL-input').value = state.OmegaL;
+        $('w-slider').value = state.w;         $('w-input').value = state.w;
+        $('z2-slider').value = Math.min(20, state.z2);
+        $('z2-input').value = state.z2;
+        const matched = detectPresetFromState();
+        $('preset-select').value = matched;
+        state.preset = matched;
+        updatePresetCaption();
+      }
+      return touched;
+    }
+
+    /* ---------- Plot styling ---------- */
+    const PLOT_LAYOUT = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      font: { color: '#cbd5e1', family: 'Inter, sans-serif' },
+      xaxis: {
+        gridcolor: 'rgba(255,255,255,0.07)',
+        zerolinecolor: 'rgba(255,255,255,0.18)',
+        tickfont: { color: '#94a3b8' }
+      },
+      yaxis: {
+        gridcolor: 'rgba(255,255,255,0.07)',
+        zerolinecolor: 'rgba(255,255,255,0.18)',
+        tickfont: { color: '#94a3b8' }
+      }
+    };
+
+    const PLOT_CONFIG = { responsive: true, displayModeBar: false };
+
+    /* ---------- The spacetime diagram itself ---------- */
+    function drawSpacetime() {
+      const p = currentParams();
+      const t0 = ageOfUniverse(p);
+      const DH_Mpc = C_KM_S / p.H0;
+      const M2GLY = 1 / MPC_PER_GLY;
+
+      // Forward integrand uses u = ln(1+z) so the high-z tail of 1/E(z)
+      // is sampled evenly; the linear rule wildly undersamples low z when
+      // the upper bound is ~10^4+.
+      const fwdIntegrand = (u) => Math.exp(u) / E(Math.exp(u) - 1, p);
+      const revIntegrand = (zp) => 1 / E(zp, p);
+
+      const Z_HIGH = 5e4;
+      const Z_FUTURE = -0.999;
+      const U_HIGH = Math.log(1 + Z_HIGH);
+
+      const Dp_now_Mpc = DH_Mpc * simpson(fwdIntegrand, 0, U_HIGH, 2000);
+      const De_now_Mpc = DH_Mpc * simpson(revIntegrand, Z_FUTURE, 0, 800);
+
+      // Log-spaced sampling in scale factor from very early to ~3 t0
+      // in the future (a = 5 in LCDM).
+      const N = 220;
+      const aMin = 1e-3;
+      const aMax = 5;
+      const lnSpan = Math.log(aMax / aMin);
+
+      const ts = new Array(N + 1);
+      const Dp_Gly = new Array(N + 1);
+      const De_Gly = new Array(N + 1);
+      const Dh_Gly = new Array(N + 1);
+      const aArr = new Array(N + 1);
+
+      for (let i = 0; i <= N; i++) {
+        const a = aMin * Math.exp(lnSpan * (i / N));
+        const z = 1 / a - 1;
+        const Ez = E(z, p);
+        ts[i] = ageAtScaleFactor(a, p);
+        aArr[i] = a;
+
+        let dCfromNow_Mpc;
+        if (z > 0) {
+          dCfromNow_Mpc = DH_Mpc * simpson(fwdIntegrand, 0, Math.log(1 + z), 400);
+        } else if (z < 0) {
+          dCfromNow_Mpc = -DH_Mpc * simpson(revIntegrand, z, 0, 200);
+        } else {
+          dCfromNow_Mpc = 0;
+        }
+        const Dp_Mpc = Dp_now_Mpc - dCfromNow_Mpc;
+        const De_Mpc = De_now_Mpc + dCfromNow_Mpc;
+        Dp_Gly[i] = Math.max(0, Dp_Mpc) * M2GLY;
+        De_Gly[i] = Math.max(0, De_Mpc) * M2GLY;
+        Dh_Gly[i] = (DH_Mpc / (a * Ez)) * M2GLY;
+      }
+
+      // Past + future light cones
+      const pastX = [], pastT = [], futX = [], futT = [];
+      for (let i = 0; i <= N; i++) {
+        if (aArr[i] <= 1.0) {
+          const dC = (Dp_now_Mpc - Dp_Gly[i] / M2GLY) * M2GLY;
+          pastX.push(dC);
+          pastT.push(ts[i]);
+        }
+        if (aArr[i] >= 1.0) {
+          const dC = (Dp_Gly[i] / M2GLY - Dp_now_Mpc) * M2GLY;
+          futX.push(dC);
+          futT.push(ts[i]);
+        }
+      }
+      pastX.push(0); pastT.push(t0);
+      futX.unshift(0); futT.unshift(t0);
+
+      const Dp_now_Gly = Dp_now_Mpc * M2GLY;
+      const De_now_Gly = De_now_Mpc * M2GLY;
+      // X-extent: ride out to ~110% of the particle horizon today so the
+      // very-early-universe parts of the curves are visible. Cap if D_p
+      // explodes for the user's chosen cosmology.
+      const xMax = Math.max(Math.min(Dp_now_Gly * 1.1, 200), 5);
+      const yTop = ts[N] * 1.02;
+
+      const mirror = (xs) => xs.map(v => -v);
+      const traces = [];
+
+      // Particle horizon
+      if (state.sParticle) {
+        traces.push({
+          x: mirror(Dp_Gly), y: ts, mode: 'lines',
+          line: { color: '#fbbf24', width: 2 },
+          name: 'Particle horizon', legendgroup: 'ph',
+          hovertemplate: 'D<sub>p</sub> = %{x:.1f} Glyr<br>t = %{y:.2f} Gyr<extra>Particle horizon</extra>'
+        });
+        traces.push({
+          x: Dp_Gly, y: ts, mode: 'lines',
+          line: { color: '#fbbf24', width: 2 },
+          showlegend: false, legendgroup: 'ph', hoverinfo: 'skip'
+        });
+      }
+
+      // Event horizon
+      if (state.sEvent) {
+        traces.push({
+          x: mirror(De_Gly), y: ts, mode: 'lines',
+          line: { color: '#60a5fa', width: 2, dash: 'dash' },
+          name: 'Event horizon', legendgroup: 'eh',
+          hovertemplate: 'D<sub>e</sub> = %{x:.1f} Glyr<br>t = %{y:.2f} Gyr<extra>Event horizon</extra>'
+        });
+        traces.push({
+          x: De_Gly, y: ts, mode: 'lines',
+          line: { color: '#60a5fa', width: 2, dash: 'dash' },
+          showlegend: false, legendgroup: 'eh', hoverinfo: 'skip'
+        });
+      }
+
+      // Hubble sphere
+      if (state.sHubble) {
+        traces.push({
+          x: mirror(Dh_Gly), y: ts, mode: 'lines',
+          line: { color: '#34d399', width: 2, dash: 'dot' },
+          name: 'Hubble sphere', legendgroup: 'hs',
+          hovertemplate: 'D<sub>H</sub> = %{x:.1f} Glyr<br>t = %{y:.2f} Gyr<extra>Hubble sphere</extra>'
+        });
+        traces.push({
+          x: Dh_Gly, y: ts, mode: 'lines',
+          line: { color: '#34d399', width: 2, dash: 'dot' },
+          showlegend: false, legendgroup: 'hs', hoverinfo: 'skip'
+        });
+      }
+
+      // Past light cone
+      if (state.sPast) {
+        traces.push({
+          x: mirror(pastX), y: pastT, mode: 'lines',
+          line: { color: '#f472b6', width: 3 },
+          name: 'Past light cone', legendgroup: 'plc',
+          hovertemplate: 'D<sub>C</sub> = %{x:.1f} Glyr<br>t = %{y:.2f} Gyr<extra>Past light cone</extra>'
+        });
+        traces.push({
+          x: pastX, y: pastT, mode: 'lines',
+          line: { color: '#f472b6', width: 3 },
+          showlegend: false, legendgroup: 'plc', hoverinfo: 'skip'
+        });
+      }
+
+      // Future light cone
+      if (state.sFuture && futX.length > 1) {
+        traces.push({
+          x: mirror(futX), y: futT, mode: 'lines',
+          line: { color: '#f472b6', width: 1.8, dash: 'dot' },
+          name: 'Future light cone', legendgroup: 'flc',
+          hovertemplate: 'D<sub>C</sub> = %{x:.1f} Glyr<br>t = %{y:.2f} Gyr<extra>Future light cone</extra>'
+        });
+        traces.push({
+          x: futX, y: futT, mode: 'lines',
+          line: { color: '#f472b6', width: 1.8, dash: 'dot' },
+          showlegend: false, legendgroup: 'flc', hoverinfo: 'skip'
+        });
+      }
+
+      // Galaxy worldlines
+      const galaxyZs = [
+        { z: 1, label: 'z = 1' },
+        { z: 3, label: 'z = 3' },
+        { z: 10, label: 'z = 10' },
+        { z: 1100, label: 'CMB (z \u2248 1100)' }
+      ];
+      if (state.sWorldlines) {
+        for (const g of galaxyZs) {
+          const dC_Gly = DH_Mpc * simpson(fwdIntegrand, 0, Math.log(1 + g.z), 800) * M2GLY;
+          if (!isFinite(dC_Gly) || dC_Gly > xMax) continue;
+          const txt = g.label + '<br>D<sub>C</sub> = ' + dC_Gly.toFixed(2) + ' Glyr';
+          traces.push({
+            x: [dC_Gly, dC_Gly], y: [0, yTop], mode: 'lines',
+            line: { color: 'rgba(148, 163, 184, 0.55)', width: 1, dash: 'dot' },
+            showlegend: false, hovertemplate: txt + '<extra></extra>'
+          });
+          traces.push({
+            x: [-dC_Gly, -dC_Gly], y: [0, yTop], mode: 'lines',
+            line: { color: 'rgba(148, 163, 184, 0.55)', width: 1, dash: 'dot' },
+            showlegend: false, hovertemplate: txt + '<extra></extra>'
+          });
+        }
+      }
+
+      // "Now" line + "us" marker (toggle together; one is meaningless without the other)
+      if (state.sNow) {
+        traces.push({
+          x: [-xMax, xMax], y: [t0, t0], mode: 'lines',
+          line: { color: '#a3e635', width: 1.5, dash: 'dash' },
+          name: 'Now (t = t\u2080)',
+          hovertemplate: 't\u2080 = ' + t0.toFixed(2) + ' Gyr<extra></extra>'
+        });
+        traces.push({
+          x: [0], y: [t0], mode: 'markers',
+          marker: { color: '#ffffff', size: 12, symbol: 'star', line: { color: '#a3e635', width: 1.5 } },
+          showlegend: false,
+          hovertemplate: 'Us<br>t = ' + t0.toFixed(2) + ' Gyr<extra></extra>'
+        });
+      }
+
+      // z2 emission event
+      let z2Diag = null;
+      if (state.sZ2 && state.z2 > 0) {
+        const aZ2 = 1 / (1 + state.z2);
+        const tZ2 = ageAtScaleFactor(aZ2, p);
+        const dCz2 = DH_Mpc * simpson(fwdIntegrand, 0, Math.log(1 + state.z2), 800) * M2GLY;
+        if (isFinite(dCz2) && dCz2 <= xMax) {
+          traces.push({
+            x: [dCz2], y: [tZ2], mode: 'markers',
+            marker: { color: '#fbbf24', size: 12, line: { color: '#fff', width: 1.5 } },
+            showlegend: false,
+            hovertemplate: 'z\u2082 = ' + state.z2.toFixed(3) +
+              '<br>D<sub>C</sub> = ' + dCz2.toFixed(2) + ' Glyr' +
+              '<br>t = ' + tZ2.toFixed(2) + ' Gyr<extra>z\u2082 emission</extra>'
+          });
+        }
+        z2Diag = { dC: dCz2, t: tZ2 };
+      }
+
+      const layout = Object.assign({}, PLOT_LAYOUT, {
+        margin: { t: 30, r: 30, b: 70, l: 80 },
+        xaxis: Object.assign({}, PLOT_LAYOUT.xaxis, {
+          title: { text: 'Comoving distance (Glyr)', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [-xMax, xMax],
+          zeroline: true
+        }),
+        yaxis: Object.assign({}, PLOT_LAYOUT.yaxis, {
+          title: { text: 'Cosmic time (Gyr)', font: { color: '#cbd5e1' }, standoff: 10 },
+          range: [0, yTop],
+          zeroline: true
+        }),
+        showlegend: true,
+        legend: {
+          x: 0.01, y: 0.99,
+          xanchor: 'left', yanchor: 'top',
+          bgcolor: 'rgba(15, 23, 42, 0.78)',
+          bordercolor: 'rgba(148, 163, 184, 0.3)',
+          borderwidth: 1,
+          font: { color: '#cbd5e1', size: 11 }
+        }
+      });
+
+      Plotly.react('plot-spacetime', traces, layout, PLOT_CONFIG);
+      const el = $('plot-spacetime');
+      if (el && el._fullLayout) {
+        try { Plotly.Plots.resize(el); } catch (e) { /* ignore */ }
+      }
+
+      // Diagnostic pills below the diagram
+      const fmt = (v, d) => isFinite(v) ? v.toFixed(d) : '\u2014';
+      const pills = [
+        { label: 'Age t\u2080', val: fmt(t0, 3), unit: 'Gyr' },
+        { label: 'Particle horizon', val: fmt(Dp_now_Gly, 2), unit: 'Glyr' },
+        { label: 'Event horizon', val: fmt(De_now_Gly, 2), unit: 'Glyr' },
+        { label: 'Hubble distance', val: fmt(DH_Mpc * M2GLY, 2), unit: 'Glyr' }
+      ];
+      if (z2Diag) {
+        pills.push({ label: 'D<sub>C</sub>(z\u2082)', val: fmt(z2Diag.dC, 2), unit: 'Glyr' });
+        pills.push({ label: 't(z\u2082) age', val: fmt(z2Diag.t, 3), unit: 'Gyr' });
+      }
+      $('diagnostics').innerHTML = pills.map(pi =>
+        '<div class="diag-pill">'
+        + '<span class="label">' + pi.label + '</span>'
+        + '<span class="val">' + pi.val + ' <span class="unit">' + pi.unit + '</span></span>'
+        + '</div>'
+      ).join('');
+
+      // Save these for the "copy as JSON" button
+      drawSpacetime._lastDiag = { t0, Dp_now_Gly, De_now_Gly, DH_Gly: DH_Mpc * M2GLY, z2: z2Diag };
+    }
+
+    /* ---------- The single entry point ---------- */
+    function recompute() {
+      const ok = 1 - state.OmegaM - state.OmegaL;
+      $('OmegaK-display').value = ok.toFixed(4);
+      let geomTxt;
+      if (Math.abs(ok) < 1e-4) geomTxt = 'flat';
+      else if (ok > 0) geomTxt = 'open';
+      else geomTxt = 'closed';
+      $('curvature-label').textContent = geomTxt;
+
+      // Detect preset live as the user drags sliders
+      const matched = detectPresetFromState();
+      if (matched !== state.preset) {
+        state.preset = matched;
+        $('preset-select').value = matched;
+        updatePresetCaption();
+      }
+
+      try {
+        drawSpacetime();
+      } catch (err) {
+        console.error(err);
+        showStatus('Calculation failed; check parameters.', 'warn');
+      }
+      syncUrl();
+    }
+
+    /* ---------- Wire up everything ---------- */
+    bindParam('H0', 'H0-slider', 'H0-input', 20, 200, recompute);
+    bindParam('OmegaM', 'OmegaM-slider', 'OmegaM-input', 0, 2, recompute);
+    bindParam('OmegaL', 'OmegaL-slider', 'OmegaL-input', 0, 2, recompute);
+    bindParam('w', 'w-slider', 'w-input', -3, 1, recompute);
+
+    // z2 needs both slider and number input (slider caps at 20, input goes higher)
+    (function bindZ2() {
+      const slider = $('z2-slider');
+      const input = $('z2-input');
+      slider.addEventListener('input', () => {
+        const v = parseFloat(slider.value);
+        if (!isFinite(v) || v < 0) return;
+        state.z2 = v;
+        input.value = v;
+        recompute();
+      });
+      input.addEventListener('input', () => {
+        const v = parseFloat(input.value);
+        if (!isFinite(v) || v < 0) return;
+        state.z2 = v;
+        if (v <= 20) slider.value = v;
+        recompute();
+      });
+    })();
+
+    $('preset-select').addEventListener('change', () => {
+      const key = $('preset-select').value;
+      if (key === 'custom') {
+        state.preset = 'custom';
+        updatePresetCaption();
+        return;
+      }
+      applyPreset(key, false);
+    });
+
+    $('btn-preset-reset').addEventListener('click', () => {
+      $('preset-select').value = 'planck18';
+      state.z2 = 1.5;
+      $('z2-slider').value = 1.5;
+      $('z2-input').value = 1.5;
+      applyPreset('planck18', true);
+      showStatus('Restored Planck 2018 defaults.', 'info');
+    });
+
+    /* ---------- Layer toggle wiring ---------- */
+    const toggles = [
+      ['tg-particle', 'sParticle'],
+      ['tg-event', 'sEvent'],
+      ['tg-hubble', 'sHubble'],
+      ['tg-past', 'sPast'],
+      ['tg-future', 'sFuture'],
+      ['tg-worldlines', 'sWorldlines'],
+      ['tg-z2', 'sZ2'],
+      ['tg-now', 'sNow']
+    ];
+    for (const [id, key] of toggles) {
+      $(id).addEventListener('change', () => {
+        state[key] = $(id).checked;
+        drawSpacetime();
+      });
+    }
+
+    /* ---------- Action buttons ---------- */
+    $('btn-copy-url').addEventListener('click', () => {
+      syncUrl();
+      const u = window.location.href;
+      navigator.clipboard.writeText(u).then(
+        () => showStatus('Share link copied to clipboard.', 'info'),
+        () => showStatus('Clipboard access denied; URL is in the address bar.', 'warn')
+      );
+    });
+
+    $('btn-copy-state').addEventListener('click', () => {
+      const d = drawSpacetime._lastDiag || {};
+      const payload = {
+        parameters: {
+          H0: state.H0,
+          OmegaM: state.OmegaM,
+          OmegaL: state.OmegaL,
+          OmegaK: 1 - state.OmegaM - state.OmegaL,
+          w: state.w,
+          z2: state.z2,
+          preset: state.preset
+        },
+        derived_Gyr_or_Glyr: {
+          age_t0_Gyr: d.t0,
+          particle_horizon_Glyr: d.Dp_now_Gly,
+          event_horizon_Glyr: d.De_now_Gly,
+          hubble_distance_Glyr: d.DH_Gly,
+          z2_comoving_Glyr: d.z2 ? d.z2.dC : null,
+          z2_emission_age_Gyr: d.z2 ? d.z2.t : null
+        }
+      };
+      navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(
+        () => showStatus('State copied to clipboard as JSON.', 'info'),
+        () => showStatus('Clipboard access denied; check console.', 'warn')
+      );
+      console.log('Spacetime state:', payload);
+    });
+
+    /* ---------- Init ---------- */
+    if (!loadFromUrl()) {
+      // No URL params: use defaults (Planck 2018)
+      applyPreset('planck18', true);
+    } else {
+      recompute();
+    }
+
+    // Resize-aware: window resizes and any layout reflow that changes the plot
+    // container's box (the diagram stretches to match the sidebar's height in
+    // the split layout, so the container can grow without a window resize).
+    window.addEventListener('resize', () => {
+      const el = $('plot-spacetime');
+      if (el && el._fullLayout) {
+        try { Plotly.Plots.resize(el); } catch (e) { /* ignore */ }
+      }
+    });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const plotEl = $('plot-spacetime');
+      if (plotEl) {
+        const ro = new ResizeObserver(() => {
+          if (plotEl._fullLayout) {
+            try { Plotly.Plots.resize(plotEl); } catch (e) { /* ignore */ }
+          }
+        });
+        ro.observe(plotEl);
+      }
+    }
+  </script>
+
+</body>
+
+</html>
