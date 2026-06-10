@@ -57,7 +57,7 @@
 
         @media (min-width: 900px) {
             .simulation-wrapper {
-                grid-template-columns: 1fr 320px;
+                grid-template-columns: 1fr 340px;
             }
         }
 
@@ -397,19 +397,33 @@
             height: 100%;
         }
 
-        .info-note {
-            margin-top: var(--space-4);
-            padding: var(--space-4);
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: var(--radius-md);
-            border-left: 3px solid var(--color-accent);
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.85);
+        .unit-select-row {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            margin-bottom: var(--space-3);
         }
 
-        .info-note strong {
+        .unit-select-row label {
+            font-size: 0.8rem;
+            color: var(--color-gray-400);
+        }
+
+        .unit-select-row select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--color-white);
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-family: var(--font-primary);
+            cursor: pointer;
+        }
+
+        .rho0-group.disabled {
+            opacity: 0.35;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -449,64 +463,45 @@
             <div class="content-section">
 
                 <div class="info-card">
-                    <h3><i class="fas fa-chart-line"></i> King (1966) model</h3>
-                    <p>
-                        This tool solves the Poisson equation for the <strong>King (1966) model</strong>, which
-                        describes the density profile of relaxed, tidally truncated star clusters (such as globular
-                        clusters). The dimensionless central potential <em>W<sub>0</sub></em> sets the shape; scale
-                        parameters <em>r<sub>0</sub></em>, half-mass radius <em>r<sub>h</sub></em>, or virial radius
-                        <em>r<sub>v</sub></em> map the profile to physical units.
+                    <h3><i class="fas fa-chart-line"></i> King (1966) density profile</h3>
+                    <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.9);">
+                        Spherically symmetric, tidally truncated model for relaxed star clusters.
+                        <em>W<sub>0</sub></em> fixes the shape; radii set the spatial scale; central density
+                        <em>&rho;<sub>0</sub></em> sets the vertical scale on the plot.
                     </p>
-
-                    <div class="info-note">
-                        <strong>Density &rho;<sub>0</sub> vs your N-body setup.</strong>
-                        The curve is a smooth <em>mass density</em> &rho;(r) (fluid limit). In simulations you usually
-                        set <strong>N</strong>, an <strong>IMF</strong> (stellar masses), and structural scales
-                        (e.g. virial radius, <em>r</em><sub>h</sub>, tides) — not &rho;<sub>0</sub> directly. Total mass
-                        is M &asymp; N &times; &lang;m&rang;<sub>IMF</sub>; the IMF sets how that mass is split among
-                        stars, while &rho;(r) sets where they sit. Here &rho;<sub>0</sub> only rescales the vertical axis
-                        (same shape if you change W<sub>0</sub> or radii). Use this page to preview <em>structure</em>;
-                        use N + IMF + radii when you build ICs.
-                        <br><br>
-                        <strong>Virial radius.</strong> For each W<sub>0</sub>, r<sub>v</sub> is found from the solved
-                        King model (local virial balance M(&lt;r)/r &asymp; &lang;v<sup>2</sup>&rang;), with
-                        r<sub>h</sub>/r<sub>v</sub> &asymp; 0.78 for concentrated models (W<sub>0</sub> &gtrsim; 5), rising
-                        toward ~0.95 when W<sub>0</sub> is small — close to the ~0.78 factor used in cluster IC tools at
-                        typical W<sub>0</sub>.
-                    </div>
 
                     <div class="stats-grid" id="statsGrid">
                         <div class="stat-box model-1-stat">
                             <div class="stat-value" id="m1-rh">—</div>
-                            <div class="stat-label">M1: r<sub>h</sub></div>
-                        </div>
-                        <div class="stat-box model-1-stat">
-                            <div class="stat-value" id="m1-rv">—</div>
-                            <div class="stat-label">M1: r<sub>v</sub></div>
+                            <div class="stat-label" id="lbl-m1-rh">M1: r<sub>h</sub></div>
                         </div>
                         <div class="stat-box model-1-stat">
                             <div class="stat-value" id="m1-rt">—</div>
-                            <div class="stat-label">M1: r<sub>t</sub></div>
+                            <div class="stat-label" id="lbl-m1-rt">M1: r<sub>t</sub></div>
                         </div>
                         <div class="stat-box model-1-stat">
-                            <div class="stat-value" id="m1-r0">—</div>
-                            <div class="stat-label">M1: r<sub>0</sub></div>
+                            <div class="stat-value" id="m1-mtot">—</div>
+                            <div class="stat-label">M1: M<sub>tot</sub> (M<sub>☉</sub>)</div>
+                        </div>
+                        <div class="stat-box model-1-stat">
+                            <div class="stat-value" id="m1-c">—</div>
+                            <div class="stat-label">M1: log<sub>10</sub>(r<sub>t</sub>/r<sub>0</sub>)</div>
                         </div>
                         <div class="stat-box model-2-stat m2-stat">
                             <div class="stat-value" id="m2-rh">—</div>
-                            <div class="stat-label">M2: r<sub>h</sub></div>
-                        </div>
-                        <div class="stat-box model-2-stat m2-stat">
-                            <div class="stat-value" id="m2-rv">—</div>
-                            <div class="stat-label">M2: r<sub>v</sub></div>
+                            <div class="stat-label" id="lbl-m2-rh">M2: r<sub>h</sub></div>
                         </div>
                         <div class="stat-box model-2-stat m2-stat">
                             <div class="stat-value" id="m2-rt">—</div>
-                            <div class="stat-label">M2: r<sub>t</sub></div>
+                            <div class="stat-label" id="lbl-m2-rt">M2: r<sub>t</sub></div>
                         </div>
                         <div class="stat-box model-2-stat m2-stat">
-                            <div class="stat-value" id="m2-r0">—</div>
-                            <div class="stat-label">M2: r<sub>0</sub></div>
+                            <div class="stat-value" id="m2-mtot">—</div>
+                            <div class="stat-label">M2: M<sub>tot</sub> (M<sub>☉</sub>)</div>
+                        </div>
+                        <div class="stat-box model-2-stat m2-stat">
+                            <div class="stat-value" id="m2-c">—</div>
+                            <div class="stat-label">M2: log<sub>10</sub>(r<sub>t</sub>/r<sub>0</sub>)</div>
                         </div>
                     </div>
                 </div>
@@ -518,6 +513,32 @@
 
                     <div class="controls-panel">
                         <h3><i class="fas fa-sliders-h"></i> Parameters</h3>
+
+                        <div class="control-section">
+                            <h4>Units &amp; display</h4>
+                            <div class="unit-select-row">
+                                <label for="lengthUnit">Length (radius)</label>
+                                <select id="lengthUnit" aria-label="Length unit">
+                                    <option value="pc" selected>parsecs (pc)</option>
+                                    <option value="kpc">kiloparsecs (kpc)</option>
+                                    <option value="au">astronomical units (au)</option>
+                                </select>
+                            </div>
+                            <div class="unit-select-row">
+                                <label for="densityUnit">Mass density</label>
+                                <select id="densityUnit" aria-label="Density unit">
+                                    <option value="Msun_pc3" selected>M<sub>☉</sub> pc<sup>−3</sup></option>
+                                    <option value="Msun_kpc3">M<sub>☉</sub> kpc<sup>−3</sup></option>
+                                </select>
+                            </div>
+                            <div class="unit-select-row">
+                                <label for="profileMode">Vertical axis</label>
+                                <select id="profileMode" aria-label="Profile display mode">
+                                    <option value="physical" selected>Physical ρ(r)</option>
+                                    <option value="dimensionless">Dimensionless ρ / ρ<sub>0</sub></option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="control-section">
                             <h4>Model 1</h4>
@@ -542,13 +563,12 @@
                                 </div>
                                 <p class="helper-text" id="hint-m1-scale">Sets the radius containing half the cluster mass.</p>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group rho0-group" id="rho0-m1">
                                 <label>&rho;<sub>0</sub> <span class="control-value" id="val-m1-rho0">1.0</span></label>
                                 <div class="slider-number-row">
                                     <input type="range" id="slider-m1-rho0" min="0.1" max="100" step="0.1" value="1">
                                     <input type="number" id="num-m1-rho0" min="0.1" max="100" step="0.1" value="1">
                                 </div>
-                                <p class="helper-text">Central mass density — normalizes the plot only; does not set N or IMF.</p>
                             </div>
                         </div>
 
@@ -586,14 +606,13 @@
                                 </div>
                                 <p class="helper-text" id="hint-m2-scale">Sets the radius containing half the cluster mass.</p>
                             </div>
-                            <div class="control-group">
+                            <div class="control-group rho0-group" id="rho0-m2">
                                 <label>&rho;<sub>0</sub> <span class="control-value model-2-accent"
                                         id="val-m2-rho0">1.0</span></label>
                                 <div class="slider-number-row">
                                     <input type="range" id="slider-m2-rho0" min="0.1" max="100" step="0.1" value="1">
                                     <input type="number" id="num-m2-rho0" min="0.1" max="100" step="0.1" value="1">
                                 </div>
-                                <p class="helper-text">Central mass density — normalizes the plot only; does not set N or IMF.</p>
                             </div>
                             </div>
                         </div>
@@ -813,14 +832,15 @@
             };
         }
 
-        function generatePlotPoints(sol, w0, r0, rho0) {
+        function generatePlotPoints(sol, w0, r0_pc, rho0_pc3) {
             const { R, W, Rt } = sol;
             const rho0_unnorm = kingDensity(w0);
             const num_points = 300;
             const min_log = Math.log10(Math.max(1e-2, Rt / 1000));
             const max_log = Math.log10(Rt);
-            const r_phys = [];
-            const rho_phys = [];
+            const r_pc = [];
+            const rho_pc3 = [];
+            const dimensionless = isDimensionlessProfile();
 
             for (let i = 0; i < num_points; i++) {
                 const current_r = Math.pow(10, min_log + (i * (max_log - min_log)) / (num_points - 1));
@@ -828,17 +848,35 @@
                 let interpolated_W = interpolate(current_r, R, W);
                 if (interpolated_W < 0) interpolated_W = 0;
                 const rho_tilde = kingDensity(interpolated_W) / rho0_unnorm;
-                r_phys.push(current_r * r0);
-                rho_phys.push(Math.max(rho_tilde * rho0, 1e-12));
+                r_pc.push(current_r * r0_pc);
+                const rho = dimensionless
+                    ? Math.max(rho_tilde, 1e-12)
+                    : Math.max(rho_tilde * rho0_pc3, 1e-30);
+                rho_pc3.push(rho);
             }
 
-            return { r_phys, rho_phys, c: Math.log10(Rt), rt_phys: Rt * r0 };
+            const r_display = r_pc.map((r) => lengthFromPc(r));
+            const rho_physical_pc3 = dimensionless
+                ? rho_pc3.map((t) => t * rho0_pc3)
+                : rho_pc3;
+            const rho_plot = dimensionless
+                ? rho_pc3
+                : rho_physical_pc3.map((r) => rhoFromPc3(r));
+            return {
+                r_display,
+                rho_plot,
+                r_pc,
+                rho_pc3: rho_physical_pc3,
+                c: Math.log10(Rt),
+                rt_pc: Rt * r0_pc,
+                mtot: integrateMassPc(r_pc, rho_physical_pc3)
+            };
         }
 
         // --- Defaults ---
         const DEFAULTS = {
-            m1: { w0: 5, scaleMode: 'rh', scaleVal: 2, rho0: 1 },
-            m2: { w0: 9, scaleMode: 'rh', scaleVal: 2, rho0: 1 },
+            m1: { w0: 5, scaleMode: 'rh', scaleValPc: 2, rho0Pc3: 1 },
+            m2: { w0: 9, scaleMode: 'rh', scaleValPc: 2, rho0Pc3: 1 },
             showModel2: true
         };
 
@@ -850,12 +888,127 @@
         const AXIS_PAD = 0.08;
 
         const SCALE_HINTS = {
-            rh: 'Sets the radius containing half the cluster mass (useful for N-body structural ICs).',
-            rv: 'Sets the virial radius r_v from the solved King model. r_h/r_v depends on W₀ (~0.78 at high W₀).',
-            r0: 'Standard King model mathematical scaling parameter.'
+            rh: 'Half-mass radius (contains 50% of model mass).',
+            rv: 'Virial radius from the solved King model.',
+            r0: 'King scale radius r₀.'
         };
 
         const SCALE_SLIDER_MAX = { rh: 25, rv: 25, r0: 10 };
+
+        /** Display value × factor = length in pc */
+        const LENGTH_TO_PC = { pc: 1, kpc: 1000, au: 206265.022140011 };
+        const LENGTH_LABEL = { pc: 'pc', kpc: 'kpc', au: 'au' };
+
+        /** ρ in M☉/pc³ = display × factor */
+        const RHO_DISPLAY_TO_PC3 = { Msun_pc3: 1, Msun_kpc3: 1e9 };
+
+        function getLengthUnit() {
+            return document.getElementById('lengthUnit').value;
+        }
+
+        function getDensityUnit() {
+            return document.getElementById('densityUnit').value;
+        }
+
+        function isDimensionlessProfile() {
+            return document.getElementById('profileMode').value === 'dimensionless';
+        }
+
+        function lengthToPc(displayLen) {
+            return displayLen * LENGTH_TO_PC[getLengthUnit()];
+        }
+
+        function lengthFromPc(pcLen) {
+            return pcLen / LENGTH_TO_PC[getLengthUnit()];
+        }
+
+        function rhoToPc3(displayRho) {
+            return displayRho * RHO_DISPLAY_TO_PC3[getDensityUnit()];
+        }
+
+        function rhoFromPc3(rhoPc3) {
+            return rhoPc3 / RHO_DISPLAY_TO_PC3[getDensityUnit()];
+        }
+
+        function getAxisTitles() {
+            const len = LENGTH_LABEL[getLengthUnit()];
+            if (isDimensionlessProfile()) {
+                return {
+                    x: `Radius r (${len})`,
+                    y: 'Relative density ρ / ρ₀'
+                };
+            }
+            const dens = getDensityUnit() === 'Msun_kpc3' ? 'M☉ kpc⁻³' : 'M☉ pc⁻³';
+            return {
+                x: `Radius r (${len})`,
+                y: `Mass density ρ (${dens})`
+            };
+        }
+
+        function updateUnitLabels() {
+            const len = LENGTH_LABEL[getLengthUnit()];
+            document.getElementById('lbl-m1-rh').innerHTML = `M1: r<sub>h</sub> (${len})`;
+            document.getElementById('lbl-m1-rt').innerHTML = `M1: r<sub>t</sub> (${len})`;
+            document.getElementById('lbl-m2-rh').innerHTML = `M2: r<sub>h</sub> (${len})`;
+            document.getElementById('lbl-m2-rt').innerHTML = `M2: r<sub>t</sub> (${len})`;
+            const dim = isDimensionlessProfile();
+            document.getElementById('rho0-m1').classList.toggle('disabled', dim);
+            document.getElementById('rho0-m2').classList.toggle('disabled', dim);
+            document.getElementById('densityUnit').disabled = dim;
+            ['m1', 'm2'].forEach((prefix) => {
+                updateScaleHint(prefix, document.getElementById(`mode-${prefix}`).value);
+            });
+            const densUnit = getDensityUnit();
+            const rhoMax = densUnit === 'Msun_kpc3' ? 1e-3 : 1000;
+            const rhoMin = densUnit === 'Msun_kpc3' ? 1e-12 : 1e-4;
+            ['m1', 'm2'].forEach((prefix) => {
+                const slider = document.getElementById(`slider-${prefix}-rho0`);
+                const num = document.getElementById(`num-${prefix}-rho0`);
+                const displayRho = rhoFromPc3(rhoToPc3(parseFloat(num.value) || 1));
+                slider.min = rhoMin;
+                slider.max = rhoMax;
+                num.min = rhoMin;
+                num.max = rhoMax;
+                const clamped = clamp(displayRho, rhoMin, rhoMax);
+                slider.value = clamped;
+                num.value = clamped;
+            });
+        }
+
+        function convertAllLengthInputs(oldUnit, newUnit) {
+            const oldF = LENGTH_TO_PC[oldUnit];
+            const newF = LENGTH_TO_PC[newUnit];
+            ['m1', 'm2'].forEach((prefix) => {
+                const num = document.getElementById(`num-${prefix}-scale`);
+                const pc = parseFloat(num.value) * oldF;
+                const display = pc / newF;
+                num.value = display.toPrecision(4);
+                document.getElementById(`slider-${prefix}-scale`).value = display;
+            });
+        }
+
+        function convertAllRhoInputs(oldUnit, newUnit) {
+            const oldF = RHO_DISPLAY_TO_PC3[oldUnit];
+            const newF = RHO_DISPLAY_TO_PC3[newUnit];
+            ['m1', 'm2'].forEach((prefix) => {
+                const num = document.getElementById(`num-${prefix}-rho0`);
+                const rhoPc3 = parseFloat(num.value) * oldF;
+                const display = rhoPc3 / newF;
+                num.value = display.toPrecision(4);
+                document.getElementById(`slider-${prefix}-rho0`).value = display;
+            });
+        }
+
+        function integrateMassPc(rPc, rhoPc3) {
+            let M = 0;
+            for (let i = 1; i < rPc.length; i++) {
+                const dr = rPc[i] - rPc[i - 1];
+                const rm = 0.5 * (rPc[i] + rPc[i - 1]);
+                const rho = 0.5 * (rhoPc3[i] + rhoPc3[i - 1]);
+                M += 4 * Math.PI * rm * rm * rho * dr;
+            }
+            return M;
+        }
 
         function computeAxisRanges(traces) {
             let xMin = Infinity;
@@ -911,17 +1064,19 @@
         }
 
         function buildPlotLayout(axisRanges) {
+            const titles = getAxisTitles();
+            const yMargin = isDimensionlessProfile() ? 72 : 78;
             return {
                 autosize: true,
                 title: {
-                    text: 'King (1966) Density Profiles',
+                    text: 'King (1966) density profile',
                     font: { size: 17, color: '#e2e8f0' }
                 },
-                margin: { t: 48, r: 16, b: 56, l: 64 },
+                margin: { t: 48, r: 16, b: 56, l: yMargin },
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
                 xaxis: {
-                    title: { text: 'Radius (r)', font: { size: 13, color: '#cbd5e1' }, standoff: 12 },
+                    title: { text: titles.x, font: { size: 13, color: '#cbd5e1' }, standoff: 12 },
                     type: 'log',
                     range: axisRanges.x,
                     autorange: false,
@@ -930,7 +1085,7 @@
                     zeroline: false
                 },
                 yaxis: {
-                    title: { text: 'Density ρ(r)', font: { size: 13, color: '#cbd5e1' }, standoff: 12 },
+                    title: { text: titles.y, font: { size: 13, color: '#cbd5e1' }, standoff: 12 },
                     type: 'log',
                     range: axisRanges.y,
                     autorange: false,
@@ -961,17 +1116,21 @@
         }
 
         function getModelParams(prefix) {
+            const scaleDisplay = parseFloat(document.getElementById(`num-${prefix}-scale`).value);
+            const rhoDisplay = parseFloat(document.getElementById(`num-${prefix}-rho0`).value);
             return {
                 w0: parseFloat(document.getElementById(`num-${prefix}-w0`).value),
                 scaleMode: document.getElementById(`mode-${prefix}`).value,
-                scaleVal: parseFloat(document.getElementById(`num-${prefix}-scale`).value),
-                rho0: parseFloat(document.getElementById(`num-${prefix}-rho0`).value)
+                scaleValPc: lengthToPc(scaleDisplay),
+                rho0Pc3: rhoToPc3(rhoDisplay)
             };
         }
 
         function syncDisplay(prefix, params) {
             document.getElementById(`val-${prefix}-w0`).textContent = params.w0.toFixed(1);
-            document.getElementById(`val-${prefix}-rho0`).textContent = params.rho0.toFixed(1);
+            if (!isDimensionlessProfile()) {
+                document.getElementById(`val-${prefix}-rho0`).textContent = rhoFromPc3(params.rho0Pc3).toPrecision(3);
+            }
         }
 
         function updateScaleSliderMax(prefix, mode) {
@@ -986,15 +1145,16 @@
         }
 
         function updateScaleHint(prefix, mode) {
-            document.getElementById(`hint-${prefix}-scale`).textContent = SCALE_HINTS[mode] || '';
+            const len = LENGTH_LABEL[getLengthUnit()];
+            document.getElementById(`hint-${prefix}-scale`).textContent =
+                `${SCALE_HINTS[mode] || ''} Value in ${len}.`;
         }
 
-        function convertScaleValue(w0, oldMode, newMode, currentVal) {
+        function convertScaleValue(w0, oldMode, newMode, currentValPc) {
             const sol = solveKingModel(w0);
-            const r0Old = scaleToR0(oldMode, currentVal, sol);
-            if (newMode === 'r0') return r0Old;
-            if (newMode === 'rh') return sol.Rh * r0Old;
-            return sol.Rv * r0Old;
+            const r0Old = scaleToR0(oldMode, currentValPc, sol);
+            const r0Pc = newMode === 'r0' ? r0Old : (newMode === 'rh' ? sol.Rh * r0Old : sol.Rv * r0Old);
+            return lengthFromPc(r0Pc);
         }
 
         function handleScaleModeChange(prefix, oldMode, newMode) {
@@ -1002,7 +1162,7 @@
             const modeEl = document.getElementById(`mode-${prefix}`);
             const w0 = parseFloat(document.getElementById(`num-${prefix}-w0`).value);
             const numScale = document.getElementById(`num-${prefix}-scale`);
-            const newVal = convertScaleValue(w0, oldMode, newMode, parseFloat(numScale.value));
+            const newVal = convertScaleValue(w0, oldMode, newMode, lengthToPc(parseFloat(numScale.value)));
             modeEl.value = newMode;
             modeEl.dataset.prevMode = newMode;
             updateScaleSliderMax(prefix, newMode);
@@ -1021,12 +1181,13 @@
             const numRho0 = document.getElementById(`num-${prefix}-rho0`);
             const modeEl = document.getElementById(`mode-${prefix}`);
 
-            function link(slider, num, min, max) {
+            function link(slider, num, getBounds) {
                 slider.addEventListener('input', () => {
                     num.value = slider.value;
                     scheduleUpdate();
                 });
                 num.addEventListener('input', () => {
+                    const { min, max } = getBounds();
                     const v = clamp(parseFloat(num.value) || min, min, max);
                     num.value = v;
                     slider.value = v;
@@ -1034,8 +1195,11 @@
                 });
             }
 
-            link(sliderW0, numW0, minMax.w0.min, minMax.w0.max);
-            link(sliderRho0, numRho0, minMax.rho0.min, minMax.rho0.max);
+            link(sliderW0, numW0, () => minMax.w0);
+            link(sliderRho0, numRho0, () => ({
+                min: parseFloat(sliderRho0.min),
+                max: parseFloat(sliderRho0.max)
+            }));
 
             sliderScale.addEventListener('input', () => {
                 numScale.value = sliderScale.value;
@@ -1065,32 +1229,42 @@
             modeEl.dataset.prevMode = p.scaleMode;
             updateScaleSliderMax(prefix, p.scaleMode);
             updateScaleHint(prefix, p.scaleMode);
-            document.getElementById(`slider-${prefix}-scale`).value = p.scaleVal;
-            document.getElementById(`num-${prefix}-scale`).value = p.scaleVal;
-            document.getElementById(`slider-${prefix}-rho0`).value = p.rho0;
-            document.getElementById(`num-${prefix}-rho0`).value = p.rho0;
+            document.getElementById(`slider-${prefix}-scale`).value = lengthFromPc(p.scaleValPc);
+            document.getElementById(`num-${prefix}-scale`).value = lengthFromPc(p.scaleValPc);
+            const rhoDisp = rhoFromPc3(p.rho0Pc3);
+            document.getElementById(`slider-${prefix}-rho0`).value = rhoDisp;
+            document.getElementById(`num-${prefix}-rho0`).value = rhoDisp;
             syncDisplay(prefix, p);
         }
 
-        function updateModelStats(prefix, sol, radii, dimmed) {
-            document.querySelectorAll(`.m2-stat`).forEach((el) => {
+        function updateModelStats(prefix, data, radPc, dimmed) {
+            document.querySelectorAll('.m2-stat').forEach((el) => {
                 if (prefix === 'm2') el.classList.toggle('dimmed', dimmed);
             });
-            const ids = ['rh', 'rv', 'rt', 'r0'];
-            ids.forEach((key) => {
-                const el = document.getElementById(`${prefix}-${key}`);
-                el.textContent = dimmed ? '—' : radii[key].toFixed(2);
-            });
+            if (dimmed) {
+                ['rh', 'rt', 'mtot', 'c'].forEach((key) => {
+                    document.getElementById(`${prefix}-${key}`).textContent = '—';
+                });
+                return;
+            }
+            document.getElementById(`${prefix}-rh`).textContent = lengthFromPc(radPc.rh).toFixed(3);
+            document.getElementById(`${prefix}-rt`).textContent = lengthFromPc(radPc.rt).toFixed(3);
+            document.getElementById(`${prefix}-mtot`).textContent = data.mtot.toPrecision(3);
+            document.getElementById(`${prefix}-c`).textContent = data.c.toFixed(2);
         }
 
         function buildTrace(label, data, color) {
+            const len = LENGTH_LABEL[getLengthUnit()];
+            const yLabel = isDimensionlessProfile()
+                ? 'ρ/ρ₀'
+                : (getDensityUnit() === 'Msun_kpc3' ? 'ρ (M☉ kpc⁻³)' : 'ρ (M☉ pc⁻³)');
             return {
-                x: data.r_phys,
-                y: data.rho_phys,
+                x: data.r_display,
+                y: data.rho_plot,
                 mode: 'lines',
                 name: label,
                 line: { color, width: 3 },
-                hovertemplate: 'r=%{x:.3g}<br>ρ=%{y:.3g}<extra></extra>'
+                hovertemplate: `r=%{x:.4g} ${len}<br>${yLabel}=%{y:.4g}<extra></extra>`
             };
         }
 
@@ -1105,14 +1279,15 @@
             document.getElementById('model2Controls').classList.toggle('disabled', !showM2);
 
             const sol1 = solveKingModel(p1.w0);
-            const r0_1 = scaleToR0(p1.scaleMode, p1.scaleVal, sol1);
+            const r0_1 = scaleToR0(p1.scaleMode, p1.scaleValPc, sol1);
             const rad1 = physicalRadii(sol1, r0_1);
-            const data1 = generatePlotPoints(sol1, p1.w0, r0_1, p1.rho0);
-            updateModelStats('m1', sol1, rad1, false);
+            const data1 = generatePlotPoints(sol1, p1.w0, r0_1, p1.rho0Pc3);
+            updateModelStats('m1', data1, rad1, false);
 
+            const len = LENGTH_LABEL[getLengthUnit()];
             const traces = [
                 buildTrace(
-                    `Model 1 (W₀=${p1.w0.toFixed(1)}, r_h=${rad1.rh.toFixed(2)}, r_h/r_v=${rad1.rhRvRatio.toFixed(2)})`,
+                    `Model 1 (W₀=${p1.w0.toFixed(1)}, r_h=${lengthFromPc(rad1.rh).toFixed(2)} ${len})`,
                     data1,
                     '#38bdf8'
                 )
@@ -1120,13 +1295,13 @@
 
             if (showM2) {
                 const sol2 = solveKingModel(p2.w0);
-                const r0_2 = scaleToR0(p2.scaleMode, p2.scaleVal, sol2);
+                const r0_2 = scaleToR0(p2.scaleMode, p2.scaleValPc, sol2);
                 const rad2 = physicalRadii(sol2, r0_2);
-                const data2 = generatePlotPoints(sol2, p2.w0, r0_2, p2.rho0);
-                updateModelStats('m2', sol2, rad2, false);
+                const data2 = generatePlotPoints(sol2, p2.w0, r0_2, p2.rho0Pc3);
+                updateModelStats('m2', data2, rad2, false);
                 traces.push(
                     buildTrace(
-                        `Model 2 (W₀=${p2.w0.toFixed(1)}, r_h=${rad2.rh.toFixed(2)}, r_h/r_v=${rad2.rhRvRatio.toFixed(2)})`,
+                        `Model 2 (W₀=${p2.w0.toFixed(1)}, r_h=${lengthFromPc(rad2.rh).toFixed(2)} ${len})`,
                         data2,
                         '#fbbf24'
                     )
@@ -1161,6 +1336,31 @@
 
         document.getElementById('showModel2').addEventListener('change', updatePlot);
 
+        document.getElementById('lengthUnit').addEventListener('change', () => {
+            const el = document.getElementById('lengthUnit');
+            const oldUnit = el.dataset.prev || 'pc';
+            convertAllLengthInputs(oldUnit, el.value);
+            el.dataset.prev = el.value;
+            updateUnitLabels();
+            scheduleUpdate();
+        });
+        document.getElementById('lengthUnit').dataset.prev = 'pc';
+
+        document.getElementById('densityUnit').addEventListener('change', () => {
+            const el = document.getElementById('densityUnit');
+            const oldUnit = el.dataset.prev || 'Msun_pc3';
+            convertAllRhoInputs(oldUnit, el.value);
+            el.dataset.prev = el.value;
+            updateUnitLabels();
+            scheduleUpdate();
+        });
+        document.getElementById('densityUnit').dataset.prev = 'Msun_pc3';
+
+        document.getElementById('profileMode').addEventListener('change', () => {
+            updateUnitLabels();
+            scheduleUpdate();
+        });
+
         document.getElementById('btnReset').addEventListener('click', () => {
             setModelParams('m1', DEFAULTS.m1);
             setModelParams('m2', DEFAULTS.m2);
@@ -1175,6 +1375,7 @@
 
         setModelParams('m1', DEFAULTS.m1);
         setModelParams('m2', DEFAULTS.m2);
+        updateUnitLabels();
         Plotly.newPlot('plot', [], buildPlotLayout({
             x: [Math.log10(0.01), Math.log10(100)],
             y: [Math.log10(1e-8), Math.log10(10)]
