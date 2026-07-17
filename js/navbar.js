@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="${rootPath}pages/tutorials.html" id="nav-tutorials">Tutorials</a>
                         <a href="${rootPath}pages/simulations.html" id="nav-simulations">Simulations</a>
                         <a href="${rootPath}pages/tools.html" id="nav-tools">Tools</a>
+                        <a href="${rootPath}pages/talks.html" id="nav-talks">Talks</a>
                     </div>
                 </li>
                 <li><a href="${rootPath}pages/blog.html" id="nav-blog">Blog</a></li>
@@ -62,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="${rootPath}pages/tutorials.html" id="mobile-tutorials">Tutorials</a>
         <a href="${rootPath}pages/simulations.html" id="mobile-simulations">Simulations</a>
         <a href="${rootPath}pages/tools.html" id="mobile-tools">Tools</a>
+        <a href="${rootPath}pages/talks.html" id="mobile-talks">Talks</a>
         <a href="${rootPath}pages/blog.html" id="mobile-blog">Blog</a>
         <a href="${rootPath}pages/photography.html" id="mobile-photography">Photography</a>
         <a href="${rootPath}pages/contact.html" id="mobile-contact">Contact</a>
@@ -90,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (path.includes("tutorials")) { setActive('nav-tutorials'); setActive('mobile-tutorials'); setActive('nav-resources-toggle'); }
     else if (path.includes("simulations")) { setActive('nav-simulations'); setActive('mobile-simulations'); setActive('nav-resources-toggle'); }
     else if (path.includes("tools")) { setActive('nav-tools'); setActive('mobile-tools'); setActive('nav-resources-toggle'); }
+    else if (path.includes("talks")) { setActive('nav-talks'); setActive('mobile-talks'); setActive('nav-resources-toggle'); }
     else if (path.includes("blog")) { setActive('nav-blog'); setActive('mobile-blog'); }
     else if (path.includes("photography.html")) { setActive('nav-photography'); setActive('mobile-photography'); }
     else if (path.includes("contact.html")) { setActive('nav-contact'); setActive('mobile-contact'); }

@@ -21,6 +21,7 @@ function initSearch() {
         { title: "Tutorials", url: "pages/tutorials.html", icon: "fa-book", keywords: "tutorials physics code" },
         { title: "Simulations", url: "pages/simulations.html", icon: "fa-star", keywords: "simulations n-body interactive" },
         { title: "Tools", url: "pages/tools.html", icon: "fa-wrench", keywords: "tools app utility" },
+        { title: "Talks", url: "pages/talks.html", icon: "fa-video", keywords: "talks workshop youtube website design portfolio astrophysicists academic research" },
         { title: "Blog", url: "pages/blog.html", icon: "fa-pen-nib", keywords: "blog posts writing" },
         { title: "Photography", url: "pages/photography.html", icon: "fa-camera", keywords: "photography photo wildlife landscape koala camera" },
         { title: "Contact", url: "pages/contact.html", icon: "fa-envelope", keywords: "contact email message" },

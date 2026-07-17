@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talks & Workshops | Mitchell Hooymans</title>
+    <meta name="description"
+        content="Academic presentations and workshops by Mitchell Hooymans, featuring 'How to Create a Website for Astrophysicists'.">
+    <link rel="canonical" href="https://mitchellhooymans.com/pages/talks.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mitchellhooymans.com/pages/talks.html">
+    <meta property="og:title" content="Talks & Workshops | Mitchell Hooymans">
+    <meta property="og:description"
+        content="Academic presentations and workshops by Mitchell Hooymans, featuring 'How to Create a Website for Astrophysicists'.">
+    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://mitchellhooymans.com/pages/talks.html">
+    <meta name="twitter:title" content="Talks & Workshops | Mitchell Hooymans">
+    <meta name="twitter:description"
+        content="Academic presentations and workshops by Mitchell Hooymans, featuring 'How to Create a Website for Astrophysicists'.">
+    <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .talk-video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            width: 100%;
+            background: #000;
+        }
+
+        .talk-video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .talk-grid-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .talk-grid-inner {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        /* Collapsible details for the abstract */
+        details.talk-details {
+            margin-top: var(--space-4);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: var(--space-4);
+        }
+
+        summary.talk-summary-btn {
+            font-weight: 600;
+            color: var(--color-accent);
+            cursor: pointer;
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.95rem;
+            user-select: none;
+            transition: color var(--transition-fast);
+        }
+
+        summary.talk-summary-btn:hover {
+            color: var(--color-accent-secondary);
+        }
+
+        summary.talk-summary-btn::-webkit-details-marker {
+            display: none;
+        }
+
+        .talk-abstract-content {
+            margin-top: var(--space-3);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--color-gray-600);
+        }
+
+        details[open] summary .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-arrow {
+            transition: transform var(--transition-base);
+            font-size: 0.8rem;
+        }
+
+        /* Hover effect on meta link */
+        .talk-meta a:hover {
+            color: var(--color-accent-secondary) !important;
+            border-color: var(--color-accent-secondary) !important;
+        }
+    </style>
+
+    <script src="../js/stars.js"></script>
+</head>
+
+<body>
+    <!-- Global Nebula Background -->
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <!-- Page Header -->
+    <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
+        <div class="container" style="position: relative; z-index: 1;">
+            <div class="page-hero-content">
+                <h1 class="animate-fade-in-up delay-100">Talks & Workshops</h1>
+                <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
+                    Presentations, academic workshops, and outreach seminars
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Talks Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Category Filter -->
+            <div class="resource-categories reveal" style="margin-bottom: var(--space-8);">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="workshop">Workshops</button>
+            </div>
+
+            <!-- Single Card Wrapper, Centered for Aesthetics -->
+            <div class="talk-grid-wrapper">
+                <div class="talk-grid-inner" id="talkGrid">
+                    <!-- Workshop: How to Create a Website for Astrophysicists -->
+                    <div class="card reveal" data-category="workshop">
+                        <div class="talk-video-container">
+                            <iframe src="https://www.youtube.com/embed/N6PCI_y3pcc?si=c6W-ThYBS9kF8GlT"
+                                title="YouTube video player" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        </div>
+                        <div class="card-body">
+                            <span class="category-badge workshop">
+                                <i class="fas fa-chalkboard-teacher button-icon"></i>
+                                Workshop
+                            </span>
+                            <h3 class="card-title" style="margin-bottom: var(--space-2);">How to Create a Website for Astrophysicists</h3>
+                            
+                            <p class="talk-meta" style="font-size: 0.95rem; color: var(--color-gray-500); margin-bottom: var(--space-4);">
+                                Presented at the <a href="https://quasarcollaboration.github.io/" target="_blank" style="color: var(--color-accent); text-decoration: none; font-weight: 500; border-bottom: 1px dashed var(--color-accent); padding-bottom: 1px; transition: all var(--transition-fast);">Quasar Collaboration</a> meeting.
+                            </p>
+
+                            <details class="talk-details">
+                                <summary class="talk-summary-btn">
+                                    Show Abstract 
+                                    <i class="fas fa-chevron-down dropdown-arrow" style="margin-left: 8px;"></i>
+                                </summary>
+                                <div class="talk-abstract-content">
+                                    <p class="card-text">
+                                        In this workshop, I will be presenting an overview of web design, detailing the essential elements to include in an academic portfolio, as well as providing a template for you to get started right away. The session will focus on modern, low-maintenance tools that allow researchers to maintain a professional digital presence without a massive time investment. We will cover how to easily link your publications and highlight your work. No prior web design expertise is needed! This session is highly recommended for all students and early career researchers.
+                                    </p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JavaScript -->
+    <script>
+        // Category Filter Logic
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const resourceCards = document.querySelectorAll('#talkGrid .card');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Get selected category
+                const selectedCategory = btn.dataset.category;
+
+                // Filter cards
+                resourceCards.forEach(card => {
+                    const cardCategory = card.dataset.category;
+
+                    if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+                        card.style.display = '';
+                        card.classList.add('visible');
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/animations.js"></script>
+    <script>
+        new Footer().init('../');
+    </script>
+</body>
+
+</html>
