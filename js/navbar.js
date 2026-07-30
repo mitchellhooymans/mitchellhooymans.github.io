@@ -129,8 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    // 6. Navbar Particle Effect
-    // 6. Navbar Particle Effect
+    // 6. Navbar Starfield Effect
+    // A quiet field of stars twinkles across the whole navbar on hover, with the
+    // occasional shooting star gliding past. Simple, calm, and unmistakably
+    // astrophysical - no orbits or physics required.
     const brandCanvas = document.getElementById('brand-particles');
     const brandLink = document.getElementById('navBrand');
     const navContainer = document.getElementById('nav');
@@ -138,19 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (brandCanvas && brandLink && navContainer) {
         const ctx = brandCanvas.getContext('2d');
 
-        // Configuration Options
-        const particleConfig = {
-            sprayAmount: 2.25,         // Number of particles per frame (Production rate)
-            sizeMin: 0.5,             // Minimum particle size
-            sizeMax: 3,             // Maximum particle size
-            speedFactor: 5,         // Velocity multiplier
-            decayRate: 0.001,       // Base decay rate (lower = longer life)
-            fadeSpeed: 0.025         // How fast they fade when mouse leaves
+        const starConfig = {
+            starCount: 55,             // Number of twinkling stars across the navbar
+            twinkleSpeedMin: 0.03,     // Slowest twinkle rate
+            twinkleSpeedMax: 0.09,     // Fastest twinkle rate
+            fadeSpeed: 0.05,           // Fade-out rate once the mouse leaves
+            shootingStarInterval: 130  // Average frames between shooting stars
         };
 
-        let particles = [];
-        let animationId;
+        let stars = [];
+        let shootingStars = [];
+        let animationId = null;
         let isHovering = false;
+        let frameCount = 0;
+        let sceneLife = 0; // Fades the whole effect in/out on hover
 
         function resizeCanvas() {
             brandCanvas.width = navContainer.offsetWidth;
@@ -161,93 +164,127 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(resizeCanvas, 100); // Small delay to ensure rendering
         window.addEventListener('resize', resizeCanvas);
 
-        class Particle {
-            constructor() {
-                // Get brand position relative to nav
-                const brandRect = brandLink.getBoundingClientRect();
-                const navRect = navContainer.getBoundingClientRect();
-                const relX = brandRect.left - navRect.left;
-                const relY = brandRect.top - navRect.top;
+        function getArea() {
+            // The whole navbar, edge to edge
+            return { x: 0, y: 0, w: brandCanvas.width, h: brandCanvas.height };
+        }
 
-                // Spawn within the brand text area
-                this.x = relX + Math.random() * brandRect.width;
-                this.y = relY + Math.random() * brandRect.height;
-
-                // Random velocity - faster to travel length
-                this.vx = (Math.random() - 0.5) * particleConfig.speedFactor;
-                this.vy = (Math.random() - 0.5) * particleConfig.speedFactor;
-
-                this.size = Math.random() * (particleConfig.sizeMax - particleConfig.sizeMin) + particleConfig.sizeMin;
-                this.life = 1.0;
-                // Much slower decay to allow travel across full navbar
-                this.decay = Math.random() * particleConfig.decayRate + 0.001;
-
-                // Randomly choose cyan (Blue) or white
-                this.color = Math.random() > 0.5 ? '56, 189, 248' : '255, 255, 255';
+        class Star {
+            constructor(area) {
+                this.x = area.x + Math.random() * area.w;
+                this.y = area.y + Math.random() * area.h;
+                this.size = 0.6 + Math.random() * 1.3;
+                this.phase = Math.random() * Math.PI * 2;
+                this.speed = starConfig.twinkleSpeedMin + Math.random() * (starConfig.twinkleSpeedMax - starConfig.twinkleSpeedMin);
+                this.color = Math.random() > 0.7 ? '56, 189, 248' : '255, 255, 255';
             }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Bounce off edges
-                if (this.x < 0 || this.x > brandCanvas.width) this.vx = -this.vx;
-                if (this.y < 0 || this.y > brandCanvas.height) this.vy = -this.vy;
-
-                if (!isHovering) {
-                    this.life -= particleConfig.fadeSpeed; // Fast fade out when not hovering
-                } else {
-                    this.life -= this.decay;
-                }
-
-                if (this.life < 0) this.life = 0;
-            }
-
-            draw() {
+            draw(alpha) {
+                const twinkle = 0.25 + 0.75 * (0.5 + 0.5 * Math.sin(frameCount * this.speed + this.phase));
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, Math.max(0, this.size), 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${this.color}, ${this.life})`;
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${this.color}, ${twinkle * alpha})`;
                 ctx.fill();
             }
         }
 
-        function animateParticles() {
-            ctx.clearRect(0, 0, brandCanvas.width, brandCanvas.height);
+        class ShootingStar {
+            constructor(area) {
+                this.x = area.x - 20;
+                this.y = area.y + Math.random() * area.h * 0.5;
+                const speed = 6 + Math.random() * 3;
+                const angle = 0.16 + Math.random() * 0.12; // Gentle downward diagonal
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.tailLength = 22 + Math.random() * 14;
+                this.life = 1;
+                this.area = area;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.012;
+                if (this.x > this.area.w + 30 || this.y > this.area.h + 30) {
+                    this.life = 0;
+                }
+            }
+            draw(alpha) {
+                const mag = Math.hypot(this.vx, this.vy) || 1;
+                const tailX = this.x - (this.vx / mag) * this.tailLength;
+                const tailY = this.y - (this.vy / mag) * this.tailLength;
+                const a = Math.max(0, this.life) * alpha;
 
-            // Spawn new particles if hovering
+                const grad = ctx.createLinearGradient(tailX, tailY, this.x, this.y);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                grad.addColorStop(1, `rgba(255, 255, 255, ${a})`);
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 1.3;
+                ctx.beginPath();
+                ctx.moveTo(tailX, tailY);
+                ctx.lineTo(this.x, this.y);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 1.2, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, brandCanvas.width, brandCanvas.height);
+            frameCount++;
+
+            sceneLife = isHovering
+                ? Math.min(1, sceneLife + 0.08)
+                : Math.max(0, sceneLife - starConfig.fadeSpeed);
+
             if (isHovering) {
-                for (let i = 0; i < particleConfig.sprayAmount; i++) {
-                    particles.push(new Particle());
+                const area = getArea();
+
+                if (stars.length < starConfig.starCount) {
+                    stars.push(new Star(area));
+                }
+
+                if (Math.random() < 1 / starConfig.shootingStarInterval && shootingStars.length < 2) {
+                    shootingStars.push(new ShootingStar(area));
                 }
             }
 
-            // Update and draw existing particles
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
+            if (sceneLife > 0) {
+                for (let i = 0; i < stars.length; i++) {
+                    stars[i].draw(sceneLife);
+                }
+            }
 
-                // Remove dead particles
-                if (particles[i].life <= 0) {
-                    particles.splice(i, 1);
+            for (let i = 0; i < shootingStars.length; i++) {
+                shootingStars[i].update();
+                shootingStars[i].draw(sceneLife);
+                if (shootingStars[i].life <= 0) {
+                    shootingStars.splice(i, 1);
                     i--;
                 }
             }
 
-            // Continue loop if there are particles or hovering
-            if (particles.length > 0 || isHovering) {
-                animationId = requestAnimationFrame(animateParticles);
+            if (sceneLife <= 0) {
+                stars = [];
+            }
+
+            if (sceneLife > 0 || shootingStars.length > 0 || isHovering) {
+                animationId = requestAnimationFrame(animate);
+            } else {
+                animationId = null;
             }
         }
 
-        brandLink.addEventListener('mouseenter', () => {
+        navContainer.addEventListener('mouseenter', () => {
             isHovering = true;
             resizeCanvas(); // Ensure correct size on hover
-            if (!animationId || particles.length === 0) {
-                animateParticles();
+            if (!animationId) {
+                animate();
             }
         });
 
-        brandLink.addEventListener('mouseleave', () => {
+        navContainer.addEventListener('mouseleave', () => {
             isHovering = false;
         });
     }
