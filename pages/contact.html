@@ -133,7 +133,7 @@
             gap: var(--space-3);
             width: fit-content;
             margin: 0 auto var(--space-12);
-            padding: var(--space-3) var(--space-6) var(--space-3) var(--space-3);
+            padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 999px;
@@ -193,6 +193,34 @@
 
         .email-banner a:hover {
             text-decoration: underline;
+        }
+
+        .email-copy-btn {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--color-gray-400);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .email-copy-btn:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: var(--color-accent);
+        }
+
+        .email-copy-btn.copied {
+            background: rgba(74, 222, 128, 0.15);
+            border-color: rgba(74, 222, 128, 0.5);
+            color: #4ade80;
         }
 
         .social-grid {
@@ -289,8 +317,13 @@
                 </div>
                 <div class="email-banner-text">
                     <span class="email-banner-label">Email</span>
-                    <a href="mailto:m.hooymans@uq.edu.au">m.hooymans@uq.edu.au</a>
+                    <a href="#" id="emailLink" data-email-enc="bS5ob295bWFuc0B1cS5lZHUuYXU=" rel="nofollow">
+                        <noscript>Enable JavaScript to view</noscript>
+                    </a>
                 </div>
+                <button type="button" class="email-copy-btn" id="emailCopyBtn" aria-label="Copy email address">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
             </div>
 
             <hr class="contact-separator reveal">
@@ -388,8 +421,42 @@
 
     <!-- JavaScript -->
     <script>
+        (function () {
+            // Email is kept out of the static HTML (base64-encoded) so basic
+            // scraper bots that only read page source can't harvest it, while
+            // real visitors still see it immediately once the page renders.
+            const link = document.getElementById('emailLink');
+            const copyBtn = document.getElementById('emailCopyBtn');
+            if (!link) return;
 
+            const encoded = link.getAttribute('data-email-enc');
+            let email = '';
+            try {
+                email = atob(encoded);
+            } catch (e) {
+                return;
+            }
 
+            link.textContent = email;
+            link.href = 'mailto:' + email;
+            link.removeAttribute('data-email-enc');
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function () {
+                    navigator.clipboard.writeText(email).then(function () {
+                        const icon = copyBtn.querySelector('i');
+                        copyBtn.classList.add('copied');
+                        copyBtn.setAttribute('aria-label', 'Email copied');
+                        if (icon) icon.className = 'fa-solid fa-check';
+                        setTimeout(function () {
+                            copyBtn.classList.remove('copied');
+                            copyBtn.setAttribute('aria-label', 'Copy email address');
+                            if (icon) icon.className = 'fa-regular fa-copy';
+                        }, 1500);
+                    });
+                });
+            }
+        })();
     </script>
     <script src="../js/footer.js"></script>
     <script src="../js/back-to-top.js"></script>

@@ -25,17 +25,23 @@ function initSearch() {
         { title: "Blog", url: "pages/blog.html", icon: "fa-pen-nib", keywords: "blog posts writing" },
         { title: "Photography", url: "pages/photography.html", icon: "fa-camera", keywords: "photography photo wildlife landscape koala camera" },
         { title: "Contact", url: "pages/contact.html", icon: "fa-envelope", keywords: "contact email message" },
+        { title: "Research Knowledge Graph", url: "pages/knowledge-graph.html", icon: "fa-project-diagram", keywords: "knowledge graph research network visualization" },
 
         // Tools
         { title: "Kick Estimator", url: "tools/kick-estimator.html", icon: "fa-wrench", keywords: "kick estimator tool" },
         { title: "King (1966) Profile Viewer", url: "tools/king66-viewer.html", icon: "fa-chart-line", keywords: "king 1966 globular cluster density profile" },
         { title: "QR Code Generator", url: "tools/qr.html", icon: "fa-qrcode", keywords: "qr code generator" },
         { title: "Steganography", url: "tools/steg.html", icon: "fa-lock", keywords: "steganography tool encryption" },
+        { title: "Cosmology Calculator", url: "tools/cosmology.html", icon: "fa-globe", keywords: "cosmology calculator redshift distance lookback time dark energy" },
+        { title: "Spacetime Diagram", url: "tools/spacetime.html", icon: "fa-chart-area", keywords: "spacetime diagram light cone horizon hubble cosmology" },
+        { title: "BSE Stellar Evolution Explorer", url: "tools/bse_interactive.html", icon: "fa-star-half-alt", keywords: "bse stellar evolution types hurley" },
 
         // Tutorials
         { title: "Black Holes Tutorial", url: "tutorials/blackholes.html", icon: "fa-book", keywords: "black holes tutorial" },
         { title: "N-Body Tutorial", url: "tutorials/nbody.html", icon: "fa-book", keywords: "n-body tutorial" },
         { title: "Introductory Python for Physicists", url: "tutorials/pythonphys.html", icon: "fa-book", keywords: "python physics" },
+        { title: "Interactive Python for Physicists", url: "tutorials/pythonphys-interactive.html", icon: "fa-book", keywords: "python physics interactive" },
+        { title: "Python for Pregnancy & Health Data", url: "tutorials/pythonpreg.html", icon: "fa-book", keywords: "python pregnancy health data tutorial" },
 
         // Simulations
         // { title: "Supernova Simulation", url: "simulations/basic-supernova.html", icon: "fa-star", keywords: "supernova explosion simulation" },
