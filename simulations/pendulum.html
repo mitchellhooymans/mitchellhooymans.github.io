@@ -268,6 +268,143 @@
             display: none !important;
         }
 
+        .sim-btn.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        /* Phase Space Panel */
+        .phase-space-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 280px;
+            min-width: 240px;
+            min-height: 200px;
+            max-width: 90vw;
+            max-height: 85vh;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: 1500;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phase-space-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-2) var(--space-3);
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .phase-space-header:active {
+            cursor: grabbing;
+        }
+
+        .phase-space-close {
+            background: none;
+            border: none;
+            color: var(--color-gray-400);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .phase-space-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #phaseSpaceCanvas {
+            display: block;
+            width: 100%;
+            height: 180px;
+            flex: 1 1 auto;
+            min-height: 100px;
+            background: #050510;
+            cursor: default;
+        }
+
+        .phase-space-legend {
+            display: flex;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            font-size: 0.7rem;
+            color: var(--color-gray-300);
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .phase-space-resize-handle {
+            position: absolute;
+            right: 2px;
+            bottom: 2px;
+            width: 16px;
+            height: 16px;
+            cursor: nwse-resize;
+            z-index: 10;
+            background: linear-gradient(135deg,
+                    transparent 0%, transparent 40%,
+                    rgba(255, 255, 255, 0.35) 40%, rgba(255, 255, 255, 0.35) 50%,
+                    transparent 50%, transparent 60%,
+                    rgba(255, 255, 255, 0.35) 60%, rgba(255, 255, 255, 0.35) 70%,
+                    transparent 70%);
+            transition: background 0.15s;
+        }
+
+        .phase-space-resize-handle:hover {
+            background: linear-gradient(135deg,
+                    transparent 0%, transparent 40%,
+                    rgba(255, 255, 255, 0.7) 40%, rgba(255, 255, 255, 0.7) 50%,
+                    transparent 50%, transparent 60%,
+                    rgba(255, 255, 255, 0.7) 60%, rgba(255, 255, 255, 0.7) 70%,
+                    transparent 70%);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .swatch-1 {
+            background: #e2e8f0;
+        }
+
+        .swatch-2 {
+            background: #3b82f6;
+        }
+
+        @media (max-width: 600px) {
+            .phase-space-panel {
+                left: 12px;
+                right: 12px;
+                width: auto;
+            }
+        }
+
         /* Full Browser Mode */
         body.full-browser {
             overflow: hidden;
@@ -468,12 +605,32 @@
                                 <i class="fas fa-redo"></i> Reset
                             </button>
                         </div>
-                        <button class="sim-btn sim-btn-secondary" id="fullBrowserBtn"
-                            style="width: 100%; margin-top: var(--space-3);">
-                            <i class="fas fa-expand"></i> Full Browser
-                        </button>
+                        <div class="btn-row" style="margin-top: var(--space-3);">
+                            <button class="sim-btn sim-btn-secondary" id="phaseSpaceBtn">
+                                <i class="fas fa-wave-square"></i> Phase Space
+                            </button>
+                            <button class="sim-btn sim-btn-secondary" id="fullBrowserBtn">
+                                <i class="fas fa-expand"></i> Full Browser
+                            </button>
+                        </div>
                     </div>
 
+                </div>
+
+                <!-- Phase Space Panel (toggleable, draggable) -->
+                <div class="phase-space-panel hidden" id="phaseSpacePanel">
+                    <div class="phase-space-header" id="phaseSpaceHeader">
+                        <span><i class="fas fa-wave-square"></i> Phase Space</span>
+                        <button class="phase-space-close" id="phaseSpaceCloseBtn" aria-label="Close phase space panel">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <canvas id="phaseSpaceCanvas"></canvas>
+                    <div class="phase-space-legend">
+                        <span class="legend-item"><span class="legend-swatch swatch-1"></span> Arm 1 (θ₁, ω₁)</span>
+                        <span class="legend-item" id="phaseLegend2"><span class="legend-swatch swatch-2"></span> Arm
+                            2 (θ₂, ω₂)</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -586,6 +743,10 @@
         let trailLength = 500;
         let trail = [];
         let timeScale = 1.0;
+
+        // Phase space trails: (theta, omega) pairs per arm
+        let phaseTrail1 = [];
+        let phaseTrail2 = [];
 
         // Rendering scale
         const SCALE_BASE = 150;
@@ -746,7 +907,182 @@
             // Or just raw physics. Raw physics is negative sometimes. 
             // Let's just show raw.
             document.getElementById('energyDisplay').textContent = E.toFixed(2);
+
+            if (!phaseSpacePanel.classList.contains('hidden')) {
+                drawPhaseSpace();
+            }
         }
+
+        // ========================================
+        // Phase Space Panel
+        // ========================================
+        const phaseSpacePanel = document.getElementById('phaseSpacePanel');
+        const phaseSpaceBtn = document.getElementById('phaseSpaceBtn');
+        const phaseSpaceCloseBtn = document.getElementById('phaseSpaceCloseBtn');
+        const phaseSpaceHeader = document.getElementById('phaseSpaceHeader');
+        const phaseCanvas = document.getElementById('phaseSpaceCanvas');
+        const phaseCtx = phaseCanvas.getContext('2d');
+
+        function setupPhaseCanvas() {
+            const rect = phaseCanvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            const dpr = window.devicePixelRatio || 1;
+            phaseCanvas.width = rect.width * dpr;
+            phaseCanvas.height = rect.height * dpr;
+            phaseCtx.resetTransform();
+            phaseCtx.scale(dpr, dpr);
+        }
+
+        function updatePhaseLegend() {
+            document.getElementById('phaseLegend2').classList.toggle('hidden', m2 <= 0.001);
+        }
+
+        function togglePhaseSpace(forceShow) {
+            const isHidden = phaseSpacePanel.classList.contains('hidden');
+            const shouldShow = forceShow !== undefined ? forceShow : isHidden;
+            phaseSpacePanel.classList.toggle('hidden', !shouldShow);
+            phaseSpaceBtn.classList.toggle('active', shouldShow);
+            if (shouldShow) {
+                requestAnimationFrame(() => {
+                    setupPhaseCanvas();
+                    drawPhaseSpace();
+                });
+            }
+        }
+
+        function drawPhaseSpace() {
+            const rect = phaseCanvas.getBoundingClientRect();
+            const W = rect.width, H = rect.height;
+            if (W === 0 || H === 0) return;
+
+            phaseCtx.clearRect(0, 0, W, H);
+            phaseCtx.fillStyle = '#050510';
+            phaseCtx.fillRect(0, 0, W, H);
+
+            const isSingle = m2 <= 0.001;
+            const allPoints = isSingle ? phaseTrail1 : phaseTrail1.concat(phaseTrail2);
+
+            const margin = { left: 30, right: 10, top: 10, bottom: 20 };
+            const plotW = W - margin.left - margin.right;
+            const plotH = H - margin.top - margin.bottom;
+
+            if (allPoints.length < 2) {
+                phaseCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                phaseCtx.strokeRect(margin.left, margin.top, plotW, plotH);
+                return;
+            }
+
+            let minT = Infinity, maxT = -Infinity, minW = Infinity, maxW = -Infinity;
+            for (const p of allPoints) {
+                if (p.theta < minT) minT = p.theta;
+                if (p.theta > maxT) maxT = p.theta;
+                if (p.omega < minW) minW = p.omega;
+                if (p.omega > maxW) maxW = p.omega;
+            }
+
+            const padT = Math.max((maxT - minT) * 0.1, 0.15);
+            const padW = Math.max((maxW - minW) * 0.1, 0.15);
+            minT -= padT; maxT += padT;
+            minW -= padW; maxW += padW;
+
+            function toPx(theta, omega) {
+                return {
+                    x: margin.left + ((theta - minT) / (maxT - minT)) * plotW,
+                    y: margin.top + plotH - ((omega - minW) / (maxW - minW)) * plotH
+                };
+            }
+
+            // Zero-reference axes
+            phaseCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            phaseCtx.lineWidth = 1;
+            if (minT < 0 && maxT > 0) {
+                const zx = toPx(0, 0).x;
+                phaseCtx.beginPath();
+                phaseCtx.moveTo(zx, margin.top);
+                phaseCtx.lineTo(zx, margin.top + plotH);
+                phaseCtx.stroke();
+            }
+            if (minW < 0 && maxW > 0) {
+                const zy = toPx(0, 0).y;
+                phaseCtx.beginPath();
+                phaseCtx.moveTo(margin.left, zy);
+                phaseCtx.lineTo(margin.left + plotW, zy);
+                phaseCtx.stroke();
+            }
+
+            phaseCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            phaseCtx.strokeRect(margin.left, margin.top, plotW, plotH);
+
+            function drawTrail(trailArr, color) {
+                if (trailArr.length < 2) return;
+                phaseCtx.beginPath();
+                phaseCtx.strokeStyle = color;
+                phaseCtx.lineWidth = 1.5;
+                for (let i = 0; i < trailArr.length; i++) {
+                    const pt = toPx(trailArr[i].theta, trailArr[i].omega);
+                    if (i === 0) phaseCtx.moveTo(pt.x, pt.y);
+                    else phaseCtx.lineTo(pt.x, pt.y);
+                }
+                phaseCtx.stroke();
+
+                const last = trailArr[trailArr.length - 1];
+                const lp = toPx(last.theta, last.omega);
+                phaseCtx.beginPath();
+                phaseCtx.fillStyle = color;
+                phaseCtx.arc(lp.x, lp.y, 3, 0, Math.PI * 2);
+                phaseCtx.fill();
+            }
+
+            drawTrail(phaseTrail1, '#e2e8f0');
+            if (!isSingle) drawTrail(phaseTrail2, '#3b82f6');
+
+            // Axis labels
+            phaseCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            phaseCtx.font = '10px "Courier New", monospace';
+            phaseCtx.textAlign = 'center';
+            phaseCtx.fillText('θ (rad)', margin.left + plotW / 2, H - 5);
+
+            phaseCtx.save();
+            phaseCtx.translate(10, margin.top + plotH / 2);
+            phaseCtx.rotate(-Math.PI / 2);
+            phaseCtx.fillText('ω (rad/s)', 0, 0);
+            phaseCtx.restore();
+        }
+
+        phaseSpaceBtn.addEventListener('click', () => togglePhaseSpace());
+        phaseSpaceCloseBtn.addEventListener('click', () => togglePhaseSpace(false));
+        window.addEventListener('resize', () => {
+            if (!phaseSpacePanel.classList.contains('hidden')) setupPhaseCanvas();
+        });
+
+        // Draggable panel
+        (function enablePhaseDrag() {
+            let dragging = false, offsetX = 0, offsetY = 0;
+
+            phaseSpaceHeader.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.phase-space-close')) return;
+                dragging = true;
+                const rect = phaseSpacePanel.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                phaseSpacePanel.style.left = rect.left + 'px';
+                phaseSpacePanel.style.top = rect.top + 'px';
+                phaseSpacePanel.style.right = 'auto';
+                phaseSpacePanel.style.bottom = 'auto';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                let newLeft = e.clientX - offsetX;
+                let newTop = e.clientY - offsetY;
+                newLeft = Math.max(4, Math.min(window.innerWidth - phaseSpacePanel.offsetWidth - 4, newLeft));
+                newTop = Math.max(4, Math.min(window.innerHeight - phaseSpacePanel.offsetHeight - 4, newTop));
+                phaseSpacePanel.style.left = newLeft + 'px';
+                phaseSpacePanel.style.top = newTop + 'px';
+            });
+
+            window.addEventListener('mouseup', () => { dragging = false; });
+        })();
 
         // ========================================
         // Loop
@@ -774,6 +1110,15 @@
                 }
 
                 if (trail.length > trailLength) trail.shift();
+
+                // Phase space trails
+                phaseTrail1.push({ theta: theta1, omega: omega1 });
+                if (phaseTrail1.length > trailLength) phaseTrail1.shift();
+
+                if (m2 > 0.001) {
+                    phaseTrail2.push({ theta: theta2, omega: omega2 });
+                    if (phaseTrail2.length > trailLength) phaseTrail2.shift();
+                }
             }
 
             render();
@@ -837,6 +1182,7 @@
             trailLength = parseInt(document.getElementById('trailSlider').value);
 
             updateUI();
+            updatePhaseLegend();
         }
 
         function resetSim() {
@@ -854,6 +1200,8 @@
             omega1 = 0;
             omega2 = 0;
             trail.length = 0; // Explicitly empty array
+            phaseTrail1.length = 0;
+            phaseTrail2.length = 0;
         }
 
         // Listeners
