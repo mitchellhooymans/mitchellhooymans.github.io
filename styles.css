@@ -888,6 +888,9 @@ p {
     font-size: 0.85rem;
     color: var(--color-gray-800);
     transition: all var(--transition-fast);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .stat-chip:hover {
@@ -895,6 +898,32 @@ p {
     border-color: var(--color-accent);
     color: var(--color-white);
     transform: translateY(-2px);
+}
+
+.stat-chip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.stat-chip.chip-pressed {
+    animation: chip-pulse 0.4s ease-out;
+}
+
+@keyframes chip-pulse {
+    0% {
+        transform: translateY(-2px) scale(1);
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6);
+    }
+
+    50% {
+        transform: translateY(-2px) scale(1.08);
+        box-shadow: 0 0 0 8px rgba(56, 189, 248, 0);
+    }
+
+    100% {
+        transform: translateY(-2px) scale(1);
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+    }
 }
 
 .stat-chip i,
@@ -990,6 +1019,349 @@ p {
     display: flex;
     gap: var(--space-4);
     margin-top: var(--space-2);
+}
+
+/* ==================================================================
+   Hidden Terminal Easter Egg
+   Triggered by a secret badge-click combo in .hero-stats
+   ================================================================== */
+
+#hero-glass-card {
+    position: relative;
+}
+
+#hero-glass-card .profile-frame,
+#hero-glass-card .hero-content-glass {
+    transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+
+#hero-glass-card .profile-frame.hero-fade-out,
+#hero-glass-card .hero-content-glass.hero-fade-out {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(4px);
+    pointer-events: none;
+}
+
+#hero-glass-card.terminal-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #eaf6ff;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    animation: terminal-flash 0.5s ease-out forwards;
+    border-radius: inherit;
+}
+
+@keyframes terminal-flash {
+    0% {
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 0.85;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.hero-terminal {
+    display: none;
+    width: 100%;
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.hero-terminal.terminal-visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.terminal-window {
+    width: 100%;
+    max-width: 100%;
+    background: #050b16;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    font-family: var(--font-mono);
+    text-align: left;
+}
+
+.terminal-titlebar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.65rem var(--space-4);
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.terminal-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.dot-red {
+    background: #ff5f56;
+}
+
+.dot-yellow {
+    background: #ffbd2e;
+}
+
+.dot-green {
+    background: #27c93f;
+}
+
+.terminal-title {
+    margin-left: var(--space-2);
+    font-size: 0.8rem;
+    color: var(--color-gray-500);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.terminal-close {
+    background: transparent;
+    border: none;
+    color: var(--color-gray-500);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0.25rem 0.4rem;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.terminal-close:hover {
+    color: var(--color-white);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.terminal-window.alert-flash {
+    animation: term-alert-flash 0.5s ease-in-out infinite;
+}
+
+@keyframes term-alert-flash {
+
+    0%,
+    100% {
+        box-shadow: 0 0 40px rgba(248, 113, 113, 0.45), 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        border-color: rgba(248, 113, 113, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 0 10px rgba(248, 113, 113, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        border-color: rgba(248, 113, 113, 0.2);
+    }
+}
+
+.terminal-body {
+    padding: var(--space-4);
+    height: 340px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+}
+
+.terminal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.3);
+    border-radius: var(--radius-full);
+}
+
+.term-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 0.35rem;
+}
+
+.term-line.term-cmd {
+    color: var(--color-white);
+}
+
+.term-line.term-cmd .term-cmd-prompt {
+    color: var(--color-accent);
+    margin-right: 0.5rem;
+}
+
+.term-line.term-info {
+    color: var(--color-gray-500);
+}
+
+.term-line.term-success {
+    color: #4ade80;
+}
+
+.term-line.term-error {
+    color: #f87171;
+}
+
+.term-line.term-warn {
+    color: #fbbf24;
+}
+
+.term-line.term-accent {
+    color: var(--color-accent-secondary);
+}
+
+.term-key {
+    color: var(--color-accent-secondary);
+    white-space: pre;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    font-size: 0.85rem;
+    position: relative;
+}
+
+.terminal-prompt {
+    color: var(--color-accent);
+    flex-shrink: 0;
+}
+
+.terminal-input-text {
+    color: var(--color-white);
+    white-space: pre;
+    word-break: break-all;
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: var(--color-accent);
+    animation: term-blink 1s step-end infinite;
+    flex-shrink: 0;
+}
+
+@keyframes term-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.terminal-hidden-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: text;
+}
+
+/* Mini singularity effect rendered inline in terminal output */
+.mini-singularity {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: var(--space-3) auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-singularity .mini-disk {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+            transparent 0%,
+            rgba(56, 189, 248, 0.15) 20%,
+            rgba(129, 140, 248, 0.5) 40%,
+            rgba(255, 255, 255, 0.7) 50%,
+            rgba(129, 140, 248, 0.5) 60%,
+            rgba(56, 189, 248, 0.15) 80%,
+            transparent 100%);
+    animation: term-spin 2.5s linear infinite;
+    filter: blur(4px);
+}
+
+.mini-singularity .mini-hole {
+    width: 44px;
+    height: 44px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 0 0 20px 6px rgba(129, 140, 248, 0.35);
+    z-index: 1;
+    position: relative;
+}
+
+@keyframes term-spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Fullscreen matrix digital-rain overlay, triggered by the 'matrix' command */
+#matrix-rain-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #000;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+}
+
+#matrix-rain-overlay.active {
+    opacity: 1;
+}
+
+@media (max-width: 767px) {
+    .terminal-body {
+        height: 280px;
+        font-size: 0.78rem;
+    }
+
+    .terminal-title {
+        font-size: 0.7rem;
+    }
 }
 
 /* -------------------- Buttons -------------------- */
