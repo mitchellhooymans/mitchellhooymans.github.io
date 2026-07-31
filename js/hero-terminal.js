@@ -21,6 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.getElementById('terminal-close');
     const terminalWindow = terminalPanel.querySelector('.terminal-window');
     const promptEl = document.getElementById('terminal-prompt');
+    const terminalTitleEl = document.getElementById('terminal-title');
+    const terminalInputLine = document.getElementById('terminal-input-line');
+    const terminalGameHint = document.getElementById('terminal-game-hint');
+    const defaultTerminalTitle = terminalTitleEl ? terminalTitleEl.textContent : '';
+
+    const GAME_HINTS = {
+        snake: 'SNAKE \u2014 arrows/WASD to move \u00b7 q/Esc to quit',
+        invaders: 'INVADERS \u2014 \u2190/\u2192 or A/D to move \u00b7 space to fire \u00b7 q/Esc to quit',
+        spaceship: 'SPACESHIP \u2014 \u2191/\u2193 or W/S to move \u00b7 space to fire \u00b7 q/Esc to quit',
+    };
 
     // ---------------------------------------------------------------
     // Secret combo detection
@@ -29,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let progress = 0;
     let comboResetTimer = null;
     let terminalActive = false;
+    let activeGame = null;
+    let activeGameScreen = null;
+    let activeGameName = null;
 
     chips.forEach((chip) => {
         chip.addEventListener('click', () => handleChipInput(chip));
@@ -102,6 +115,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         stopMatrix();
         clearBootTimers();
+        if (activeGame) {
+            activeGame.stop();
+            activeGame = null;
+            activeGameScreen = null;
+            activeGameName = null;
+            terminalBody.classList.remove('game-mode');
+            if (terminalInputLine) terminalInputLine.classList.remove('game-mode');
+            if (terminalGameHint) terminalGameHint.textContent = '';
+            if (terminalTitleEl) terminalTitleEl.textContent = defaultTerminalTitle;
+        }
         document.removeEventListener('keydown', onGlobalKeydown);
         hiddenInput.blur();
         authStage = 'idle';
@@ -200,13 +223,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let commandHistory = [];
     let historyIndex = 0;
 
+    const GAME_KEYS = new Set([
+        'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+        'w', 'a', 's', 'd', 'W', 'A', 'S', 'D', ' ',
+    ]);
+
     hiddenInput.addEventListener('input', () => {
+        if (activeGame) return;
         inputDisplay.textContent = authStage === 'password'
             ? '*'.repeat(hiddenInput.value.length)
             : hiddenInput.value;
     });
 
     hiddenInput.addEventListener('keydown', (e) => {
+        if (activeGame) {
+            if (e.key === 'q' || e.key === 'Q' || e.key === 'Escape') {
+                e.preventDefault();
+                e.stopPropagation();
+                const score = activeGame.getScore();
+                activeGame.stop();
+                endGame('Game aborted.', score);
+                return;
+            }
+            if (GAME_KEYS.has(e.key)) {
+                e.preventDefault();
+                e.stopPropagation();
+                activeGame.handleKey(e.key);
+            }
+            return;
+        }
+
         if (e.key === 'Enter') {
             e.preventDefault();
             const raw = hiddenInput.value;
@@ -378,6 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'cv', 'resume', 'research', 'contact', 'blog', 'tools', 'simulations',
         'sim', 'talks', 'photography', 'photos', 'tutorials', 'resources', 'home',
     ]);
+    const GAME_NAMES = new Set(['snake', 'invaders', 'spaceship']);
 
     function runCommand(cmdStr) {
         const parts = cmdStr.split(/\s+/);
@@ -448,6 +495,21 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'mainframe':
                 triggerMainframe();
                 break;
+            case 'games':
+                printGamesList();
+                break;
+            case 'play':
+                startGame((args[0] || '').toLowerCase());
+                break;
+            case 'highscores':
+            case 'scores':
+            case 'leaderboard':
+                if ((args[0] || '').toLowerCase() === 'reset') {
+                    resetHighScores();
+                } else {
+                    printHighScores();
+                }
+                break;
             case 'open':
                 handleOpen(args[0]);
                 break;
@@ -458,7 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(deactivateTerminal, 300);
                 break;
             default:
-                if (NAV_SHORTCUTS.has(cmd)) {
+                if (GAME_NAMES.has(cmd)) {
+                    startGame(cmd);
+                } else if (NAV_SHORTCUTS.has(cmd)) {
                     handleOpen(cmd);
                 } else {
                     printLine(`command not found: ${cmd}`, 'error');
@@ -480,6 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ['coffee', 'Brew a virtual coffee'],
             ['sudo ...', "Try it and see what happens"],
             ['login', 'Authenticate for elevated access'],
+            ['games', 'List playable in-terminal games'],
+            ['play <name>', 'Play a game (snake, invaders, spaceship)'],
+            ['highscores', 'Show your best scores (add "reset" to clear)'],
             ['clear', 'Clear the terminal'],
             ['exit', 'Return to the normal hero'],
         ].forEach(([cmd, desc]) => {
@@ -570,6 +637,127 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             printLine(`No such destination: "${target}". Type 'ls' to see available sections.`, 'error');
         }
+    }
+
+    // ---------------------------------------------------------------
+    // In-terminal ASCII games
+    // ---------------------------------------------------------------
+    function printGamesList() {
+        printLine('Available games:', '');
+        [
+            ['snake', "Classic snake \u2014 eat, grow, don't hit yourself"],
+            ['invaders', 'Defend against the descending horde'],
+            ['spaceship', 'Dodge and shoot asteroids in an endless side-scroller'],
+        ].forEach(([name, desc]) => {
+            const best = window.TerminalHighScores ? window.TerminalHighScores.get(name) : 0;
+            const line = document.createElement('div');
+            line.className = 'term-line';
+            const cmdSpan = document.createElement('span');
+            cmdSpan.className = 'term-key';
+            cmdSpan.textContent = name.padEnd(14, ' ');
+            line.appendChild(cmdSpan);
+            line.appendChild(document.createTextNode(`${desc}  (best: ${best})`));
+            terminalBody.appendChild(line);
+        });
+        printLine("Type 'play <name>' or just the name to start, e.g. 'snake'.", 'info');
+        scrollToBottom();
+    }
+
+    function printHighScores() {
+        const scores = window.TerminalHighScores ? window.TerminalHighScores.getAll() : {};
+        const names = ['snake', 'invaders', 'spaceship'];
+        printLine('High scores:', '');
+        names.forEach((name) => {
+            const best = scores[name] || 0;
+            const line = document.createElement('div');
+            line.className = 'term-line';
+            const cmdSpan = document.createElement('span');
+            cmdSpan.className = 'term-key';
+            cmdSpan.textContent = name.padEnd(14, ' ');
+            line.appendChild(cmdSpan);
+            line.appendChild(document.createTextNode(String(best)));
+            terminalBody.appendChild(line);
+        });
+        printLine("Scores are saved to this browser. Type 'highscores reset' to clear them.", 'info');
+        scrollToBottom();
+    }
+
+    function resetHighScores() {
+        if (window.TerminalHighScores) window.TerminalHighScores.resetAll();
+        printLine('High scores cleared.', 'warn');
+    }
+
+    function startGame(name) {
+        if (activeGame) return;
+        const factory = window.TerminalGames && window.TerminalGames[name];
+        if (!factory) {
+            printLine(`No such game: "${name || ''}". Type 'games' to see what's available.`, 'error');
+            return;
+        }
+        if (!window.AsciiGameEngine) {
+            printLine('Game engine failed to load.', 'error');
+            return;
+        }
+
+        const best = window.TerminalHighScores ? window.TerminalHighScores.get(name) : 0;
+        activeGameName = name;
+        printLine(`Launching ${name}... (best: ${best}) \u2014 arrows/WASD to move, space to fire, 'q' or Esc to quit`, 'accent');
+
+        const screenWrap = document.createElement('div');
+        screenWrap.className = 'game-screen-wrap';
+        const screenEl = document.createElement('pre');
+        screenEl.className = 'game-screen';
+        screenWrap.appendChild(screenEl);
+        terminalBody.appendChild(screenWrap);
+        activeGameScreen = screenWrap;
+
+        // Full takeover: the game fills the entire terminal body, like a
+        // curses app taking over a real terminal, rather than sitting
+        // inline amongst the scrollback.
+        terminalBody.classList.add('game-mode');
+        if (terminalInputLine) terminalInputLine.classList.add('game-mode');
+        if (terminalGameHint) terminalGameHint.textContent = GAME_HINTS[name] || `${name.toUpperCase()} \u2014 q/Esc to quit`;
+        if (terminalTitleEl) terminalTitleEl.textContent = `${name} \u2014 astro-shell`;
+        scrollToBottom();
+
+        const descriptor = factory();
+        activeGame = window.AsciiGameEngine.createGame(Object.assign({}, descriptor, {
+            onFrame: (text) => { screenEl.textContent = text; },
+            onGameOver: (state) => {
+                const score = descriptor.scoreOf ? descriptor.scoreOf(state) : (state.score || 0);
+                const label = state && state.won ? 'You win!' : 'Game over!';
+                endGame(label, score);
+            },
+        }));
+
+        activeGame.start();
+    }
+
+    function endGame(label, score) {
+        const name = activeGameName;
+        if (activeGameScreen && activeGameScreen.parentNode) activeGameScreen.remove();
+        activeGame = null;
+        activeGameScreen = null;
+        activeGameName = null;
+
+        terminalBody.classList.remove('game-mode');
+        if (terminalInputLine) terminalInputLine.classList.remove('game-mode');
+        if (terminalGameHint) terminalGameHint.textContent = '';
+        if (terminalTitleEl) terminalTitleEl.textContent = defaultTerminalTitle;
+
+        printLine(`${label} Final score: ${score}`, 'info');
+
+        if (name && window.TerminalHighScores) {
+            const result = window.TerminalHighScores.submit(name, score);
+            if (result.isNewHigh) {
+                printLine(`\u2605 New high score for ${name}! (previous best: ${result.previousBest})`, 'success');
+            } else {
+                printLine(`Best for ${name}: ${result.best}`, 'info');
+            }
+        }
+
+        printLine("Type 'games' to play again, or any other command.", 'info');
+        focusInput();
     }
 
     // ---------------------------------------------------------------

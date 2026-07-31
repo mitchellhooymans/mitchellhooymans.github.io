@@ -171,15 +171,16 @@
                         <span class="terminal-dot dot-red"></span>
                         <span class="terminal-dot dot-yellow"></span>
                         <span class="terminal-dot dot-green"></span>
-                        <span class="terminal-title">guest@mitchellhooymans.com — astro-shell</span>
+                        <span class="terminal-title" id="terminal-title">guest@mitchellhooymans.com — astro-shell</span>
                         <button type="button" class="terminal-close" id="terminal-close"
                             aria-label="Close terminal">✕</button>
                     </div>
                     <div class="terminal-body" id="terminal-body"></div>
-                    <div class="terminal-input-line">
+                    <div class="terminal-input-line" id="terminal-input-line">
                         <span class="terminal-prompt" id="terminal-prompt">guest@mitchellhooymans.com:~$</span>
                         <span class="terminal-input-text" id="terminal-input-text"></span><span
                             class="terminal-cursor" id="terminal-cursor"></span>
+                        <span class="terminal-game-hint" id="terminal-game-hint"></span>
                         <input type="text" id="terminal-hidden-input" class="terminal-hidden-input" autocomplete="off"
                             autocapitalize="off" autocorrect="off" spellcheck="false"
                             aria-label="Terminal command input">
@@ -360,6 +361,11 @@
         new Footer().init('./');
     </script>
     <script src="js/easter-egg.js"></script>
+    <script src="games/ascii-engine.js"></script>
+    <script src="games/highscores.js"></script>
+    <script src="games/snake.js"></script>
+    <script src="games/invaders.js"></script>
+    <script src="games/spaceship.js"></script>
     <script src="js/hero-terminal.js"></script>
 </body>
 
