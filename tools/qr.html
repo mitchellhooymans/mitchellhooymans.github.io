@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Oswald:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Raleway:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
   <!-- Styles -->
@@ -27,10 +27,40 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    .qr-bento {
+    .qr-workspace {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+      gap: var(--space-5);
+      align-items: start;
+    }
+
+    .qr-controls {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
+    .qr-preview-rail {
+      position: sticky;
+      top: 88px;
+      z-index: 5;
+      max-height: calc(100vh - 104px);
+    }
+
+    .qr-preview-panel {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
       gap: var(--space-4);
+      max-height: calc(100vh - 104px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     .qr-card {
@@ -39,11 +69,11 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-xl);
-      padding: var(--space-6);
+      padding: var(--space-5);
       transition: border-color var(--transition-base), background var(--transition-base);
     }
 
-    .qr-card:hover {
+    .qr-controls .qr-card:hover {
       background: rgba(15, 23, 42, 0.8);
       border-color: rgba(56, 189, 248, 0.3);
     }
@@ -54,22 +84,295 @@
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--color-gray-500);
-      margin-bottom: var(--space-4);
+      margin-bottom: var(--space-3);
     }
 
-    .card-input,
+    /* Accordion panels */
+    .qr-accordion {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: border-color var(--transition-base), background var(--transition-base);
+    }
+
+    .qr-accordion:hover,
+    .qr-accordion[open] {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .qr-accordion-summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: 0.9rem var(--space-5);
+      user-select: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-gray-500);
+      transition: color var(--transition-fast);
+    }
+
+    .qr-accordion-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .qr-accordion-summary:hover {
+      color: var(--color-accent);
+    }
+
+    .qr-accordion[open] > .qr-accordion-summary {
+      color: var(--color-accent);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .qr-accordion-chevron {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-gray-400);
+      font-size: 0.65rem;
+      transition: transform 0.2s ease, border-color var(--transition-fast), color var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .qr-accordion[open] > .qr-accordion-summary .qr-accordion-chevron {
+      transform: rotate(180deg);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--color-accent);
+    }
+
+    .qr-accordion-body {
+      padding: var(--space-4) var(--space-5) var(--space-5);
+    }
+
+    .qr-preview-stage {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 240px;
+      flex: 1;
+    }
+
+    .qr-preview-frame {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      background-color: rgba(0, 0, 0, 0.2);
+      background-image:
+        linear-gradient(45deg, rgba(255, 255, 255, 0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255, 255, 255, 0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.06) 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    #qrcode {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #qrcode img {
+      max-width: 100%;
+      max-height: min(46vh, 360px);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
     .card-actions {
-      grid-column: 1 / -1;
+      display: none;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding-top: var(--space-4);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    @media (max-width: 768px) {
-      .qr-bento {
+    .card-actions.is-visible {
+      display: flex;
+    }
+
+    .qr-mobile-dock {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .qr-workspace {
         grid-template-columns: 1fr;
+        gap: var(--space-3);
       }
 
-      .card-qr,
-      .card-colours {
-        grid-column: 1 / -1;
+      .qr-preview-rail {
+        order: -1;
+        position: relative;
+        top: auto;
+        max-height: none;
+        z-index: 1;
+      }
+
+      .qr-preview-panel {
+        max-height: none;
+        overflow: visible;
+        padding: var(--space-4);
+        gap: var(--space-3);
+      }
+
+      .qr-preview-stage {
+        min-height: 0;
+      }
+
+      .qr-preview-frame {
+        padding: var(--space-3);
+      }
+
+      #qrcode img {
+        max-height: min(42vh, 280px);
+      }
+
+      .orbit-wrap {
+        width: 52px;
+        height: 52px;
+        margin-bottom: 10px;
+      }
+
+      .format-btn-row {
+        gap: 6px;
+      }
+
+      .btn-format {
+        min-width: 0;
+        flex: 1 1 calc(33.33% - 6px);
+        padding: 8px 6px;
+        font-size: 0.8rem;
+      }
+
+      .qr-accordion-summary {
+        padding: 0.85rem var(--space-4);
+      }
+
+      .qr-accordion-body {
+        padding: var(--space-3) var(--space-4) var(--space-4);
+      }
+
+      .qr-card {
+        padding: var(--space-4);
+      }
+
+      .qr-mobile-dock {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        /* Nav sits at top: 1rem with 70px content height */
+        top: calc(var(--space-4, 1rem) + 70px + 12px);
+        z-index: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.96);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        transform: translateY(calc(-100% - 28px));
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+        transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s;
+      }
+
+      .qr-mobile-dock.is-visible {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+        visibility: visible;
+      }
+
+      .qr-mobile-dock-thumb {
+        width: 88px;
+        height: 88px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        object-fit: contain;
+        background-color: rgba(0, 0, 0, 0.25);
+        background-image:
+          linear-gradient(45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%),
+          linear-gradient(-45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.08) 75%),
+          linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.08) 75%);
+        background-size: 12px 12px;
+        background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .qr-mobile-dock-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .qr-mobile-dock-actions .btn-format {
+        min-width: 0;
+        flex: 1 1 calc(33.33% - 6px);
+        padding: 10px 6px;
+        font-size: 0.78rem;
+      }
+
+      .qr-mobile-dock-actions .btn-format-label {
+        display: none;
+      }
+
+      .qr-hero {
+        padding: 12px 0 4px !important;
+      }
+
+      .qr-hero .hero-subtitle {
+        font-size: 0.9rem;
+        padding: 0 8px;
+      }
+
+      .qr-hero h1 {
+        font-size: clamp(1.6rem, 7vw, 2.2rem) !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .qr-mobile-dock {
+        left: 8px;
+        right: 8px;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .qr-mobile-dock-thumb {
+        width: 76px;
+        height: 76px;
       }
     }
 
@@ -83,7 +386,7 @@
       font-size: 1rem;
       padding: var(--space-4);
       resize: none;
-      height: 100px;
+      height: 84px;
       outline: none;
       transition: border-color var(--transition-base);
       display: block;
@@ -95,6 +398,24 @@
 
     .qr-textarea::placeholder {
       color: var(--color-gray-500);
+    }
+
+    .qr-text-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-white);
+      font-family: var(--font-primary);
+      font-size: 0.95rem;
+      padding: 0 var(--space-3);
+      height: 40px;
+      outline: none;
+      transition: border-color var(--transition-base);
+    }
+
+    .qr-text-input:focus {
+      border-color: var(--color-accent);
     }
 
     .qr-generate-btn {
@@ -113,14 +434,6 @@
     .qr-generate-btn:hover {
       background: rgba(56, 189, 248, 0.2);
       border-color: rgba(56, 189, 248, 0.8);
-    }
-
-    .card-qr {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 290px;
     }
 
     #qrcode img,
@@ -159,7 +472,7 @@
       }
     }
 
-    .card-colours {
+    .accordion-stack {
       display: flex;
       flex-direction: column;
       gap: var(--space-4);
@@ -203,17 +516,9 @@
       border-radius: 4px;
     }
 
-    .card-actions {
-      display: flex;
-      gap: var(--space-3);
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
     .btn-action {
       flex: 1;
-      min-width: 140px;
+      min-width: 120px;
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-md);
@@ -222,6 +527,7 @@
       cursor: pointer;
       transition: all var(--transition-fast);
       text-align: center;
+      font-size: 0.9rem;
     }
 
     .btn-action:hover {
@@ -230,7 +536,6 @@
       background: rgba(56, 189, 248, 0.1);
     }
 
-    /* Settings styles */
     .settings-row {
       margin-bottom: var(--space-4);
     }
@@ -309,7 +614,6 @@
       color: var(--color-white);
     }
 
-    /* Toggle Switch */
     .toggle-wrapper {
       display: flex;
       align-items: center;
@@ -367,6 +671,227 @@
       color: var(--color-gray-400);
       user-select: none;
     }
+
+    .style-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+
+    .style-option {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-gray-400);
+      padding: var(--space-2) var(--space-3);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-align: center;
+      transition: all var(--transition-fast);
+    }
+
+    .style-option:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--color-accent);
+    }
+
+    .style-option.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.6);
+      color: var(--color-accent);
+    }
+
+    .preset-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .preset-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .preset-swatch:hover {
+      transform: scale(1.1);
+      border-color: var(--color-accent);
+    }
+
+    .preset-swatch::before,
+    .preset-swatch::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    .preset-swatch::after {
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .format-btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      width: 100%;
+    }
+
+    .btn-format {
+      flex: 1;
+      min-width: 90px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-gray-400);
+      padding: var(--space-2) var(--space-3);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-format:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--color-accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .style-toggle-btn {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-gray-400);
+      width: 40px;
+      height: 36px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .style-toggle-btn:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--color-accent);
+    }
+
+    .style-toggle-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.6);
+      color: var(--color-accent);
+    }
+
+    .text-style-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--color-gray-500);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .field-label {
+      color: var(--color-gray-400);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-2);
+      display: block;
+    }
+
+    .divider {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: var(--space-4) 0;
+    }
+
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .preset-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .preset-item-name {
+      color: var(--color-gray-300);
+      font-size: 0.9rem;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .preset-item-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preset-mini-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-sm);
+      color: var(--color-gray-400);
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all var(--transition-fast);
+    }
+
+    .preset-mini-btn:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--color-accent);
+    }
+
+    .preset-mini-btn.danger:hover {
+      border-color: rgba(248, 113, 113, 0.5);
+      color: #f87171;
+    }
+
+    .conditional {
+      display: none;
+    }
+
+    .conditional.visible {
+      display: block;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    @media (max-width: 480px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .style-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -390,130 +915,234 @@
     </div>
   </header>
 
-  <section class="hero" style="min-height: 20vh; padding-top: 40px; position: relative; overflow: hidden;">
+  <section class="hero qr-hero" style="min-height: auto; padding: 24px 0 8px; position: relative; overflow: hidden;">
     <div class="container" style="position: relative; z-index: 1;">
       <div class="page-hero-content" style="text-align: center;">
-        <h1 class="animate-fade-in-up delay-100">QR Generator</h1>
+        <h1 class="animate-fade-in-up delay-100" style="margin-bottom: 8px;">QR Generator</h1>
         <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
-          Encode any URL or text into a scannable QR code. Customise colours and download as PNG.
+          Encode any URL or text into a scannable QR code. Fully customise style, branding, and download.
         </p>
       </div>
     </div>
   </section>
 
   <!-- App Content -->
-  <section class="section">
-    <div class="container" style="max-width: 820px;">
-      <div class="qr-bento animate-fade-in-up delay-300">
-        <div class="qr-card card-input">
-          <div class="qr-card-label">01 — Input</div>
-          <textarea id="input" class="qr-textarea" placeholder="https://example.com or any text…"
-            spellcheck="false"></textarea>
+  <section class="section" style="padding-top: var(--space-4);">
+    <div class="container" style="max-width: 1180px;">
+      <div class="qr-workspace animate-fade-in-up delay-300">
 
-          <div
-            style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--color-gray-500);">
-            <label class="toggle-wrapper" title="Toggle real-time updates as you type">
-              <div class="toggle-switch">
-                <input type="checkbox" id="liveToggle" checked>
-                <span class="toggle-slider"></span>
-              </div>
-              <span class="toggle-label" id="liveLabel">Live On</span>
-            </label>
-            <span id="char-count">0 chars</span>
-          </div>
-        </div>
+        <!-- LEFT: scrollable controls -->
+        <div class="qr-controls">
 
-        <div class="qr-card card-colours">
-          <div class="qr-card-label">02 — Appearance</div>
-          <div class="colour-row">
-            <label>Foreground</label>
-            <input type="color" id="fgColor" value="#000000">
-          </div>
-          <div class="colour-row">
-            <label>Background</label>
-            <input type="color" id="bgColor" value="#ffffff">
-          </div>
-          <p style="font-size: 0.85rem; color: var(--color-gray-500); margin-top: auto; line-height: 1.5;">
-            High contrast between foreground and background produces the most reliably scannable codes.
-          </p>
-        </div>
-
-        <div class="qr-card card-settings">
-          <div class="qr-card-label">03 — Settings</div>
-
-          <div class="settings-row">
-            <div class="settings-label">
-              <span>Resolution Size</span>
-              <span class="settings-value" id="sizeValue">1024px</span>
-            </div>
-            <input type="range" id="sizeSlider" class="range-slider" min="128" max="1024" step="64" value="1024">
-            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 6px;">Affects downloaded PNG size.
-            </p>
-          </div>
-
-          <div class="settings-row" style="margin-top: var(--space-4);">
-            <div class="settings-label">
-              <span>Quiet Zone (Margin)</span>
-              <span class="settings-value" id="marginValue">4</span>
-            </div>
-            <input type="range" id="marginSlider" class="range-slider" min="0" max="10" step="1" value="4">
-            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 6px;">Empty space padding around the
-              QR code.</p>
-          </div>
-
-          <div class="settings-row" style="margin-top: var(--space-4);">
-            <div class="settings-label">
-              <span>Error Correction</span>
-            </div>
-            <select id="eccLevel" class="select-dropdown">
-              <option value="L">Low (~7% recovery)</option>
-              <option value="M">Medium (~15% recovery)</option>
-              <option value="Q">Quarter (~25% recovery)</option>
-              <option value="H" selected>High (~30% recovery)</option>
-            </select>
-            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 6px;">Higher levels allow adding
-              logos over it.</p>
-          </div>
-        </div>
-
-        <div class="qr-card card-logo" style="display: flex; flex-direction: column;">
-          <div class="qr-card-label">04 — Branding &amp; Text</div>
-          <div style="display: flex; flex-direction: column; gap: var(--space-4); flex-grow: 1;">
-            
-            <!-- Logo Section -->
-            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
-              <label style="color: var(--color-gray-400); font-size: 0.9rem;">Center Logo <span
-                  style="font-size: 0.75rem; float: right;">(Optional)</span></label>
-              <div
-                style="position: relative; flex-grow: 1; min-height: 100px; border: 2px dashed rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2);">
-                <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/svg+xml"
-                  style="position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10;" />
-                <div id="logoPreviewWrapper"
-                  style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,0.4);">
-                  <img id="logoPreview"
-                    style="max-width: 60%; max-height: 60%; object-fit: contain; pointer-events: none;" />
-                  <button id="clearLogoBtn"
-                    style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20; transition: all 0.2s;"><i
-                      class="fas fa-times"></i></button>
+          <!-- Input always visible -->
+          <div class="qr-card card-input">
+            <div class="qr-card-label">01 — Input</div>
+            <textarea id="input" class="qr-textarea" placeholder="https://example.com or any text…"
+              spellcheck="false"></textarea>
+            <div
+              style="margin-top: var(--space-4); display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--color-gray-500);">
+              <label class="toggle-wrapper" title="Toggle real-time updates as you type">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="liveToggle" checked>
+                  <span class="toggle-slider"></span>
                 </div>
-                <div id="logoUploadPrompt"
-                  style="text-align: center; color: var(--color-gray-500); padding: var(--space-4); pointer-events: none;">
-                  <i class="fas fa-image"
-                    style="font-size: 1.5rem; margin-bottom: 8px; color: var(--color-accent);"></i><br>
-                  <span style="font-size: 0.8rem;">Click or drag image</span>
+                <span class="toggle-label" id="liveLabel">Live On</span>
+              </label>
+              <span id="char-count">0 chars</span>
+            </div>
+          </div>
+
+          <!-- Accordion option panels -->
+          <details class="qr-accordion" open>
+            <summary class="qr-accordion-summary">
+              <span>02 — Colours</span>
+              <span class="qr-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="qr-accordion-body accordion-stack">
+              <div>
+                <span class="field-label">Quick Themes</span>
+                <div class="preset-swatches" id="colourThemes"></div>
+              </div>
+
+              <div class="colour-row">
+                <label>Foreground</label>
+                <input type="color" id="fgColor" value="#000000">
+              </div>
+              <div class="colour-row">
+                <label>Background</label>
+                <input type="color" id="bgColor" value="#ffffff">
+              </div>
+
+              <label class="toggle-wrapper">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="transparentBg">
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label">Transparent background</span>
+              </label>
+
+              <label class="toggle-wrapper">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="gradientToggle">
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label">Gradient fill</span>
+              </label>
+
+              <div id="gradientOptions" class="conditional">
+                <div class="settings-row">
+                  <div class="settings-label"><span>Gradient Type</span></div>
+                  <select id="gradientType" class="select-dropdown">
+                    <option value="linear" selected>Linear</option>
+                    <option value="radial">Radial</option>
+                  </select>
+                </div>
+                <div class="colour-row" style="margin-top: var(--space-3);">
+                  <label>Gradient End</label>
+                  <input type="color" id="gradientColor" value="#38bdf8">
                 </div>
               </div>
-              <div class="settings-row" style="margin-top: var(--space-2);">
+
+              <hr class="divider">
+
+              <label class="toggle-wrapper">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="frameToggle">
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label">Outer frame</span>
+              </label>
+
+              <div id="frameOptions" class="conditional">
+                <div class="colour-row" style="margin-top: var(--space-3);">
+                  <label>Frame Colour</label>
+                  <input type="color" id="frameColor" value="#000000">
+                </div>
+                <div class="settings-row" style="margin-top: var(--space-3);">
+                  <div class="settings-label">
+                    <span>Frame Thickness</span>
+                    <span class="settings-value" id="frameThicknessValue">4%</span>
+                  </div>
+                  <input type="range" id="frameThickness" class="range-slider" min="1" max="12" step="1" value="4">
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="qr-accordion">
+            <summary class="qr-accordion-summary">
+              <span>03 — QR Style</span>
+              <span class="qr-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="qr-accordion-body accordion-stack">
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Module Shape</span></div>
+                <div class="style-grid" id="moduleShapeGrid">
+                  <button type="button" class="style-option active" data-value="square">Square</button>
+                  <button type="button" class="style-option" data-value="rounded">Rounded</button>
+                  <button type="button" class="style-option" data-value="dots">Dots</button>
+                  <button type="button" class="style-option" data-value="diamond">Diamond</button>
+                </div>
+                <input type="hidden" id="moduleShape" value="square">
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Finder Eye Style</span></div>
+                <div class="style-grid" id="finderStyleGrid">
+                  <button type="button" class="style-option active" data-value="square">Square</button>
+                  <button type="button" class="style-option" data-value="rounded">Rounded</button>
+                  <button type="button" class="style-option" data-value="circle">Circle</button>
+                </div>
+                <input type="hidden" id="finderStyle" value="square">
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Corner Radius</span>
+                  <span class="settings-value" id="cornerRadiusValue">0%</span>
+                </div>
+                <input type="range" id="cornerRadius" class="range-slider" min="0" max="25" step="1" value="0">
+                <p class="hint">Rounds the overall QR canvas clip.</p>
+              </div>
+            </div>
+          </details>
+
+          <details class="qr-accordion">
+            <summary class="qr-accordion-summary">
+              <span>04 — Settings</span>
+              <span class="qr-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="qr-accordion-body accordion-stack">
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Resolution Size</span>
+                  <span class="settings-value" id="sizeValue">1024px</span>
+                </div>
+                <input type="range" id="sizeSlider" class="range-slider" min="128" max="1024" step="64" value="1024">
+                <p class="hint">Affects downloaded image size.</p>
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Quiet Zone (Margin)</span>
+                  <span class="settings-value" id="marginValue">4</span>
+                </div>
+                <input type="range" id="marginSlider" class="range-slider" min="0" max="10" step="1" value="4">
+                <p class="hint">Empty space padding around the QR code.</p>
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Error Correction</span></div>
+                <select id="eccLevel" class="select-dropdown">
+                  <option value="L">Low (~7% recovery)</option>
+                  <option value="M">Medium (~15% recovery)</option>
+                  <option value="Q">Quarter (~25% recovery)</option>
+                  <option value="H" selected>High (~30% recovery)</option>
+                </select>
+                <p class="hint">Higher levels allow larger logos over it.</p>
+              </div>
+            </div>
+          </details>
+
+          <details class="qr-accordion">
+            <summary class="qr-accordion-summary">
+              <span>05 — Logo</span>
+              <span class="qr-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="qr-accordion-body accordion-stack">
+              <div>
+                <label class="field-label">Center Logo <span style="font-size: 0.75rem; float: right;">(Optional)</span></label>
+                <div
+                  style="position: relative; min-height: 100px; border: 2px dashed rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2);">
+                  <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/svg+xml"
+                    style="position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10;" />
+                  <div id="logoPreviewWrapper"
+                    style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,0.4);">
+                    <img id="logoPreview"
+                      style="max-width: 60%; max-height: 60%; object-fit: contain; pointer-events: none;" />
+                    <button id="clearLogoBtn"
+                      style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20;"><i
+                        class="fas fa-times"></i></button>
+                  </div>
+                  <div id="logoUploadPrompt"
+                    style="text-align: center; color: var(--color-gray-500); padding: var(--space-4); pointer-events: none;">
+                    <i class="fas fa-image"
+                      style="font-size: 1.5rem; margin-bottom: 8px; color: var(--color-accent);"></i><br>
+                    <span style="font-size: 0.8rem;">Click or drag image</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
                 <div class="settings-label">
                   <span>Logo Scale</span>
                   <span class="settings-value" id="logoScaleValue">22%</span>
                 </div>
                 <input type="range" id="logoScaleSlider" class="range-slider" min="10" max="40" step="1" value="22">
               </div>
-              <div
-                style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; flex-wrap: wrap; gap: 8px;">
-                <p style="font-size: 0.75rem; color: var(--color-gray-500); margin: 0; max-width: 65%;">Max scale is based
-                  on Error Correction.</p>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <p class="hint" style="margin: 0; max-width: 60%;">Max scale depends on Error Correction.</p>
                 <label class="toggle-wrapper" title="Apply a circular mask to the logo">
                   <div class="toggle-switch">
                     <input type="checkbox" id="roundedLogoToggle" checked>
@@ -522,85 +1151,275 @@
                   <span class="toggle-label" style="font-size: 0.75rem;">Rounded</span>
                 </label>
               </div>
-            </div>
 
-            <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 0;">
+              <hr class="divider">
 
-            <!-- Text Section -->
-            <div style="display: flex; flex-direction: column; gap: var(--space-2);">
-              <label style="color: var(--color-gray-400); font-size: 0.9rem;">Bottom Text <span style="font-size: 0.75rem; float: right;">(Optional)</span></label>
-              <input type="text" id="labelText" class="qr-textarea" style="height: 40px; padding: 0 var(--space-3);" placeholder="e.g. Scan Me!" />
-              
-              <div class="settings-row" style="margin-top: var(--space-2);">
+              <div class="settings-row" style="margin-bottom: 0;">
                 <div class="settings-label">
-                  <span>Text Font</span>
+                  <span>Logo Opacity</span>
+                  <span class="settings-value" id="logoOpacityValue">100%</span>
                 </div>
-                <select id="textFont" class="select-dropdown">
-                  <option value="Inter, 'Space Grotesk', sans-serif" selected>Inter / Space Grotesk</option>
-                  <option value="Roboto, sans-serif">Roboto</option>
-                  <option value="Arial, sans-serif">Arial</option>
-                  <option value="'Courier New', monospace">Courier New</option>
-                  <option value="Georgia, serif">Georgia</option>
+                <input type="range" id="logoOpacity" class="range-slider" min="20" max="100" step="5" value="100">
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Border / Ring</span>
+                  <span class="settings-value" id="logoBorderValue">0%</span>
+                </div>
+                <input type="range" id="logoBorder" class="range-slider" min="0" max="15" step="1" value="0">
+              </div>
+
+              <div class="colour-row">
+                <label>Border Colour</label>
+                <input type="color" id="logoBorderColor" value="#ffffff">
+              </div>
+
+              <div class="two-col">
+                <div class="settings-row" style="margin-bottom: 0;">
+                  <div class="settings-label">
+                    <span>Offset X</span>
+                    <span class="settings-value" id="logoOffsetXValue">0%</span>
+                  </div>
+                  <input type="range" id="logoOffsetX" class="range-slider" min="-25" max="25" step="1" value="0">
+                </div>
+                <div class="settings-row" style="margin-bottom: 0;">
+                  <div class="settings-label">
+                    <span>Offset Y</span>
+                    <span class="settings-value" id="logoOffsetYValue">0%</span>
+                  </div>
+                  <input type="range" id="logoOffsetY" class="range-slider" min="-25" max="25" step="1" value="0">
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="qr-accordion">
+            <summary class="qr-accordion-summary">
+              <span>06 — Text</span>
+              <span class="qr-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="qr-accordion-body accordion-stack">
+              <div>
+                <label class="field-label">Label Text <span
+                    style="font-size: 0.75rem; float: right;">(Optional)</span></label>
+                <textarea id="labelText" class="qr-textarea" style="height: 72px; padding: var(--space-3);"
+                  placeholder="e.g. Scan Me!&#10;Use Enter for a second line"></textarea>
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Placement</span></div>
+                <select id="textPlacement" class="select-dropdown">
+                  <option value="bottom" selected>Bottom</option>
+                  <option value="top">Top</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                  <option value="overlay">Overlay (on QR)</option>
                 </select>
               </div>
 
-              <div class="settings-row" style="margin-top: var(--space-2);">
-                <div class="settings-label">
-                  <span>Text Size</span>
-                  <span class="settings-value" id="textSizeValue">5%</span>
-                </div>
-                <input type="range" id="textSizeSlider" class="range-slider" min="2" max="15" step="1" value="5">
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Alignment</span></div>
+                <select id="textAlign" class="select-dropdown">
+                  <option value="center" selected>Center</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
               </div>
 
-              <div class="colour-row" style="padding: var(--space-2) var(--space-3); margin-top: 0;">
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Font</span></div>
+                <select id="textFont" class="select-dropdown">
+                  <option value="Inter, sans-serif" selected>Inter</option>
+                  <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+                  <option value="Roboto, sans-serif">Roboto</option>
+                  <option value="Montserrat, sans-serif">Montserrat</option>
+                  <option value="Poppins, sans-serif">Poppins</option>
+                  <option value="Raleway, sans-serif">Raleway</option>
+                  <option value="Oswald, sans-serif">Oswald</option>
+                  <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+                  <option value="'Playfair Display', serif">Playfair Display</option>
+                  <option value="Lora, serif">Lora</option>
+                  <option value="Merriweather, serif">Merriweather</option>
+                  <option value="Georgia, serif">Georgia</option>
+                  <option value="'Fira Code', monospace">Fira Code</option>
+                  <option value="'Courier New', monospace">Courier New</option>
+                  <option value="Arial, sans-serif">Arial</option>
+                </select>
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Font Size</span>
+                  <span class="settings-value" id="textSizeValue">5%</span>
+                </div>
+                <input type="range" id="textSizeSlider" class="range-slider" min="2" max="18" step="1" value="5">
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label"><span>Style</span></div>
+                <div class="text-style-row">
+                  <button type="button" class="style-toggle-btn" id="textBoldBtn" title="Bold"><i
+                      class="fas fa-bold"></i></button>
+                  <button type="button" class="style-toggle-btn" id="textItalicBtn" title="Italic"><i
+                      class="fas fa-italic"></i></button>
+                  <button type="button" class="style-toggle-btn" id="textUnderlineBtn" title="Underline"><i
+                      class="fas fa-underline"></i></button>
+                </div>
+                <input type="hidden" id="textBold" value="0">
+                <input type="hidden" id="textItalic" value="0">
+                <input type="hidden" id="textUnderline" value="0">
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Letter Spacing</span>
+                  <span class="settings-value" id="letterSpacingValue">0</span>
+                </div>
+                <input type="range" id="letterSpacing" class="range-slider" min="-2" max="20" step="1" value="0">
+              </div>
+
+              <div class="settings-row" style="margin-bottom: 0;">
+                <div class="settings-label">
+                  <span>Text Opacity</span>
+                  <span class="settings-value" id="textOpacityValue">100%</span>
+                </div>
+                <input type="range" id="textOpacity" class="range-slider" min="20" max="100" step="5" value="100">
+              </div>
+
+              <div class="colour-row">
                 <label>Text Colour</label>
                 <input type="color" id="textColor" value="#000000">
               </div>
-            </div>
 
-          </div>
+              <hr class="divider">
+
+              <label class="toggle-wrapper">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="textPillToggle">
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label">Background pill</span>
+              </label>
+
+              <div id="textPillOptions" class="conditional">
+                <div class="colour-row" style="margin-top: var(--space-3);">
+                  <label>Pill Colour</label>
+                  <input type="color" id="textPillColor" value="#ffffff">
+                </div>
+                <div class="settings-row" style="margin-top: var(--space-3); margin-bottom: 0;">
+                  <div class="settings-label">
+                    <span>Pill Padding</span>
+                    <span class="settings-value" id="textPillPadValue">8%</span>
+                  </div>
+                  <input type="range" id="textPillPad" class="range-slider" min="2" max="20" step="1" value="8">
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="qr-accordion">
+            <summary class="qr-accordion-summary">
+              <span>07 — Style Presets</span>
+              <span class="qr-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
+            </summary>
+            <div class="qr-accordion-body">
+              <div class="two-col">
+                <div>
+                  <label class="field-label">Save Current Style</label>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="text" id="presetName" class="qr-text-input" placeholder="Preset name…" style="flex: 1;">
+                    <button type="button" class="btn-action" style="flex: 0; min-width: auto; padding: 0 16px;"
+                      onclick="savePreset()"><i class="fas fa-save"></i></button>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label">Saved Presets</label>
+                  <div id="presetList" class="preset-list">
+                    <p class="hint" style="margin: 0;">No saved presets yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
         </div>
 
-        <div class="qr-card card-qr">
-          <div class="qr-card-label">05 — Preview</div>
-          <div id="qrcode" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-            <div class="qr-placeholder" id="placeholder" style="text-align: center;">
-              <div class="orbit-wrap"></div>
-              <p style="font-size: 0.9rem; color: var(--color-gray-500);">Enter text above<br>to generate your QR code
+        <!-- RIGHT: sticky live preview -->
+        <aside class="qr-preview-rail" id="previewRail">
+          <div class="qr-preview-panel">
+            <div class="qr-preview-stage">
+              <div class="qr-card-label" style="align-self: flex-start; width: 100%;">Live Preview</div>
+              <div class="qr-preview-frame">
+                <div id="qrcode">
+                  <div class="qr-placeholder" id="placeholder" style="text-align: center;">
+                    <div class="orbit-wrap"></div>
+                    <p style="font-size: 0.9rem; color: var(--color-gray-500);">Enter text to generate<br>your QR code</p>
+                  </div>
+                </div>
+              </div>
+              <p id="qrEncoded"
+                style="display:none; margin-top: 12px; font-size: 0.8rem; color: var(--color-gray-500); word-break: break-all; text-align: center;">
               </p>
+              <button id="manualGenerateBtn" class="qr-generate-btn" style="display: none;"
+                onclick="forceGenerate()">Generate QR Code →</button>
+            </div>
+
+            <div class="card-actions" id="actionsCard">
+              <div class="qr-actions-meta" style="width: 100%;">
+                <label class="field-label">Filename</label>
+                <input type="text" id="downloadFilename" class="qr-text-input" value="qr-code" placeholder="qr-code">
+              </div>
+              <div class="format-btn-row">
+                <button class="btn-format" onclick="downloadPNG()" title="Download PNG"><i class="fas fa-image"></i>
+                  <span class="btn-format-label">PNG</span></button>
+                <button class="btn-format" onclick="downloadJPEG()" title="Download JPEG"><i
+                    class="fas fa-file-image"></i> <span class="btn-format-label">JPEG</span></button>
+                <button class="btn-format" onclick="downloadWebP()" title="Download WebP"><i class="fas fa-file"></i>
+                  <span class="btn-format-label">WebP</span></button>
+                <button class="btn-format" onclick="downloadSVG()" title="Download SVG"><i
+                    class="fas fa-bezier-curve"></i> <span class="btn-format-label">SVG</span></button>
+                <button class="btn-format" onclick="copyImage()" title="Copy image"><i class="fas fa-clipboard"></i>
+                  <span class="btn-format-label">Copy</span></button>
+                <button class="btn-format" id="copyBtn" onclick="copyText()" title="Copy text"><i
+                    class="far fa-copy"></i> <span class="btn-format-label">Text</span></button>
+              </div>
+              <span id="status" class="qr-actions-meta"
+                style="font-size: 0.8rem; color: var(--color-gray-500); text-align: center;"></span>
             </div>
           </div>
-          <p id="qrEncoded"
-            style="display:none; margin-top: 16px; font-size: 0.8rem; color: var(--color-gray-500); word-break: break-all; text-align: center;">
-          </p>
-          <button id="manualGenerateBtn" class="qr-generate-btn" style="display: none; margin-top: var(--space-4);"
-            onclick="forceGenerate()">Generate QR Code →</button>
-        </div>
+        </aside>
 
-        <div class="qr-card card-actions" id="actionsCard" style="display:none; grid-column: 1 / -1;">
-          <button class="btn-action" onclick="downloadPNG()"><i class="fas fa-image" style="margin-right: 6px;"></i>
-            Download PNG</button>
-          <button class="btn-action" onclick="downloadSVG()"><i class="fas fa-bezier-curve"
-              style="margin-right: 6px;"></i> Download SVG</button>
-          <button class="btn-action" id="copyBtn" onclick="copyText()"><i class="far fa-copy"
-              style="margin-right: 6px;"></i> Copy Text</button>
-          <span id="status"
-            style="font-size: 0.8rem; color: var(--color-gray-500); flex-basis: 100%; text-align: center;"></span>
-        </div>
       </div>
     </div>
   </section>
+
+  <!-- Mobile floating preview dock (shown when full preview scrolls off-screen) -->
+  <div class="qr-mobile-dock" id="mobileDock" aria-hidden="true">
+    <img class="qr-mobile-dock-thumb" id="mobileDockImg" alt="QR preview">
+    <div class="qr-mobile-dock-actions">
+      <button class="btn-format" onclick="downloadPNG()" title="Download PNG"><i class="fas fa-image"></i><span
+          class="btn-format-label">PNG</span></button>
+      <button class="btn-format" onclick="downloadJPEG()" title="Download JPEG"><i class="fas fa-file-image"></i><span
+          class="btn-format-label">JPEG</span></button>
+      <button class="btn-format" onclick="downloadWebP()" title="Download WebP"><i class="fas fa-file"></i><span
+          class="btn-format-label">WebP</span></button>
+      <button class="btn-format" onclick="downloadSVG()" title="Download SVG"><i class="fas fa-bezier-curve"></i><span
+          class="btn-format-label">SVG</span></button>
+      <button class="btn-format" onclick="copyImage()" title="Copy image"><i class="fas fa-clipboard"></i><span
+          class="btn-format-label">Copy</span></button>
+      <button class="btn-format" onclick="copyText()" title="Copy text"><i class="far fa-copy"></i><span
+          class="btn-format-label">Text</span></button>
+    </div>
+  </div>
 
   <!-- Footer -->
   <div id="footer-placeholder"></div>
 
   <!-- JavaScript -->
   <script>
-    // QR logic
     let lastText = '';
     let debounceTimer;
-
-    // Quick hack to expose qrcode.js internal model logic for our custom canvas drawing and SVG
     let lastQRCodeInstance = null;
     const OriginalQRCode = window.QRCode;
     window.QRCode = function (el, vOption) {
@@ -609,7 +1428,29 @@
     };
     Object.assign(window.QRCode, OriginalQRCode);
 
-    // UI Elements
+    const PRESET_KEY = 'qr-style-presets-v1';
+    const STYLE_FIELDS = [
+      'fgColor', 'bgColor', 'transparentBg', 'gradientToggle', 'gradientType', 'gradientColor',
+      'frameToggle', 'frameColor', 'frameThickness', 'moduleShape', 'finderStyle', 'cornerRadius',
+      'sizeSlider', 'marginSlider', 'eccLevel', 'logoScaleSlider', 'roundedLogoToggle',
+      'logoOpacity', 'logoBorder', 'logoBorderColor', 'logoOffsetX', 'logoOffsetY',
+      'labelText', 'textPlacement', 'textAlign', 'textFont', 'textSizeSlider',
+      'textBold', 'textItalic', 'textUnderline', 'letterSpacing', 'textOpacity',
+      'textColor', 'textPillToggle', 'textPillColor', 'textPillPad'
+    ];
+
+    const COLOUR_THEMES = [
+      { name: 'Classic', fg: '#000000', bg: '#ffffff' },
+      { name: 'Inverted', fg: '#ffffff', bg: '#000000' },
+      { name: 'Midnight', fg: '#e2e8f0', bg: '#0f172a' },
+      { name: 'Ocean', fg: '#0c4a6e', bg: '#e0f2fe' },
+      { name: 'Forest', fg: '#14532d', bg: '#ecfdf5' },
+      { name: 'Coral', fg: '#7f1d1d', bg: '#fff1f2' },
+      { name: 'Slate', fg: '#1e293b', bg: '#f1f5f9' },
+      { name: 'Amber', fg: '#78350f', bg: '#fffbeb' }
+    ];
+
+    // Elements
     const inputEl = document.getElementById('input');
     const fgColorEl = document.getElementById('fgColor');
     const bgColorEl = document.getElementById('bgColor');
@@ -623,15 +1464,6 @@
     const liveLabelEl = document.getElementById('liveLabel');
     const manualGenerateBtn = document.getElementById('manualGenerateBtn');
 
-    // Toggle handling
-    liveToggleEl.addEventListener('change', (e) => {
-      const isLive = e.target.checked;
-      liveLabelEl.textContent = isLive ? 'Live On' : 'Live Off';
-      manualGenerateBtn.style.display = isLive ? 'none' : 'block';
-      if (isLive) debouncedGenerate();
-    });
-
-    // Logo Elements
     const logoUpload = document.getElementById('logoUpload');
     const logoPreviewWrapper = document.getElementById('logoPreviewWrapper');
     const logoPreview = document.getElementById('logoPreview');
@@ -640,16 +1472,81 @@
     const roundedLogoToggle = document.getElementById('roundedLogoToggle');
     const logoScaleSlider = document.getElementById('logoScaleSlider');
     const logoScaleValue = document.getElementById('logoScaleValue');
-    
-    const labelTextEl = document.getElementById('labelText');
-    const textSizeSliderEl = document.getElementById('textSizeSlider');
-    const textSizeValueEl = document.getElementById('textSizeValue');
-    const textColorEl = document.getElementById('textColor');
-    const textFontEl = document.getElementById('textFont');
 
     let logoImageObj = null;
     let logoDataUrl = null;
 
+    // Colour themes
+    const themeContainer = document.getElementById('colourThemes');
+    COLOUR_THEMES.forEach(theme => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'preset-swatch';
+      btn.title = theme.name;
+      btn.style.setProperty('--fg', theme.fg);
+      btn.style.setProperty('--bg', theme.bg);
+      btn.style.background = `linear-gradient(135deg, ${theme.fg} 50%, ${theme.bg} 50%)`;
+      btn.addEventListener('click', () => {
+        fgColorEl.value = theme.fg;
+        bgColorEl.value = theme.bg;
+        document.getElementById('transparentBg').checked = false;
+        debouncedGenerate();
+      });
+      themeContainer.appendChild(btn);
+    });
+
+    // Style option grids
+    function bindStyleGrid(gridId, hiddenId) {
+      const grid = document.getElementById(gridId);
+      const hidden = document.getElementById(hiddenId);
+      grid.querySelectorAll('.style-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+          grid.querySelectorAll('.style-option').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          hidden.value = btn.dataset.value;
+          debouncedGenerate();
+        });
+      });
+    }
+    bindStyleGrid('moduleShapeGrid', 'moduleShape');
+    bindStyleGrid('finderStyleGrid', 'finderStyle');
+
+    // Text style toggles
+    function bindToggleBtn(btnId, hiddenId) {
+      const btn = document.getElementById(btnId);
+      const hidden = document.getElementById(hiddenId);
+      btn.addEventListener('click', () => {
+        const on = hidden.value !== '1';
+        hidden.value = on ? '1' : '0';
+        btn.classList.toggle('active', on);
+        debouncedGenerate();
+      });
+    }
+    bindToggleBtn('textBoldBtn', 'textBold');
+    bindToggleBtn('textItalicBtn', 'textItalic');
+    bindToggleBtn('textUnderlineBtn', 'textUnderline');
+
+    // Conditional sections
+    function bindConditional(toggleId, optionsId) {
+      const toggle = document.getElementById(toggleId);
+      const opts = document.getElementById(optionsId);
+      const sync = () => opts.classList.toggle('visible', toggle.checked);
+      toggle.addEventListener('change', () => { sync(); debouncedGenerate(); });
+      sync();
+    }
+    bindConditional('gradientToggle', 'gradientOptions');
+    bindConditional('frameToggle', 'frameOptions');
+    bindConditional('textPillToggle', 'textPillOptions');
+
+    // Live toggle
+    liveToggleEl.addEventListener('change', (e) => {
+      const isLive = e.target.checked;
+      liveLabelEl.textContent = isLive ? 'Live On' : 'Live Off';
+      manualGenerateBtn.style.display = isLive ? 'none' : 'block';
+      if (isLive) debouncedGenerate();
+    });
+
+    // Logo upload
     logoUpload.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -659,7 +1556,6 @@
           logoPreview.src = logoDataUrl;
           logoUploadPrompt.style.display = 'none';
           logoPreviewWrapper.style.display = 'flex';
-
           logoImageObj = new Image();
           logoImageObj.onload = debouncedGenerate;
           logoImageObj.src = logoDataUrl;
@@ -679,47 +1575,51 @@
       debouncedGenerate();
     });
 
-    roundedLogoToggle.addEventListener('change', debouncedGenerate);
+    // Value display helpers
+    function bindSlider(id, valueId, fmt) {
+      const el = document.getElementById(id);
+      const val = document.getElementById(valueId);
+      el.addEventListener('input', () => {
+        val.textContent = fmt(el.value);
+        debouncedGenerate();
+      });
+    }
 
-    // Update size value display
-    sizeSliderEl.addEventListener('input', (e) => {
-      sizeValueEl.textContent = `${e.target.value}px`;
-      debouncedGenerate();
+    bindSlider('sizeSlider', 'sizeValue', v => `${v}px`);
+    bindSlider('marginSlider', 'marginValue', v => v);
+    bindSlider('cornerRadius', 'cornerRadiusValue', v => `${v}%`);
+    bindSlider('frameThickness', 'frameThicknessValue', v => `${v}%`);
+    bindSlider('logoOpacity', 'logoOpacityValue', v => `${v}%`);
+    bindSlider('logoBorder', 'logoBorderValue', v => `${v}%`);
+    bindSlider('logoOffsetX', 'logoOffsetXValue', v => `${v}%`);
+    bindSlider('logoOffsetY', 'logoOffsetYValue', v => `${v}%`);
+    bindSlider('textSizeSlider', 'textSizeValue', v => `${v}%`);
+    bindSlider('letterSpacing', 'letterSpacingValue', v => v);
+    bindSlider('textOpacity', 'textOpacityValue', v => `${v}%`);
+    bindSlider('textPillPad', 'textPillPadValue', v => `${v}%`);
+
+    logoScaleSlider.addEventListener('input', debouncedGenerate);
+
+    // Generic regenerate listeners
+    [
+      'fgColor', 'bgColor', 'transparentBg', 'gradientType', 'gradientColor',
+      'frameColor', 'eccLevel', 'roundedLogoToggle', 'logoBorderColor',
+      'labelText', 'textPlacement', 'textAlign', 'textFont', 'textColor', 'textPillColor'
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const evt = (el.type === 'checkbox' || el.tagName === 'SELECT') ? 'change' : 'input';
+      el.addEventListener(evt, debouncedGenerate);
     });
 
-    // Update margin value display
-    marginSliderEl.addEventListener('input', (e) => {
-      marginValueEl.textContent = e.target.value;
-      debouncedGenerate();
-    });
-
-    // Event listeners for live generation
     inputEl.addEventListener('input', () => {
       charCountEl.textContent = `${inputEl.value.length} chars`;
       debouncedGenerate();
     });
 
-    fgColorEl.addEventListener('input', debouncedGenerate);
-    bgColorEl.addEventListener('input', debouncedGenerate);
-    eccLevelEl.addEventListener('change', debouncedGenerate);
-    roundedLogoToggle.addEventListener('change', debouncedGenerate);
-
-    logoScaleSlider.addEventListener('input', (e) => {
-      debouncedGenerate();
-    });
-
-    labelTextEl.addEventListener('input', debouncedGenerate);
-    textSizeSliderEl.addEventListener('input', (e) => {
-      textSizeValueEl.textContent = `${e.target.value}%`;
-      debouncedGenerate();
-    });
-    textColorEl.addEventListener('input', debouncedGenerate);
-    textFontEl.addEventListener('change', debouncedGenerate);
-
     function debouncedGenerate() {
       if (!liveToggleEl.checked) return;
       clearTimeout(debounceTimer);
-      // Fast updates for colors/settings if text is small, slower if typing
       debounceTimer = setTimeout(generate, 150);
     }
 
@@ -727,52 +1627,325 @@
       generate();
     }
 
+    function getEcc() {
+      const map = {
+        'L': QRCode.CorrectLevel.L,
+        'M': QRCode.CorrectLevel.M,
+        'Q': QRCode.CorrectLevel.Q,
+        'H': QRCode.CorrectLevel.H
+      };
+      return map[eccLevelEl.value] || QRCode.CorrectLevel.H;
+    }
+
+    function isInFinder(row, col, moduleCount) {
+      const inTL = row < 7 && col < 7;
+      const inTR = row < 7 && col >= moduleCount - 7;
+      const inBL = row >= moduleCount - 7 && col < 7;
+      return inTL || inTR || inBL;
+    }
+
+    function createFgStyle(ctx, x0, y0, w, h) {
+      const useGradient = document.getElementById('gradientToggle').checked;
+      if (!useGradient) return fgColorEl.value;
+
+      const type = document.getElementById('gradientType').value;
+      const c1 = fgColorEl.value;
+      const c2 = document.getElementById('gradientColor').value;
+
+      if (type === 'radial') {
+        const g = ctx.createRadialGradient(x0 + w / 2, y0 + h / 2, 0, x0 + w / 2, y0 + h / 2, Math.max(w, h) / 2);
+        g.addColorStop(0, c1);
+        g.addColorStop(1, c2);
+        return g;
+      }
+      const g = ctx.createLinearGradient(x0, y0, x0 + w, y0 + h);
+      g.addColorStop(0, c1);
+      g.addColorStop(1, c2);
+      return g;
+    }
+
+    function drawModule(ctx, x, y, size, shape) {
+      const s = size;
+      if (shape === 'dots') {
+        ctx.beginPath();
+        ctx.arc(x + s / 2, y + s / 2, s * 0.42, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'diamond') {
+        ctx.beginPath();
+        ctx.moveTo(x + s / 2, y);
+        ctx.lineTo(x + s, y + s / 2);
+        ctx.lineTo(x + s / 2, y + s);
+        ctx.lineTo(x, y + s / 2);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'rounded') {
+        const r = s * 0.28;
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + s, y, x + s, y + s, r);
+        ctx.arcTo(x + s, y + s, x, y + s, r);
+        ctx.arcTo(x, y + s, x, y, r);
+        ctx.arcTo(x, y, x + s, y, r);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.fillRect(x, y, Math.ceil(s), Math.ceil(s));
+      }
+    }
+
+    function drawFinderEye(ctx, ox, oy, moduleSize, style, fillStyle) {
+      const size = moduleSize * 7;
+      const outer = moduleSize;
+      const innerPad = moduleSize * 2;
+      const core = moduleSize * 3;
+      const transparent = document.getElementById('transparentBg').checked;
+      const bg = bgColorEl.value;
+
+      ctx.fillStyle = fillStyle;
+
+      if (style === 'circle') {
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(ox + size / 2, oy + size / 2, size / 2, 0, Math.PI * 2);
+        ctx.arc(ox + size / 2, oy + size / 2, size / 2 - outer, 0, Math.PI * 2, true);
+        ctx.fill('evenodd');
+        if (!transparent) {
+          ctx.fillStyle = bg;
+          ctx.beginPath();
+          ctx.arc(ox + size / 2, oy + size / 2, size / 2 - outer, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = fillStyle;
+        ctx.beginPath();
+        ctx.arc(ox + size / 2, oy + size / 2, core / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (style === 'rounded') {
+        const rOuter = moduleSize * 1.2;
+        const rInner = moduleSize * 0.8;
+        roundRectPath(ctx, ox, oy, size, size, rOuter);
+        ctx.fill();
+        if (transparent) {
+          ctx.clearRect(ox + outer, oy + outer, size - outer * 2, size - outer * 2);
+        } else {
+          ctx.fillStyle = bg;
+          roundRectPath(ctx, ox + outer, oy + outer, size - outer * 2, size - outer * 2, rInner);
+          ctx.fill();
+        }
+        ctx.fillStyle = fillStyle;
+        roundRectPath(ctx, ox + innerPad, oy + innerPad, core, core, moduleSize * 0.5);
+        ctx.fill();
+      } else {
+        ctx.fillRect(ox, oy, size, size);
+        if (transparent) {
+          ctx.clearRect(ox + outer, oy + outer, size - outer * 2, size - outer * 2);
+        } else {
+          ctx.fillStyle = bg;
+          ctx.fillRect(ox + outer, oy + outer, size - outer * 2, size - outer * 2);
+        }
+        ctx.fillStyle = fillStyle;
+        ctx.fillRect(ox + innerPad, oy + innerPad, core, core);
+      }
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + w, y, x + w, y + h, rr);
+      ctx.arcTo(x + w, y + h, x, y + h, rr);
+      ctx.arcTo(x, y + h, x, y, rr);
+      ctx.arcTo(x, y, x + w, y, rr);
+      ctx.closePath();
+    }
+
+    function buildFontString(sizePx) {
+      const italic = document.getElementById('textItalic').value === '1' ? 'italic ' : '';
+      const bold = document.getElementById('textBold').value === '1' ? '700 ' : '600 ';
+      const family = document.getElementById('textFont').value;
+      return `${italic}${bold}${sizePx}px ${family}`;
+    }
+
+    function measureMultiline(ctx, lines, letterSpacing) {
+      let maxW = 0;
+      lines.forEach(line => {
+        let w;
+        if (letterSpacing !== 0 && line.length > 1) {
+          w = 0;
+          for (let i = 0; i < line.length; i++) {
+            w += ctx.measureText(line[i]).width;
+            if (i < line.length - 1) w += letterSpacing;
+          }
+        } else {
+          w = ctx.measureText(line).width;
+        }
+        maxW = Math.max(maxW, w);
+      });
+      return maxW;
+    }
+
+    function drawTextLine(ctx, text, x, y, align, letterSpacing) {
+      if (letterSpacing === 0) {
+        ctx.textAlign = align;
+        ctx.fillText(text, x, y);
+        return ctx.measureText(text).width;
+      }
+
+      // Manual letter-spacing draw
+      let total = 0;
+      for (let i = 0; i < text.length; i++) {
+        total += ctx.measureText(text[i]).width;
+        if (i < text.length - 1) total += letterSpacing;
+      }
+
+      let startX = x;
+      if (align === 'center') startX = x - total / 2;
+      else if (align === 'right') startX = x - total;
+
+      ctx.textAlign = 'left';
+      let cx = startX;
+      for (let i = 0; i < text.length; i++) {
+        ctx.fillText(text[i], cx, y);
+        cx += ctx.measureText(text[i]).width + letterSpacing;
+      }
+      return total;
+    }
+
+    function drawLabelText(ctx, labelText, qrX, qrY, qrSize, canvasW, canvasH, placement) {
+      const lines = labelText.split('\n').map(l => l.trimEnd()).filter((l, i, arr) => l.length || arr.length === 1);
+      if (!lines.length || (lines.length === 1 && !lines[0])) return;
+
+      const sizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10) / 100;
+      let fontSize = Math.floor(qrSize * sizeRatio);
+      const align = document.getElementById('textAlign').value;
+      const letterSpacing = parseInt(document.getElementById('letterSpacing').value, 10);
+      const opacity = parseInt(document.getElementById('textOpacity').value, 10) / 100;
+      const textColor = document.getElementById('textColor').value;
+      const underline = document.getElementById('textUnderline').value === '1';
+      const usePill = document.getElementById('textPillToggle').checked;
+      const pillColor = document.getElementById('textPillColor').value;
+      const pillPadRatio = parseInt(document.getElementById('textPillPad').value, 10) / 100;
+
+      ctx.font = buildFontString(fontSize);
+      const maxBand = (placement === 'left' || placement === 'right')
+        ? (canvasW - qrSize) * 0.9
+        : qrSize * 0.9;
+
+      let metricsW = measureMultiline(ctx, lines, letterSpacing);
+      if (metricsW > maxBand && metricsW > 0) {
+        fontSize = Math.floor(fontSize * (maxBand / metricsW));
+        ctx.font = buildFontString(fontSize);
+        metricsW = measureMultiline(ctx, lines, letterSpacing);
+      }
+
+      const lineHeight = fontSize * 1.25;
+      const blockH = lineHeight * lines.length;
+      const pad = fontSize * pillPadRatio;
+
+      let blockX, blockY, textAreaW;
+
+      if (placement === 'bottom') {
+        textAreaW = qrSize;
+        blockX = qrX;
+        blockY = qrY + qrSize + (canvasH - qrY - qrSize - blockH) / 2;
+      } else if (placement === 'top') {
+        textAreaW = qrSize;
+        blockX = qrX;
+        blockY = (qrY - blockH) / 2;
+      } else if (placement === 'left') {
+        textAreaW = qrX;
+        blockX = 0;
+        blockY = qrY + (qrSize - blockH) / 2;
+      } else if (placement === 'right') {
+        textAreaW = canvasW - (qrX + qrSize);
+        blockX = qrX + qrSize;
+        blockY = qrY + (qrSize - blockH) / 2;
+      } else {
+        // overlay
+        textAreaW = qrSize;
+        blockX = qrX;
+        blockY = qrY + (qrSize - blockH) / 2;
+      }
+
+      // Anchor X based on alignment within band
+      let anchorX;
+      if (align === 'left') anchorX = blockX + pad + fontSize * 0.2;
+      else if (align === 'right') anchorX = blockX + textAreaW - pad - fontSize * 0.2;
+      else anchorX = blockX + textAreaW / 2;
+
+      ctx.save();
+      ctx.globalAlpha = opacity;
+
+      if (usePill) {
+        const pillW = metricsW + pad * 2;
+        const pillH = blockH + pad * 2;
+        let pillX;
+        if (align === 'left') pillX = anchorX - fontSize * 0.1;
+        else if (align === 'right') pillX = anchorX - pillW + fontSize * 0.1;
+        else pillX = anchorX - pillW / 2;
+        const pillY = blockY - pad;
+        ctx.fillStyle = pillColor;
+        roundRectPath(ctx, pillX, pillY, pillW, pillH, fontSize * 0.35);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = textColor;
+      ctx.textBaseline = 'middle';
+      ctx.font = buildFontString(fontSize);
+
+      lines.forEach((line, i) => {
+        const y = blockY + lineHeight * i + lineHeight / 2;
+        const w = drawTextLine(ctx, line, anchorX, y, align, letterSpacing);
+        if (underline && line.length) {
+          let ux;
+          if (align === 'left') ux = anchorX;
+          else if (align === 'right') ux = anchorX - w;
+          else ux = anchorX - w / 2;
+          ctx.fillRect(ux, y + fontSize * 0.4, w, Math.max(1, fontSize * 0.06));
+        }
+      });
+
+      ctx.restore();
+    }
+
     function generate() {
       const text = inputEl.value.trim();
-
       const container = document.getElementById('qrcode');
 
       if (!text) {
         container.innerHTML = `
           <div class="qr-placeholder" id="placeholder" style="text-align: center;">
             <div class="orbit-wrap"></div>
-            <p style="font-size: 0.9rem; color: var(--color-gray-500);">Enter text above<br>to generate your QR code</p>
+            <p style="font-size: 0.9rem; color: var(--color-gray-500);">Enter text to generate<br>your QR code</p>
           </div>
         `;
         document.getElementById('qrEncoded').style.display = 'none';
-        document.getElementById('actionsCard').style.display = 'none';
+        document.getElementById('actionsCard').classList.remove('is-visible');
+        syncMobileDock(null);
         return;
       }
 
-      const fg = fgColorEl.value;
-      const bg = bgColorEl.value;
       const size = parseInt(sizeSliderEl.value, 10);
-
-      // Map dropdown value to QRCode enum
-      const eccMap = {
-        'L': QRCode.CorrectLevel.L,
-        'M': QRCode.CorrectLevel.M,
-        'Q': QRCode.CorrectLevel.Q,
-        'H': QRCode.CorrectLevel.H
-      };
-      const ecc = eccMap[eccLevelEl.value] || QRCode.CorrectLevel.H;
-
-      // Calculate effective pixel dimensions handling quiet zone scaling natively is difficult with pure qrcode.js.
-      // Easiest approach is generating it without canvas via the hacked model and drawing manually, but we can do a canvas trick:
-      // We'll generate an internal canvas, then draw it centered onto a larger canvas.
+      const ecc = getEcc();
+      const transparent = document.getElementById('transparentBg').checked;
+      const bg = bgColorEl.value;
+      const moduleShape = document.getElementById('moduleShape').value;
+      const finderStyle = document.getElementById('finderStyle').value;
+      const cornerRadiusPct = parseInt(document.getElementById('cornerRadius').value, 10);
+      const useFrame = document.getElementById('frameToggle').checked;
+      const frameColor = document.getElementById('frameColor').value;
+      const frameThicknessPct = parseInt(document.getElementById('frameThickness').value, 10) / 100;
 
       container.innerHTML = '';
       lastText = text;
 
-      // Internal model instantiation for data tracking via hijacked instance
       const tempDiv = document.createElement('div');
       new QRCode(tempDiv, { text: text, correctLevel: ecc });
       const qrcodeModel = lastQRCodeInstance._oQRCode;
-
       const moduleCount = qrcodeModel.getModuleCount();
       const paddingModules = parseInt(marginSliderEl.value, 10);
       const totalModules = moduleCount + (paddingModules * 2);
 
+      // Logo scale max
       const isRounded = roundedLogoToggle.checked;
       let maxFinderScale = 40;
       if (isRounded) {
@@ -781,146 +1954,204 @@
         const maxScaleRatio = ((distToFinder / moduleCount) - 0.02) * 2;
         maxFinderScale = Math.floor(maxScaleRatio * 100);
       } else {
-        const maxScaleRatio = 0.96 - (17 / moduleCount);
-        maxFinderScale = Math.floor(maxScaleRatio * 100);
+        maxFinderScale = Math.floor((0.96 - (17 / moduleCount)) * 100);
       }
-
       let maxEccScale = 40;
       if (ecc === QRCode.CorrectLevel.L) maxEccScale = 15;
       else if (ecc === QRCode.CorrectLevel.M) maxEccScale = 22;
       else if (ecc === QRCode.CorrectLevel.Q) maxEccScale = 30;
-
       const absoluteMaxScale = Math.max(10, Math.min(maxEccScale, maxFinderScale));
       logoScaleSlider.max = absoluteMaxScale;
-
       let sliderVal = parseInt(logoScaleSlider.value, 10);
       if (sliderVal > absoluteMaxScale) {
         sliderVal = absoluteMaxScale;
         logoScaleSlider.value = absoluteMaxScale;
       }
       logoScaleValue.textContent = `${sliderVal}%`;
-
       const logoScaleRatio = sliderVal / 100;
 
-      // Calculate true pixel scale
       const pixelPerModule = size / totalModules;
       const innerSize = Math.floor(pixelPerModule * moduleCount);
-      const trueSize = Math.floor(pixelPerModule * totalModules); // May be slightly off from exact 'size' due to flooring
+      const qrDrawSize = size;
 
-      const labelText = document.getElementById('labelText').value.trim();
-      const textSizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10);
-      const textColor = document.getElementById('textColor').value;
-      const textFont = document.getElementById('textFont').value;
+      const labelText = document.getElementById('labelText').value;
+      const placement = document.getElementById('textPlacement').value;
+      const hasText = labelText.trim().length > 0;
 
-      let textHeightAdd = 0;
-      let fontSize = 0;
-      if (labelText) {
-        fontSize = Math.floor(size * (textSizeRatio / 100));
-        textHeightAdd = fontSize + Math.floor(size * 0.08);
+      let textBand = 0;
+      if (hasText && placement !== 'overlay') {
+        const sizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10) / 100;
+        const lines = labelText.split('\n').length;
+        const fontSize = Math.floor(size * sizeRatio);
+        textBand = Math.ceil(fontSize * 1.25 * lines + size * 0.1);
       }
 
+      const framePad = useFrame ? Math.floor(size * frameThicknessPct) : 0;
+
+      let canvasW = size + framePad * 2;
+      let canvasH = size + framePad * 2;
+      if (hasText && placement === 'top') canvasH += textBand;
+      if (hasText && placement === 'bottom') canvasH += textBand;
+      if (hasText && placement === 'left') canvasW += textBand;
+      if (hasText && placement === 'right') canvasW += textBand;
+
       const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size + textHeightAdd;
+      canvas.width = canvasW;
+      canvas.height = canvasH;
       const ctx = canvas.getContext('2d');
 
-      // Fill entire background (acting as quiet zone margin)
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Background
+      if (!transparent) {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, canvasW, canvasH);
+      } else {
+        ctx.clearRect(0, 0, canvasW, canvasH);
+      }
 
-      const offsetPixels = (size - innerSize) / 2;
-
-      // Draw standard inner QR code cells
-      ctx.fillStyle = fg;
-      for (let row = 0; row < moduleCount; row++) {
-        for (let col = 0; col < moduleCount; col++) {
-          if (qrcodeModel.isDark(row, col)) {
-            const x = offsetPixels + Math.floor(col * pixelPerModule);
-            const y = offsetPixels + Math.floor(row * pixelPerModule);
-            // Use ceil for w/h to prevent sub-pixel gaps between cells
-            ctx.fillRect(x, y, Math.ceil(pixelPerModule), Math.ceil(pixelPerModule));
-          }
+      // Frame
+      if (useFrame) {
+        ctx.fillStyle = frameColor;
+        ctx.fillRect(0, 0, canvasW, canvasH);
+        if (!transparent) {
+          ctx.fillStyle = bg;
+          ctx.fillRect(framePad, framePad, canvasW - framePad * 2, canvasH - framePad * 2);
+        } else {
+          ctx.clearRect(framePad, framePad, canvasW - framePad * 2, canvasH - framePad * 2);
         }
       }
 
-      // If a logo is selected, we draw it onto the internally generated canvas
+      // QR origin inside canvas
+      let qrX = framePad;
+      let qrY = framePad;
+      if (hasText && placement === 'top') qrY += textBand;
+      if (hasText && placement === 'left') qrX += textBand;
+
+      // Clip rounded corner on QR area
+      ctx.save();
+      if (cornerRadiusPct > 0) {
+        const r = (Math.min(innerSize, innerSize) * cornerRadiusPct) / 100;
+        const offsetPixels = (qrDrawSize - innerSize) / 2;
+        roundRectPath(ctx, qrX + offsetPixels, qrY + offsetPixels, innerSize, innerSize, r);
+        ctx.clip();
+      }
+
+      // Quiet zone bg already filled; draw modules
+      const offsetPixels = (qrDrawSize - innerSize) / 2;
+      const originX = qrX + offsetPixels;
+      const originY = qrY + offsetPixels;
+
+      const fgStyle = createFgStyle(ctx, originX, originY, innerSize, innerSize);
+      ctx.fillStyle = fgStyle;
+
+      // Draw data modules (skip finder regions when using shaped modules or custom eyes)
+      const separateFinders = finderStyle !== 'square' || moduleShape !== 'square';
+      for (let row = 0; row < moduleCount; row++) {
+        for (let col = 0; col < moduleCount; col++) {
+          if (!qrcodeModel.isDark(row, col)) continue;
+          if (separateFinders && isInFinder(row, col, moduleCount)) continue;
+          const x = originX + col * pixelPerModule;
+          const y = originY + row * pixelPerModule;
+          drawModule(ctx, x, y, pixelPerModule, moduleShape);
+        }
+      }
+
+      if (separateFinders) {
+        [[0, 0], [0, moduleCount - 7], [moduleCount - 7, 0]].forEach(([r, c]) => {
+          const fx = originX + c * pixelPerModule;
+          const fy = originY + r * pixelPerModule;
+          const fsize = pixelPerModule * 7;
+          if (transparent) ctx.clearRect(fx, fy, fsize, fsize);
+          else {
+            ctx.fillStyle = bg;
+            ctx.fillRect(fx, fy, fsize, fsize);
+          }
+          drawFinderEye(ctx, fx, fy, pixelPerModule, finderStyle, fgStyle);
+        });
+      }
+
+      ctx.restore(); // end corner clip
+
+      // Logo
       if (logoImageObj) {
+        const offX = parseInt(document.getElementById('logoOffsetX').value, 10) / 100;
+        const offY = parseInt(document.getElementById('logoOffsetY').value, 10) / 100;
+        const logoOpacity = parseInt(document.getElementById('logoOpacity').value, 10) / 100;
+        const borderPct = parseInt(document.getElementById('logoBorder').value, 10) / 100;
+        const borderColor = document.getElementById('logoBorderColor').value;
+
         let drawWidth = innerSize * logoScaleRatio;
         let drawHeight = innerSize * logoScaleRatio;
-
         const imgAspect = logoImageObj.width / logoImageObj.height;
         let bgWidth = drawWidth;
         let bgHeight = drawHeight;
 
         if (!isRounded) {
-          if (imgAspect > 1) { // Wide
+          if (imgAspect > 1) {
             drawHeight = drawWidth / imgAspect;
             bgHeight = drawHeight;
-          } else { // Tall
+          } else {
             drawWidth = drawHeight * imgAspect;
             bgWidth = drawWidth;
           }
         } else {
-          if (imgAspect > 1) { // Wide
-            drawWidth = drawHeight * imgAspect;
-          } else { // Tall
-            drawHeight = drawWidth / imgAspect;
+          if (imgAspect > 1) drawWidth = drawHeight * imgAspect;
+          else drawHeight = drawWidth / imgAspect;
+        }
+
+        const centerX = originX + innerSize / 2 + innerSize * offX;
+        const centerY = originY + innerSize / 2 + innerSize * offY;
+        const drawX = centerX - drawWidth / 2;
+        const drawY = centerY - drawHeight / 2;
+        const bgOffsetX = centerX - bgWidth / 2;
+        const bgOffsetY = centerY - bgHeight / 2;
+        const padding = innerSize * 0.02;
+        const borderW = innerSize * borderPct;
+
+        ctx.save();
+        ctx.globalAlpha = logoOpacity;
+
+        // Border ring
+        if (borderW > 0) {
+          ctx.fillStyle = borderColor;
+          if (isRounded) {
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, bgWidth / 2 + padding + borderW, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(bgOffsetX - padding - borderW, bgOffsetY - padding - borderW,
+              bgWidth + (padding + borderW) * 2, bgHeight + (padding + borderW) * 2);
           }
         }
 
-        const bgOffset = offsetPixels + (innerSize - bgWidth) / 2;
-        const bgOffsetY = offsetPixels + (innerSize - bgHeight) / 2;
-
-        const drawX = offsetPixels + (innerSize - drawWidth) / 2;
-        const drawY = offsetPixels + (innerSize - drawHeight) / 2;
-
-        const padding = innerSize * 0.02;
-
-        ctx.fillStyle = bg;
+        // Logo knockout bg
+        ctx.fillStyle = transparent ? 'rgba(255,255,255,0.92)' : bg;
         if (isRounded) {
           ctx.beginPath();
-          ctx.arc(offsetPixels + innerSize / 2, offsetPixels + innerSize / 2, (bgWidth / 2) + padding, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, bgWidth / 2 + padding, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          ctx.fillRect(bgOffset - padding, bgOffsetY - padding, bgWidth + padding * 2, bgHeight + padding * 2);
+          ctx.fillRect(bgOffsetX - padding, bgOffsetY - padding, bgWidth + padding * 2, bgHeight + padding * 2);
         }
 
-        // Draw logo image
         if (isRounded) {
-          ctx.save();
           ctx.beginPath();
-          ctx.arc(offsetPixels + innerSize / 2, offsetPixels + innerSize / 2, bgWidth / 2, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, bgWidth / 2, 0, Math.PI * 2);
           ctx.clip();
           ctx.drawImage(logoImageObj, drawX, drawY, drawWidth, drawHeight);
-          ctx.restore();
         } else {
           ctx.drawImage(logoImageObj, drawX, drawY, drawWidth, drawHeight);
         }
+        ctx.restore();
       }
 
-      // Draw text if present
-      if (labelText) {
-        ctx.fillStyle = textColor;
-        ctx.font = `600 ${fontSize}px ${textFont}`;
-        
-        // Dynamically shrink text if it exceeds 90% of QR width
-        let metrics = ctx.measureText(labelText);
-        if (metrics.width > size * 0.9) {
-          fontSize = Math.floor(fontSize * ((size * 0.9) / metrics.width));
-          ctx.font = `600 ${fontSize}px ${textFont}`;
-        }
-
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        const textY = size + (textHeightAdd / 2);
-        ctx.fillText(labelText, size / 2, textY);
+      // Text
+      if (hasText) {
+        drawLabelText(ctx, labelText, qrX, qrY, qrDrawSize, canvasW, canvasH, placement);
       }
 
-      // Convert to an img tag for responsive display
       const img = document.createElement('img');
       img.src = canvas.toDataURL('image/png');
       img.style.maxWidth = '100%';
-      // Keep canvas around hidden so download function has access to it
       canvas.style.display = 'none';
       container.appendChild(img);
       container.appendChild(canvas);
@@ -928,7 +2159,27 @@
       const enc = document.getElementById('qrEncoded');
       enc.textContent = text.length > 55 ? text.slice(0, 52) + '…' : text;
       enc.style.display = 'block';
-      document.getElementById('actionsCard').style.display = 'flex';
+      document.getElementById('actionsCard').classList.add('is-visible');
+      syncMobileDock(img.src);
+    }
+
+    function syncMobileDock(dataUrl) {
+      const dock = document.getElementById('mobileDock');
+      const dockImg = document.getElementById('mobileDockImg');
+      if (!dock || !dockImg) return;
+      if (!dataUrl) {
+        dockImg.removeAttribute('src');
+        dock.classList.remove('is-visible');
+        dock.setAttribute('aria-hidden', 'true');
+        return;
+      }
+      dockImg.src = dataUrl;
+      updateMobileDockVisibility();
+    }
+
+    function getFilename() {
+      const name = document.getElementById('downloadFilename').value.trim() || 'qr-code';
+      return name.replace(/\.(png|jpe?g|webp|svg)$/i, '');
     }
 
     function downloadPNG() {
@@ -936,124 +2187,296 @@
       const c = document.querySelector('#qrcode canvas');
       if (!c) return;
       const a = document.createElement('a');
-      a.download = 'qr-code.png';
+      a.download = `${getFilename()}.png`;
       a.href = c.toDataURL('image/png');
       a.click();
+      setStatus('PNG downloaded');
     }
 
-    // SVG uses the same logic with custom model
+    function downloadJPEG() {
+      if (!lastText) return;
+      const c = document.querySelector('#qrcode canvas');
+      if (!c) return;
+      // Flatten onto white for JPEG
+      const flat = document.createElement('canvas');
+      flat.width = c.width;
+      flat.height = c.height;
+      const fctx = flat.getContext('2d');
+      fctx.fillStyle = '#ffffff';
+      fctx.fillRect(0, 0, flat.width, flat.height);
+      fctx.drawImage(c, 0, 0);
+      const a = document.createElement('a');
+      a.download = `${getFilename()}.jpg`;
+      a.href = flat.toDataURL('image/jpeg', 0.92);
+      a.click();
+      setStatus('JPEG downloaded');
+    }
+
+    function downloadWebP() {
+      if (!lastText) return;
+      const c = document.querySelector('#qrcode canvas');
+      if (!c) return;
+      const a = document.createElement('a');
+      a.download = `${getFilename()}.webp`;
+      a.href = c.toDataURL('image/webp', 0.92);
+      a.click();
+      setStatus('WebP downloaded');
+    }
+
+    async function copyImage() {
+      if (!lastText) return;
+      const c = document.querySelector('#qrcode canvas');
+      if (!c) return;
+      try {
+        const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        setStatus('Image copied to clipboard');
+      } catch (err) {
+        setStatus('Clipboard image copy not supported');
+      }
+    }
+
+    function setStatus(msg) {
+      const st = document.getElementById('status');
+      st.textContent = msg;
+      setTimeout(() => { if (st.textContent === msg) st.textContent = ''; }, 1800);
+    }
+
+    function svgEsc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     function downloadSVG() {
       if (!lastText) return;
 
-      const eccMapLocal = {
-        'L': QRCode.CorrectLevel.L,
-        'M': QRCode.CorrectLevel.M,
-        'Q': QRCode.CorrectLevel.Q,
-        'H': QRCode.CorrectLevel.H
-      };
-      const ecc = eccMapLocal[eccLevelEl.value] || QRCode.CorrectLevel.H;
-
+      const ecc = getEcc();
       const tempDiv = document.createElement('div');
       new QRCode(tempDiv, { text: lastText, correctLevel: ecc });
       const qrcodeModel = lastQRCodeInstance._oQRCode;
-
       const rawModuleCount = qrcodeModel.getModuleCount();
       const paddingModules = parseInt(marginSliderEl.value, 10);
       const totalModules = rawModuleCount + (paddingModules * 2);
 
-      const isRounded = roundedLogoToggle.checked;
-      let maxFinderScale = 40;
-      if (isRounded) {
-        const center = rawModuleCount / 2;
-        const distToFinder = Math.sqrt(2) * (center - 8.5);
-        const maxScaleRatio = ((distToFinder / rawModuleCount) - 0.02) * 2;
-        maxFinderScale = Math.floor(maxScaleRatio * 100);
-      } else {
-        const maxScaleRatio = 0.96 - (17 / rawModuleCount);
-        maxFinderScale = Math.floor(maxScaleRatio * 100);
-      }
-
-      let maxEccScale = 40;
-      if (ecc === QRCode.CorrectLevel.L) maxEccScale = 15;
-      else if (ecc === QRCode.CorrectLevel.M) maxEccScale = 22;
-      else if (ecc === QRCode.CorrectLevel.Q) maxEccScale = 30;
-
-      const absoluteMaxScale = Math.max(10, Math.min(maxEccScale, maxFinderScale));
-      let sliderVal = parseInt(logoScaleSlider.value, 10);
-      if (sliderVal > absoluteMaxScale) sliderVal = absoluteMaxScale;
-
-      const logoScaleRatio = sliderVal / 100;
-
-      const size = parseInt(sizeSliderEl.value, 10);
-      const fg = fgColorEl.value;
+      const transparent = document.getElementById('transparentBg').checked;
       const bg = bgColorEl.value;
+      const fg = fgColorEl.value;
+      const useGradient = document.getElementById('gradientToggle').checked;
+      const gradientType = document.getElementById('gradientType').value;
+      const gradientColor = document.getElementById('gradientColor').value;
+      const moduleShape = document.getElementById('moduleShape').value;
+      const finderStyle = document.getElementById('finderStyle').value;
+      const cornerRadiusPct = parseInt(document.getElementById('cornerRadius').value, 10);
+      const useFrame = document.getElementById('frameToggle').checked;
+      const frameColor = document.getElementById('frameColor').value;
+      const frameThicknessPct = parseInt(document.getElementById('frameThickness').value, 10) / 100;
+      const size = parseInt(sizeSliderEl.value, 10);
 
-      const labelText = document.getElementById('labelText').value.trim();
-      const textSizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10);
-      const textColor = document.getElementById('textColor').value;
-      const textFont = document.getElementById('textFont').value;
+      const labelText = document.getElementById('labelText').value;
+      const placement = document.getElementById('textPlacement').value;
+      const hasText = labelText.trim().length > 0;
 
-      let textHeightAddModules = 0;
-      let fontSizeModules = 0;
-      if (labelText) {
-        fontSizeModules = totalModules * (textSizeRatio / 100);
-        
-        // Approximate width and scale down if needed
-        let approxWidth = fontSizeModules * 0.6 * labelText.length;
-        if (approxWidth > totalModules * 0.9) {
-          fontSizeModules = fontSizeModules * ((totalModules * 0.9) / approxWidth);
-        }
-
-        textHeightAddModules = fontSizeModules + (totalModules * 0.08);
+      let textBandModules = 0;
+      if (hasText && placement !== 'overlay') {
+        const sizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10) / 100;
+        const lines = labelText.split('\n').length;
+        const fontSizeModules = totalModules * sizeRatio;
+        textBandModules = fontSizeModules * 1.25 * lines + totalModules * 0.1;
       }
-      
-      const totalSvgWidth = totalModules;
-      const totalSvgHeight = totalModules + textHeightAddModules;
-      const svgHeightPx = Math.floor(size * (totalSvgHeight / totalSvgWidth));
 
-      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSvgWidth} ${totalSvgHeight}" width="${size}" height="${svgHeightPx}">`;
-      svg += `<rect width="${totalSvgWidth}" height="${totalSvgHeight}" fill="${bg}"/>`;
+      const framePad = useFrame ? totalModules * frameThicknessPct : 0;
+      let svgW = totalModules + framePad * 2;
+      let svgH = totalModules + framePad * 2;
+      if (hasText && (placement === 'top' || placement === 'bottom')) svgH += textBandModules;
+      if (hasText && (placement === 'left' || placement === 'right')) svgW += textBandModules;
 
-      // Optimize: Group rects into a single path for cleaner SVG
-      let pathD = '';
+      let qrX = framePad;
+      let qrY = framePad;
+      if (hasText && placement === 'top') qrY += textBandModules;
+      if (hasText && placement === 'left') qrX += textBandModules;
+
+      const pxH = Math.floor(size * (svgH / svgW));
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${svgW} ${svgH}" width="${size}" height="${pxH}">`;
+
+      if (useFrame) {
+        svg += `<rect width="${svgW}" height="${svgH}" fill="${frameColor}"/>`;
+      }
+      if (!transparent) {
+        svg += `<rect x="${framePad}" y="${framePad}" width="${svgW - framePad * 2}" height="${svgH - framePad * 2}" fill="${bg}"/>`;
+      }
+
+      const gradId = 'qr-grad';
+      let fillRef = fg;
+      if (useGradient) {
+        if (gradientType === 'radial') {
+          svg += `<defs><radialGradient id="${gradId}" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="${fg}"/><stop offset="100%" stop-color="${gradientColor}"/></radialGradient></defs>`;
+        } else {
+          svg += `<defs><linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${fg}"/><stop offset="100%" stop-color="${gradientColor}"/></linearGradient></defs>`;
+        }
+        fillRef = `url(#${gradId})`;
+      }
+
+      const clipId = 'qr-clip';
+      const rClip = cornerRadiusPct > 0 ? (rawModuleCount * cornerRadiusPct / 100) : 0;
+      if (rClip > 0) {
+        svg += `<defs><clipPath id="${clipId}"><rect x="${qrX + paddingModules}" y="${qrY + paddingModules}" width="${rawModuleCount}" height="${rawModuleCount}" rx="${rClip}" ry="${rClip}"/></clipPath></defs>`;
+        svg += `<g clip-path="url(#${clipId})">`;
+      } else {
+        svg += `<g>`;
+      }
+
+      const separateFinders = finderStyle !== 'square' || moduleShape !== 'square';
+
+      function modulePath(x, y, s, shape) {
+        if (shape === 'dots') {
+          return `<circle cx="${x + s / 2}" cy="${y + s / 2}" r="${s * 0.42}" fill="${fillRef}"/>`;
+        }
+        if (shape === 'diamond') {
+          return `<polygon points="${x + s / 2},${y} ${x + s},${y + s / 2} ${x + s / 2},${y + s} ${x},${y + s / 2}" fill="${fillRef}"/>`;
+        }
+        if (shape === 'rounded') {
+          const rr = s * 0.28;
+          return `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${rr}" ry="${rr}" fill="${fillRef}"/>`;
+        }
+        return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fillRef}"/>`;
+      }
+
       for (let row = 0; row < rawModuleCount; row++) {
         for (let col = 0; col < rawModuleCount; col++) {
-          if (qrcodeModel.isDark(row, col)) {
-            pathD += `M${col + paddingModules},${row + paddingModules}h1v1h-1z `;
-          }
+          if (!qrcodeModel.isDark(row, col)) continue;
+          if (separateFinders && isInFinder(row, col, rawModuleCount)) continue;
+          const x = qrX + paddingModules + col;
+          const y = qrY + paddingModules + row;
+          svg += modulePath(x, y, 1, moduleShape);
         }
       }
-      svg += `<path d="${pathD}" fill="${fg}"/>`;
 
-      // Embed logo if present
+      if (separateFinders) {
+        [[0, 0], [0, rawModuleCount - 7], [rawModuleCount - 7, 0]].forEach(([r, c]) => {
+          const ox = qrX + paddingModules + c;
+          const oy = qrY + paddingModules + r;
+          if (!transparent) svg += `<rect x="${ox}" y="${oy}" width="7" height="7" fill="${bg}"/>`;
+
+          if (finderStyle === 'circle') {
+            svg += `<path fill-rule="evenodd" fill="${fillRef}" d="M ${ox + 3.5} ${oy} a 3.5 3.5 0 1 1 0 7 a 3.5 3.5 0 1 1 0 -7 M ${ox + 3.5} ${oy + 1} a 2.5 2.5 0 1 0 0 5 a 2.5 2.5 0 1 0 0 -5"/>`;
+            if (!transparent) svg += `<circle cx="${ox + 3.5}" cy="${oy + 3.5}" r="2.5" fill="${bg}"/>`;
+            svg += `<circle cx="${ox + 3.5}" cy="${oy + 3.5}" r="1.5" fill="${fillRef}"/>`;
+          } else if (finderStyle === 'rounded') {
+            if (transparent) {
+              svg += `<path fill-rule="evenodd" fill="${fillRef}" d="M ${ox + 1.2} ${oy} H ${ox + 5.8} Q ${ox + 7} ${oy} ${ox + 7} ${oy + 1.2} V ${oy + 5.8} Q ${ox + 7} ${oy + 7} ${ox + 5.8} ${oy + 7} H ${ox + 1.2} Q ${ox} ${oy + 7} ${ox} ${oy + 5.8} V ${oy + 1.2} Q ${ox} ${oy} ${ox + 1.2} ${oy} Z M ${ox + 1.8} ${oy + 1} H ${ox + 5.2} Q ${ox + 6} ${oy + 1} ${ox + 6} ${oy + 1.8} V ${oy + 5.2} Q ${ox + 6} ${oy + 6} ${ox + 5.2} ${oy + 6} H ${ox + 1.8} Q ${ox + 1} ${oy + 6} ${ox + 1} ${oy + 5.2} V ${oy + 1.8} Q ${ox + 1} ${oy + 1} ${ox + 1.8} ${oy + 1} Z"/>`;
+            } else {
+              svg += `<rect x="${ox}" y="${oy}" width="7" height="7" rx="1.2" ry="1.2" fill="${fillRef}"/>`;
+              svg += `<rect x="${ox + 1}" y="${oy + 1}" width="5" height="5" rx="0.8" ry="0.8" fill="${bg}"/>`;
+            }
+            svg += `<rect x="${ox + 2}" y="${oy + 2}" width="3" height="3" rx="0.5" ry="0.5" fill="${fillRef}"/>`;
+          } else {
+            svg += `<path fill-rule="evenodd" fill="${fillRef}" d="M ${ox} ${oy} h7 v7 h-7 z M ${ox + 1} ${oy + 1} h5 v5 h-5 z"/>`;
+            if (!transparent) svg += `<rect x="${ox + 1}" y="${oy + 1}" width="5" height="5" fill="${bg}"/>`;
+            svg += `<rect x="${ox + 2}" y="${oy + 2}" width="3" height="3" fill="${fillRef}"/>`;
+          }
+        });
+      }
+
+      svg += `</g>`;
+
+      // Logo
       if (logoDataUrl) {
+        const isRounded = roundedLogoToggle.checked;
+        let sliderVal = parseInt(logoScaleSlider.value, 10);
+        const logoScaleRatio = sliderVal / 100;
+        const offX = parseInt(document.getElementById('logoOffsetX').value, 10) / 100;
+        const offY = parseInt(document.getElementById('logoOffsetY').value, 10) / 100;
+        const logoOpacity = parseInt(document.getElementById('logoOpacity').value, 10) / 100;
+        const borderPct = parseInt(document.getElementById('logoBorder').value, 10) / 100;
+        const borderColor = document.getElementById('logoBorderColor').value;
+
         const baseLogoDim = rawModuleCount * logoScaleRatio;
         const padding = rawModuleCount * 0.02;
+        const cx = qrX + paddingModules + rawModuleCount / 2 + rawModuleCount * offX;
+        const cy = qrY + paddingModules + rawModuleCount / 2 + rawModuleCount * offY;
+        const offset = baseLogoDim / 2;
+        const borderW = rawModuleCount * borderPct;
 
-        const offset = paddingModules + (rawModuleCount - baseLogoDim) / 2;
-
-        if (isRounded) {
-          const cx = offset + baseLogoDim / 2;
-          const cy = offset + baseLogoDim / 2;
-          const rBG = (baseLogoDim / 2) + padding;
-          svg += `<circle cx="${cx}" cy="${cy}" r="${rBG}" fill="${bg}" />`;
-
-          const rLogo = baseLogoDim / 2;
-          const clipId = `rounded-clip-${Math.random().toString(36).substr(2, 9)}`;
-          svg += `<defs><clipPath id="${clipId}"><circle cx="${cx}" cy="${cy}" r="${rLogo}" /></clipPath></defs>`;
-          svg += `<image href="${logoDataUrl}" x="${offset}" y="${offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})" />`;
-        } else {
-          // Native width/height of image will be preserved by meet. We just provide bounding box.
-          svg += `<rect x="${offset - padding}" y="${offset - padding}" width="${baseLogoDim + padding * 2}" height="${baseLogoDim + padding * 2}" fill="${bg}" />`;
-          svg += `<image href="${logoDataUrl}" x="${offset}" y="${offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid meet" />`;
+        svg += `<g opacity="${logoOpacity}">`;
+        if (borderW > 0) {
+          if (isRounded) {
+            svg += `<circle cx="${cx}" cy="${cy}" r="${offset + padding + borderW}" fill="${borderColor}"/>`;
+          } else {
+            svg += `<rect x="${cx - offset - padding - borderW}" y="${cy - offset - padding - borderW}" width="${baseLogoDim + (padding + borderW) * 2}" height="${baseLogoDim + (padding + borderW) * 2}" fill="${borderColor}"/>`;
+          }
         }
+        const knockout = transparent ? '#ffffff' : bg;
+        if (isRounded) {
+          svg += `<circle cx="${cx}" cy="${cy}" r="${offset + padding}" fill="${knockout}"/>`;
+          const clipLogo = `logo-clip-${Math.random().toString(36).slice(2, 9)}`;
+          svg += `<defs><clipPath id="${clipLogo}"><circle cx="${cx}" cy="${cy}" r="${offset}"/></clipPath></defs>`;
+          svg += `<image href="${logoDataUrl}" x="${cx - offset}" y="${cy - offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipLogo})"/>`;
+        } else {
+          svg += `<rect x="${cx - offset - padding}" y="${cy - offset - padding}" width="${baseLogoDim + padding * 2}" height="${baseLogoDim + padding * 2}" fill="${knockout}"/>`;
+          svg += `<image href="${logoDataUrl}" x="${cx - offset}" y="${cy - offset}" width="${baseLogoDim}" height="${baseLogoDim}" preserveAspectRatio="xMidYMid meet"/>`;
+        }
+        svg += `</g>`;
       }
 
-      if (labelText) {
-        // Embed text in SVG
-        const safeText = labelText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const textY = totalModules + (textHeightAddModules / 2);
-        svg += `<text x="${totalSvgWidth / 2}" y="${textY}" font-family="${textFont}" font-weight="600" font-size="${fontSizeModules}" fill="${textColor}" text-anchor="middle" dominant-baseline="middle">${safeText}</text>`;
+      // Text
+      if (hasText) {
+        const lines = labelText.split('\n').map(l => l.trimEnd());
+        const sizeRatio = parseInt(document.getElementById('textSizeSlider').value, 10) / 100;
+        let fontSize = totalModules * sizeRatio;
+        const align = document.getElementById('textAlign').value;
+        const letterSpacing = parseInt(document.getElementById('letterSpacing').value, 10);
+        // Convert px letter-spacing roughly to module units
+        const lsModules = letterSpacing * (totalModules / size);
+        const opacity = parseInt(document.getElementById('textOpacity').value, 10) / 100;
+        const textColor = document.getElementById('textColor').value;
+        const fontFamily = document.getElementById('textFont').value;
+        const bold = document.getElementById('textBold').value === '1' ? '700' : '600';
+        const italic = document.getElementById('textItalic').value === '1' ? 'italic' : 'normal';
+        const underline = document.getElementById('textUnderline').value === '1';
+        const usePill = document.getElementById('textPillToggle').checked;
+        const pillColor = document.getElementById('textPillColor').value;
+        const pillPad = fontSize * (parseInt(document.getElementById('textPillPad').value, 10) / 100);
+        const lineHeight = fontSize * 1.25;
+        const blockH = lineHeight * lines.length;
+
+        // Approximate shrink
+        const approxW = Math.max(...lines.map(l => fontSize * 0.55 * l.length + Math.max(0, l.length - 1) * lsModules));
+        const maxBand = (placement === 'left' || placement === 'right')
+          ? textBandModules * 0.9
+          : totalModules * 0.9;
+        if (approxW > maxBand && approxW > 0) fontSize *= maxBand / approxW;
+
+        let textAreaW, blockX, blockY;
+        if (placement === 'bottom') {
+          textAreaW = totalModules; blockX = qrX; blockY = qrY + totalModules + (textBandModules - blockH) / 2;
+        } else if (placement === 'top') {
+          textAreaW = totalModules; blockX = qrX; blockY = framePad + (textBandModules - blockH) / 2;
+        } else if (placement === 'left') {
+          textAreaW = textBandModules; blockX = framePad; blockY = qrY + (totalModules - blockH) / 2;
+        } else if (placement === 'right') {
+          textAreaW = textBandModules; blockX = qrX + totalModules; blockY = qrY + (totalModules - blockH) / 2;
+        } else {
+          textAreaW = totalModules; blockX = qrX; blockY = qrY + (totalModules - blockH) / 2;
+        }
+
+        let anchorX;
+        const anchor = align === 'left' ? 'start' : align === 'right' ? 'end' : 'middle';
+        if (align === 'left') anchorX = blockX + pillPad + fontSize * 0.2;
+        else if (align === 'right') anchorX = blockX + textAreaW - pillPad - fontSize * 0.2;
+        else anchorX = blockX + textAreaW / 2;
+
+        if (usePill) {
+          const pillW = Math.min(approxW, maxBand) + pillPad * 2;
+          const pillH = blockH + pillPad * 2;
+          let pillX = align === 'left' ? anchorX : align === 'right' ? anchorX - pillW : anchorX - pillW / 2;
+          svg += `<rect x="${pillX}" y="${blockY - pillPad}" width="${pillW}" height="${pillH}" rx="${fontSize * 0.35}" fill="${pillColor}" opacity="${opacity}"/>`;
+        }
+
+        const deco = underline ? 'underline' : 'none';
+        lines.forEach((line, i) => {
+          const y = blockY + lineHeight * i + lineHeight / 2;
+          const safe = svgEsc(line);
+          svg += `<text x="${anchorX}" y="${y}" font-family="${svgEsc(fontFamily)}" font-weight="${bold}" font-style="${italic}" font-size="${fontSize}" fill="${textColor}" text-anchor="${anchor}" dominant-baseline="middle" letter-spacing="${lsModules}" opacity="${opacity}" text-decoration="${deco}">${safe}</text>`;
+        });
       }
 
       svg += `</svg>`;
@@ -1062,24 +2485,196 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'qr-code.svg';
+      a.download = `${getFilename()}.svg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      setStatus('SVG downloaded');
     }
 
     function copyText() {
       if (!lastText) return;
       navigator.clipboard.writeText(lastText).then(() => {
         const btn = document.getElementById('copyBtn');
-        const st = document.getElementById('status');
         const originalContent = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check" style="margin-right: 6px;"></i> Copied';
-        st.textContent = 'Copied to clipboard';
-        setTimeout(() => { btn.innerHTML = originalContent; st.textContent = ''; }, 1800);
+        btn.innerHTML = '<i class="fas fa-check"></i><span class="btn-format-label">Copied</span>';
+        setStatus('Copied to clipboard');
+        setTimeout(() => { btn.innerHTML = originalContent; }, 1800);
       });
     }
+
+    // --- Presets ---
+    function collectStyleState() {
+      const state = {};
+      STYLE_FIELDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') state[id] = el.checked;
+        else state[id] = el.value;
+      });
+      return state;
+    }
+
+    function applyStyleState(state) {
+      STYLE_FIELDS.forEach(id => {
+        if (!(id in state)) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') el.checked = !!state[id];
+        else el.value = state[id];
+      });
+
+      // Sync UI chrome
+      document.getElementById('gradientOptions').classList.toggle('visible', document.getElementById('gradientToggle').checked);
+      document.getElementById('frameOptions').classList.toggle('visible', document.getElementById('frameToggle').checked);
+      document.getElementById('textPillOptions').classList.toggle('visible', document.getElementById('textPillToggle').checked);
+
+      syncStyleGrid('moduleShapeGrid', 'moduleShape');
+      syncStyleGrid('finderStyleGrid', 'finderStyle');
+
+      document.getElementById('textBoldBtn').classList.toggle('active', document.getElementById('textBold').value === '1');
+      document.getElementById('textItalicBtn').classList.toggle('active', document.getElementById('textItalic').value === '1');
+      document.getElementById('textUnderlineBtn').classList.toggle('active', document.getElementById('textUnderline').value === '1');
+
+      // Refresh value labels
+      sizeValueEl.textContent = `${sizeSliderEl.value}px`;
+      marginValueEl.textContent = marginSliderEl.value;
+      document.getElementById('cornerRadiusValue').textContent = `${document.getElementById('cornerRadius').value}%`;
+      document.getElementById('frameThicknessValue').textContent = `${document.getElementById('frameThickness').value}%`;
+      document.getElementById('logoOpacityValue').textContent = `${document.getElementById('logoOpacity').value}%`;
+      document.getElementById('logoBorderValue').textContent = `${document.getElementById('logoBorder').value}%`;
+      document.getElementById('logoOffsetXValue').textContent = `${document.getElementById('logoOffsetX').value}%`;
+      document.getElementById('logoOffsetYValue').textContent = `${document.getElementById('logoOffsetY').value}%`;
+      document.getElementById('textSizeValue').textContent = `${document.getElementById('textSizeSlider').value}%`;
+      document.getElementById('letterSpacingValue').textContent = document.getElementById('letterSpacing').value;
+      document.getElementById('textOpacityValue').textContent = `${document.getElementById('textOpacity').value}%`;
+      document.getElementById('textPillPadValue').textContent = `${document.getElementById('textPillPad').value}%`;
+
+      debouncedGenerate();
+    }
+
+    function syncStyleGrid(gridId, hiddenId) {
+      const val = document.getElementById(hiddenId).value;
+      document.getElementById(gridId).querySelectorAll('.style-option').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === val);
+      });
+    }
+
+    function loadPresets() {
+      try {
+        return JSON.parse(localStorage.getItem(PRESET_KEY) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function storePresets(list) {
+      localStorage.setItem(PRESET_KEY, JSON.stringify(list));
+    }
+
+    function renderPresetList() {
+      const list = loadPresets();
+      const el = document.getElementById('presetList');
+      if (!list.length) {
+        el.innerHTML = '<p class="hint" style="margin: 0;">No saved presets yet.</p>';
+        return;
+      }
+      el.innerHTML = list.map((p, i) => `
+        <div class="preset-item">
+          <span class="preset-item-name">${svgEsc(p.name)}</span>
+          <div class="preset-item-actions">
+            <button type="button" class="preset-mini-btn" onclick="loadPreset(${i})">Load</button>
+            <button type="button" class="preset-mini-btn danger" onclick="deletePreset(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function savePreset() {
+      const name = document.getElementById('presetName').value.trim();
+      if (!name) {
+        setStatus('Enter a preset name');
+        return;
+      }
+      const list = loadPresets();
+      const existing = list.findIndex(p => p.name === name);
+      const entry = { name, state: collectStyleState(), savedAt: Date.now() };
+      if (existing >= 0) list[existing] = entry;
+      else list.push(entry);
+      storePresets(list);
+      document.getElementById('presetName').value = '';
+      renderPresetList();
+      setStatus(`Saved preset “${name}”`);
+    }
+
+    function loadPreset(index) {
+      const list = loadPresets();
+      if (!list[index]) return;
+      applyStyleState(list[index].state);
+      setStatus(`Loaded “${list[index].name}”`);
+    }
+
+    function deletePreset(index) {
+      const list = loadPresets();
+      const name = list[index]?.name;
+      list.splice(index, 1);
+      storePresets(list);
+      renderPresetList();
+      setStatus(name ? `Deleted “${name}”` : 'Preset deleted');
+    }
+
+    renderPresetList();
+
+    // Accordion: exclusive open on mobile only (desktop can keep several open)
+    const accordions = document.querySelectorAll('.qr-accordion');
+    const mqMobile = window.matchMedia('(max-width: 960px)');
+    accordions.forEach(panel => {
+      panel.addEventListener('toggle', () => {
+        if (!panel.open || !mqMobile.matches) return;
+        accordions.forEach(other => {
+          if (other !== panel) other.open = false;
+        });
+      });
+    });
+
+    // Mobile dock: fixed mini preview + downloads when full preview leaves the viewport
+    const previewRail = document.getElementById('previewRail');
+    const mobileDock = document.getElementById('mobileDock');
+    let previewInView = true;
+
+    function updateMobileDockVisibility() {
+      if (!mobileDock) return;
+      const hasQr = !!lastText && !!document.getElementById('mobileDockImg')?.getAttribute('src');
+      const show = mqMobile.matches && hasQr && !previewInView;
+      mobileDock.classList.toggle('is-visible', show);
+      mobileDock.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+
+    if (previewRail && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          previewInView = entry.isIntersecting;
+          updateMobileDockVisibility();
+        });
+      }, {
+        root: null,
+        threshold: 0,
+        /* Hide dock while preview is still in the area below the floating nav */
+        rootMargin: '-110px 0px 0px 0px'
+      });
+      io.observe(previewRail);
+    } else {
+      window.addEventListener('scroll', () => {
+        if (!previewRail) return;
+        const rect = previewRail.getBoundingClientRect();
+        previewInView = rect.bottom > 120;
+        updateMobileDockVisibility();
+      }, { passive: true });
+    }
+
+    mqMobile.addEventListener?.('change', updateMobileDockVisibility);
+    window.addEventListener('resize', updateMobileDockVisibility);
   </script>
   <script src="../js/footer.js"></script>
   <script src="../js/back-to-top.js"></script>
