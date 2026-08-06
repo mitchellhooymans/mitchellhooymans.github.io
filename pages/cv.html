@@ -29,7 +29,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
         rel="stylesheet">
 
     <!-- Styles -->
@@ -44,43 +44,225 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
+        :root {
+            --track-edu: #38bdf8;
+            --track-edu-soft: rgba(56, 189, 248, 0.12);
+            --track-edu-border: rgba(56, 189, 248, 0.28);
+            --track-edu-glow: rgba(56, 189, 248, 0.45);
+            --track-pro: #a78bfa;
+            --track-pro-soft: rgba(167, 139, 250, 0.12);
+            --track-pro-border: rgba(167, 139, 250, 0.3);
+            --track-pro-glow: rgba(167, 139, 250, 0.45);
+        }
+
+        .journey-shell {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 0 !important;
+            text-align: left;
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
         .timeline {
             position: relative;
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            padding: var(--space-2) 0;
         }
 
         .timeline::before {
             content: '';
             position: absolute;
-            left: 0;
+            left: 50%;
             top: 0;
             bottom: 0;
             width: 2px;
-            background: var(--color-accent);
+            transform: translateX(-50%);
+            background: linear-gradient(
+                180deg,
+                var(--track-edu) 0%,
+                rgba(148, 163, 184, 0.5) 50%,
+                var(--track-pro) 100%
+            );
+            opacity: 0.85;
+        }
+
+        .timeline-rails {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .timeline-rails {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-8);
+                pointer-events: none;
+                margin-bottom: var(--space-4);
+                padding: 0 var(--space-2);
+            }
+
+            .timeline-rails span {
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+
+            .timeline-rails__edu {
+                text-align: right;
+                color: var(--track-edu);
+                padding-right: var(--space-6);
+            }
+
+            .timeline-rails__pro {
+                text-align: left;
+                color: var(--track-pro);
+                padding-left: var(--space-6);
+            }
         }
 
         .timeline-item {
+            --item-accent: var(--track-edu);
+            --item-soft: var(--track-edu-soft);
+            --item-border: var(--track-edu-border);
+            --item-glow: var(--track-edu-glow);
+
             position: relative;
-            padding-left: 30px;
-            margin-bottom: var(--space-8);
+            display: block;
+            width: calc(50% - 28px);
+            text-align: left;
+            padding: var(--space-4) var(--space-5);
+            margin-bottom: var(--space-5);
+            border: 1px solid transparent;
+            border-radius: var(--radius-lg);
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font: inherit;
+            transition:
+                background var(--transition-base),
+                border-color var(--transition-base),
+                box-shadow var(--transition-base),
+                transform var(--transition-base);
         }
 
+        .timeline-item--education {
+            --item-accent: var(--track-edu);
+            --item-soft: var(--track-edu-soft);
+            --item-border: var(--track-edu-border);
+            --item-glow: var(--track-edu-glow);
+            margin-right: auto;
+            text-align: right;
+        }
+
+        .timeline-item--professional {
+            --item-accent: var(--track-pro);
+            --item-soft: var(--track-pro-soft);
+            --item-border: var(--track-pro-border);
+            --item-glow: var(--track-pro-glow);
+            margin-left: auto;
+            text-align: left;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Center dots */
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -5px;
-            top: 5px;
-            width: 12px;
-            height: 12px;
+            top: calc(var(--space-4) + 8px);
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            background: var(--color-accent);
+            background: var(--color-gray-300);
             border: 2px solid var(--color-gray-50);
+            z-index: 2;
+            transition:
+                background var(--transition-base),
+                box-shadow var(--transition-base),
+                transform var(--transition-base);
+        }
+
+        .timeline-item--education::before {
+            right: -36px;
+            transform: translateX(50%);
+        }
+
+        .timeline-item--professional::before {
+            left: -36px;
+            transform: translateX(-50%);
+        }
+
+        /* Connector stubs from card to spine */
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            top: calc(var(--space-4) + 14px);
+            height: 2px;
+            width: 22px;
+            background: var(--item-accent);
+            opacity: 0.45;
+            transition: opacity var(--transition-base), width var(--transition-base);
+        }
+
+        .timeline-item--education::after {
+            right: -28px;
+        }
+
+        .timeline-item--professional::after {
+            left: -28px;
+        }
+
+        .timeline-item:hover {
+            background: var(--item-soft);
+        }
+
+        .timeline-item:focus-visible {
+            outline: 2px solid var(--item-accent);
+            outline-offset: 2px;
+        }
+
+        .timeline-item.is-active {
+            background: var(--item-soft);
+            border-color: var(--item-border);
+            box-shadow: 0 0 28px var(--item-soft);
+        }
+
+        .timeline-item.is-active::before {
+            background: var(--item-accent);
+            box-shadow: 0 0 14px var(--item-glow);
+        }
+
+        .timeline-item--education.is-active::before {
+            transform: translateX(50%) scale(1.2);
+        }
+
+        .timeline-item--professional.is-active::before {
+            transform: translateX(-50%) scale(1.2);
+        }
+
+        .timeline-item.is-active::after {
+            opacity: 1;
+            width: 28px;
+        }
+
+        .timeline-kind {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--item-accent);
+            margin-bottom: var(--space-2);
         }
 
         .timeline-date {
             font-size: 0.85rem;
-            color: var(--color-accent);
+            color: var(--item-accent);
             font-weight: 600;
             margin-bottom: var(--space-2);
         }
@@ -93,14 +275,73 @@
         }
 
         .timeline-institution {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            flex-wrap: wrap;
             font-size: 0.95rem;
             color: var(--color-gray-600);
-            margin-bottom: var(--space-2);
+            margin-bottom: 0;
+        }
+
+        .timeline-item--education .timeline-institution {
+            justify-content: flex-end;
+        }
+
+        .timeline-institution img {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .timeline-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            opacity: 0;
+            transition:
+                grid-template-rows var(--transition-slow),
+                opacity var(--transition-base),
+                margin-top var(--transition-base);
+            margin-top: 0;
+        }
+
+        .timeline-item.is-active .timeline-panel {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            margin-top: var(--space-3);
+        }
+
+        .timeline-panel__inner {
+            overflow: hidden;
+            min-height: 0;
         }
 
         .timeline-description {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--color-gray-500);
+            line-height: 1.65;
+            margin-bottom: var(--space-3);
+        }
+
+        .timeline-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .timeline-item--education .timeline-tags {
+            justify-content: flex-end;
+        }
+
+        .timeline-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--color-gray-700);
+            border: 1px solid var(--item-border);
+            background: var(--item-soft);
+            padding: 0.3rem 0.65rem;
+            border-radius: var(--radius-md);
         }
 
         .skills-grid {
@@ -115,6 +356,52 @@
             }
         }
 
+        @media (max-width: 767px) {
+            .timeline::before {
+                left: 0;
+                transform: none;
+                background: linear-gradient(
+                    180deg,
+                    var(--track-edu),
+                    var(--track-pro)
+                );
+            }
+
+            .timeline-item,
+            .timeline-item--education,
+            .timeline-item--professional {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                text-align: left;
+                padding-left: 30px;
+                padding-right: var(--space-4);
+            }
+
+            .timeline-item::before,
+            .timeline-item--education::before,
+            .timeline-item--professional::before {
+                left: -5px;
+                right: auto;
+                transform: none;
+            }
+
+            .timeline-item.is-active::before,
+            .timeline-item--education.is-active::before,
+            .timeline-item--professional.is-active::before {
+                transform: scale(1.15);
+            }
+
+            .timeline-item::after {
+                display: none;
+            }
+
+            .timeline-item--education .timeline-institution,
+            .timeline-item--education .timeline-tags {
+                justify-content: flex-start;
+            }
+        }
+
         @media (max-width: 600px) {
             .skills-grid {
                 grid-template-columns: 1fr;
@@ -123,7 +410,6 @@
 
         .skill-category h4 {
             color: #0ea5e9;
-            /* Bright neon cyan/blue to match theme */
             margin-bottom: var(--space-3);
             font-size: 1.1rem;
             font-weight: 700;
@@ -139,7 +425,6 @@
             border-bottom: 1px solid var(--color-gray-200);
             font-size: 0.95rem;
             color: #f8fafc;
-            /* specific off-white for skills text */
         }
 
         .skill-list li:last-child {
@@ -167,130 +452,44 @@
     </div>
 
     <!-- Navigation -->
-    <!-- Navigation -->
     <div id="navbar-placeholder"></div>
     <script src="../js/navbar.js"></script>
 
-    <!-- Mobile Menu -->
-
     <!-- Page Header -->
     <section class="hero" style="min-height: 40vh; padding-top: 120px; position: relative; overflow: hidden;">
-
         <div class="container" style="position: relative; z-index: 1;">
             <div class="page-hero-content">
                 <h1 class="animate-fade-in-up delay-100">My Academic Journey</h1>
                 <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
-                    Education, experience, and skills in astrophysics research
+                    Research, teaching, and the path through astrophysics
                 </p>
-                <!-- Button removed -->
             </div>
         </div>
     </section>
 
-    <!-- Education -->
+    <!-- My Journey -->
     <section class="section">
         <div class="container">
             <div class="section-header text-center reveal" style="margin-bottom: var(--space-8); width: 100%;">
-                <h2 style="font-size: 2.5rem; margin-bottom: 0;">Academic Background</h2>
+                <h2 style="font-size: 2.5rem; margin-bottom: 0;">My Journey</h2>
             </div>
 
-            <div class="glass-card reveal">
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-date">Jan 2025 – Present</div>
-                        <div class="timeline-title">Doctor of Philosophy (PhD)</div>
-                        <div class="timeline-institution">The University of Queensland</div>
-                        <div class="timeline-description">
-                            Computational and Theoretical Astrophysics. Research focuses on the formation and dynamics
-                            of
-                            black holes within dense star clusters.
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-date">Feb 2024 – Dec 2024</div>
-                        <div class="timeline-title">Bachelor of Science (Honours)</div>
-                        <div class="timeline-institution">Queensland University of Technology</div>
-                        <div class="timeline-description">
-                            Physics Major (Astronomy and Astrophysics). Honours research on the effect of active
-                            galactic
-                            nuclei on host galaxies.
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-date">2020 – 2023</div>
-                        <div class="timeline-title">Bachelor of Science (Physics Major)</div>
-                        <div class="timeline-institution">Queensland University of Technology</div>
-                        <div class="timeline-description">
-                            Focused on astronomy and astrophysics. Dean's List for Academic Excellence (2020-2023).
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-date">2020 – 2023</div>
-                        <div class="timeline-title">Bachelor of Information Technology (Computer Science Major)</div>
-                        <div class="timeline-institution">Queensland University of Technology</div>
-                        <div class="timeline-description">
-                            Completed as a double degree alongside BSc. Dean's List for Academic Excellence (2020-2023).
-                        </div>
-                    </div>
+            <div class="glass-card journey-shell reveal">
+                <div class="timeline-rails" aria-hidden="true">
+                    <span class="timeline-rails__edu">Education</span>
+                    <span class="timeline-rails__pro">Professional</span>
+                </div>
+                <div class="timeline" id="journey-timeline" role="list" aria-label="Academic and professional milestones">
+                    <!-- Items injected by JS -->
                 </div>
             </div>
-        </div>
-        </div>
-    </section>
-
-    <!-- Experience -->
-    <section class="section section-alt">
-        <div class="container">
-            <div class="section-header text-center reveal" style="margin-bottom: var(--space-8); width: 100%;">
-                <h2 style="font-size: 2.5rem; margin-bottom: 0;">Teaching & Academic Roles</h2>
-            </div>
-
-            <div class="glass-card reveal">
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-date">July 2025 – Present</div>
-                        <div class="timeline-title">Casual Academic</div>
-                        <div class="timeline-institution">The University of Queensland</div>
-                        <div class="timeline-description">
-                            Tutoring and marking for PHYS3071 - Computational Physics I.
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-date">Jan 2024 – Present</div>
-                        <div class="timeline-title">Sessional Academic</div>
-                        <div class="timeline-institution">Queensland University of Technology</div>
-                        <div class="timeline-description">
-                            Tutoring and marking in physics courses including PVB220 (Cosmology), SEB122 (Physics in The
-                            Real World), SEB108 (Data Analysis and Visualisation), and PVB102 (Physics of the Very
-                            Small).
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="timeline-date">Jan 2023 – Dec 2024</div>
-                        <div class="timeline-title">Lead Student Success Partner (STEM)</div>
-                        <div class="timeline-institution">Queensland University of Technology</div>
-                        <div class="timeline-description">
-                            Coordinated teams of volunteers for QUT's STIMulate Program. Ran study sessions, academic
-                            workshops, and provided support for science, engineering, mathematics, and IT topics.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
         </div>
     </section>
 
     <!-- Awards -->
-    <section class="section">
+    <section class="section section-alt">
         <div class="container">
             <div class="section-header reveal">
-
                 <h2>Awards & Honours</h2>
             </div>
 
@@ -363,17 +562,16 @@
                 </div>
             </div>
         </div>
-        </div>
     </section>
 
     <!-- Skills -->
-    <section class="section section-alt">
+    <section class="section">
         <div class="container">
             <div class="section-header text-center reveal" style="margin-bottom: var(--space-8); width: 100%;">
                 <h2 style="font-size: 2.5rem; margin-bottom: 0;">Technical & Professional Expertise</h2>
             </div>
 
-            <div class="glass-card reveal">
+            <div class="glass-card reveal" style="display:block;">
                 <div class="skills-grid">
                     <div class="skill-category">
                         <h4><i class="fas fa-brain"></i> Research</h4>
@@ -416,10 +614,11 @@
                     </div>
                 </div>
             </div>
+        </div>
     </section>
 
     <!-- Download CTA -->
-    <section class="section">
+    <section class="section section-alt">
         <div class="container text-center">
             <div class="reveal">
                 <h2>Want the Full Details?</h2>
@@ -434,21 +633,151 @@
         </div>
     </section>
 
-
-
     <!-- Footer -->
     <div id="footer-placeholder"></div>
 
-    <!-- JavaScript -->
-    <script>
-
-
-    </script>
     <script src="../js/footer.js"></script>
     <script src="../js/back-to-top.js"></script>
     <script src="../js/animations.js"></script>
     <script>
         new Footer().init('../');
+
+        (function initJourneyTimeline() {
+            const milestones = [
+                {
+                    id: 'undergrad',
+                    kind: 'education',
+                    date: '2020 – 2023',
+                    title: 'BSc (Physics) & BIT (Computer Science)',
+                    institution: 'Queensland University of Technology',
+                    logo: null,
+                    text: 'Completed a double degree focused on astronomy, astrophysics, and computational methods. Dean\'s List standing across science and IT laid the modelling and programming foundation for research and teaching alike.',
+                    tags: ['Dean\'s List 2020–2023', 'Physics Major', 'Computer Science']
+                },
+                {
+                    id: 'lead-ssp',
+                    kind: 'professional',
+                    date: 'Jan 2023 – Dec 2024',
+                    title: 'Lead Student Success Partner (STEM)',
+                    institution: 'Queensland University of Technology',
+                    logo: null,
+                    text: 'Led volunteer teams for QUT\'s STIMulate program — running study sessions and academic workshops, and supporting students across science, engineering, mathematics, and IT. A first deep dive into STEM education leadership alongside undergraduate study.',
+                    tags: ['STIMulate Program', 'Peer Learning', 'Team Leadership']
+                },
+                {
+                    id: 'honours',
+                    kind: 'education',
+                    date: 'Feb 2024 – Dec 2024',
+                    title: 'Bachelor of Science (Honours)',
+                    institution: 'Queensland University of Technology',
+                    logo: null,
+                    text: 'Honours research on the effect of active galactic nuclei on host galaxies. Graduated as the Australian Institute of Physics Most Outstanding Graduating Student in Queensland and received the Faculty of Science Honours Scholarship.',
+                    tags: ['AIP Outstanding Graduate', 'FoS Honours Scholarship', 'AGN Research']
+                },
+                {
+                    id: 'tutor-qut',
+                    kind: 'professional',
+                    date: 'Jan 2024 – Present',
+                    title: 'Sessional Academic / Tutor',
+                    institution: 'Queensland University of Technology',
+                    logo: null,
+                    text: 'Tutoring and marking across undergraduate physics — from foundational concepts and data analysis through to cosmology — helping students build intuition for how the universe works while sharpening my own communication of complex ideas.',
+                    tags: ['Physics Tutor', 'Undergraduate Teaching', 'Sessional Academic']
+                },
+                {
+                    id: 'phd',
+                    kind: 'education',
+                    date: 'Jan 2025 – Present',
+                    title: 'Doctor of Philosophy (PhD)',
+                    institution: 'The University of Queensland',
+                    logo: '../images/logos/icons/uq-crest.png',
+                    text: 'Computational and theoretical astrophysics at UQ. Research focuses on the formation and dynamics of black holes within dense star clusters — linking stellar dynamics to gravitational-wave source populations.',
+                    tags: ['Black Hole Dynamics', 'Dense Star Clusters', 'N-body']
+                },
+                {
+                    id: 'ozgrav',
+                    kind: 'professional',
+                    date: '2025 – Present',
+                    title: 'OzGrav Member',
+                    institution: 'ARC Centre of Excellence for Gravitational Wave Discovery',
+                    logo: '../images/logos/icons/ozgrav.png',
+                    text: 'Contributing to Australia\'s gravitational-wave research network. Collaborating across theory and computation to connect cluster dynamics with observable GW signatures and the broader OzGrav science programme.',
+                    tags: ['Gravitational Waves', 'Collaboration', 'Theory & Computation']
+                },
+                {
+                    id: 'tutor-uq',
+                    kind: 'professional',
+                    date: 'July 2025 – Present',
+                    title: 'Casual Academic / Tutor',
+                    institution: 'The University of Queensland',
+                    logo: '../images/logos/icons/uq-crest.png',
+                    text: 'Tutoring computational physics at UQ — guiding students through numerical methods and scientific programming as they learn to turn physical ideas into working models. Teaching continues in parallel with PhD research.',
+                    tags: ['Computational Physics', 'Casual Academic', 'UQ']
+                }
+            ];
+
+            const timelineEl = document.getElementById('journey-timeline');
+            if (!timelineEl) return;
+
+            let activeIndex = 4; // PhD
+            let items = [];
+
+            function createItems() {
+                timelineEl.innerHTML = '';
+                items = milestones.map((m, index) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `timeline-item timeline-item--${m.kind}`;
+                    btn.setAttribute('role', 'listitem');
+                    btn.setAttribute('aria-expanded', 'false');
+                    btn.id = `journey-item-${m.id}`;
+
+                    const kindLabel = m.kind === 'education' ? 'Education' : 'Professional';
+                    const logoHtml = m.logo
+                        ? `<img src="${m.logo}" alt="" loading="lazy">`
+                        : '';
+
+                    const tagsHtml = m.tags
+                        .map((tag) => `<span class="timeline-tag">${tag}</span>`)
+                        .join('');
+
+                    btn.innerHTML = `
+                        <div class="timeline-kind">${kindLabel}</div>
+                        <div class="timeline-date">${m.date}</div>
+                        <div class="timeline-title">${m.title}</div>
+                        <div class="timeline-institution">
+                            ${logoHtml}
+                            <span>${m.institution}</span>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-panel__inner">
+                                <p class="timeline-description">${m.text}</p>
+                                <div class="timeline-tags">${tagsHtml}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    btn.addEventListener('click', () => setActive(index));
+                    btn.addEventListener('mouseenter', () => setActive(index));
+                    btn.addEventListener('focus', () => setActive(index));
+
+                    timelineEl.appendChild(btn);
+                    return btn;
+                });
+            }
+
+            function setActive(index) {
+                activeIndex = index;
+                items.forEach((btn, i) => {
+                    const isActive = i === index;
+                    btn.classList.toggle('is-active', isActive);
+                    btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+                });
+            }
+
+            createItems();
+            setActive(activeIndex);
+        })();
     </script>
 </body>
 
