@@ -2,7 +2,7 @@
  * Shared hero badge combo router
  * --------------------------------
  * Listens to the three hero chips and fires named CustomEvents when a
- * secret sequence is completed. Both the terminal and blackboard easter
+ * secret sequence is completed. Terminal, blackboard, and pet easter
  * eggs register through this module.
  */
 
@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             name: 'blackboard',
             sequence: ['phd', 'ozgrav', 'ozgrav', 'comp'],
+        },
+        {
+            name: 'pet',
+            sequence: ['comp', 'ozgrav', 'phd', 'phd'],
         },
     ];
 

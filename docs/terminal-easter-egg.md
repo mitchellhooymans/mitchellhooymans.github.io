@@ -91,15 +91,57 @@ On success the hero card flashes and morphs into a wooden-framed chalk blackboar
 
 ---
 
+## Stellar buddy (evolution pet)
+
+### How to trigger it
+
+1. **Computational Astrophysics** × 1
+2. **OzGrav** × 1
+3. **PhD** × 2
+
+A stellar-evolution desk pet with persistent save data (`localStorage` key `stellarBuddySave`). Closing the panel or leaving the page keeps progress; reopening applies offline time (fuel drain, activity, wind debris, possible instability).
+
+### Life cycle (mass tracks)
+
+| Stage | Object |
+|---|---|
+| Prestellar | **Dust Core** (molecular-cloud core) |
+| Class 0 | **Protostar** (collapsing, not yet fusing) |
+| Pre-MS | **T Tauri** (still contracting; bipolar jets) |
+| Main Sequence | **Blue Sequence** (high mass / lots of accretion) · **G Dwarf** (balanced) · **Red Dwarf** (neglected / low mass) |
+| Late | **Black Hole** · **Red Giant** · **White Dwarf** |
+
+Mass is raised by **Accrete**; fuel is restored by **Fuel** (hydrogen pellets). Evolution at ZAMS / post-MS follows those care proxies.
+
+### Actions
+
+| Button | Astrophysics meaning |
+|---|---|
+| **Fuel** | Drop a hydrogen pellet; the object walks over and accretes it |
+| **Flare** | Activity / magnetic flare (also click the object) |
+| **Accrete** | Increase mass (affects evolutionary track); costs some fuel |
+| **Sweep** | Clear one stellar-wind debris clump |
+| **Quench** | Fix thermal instability |
+| **Dome** | Observatory night / day (dormant when closed) |
+| **Status** | Fuel / Activity / Mass / Stability (+ approx M☉) |
+| **Restart** | Only when gone — new Dust Core |
+
+Neglect (fuel exhaustion, debris, care slips) can end the run. Esc or ✕ closes (and saves).
+
+- Logic: `js/hero-pet.js` (listens for `hero-combo:pet`)
+
+---
+
 ## Key files
 
 | File | Purpose |
 |---|---|
-| `index.html` | Hero markup, stat chips (`data-chip`), terminal + blackboard DOM, script includes |
-| `styles.css` | Terminal / blackboard / game visual styling |
+| `index.html` | Hero markup, stat chips (`data-chip`), terminal / blackboard / pet DOM, script includes |
+| `styles.css` | Terminal / blackboard / pet / game visual styling |
 | `js/hero-combos.js` | Shared chip combo detection + overlay lock (`HeroCombos`) |
 | `js/hero-terminal.js` | Terminal boot, commands, login, games |
 | `js/hero-blackboard.js` | Chalkboard canvas drawing + guide shapes |
+| `js/hero-pet.js` | Stellar-evolution buddy + localStorage save |
 | `games/*.js` | Game engine + individual games + high scores |
 
 ## Notes

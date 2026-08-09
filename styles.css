@@ -1641,6 +1641,217 @@ p {
     }
 }
 
+/* -------------------- Hero desktop pet easter egg -------------------- */
+.hero-pet {
+    display: none;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.hero-pet.pet-visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.pet-window {
+    width: 100%;
+    background: #121a28;
+    border: 1px solid rgba(120, 160, 200, 0.35);
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 0 0 5px #2a3548,
+        0 0 0 7px #1a2233,
+        0 25px 50px -12px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    text-align: left;
+}
+
+.pet-titlebar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.65rem var(--space-4);
+    background: #1c2738;
+    border-bottom: 1px solid rgba(120, 160, 200, 0.2);
+}
+
+.pet-title {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: #c5d4e8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pet-canvas-wrap {
+    padding: var(--space-3);
+    background: #0f1624;
+    position: relative;
+}
+
+#pet-canvas {
+    display: block;
+    width: 100%;
+    height: 300px;
+    border-radius: var(--radius-md);
+    cursor: default;
+    box-shadow: inset 0 0 0 1px rgba(166, 124, 82, 0.2);
+    background: #152238;
+}
+
+.pet-meters {
+    position: absolute;
+    left: calc(var(--space-3) + 10px);
+    top: calc(var(--space-3) + 10px);
+    right: auto;
+    width: min(220px, 46%);
+    padding: 0.55rem 0.65rem;
+    background: rgba(18, 26, 40, 0.92);
+    border: 1px solid rgba(120, 160, 200, 0.35);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+.pet-meter {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: #c5d4e8;
+}
+
+.pet-meter:last-child {
+    margin-bottom: 0;
+}
+
+.pet-meter-track {
+    height: 7px;
+    background: rgba(120, 160, 200, 0.18);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.pet-meter-track i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: #38bdf8;
+}
+
+.pet-meter-track i.is-mid {
+    background: #d4a017;
+}
+
+.pet-meter-track i.is-low {
+    background: #c45c5c;
+}
+
+.pet-meter-meta {
+    margin-top: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: rgba(168, 189, 212, 0.7);
+    line-height: 1.35;
+}
+
+.pet-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: #1c2738;
+    border-top: 1px solid rgba(120, 160, 200, 0.2);
+}
+
+.pet-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.pet-action-btn {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #9dd8f5;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.pet-action-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.22);
+    color: #e0f4ff;
+}
+
+.pet-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pet-action-btn.is-active {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: #38bdf8;
+}
+
+.pet-restart-btn {
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.45);
+    color: #fca5a5;
+}
+
+.pet-restart-btn:hover:not(:disabled) {
+    background: rgba(248, 113, 113, 0.22);
+    color: #fecaca;
+}
+
+.pet-status {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: #a8bdd4;
+    flex: 1 1 140px;
+}
+
+.pet-hint {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: rgba(168, 189, 212, 0.55);
+}
+
+@media (max-width: 767px) {
+    #pet-canvas {
+        height: 240px;
+    }
+
+    .pet-meters {
+        width: min(180px, 55%);
+    }
+
+    .pet-hint {
+        width: 100%;
+        margin-left: 0;
+        order: 5;
+    }
+
+    .pet-title {
+        font-size: 0.7rem;
+    }
+}
+
 /* -------------------- Buttons -------------------- */
 .btn {
     display: inline-flex;

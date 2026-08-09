@@ -227,6 +227,36 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Hidden desk buddy pet, revealed via a different hero badge combo -->
+            <div class="hero-pet" id="hero-pet" aria-hidden="true">
+                <div class="pet-window">
+                    <div class="pet-titlebar">
+                        <span class="pet-title" id="pet-title">Dust Core · Prestellar</span>
+                        <button type="button" class="terminal-close" id="pet-close"
+                            aria-label="Close stellar buddy">✕</button>
+                    </div>
+                    <div class="pet-canvas-wrap">
+                        <canvas id="pet-canvas" aria-label="Stellar evolution buddy"></canvas>
+                        <div class="pet-meters" id="pet-meters" hidden></div>
+                    </div>
+                    <div class="pet-toolbar">
+                        <div class="pet-actions" role="group" aria-label="Stellar care actions">
+                            <button type="button" class="pet-action-btn" id="pet-feed" title="Drop a hydrogen pellet">Fuel</button>
+                            <button type="button" class="pet-action-btn" id="pet-play" title="Trigger a flare">Flare</button>
+                            <button type="button" class="pet-action-btn" id="pet-train" title="Accrete mass">Accrete</button>
+                            <button type="button" class="pet-action-btn" id="pet-clean" title="Clear stellar-wind debris">Sweep</button>
+                            <button type="button" class="pet-action-btn" id="pet-meds" title="Quench thermal instability">Quench</button>
+                            <button type="button" class="pet-action-btn" id="pet-light" title="Toggle observatory dome">Dome</button>
+                            <button type="button" class="pet-action-btn" id="pet-status-btn" title="Show stellar stats">Status</button>
+                            <button type="button" class="pet-action-btn pet-restart-btn" id="pet-restart" hidden
+                                title="Condense a new Dust Core">Restart</button>
+                        </div>
+                        <span class="pet-status" id="pet-status">A Dust Core is collapsing…</span>
+                        <span class="pet-hint">Click the object to flare · Esc closes</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -409,6 +439,7 @@
     <script src="js/hero-combos.js"></script>
     <script src="js/hero-terminal.js"></script>
     <script src="js/hero-blackboard.js"></script>
+    <script src="js/hero-pet.js"></script>
 </body>
 
 </html>
