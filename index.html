@@ -187,6 +187,46 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Hidden chalkboard, revealed via a different hero badge combo -->
+            <div class="hero-blackboard" id="hero-blackboard" aria-hidden="true">
+                <div class="blackboard-window">
+                    <div class="blackboard-titlebar">
+                        <span class="blackboard-title">Astro chalkboard</span>
+                        <button type="button" class="terminal-close" id="blackboard-close"
+                            aria-label="Close blackboard">✕</button>
+                    </div>
+                    <div class="blackboard-canvas-wrap">
+                        <canvas id="blackboard-canvas" aria-label="Drawing chalkboard"></canvas>
+                    </div>
+                    <div class="blackboard-toolbar">
+                        <div class="blackboard-colors" role="group" aria-label="Chalk colour">
+                            <button type="button" class="chalk-swatch is-active" data-chalk="white"
+                                style="--chalk:#f4f7f2" aria-label="White chalk" title="White"></button>
+                            <button type="button" class="chalk-swatch" data-chalk="yellow"
+                                style="--chalk:#f5e6a3" aria-label="Yellow chalk" title="Yellow"></button>
+                            <button type="button" class="chalk-swatch" data-chalk="blue"
+                                style="--chalk:#a8d4ef" aria-label="Blue chalk" title="Blue"></button>
+                            <button type="button" class="chalk-swatch" data-chalk="pink"
+                                style="--chalk:#f0b8c8" aria-label="Pink chalk" title="Pink"></button>
+                            <button type="button" class="chalk-swatch chalk-eraser" data-chalk="eraser"
+                                aria-label="Eraser" title="Eraser">⌫</button>
+                        </div>
+                        <div class="blackboard-presets" role="group" aria-label="Outline presets">
+                            <button type="button" class="blackboard-preset-btn" data-preset="star"
+                                aria-label="Star outline" title="Star">★</button>
+                            <button type="button" class="blackboard-preset-btn" data-preset="crescent"
+                                aria-label="Crescent moon outline" title="Crescent moon">☾</button>
+                            <button type="button" class="blackboard-preset-btn" data-preset="saturn"
+                                aria-label="Saturn outline" title="Saturn">♄</button>
+                            <button type="button" class="blackboard-preset-btn" data-preset="sun"
+                                aria-label="Sun outline" title="Sun">☼</button>
+                        </div>
+                        <button type="button" class="blackboard-clear-btn" id="blackboard-clear">Clear</button>
+                        <span class="blackboard-hint">Draw · Esc to close</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -366,7 +406,9 @@
     <script src="games/snake.js"></script>
     <script src="games/invaders.js"></script>
     <script src="games/spaceship.js"></script>
+    <script src="js/hero-combos.js"></script>
     <script src="js/hero-terminal.js"></script>
+    <script src="js/hero-blackboard.js"></script>
 </body>
 
 </html>

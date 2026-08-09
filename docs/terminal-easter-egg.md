@@ -1,22 +1,27 @@
-# Hero Terminal Easter Egg — Quick Reference
+# Hero Easter Eggs — Quick Reference
 
-Private cheat-sheet for the hidden terminal on the homepage hero section, in case future-me forgets how it works.
+Private cheat-sheet for the hidden hero overlays on the homepage, in case future-me forgets how it works.
 
-## How to trigger it
+Shared combo routing lives in `js/hero-combos.js`. Clicks must land within ~3.5 seconds of each other (timer resets on every click). Only one overlay can be open at a time.
 
-On the homepage hero card, click the three stat chips in this exact order/count, within ~3.5 seconds of each click (timer resets on every click):
+Chips are marked with `data-chip="ozgrav" | "phd" | "comp"` in `index.html`.
+
+---
+
+## Terminal
+
+### How to trigger it
 
 1. **OzGrav** × 2
 2. **PhD** × 1
 3. **Computational Astrophysics** × 3
 
-On success the hero card flashes and morphs into a full-screen-style terminal window with a boot sequence.
+On success the hero card flashes and morphs into a terminal window with a boot sequence.
 
-- Trigger logic lives in `js/hero-terminal.js` → `COMBO` array + `handleChipInput()`.
-- Chips are marked with `data-chip="ozgrav" | "phd" | "comp"` in `index.html`.
-- Press `Esc` or click the terminal's close button to exit back to the normal hero.
+- Logic: `js/hero-terminal.js` (listens for `hero-combo:terminal`)
+- Press `Esc` or click the terminal's close button to exit
 
-## Login
+### Login
 
 Type `login` at the prompt, then enter:
 
@@ -27,7 +32,7 @@ Any other credentials are rejected. On success you become root (`mitchellhooyman
 
 Credentials/logic: `js/hero-terminal.js` → `VALID_USERNAME`, `VALID_PASSWORD`, `runAuthentication()`.
 
-## Command list
+### Command list
 
 | Command | What it does |
 |---|---|
@@ -46,13 +51,13 @@ Credentials/logic: `js/hero-terminal.js` → `VALID_USERNAME`, `VALID_PASSWORD`,
 | `secrets` | Root-only classified facts |
 | `mainframe` | Root-only effect/sequence |
 | `games` | Lists playable ASCII games + best scores |
-| `play <name>` | Launches a game (or just type the game name directly) |
+| `play <name>` | Play a game (snake, invaders, spaceship) |
 | `highscores` (aka `scores`, `leaderboard`) | Shows best score per game |
 | `highscores reset` | Clears all saved high scores |
 | `clear` | Clears the terminal screen |
 | `exit` / `back` / `quit` | Closes the terminal, returns to hero |
 
-## Games
+### Games
 
 Three ASCII games, playable directly in the terminal body:
 
@@ -67,13 +72,34 @@ Game files live in `games/`:
 - `snake.js`, `invaders.js`, `spaceship.js` — individual game descriptors (`TerminalGames`)
 - `highscores.js` — persistent best-score storage (`TerminalHighScores`, backed by `localStorage` key `astroShellHighScores`)
 
+---
+
+## Blackboard
+
+### How to trigger it
+
+1. **PhD** × 1
+2. **OzGrav** × 2
+3. **Computational Astrophysics** × 1
+
+On success the hero card flashes and morphs into a wooden-framed chalk blackboard. A random celestial outline is pre-sketched lightly (star, crescent moon, Saturn, or sun) so you can trace or freestyle over it — the title does not reveal which one.
+
+- Logic: `js/hero-blackboard.js` (listens for `hero-combo:blackboard`)
+- Tools: white / yellow / blue / pink chalk, eraser, Clear (wipes drawings **and** the outline)
+- Presets: ★ / ☾ / ♄ / ☼ buttons swap in a fresh outline (also clears current drawing)
+- Press `Esc` or click ✕ to exit
+
+---
+
 ## Key files
 
 | File | Purpose |
 |---|---|
-| `index.html` | Hero markup, stat chips (`data-chip`), terminal DOM, script includes |
-| `styles.css` | All terminal/game visual styling (search `.hero-terminal`, `.game-screen`) |
-| `js/hero-terminal.js` | Combo detection, boot sequence, command parser, login flow, game lifecycle |
+| `index.html` | Hero markup, stat chips (`data-chip`), terminal + blackboard DOM, script includes |
+| `styles.css` | Terminal / blackboard / game visual styling |
+| `js/hero-combos.js` | Shared chip combo detection + overlay lock (`HeroCombos`) |
+| `js/hero-terminal.js` | Terminal boot, commands, login, games |
+| `js/hero-blackboard.js` | Chalkboard canvas drawing + guide shapes |
 | `games/*.js` | Game engine + individual games + high scores |
 
 ## Notes
@@ -81,3 +107,4 @@ Game files live in `games/`:
 - Everything is client-side vanilla JS — no backend, no real auth. It's just for fun/immersion on my own site.
 - High scores are per-browser (via `localStorage`), not synced across devices.
 - If you add a new game, register it in `TerminalGames` (in its own file under `games/`), add it to `GAME_NAMES` in `js/hero-terminal.js`, and add a line to `printGamesList()`.
+- If you add another chip combo, register it in `COMBOS` inside `js/hero-combos.js` and listen for `hero-combo:<name>`.

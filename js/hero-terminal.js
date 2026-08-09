@@ -1,17 +1,16 @@
 /**
  * Hidden Hero Terminal Easter Egg
  * ---------------------------------
- * Click the three hero badges in the secret combo:
+ * Triggered via the shared combo router (js/hero-combos.js):
  *   OzGrav x2  ->  PhD x1  ->  Computational Astrophysics x3
  * ...and the hero card transforms into an interactive terminal.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     const glassCard = document.getElementById('hero-glass-card');
-    const chips = document.querySelectorAll('#hero-stats .stat-chip[data-chip]');
     const terminalPanel = document.getElementById('hero-terminal');
 
-    if (!glassCard || !chips.length || !terminalPanel) return;
+    if (!glassCard || !terminalPanel) return;
 
     const profileFrame = glassCard.querySelector('.profile-frame');
     const heroContent = glassCard.querySelector('.hero-content-glass');
@@ -32,58 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
         spaceship: 'SPACESHIP \u2014 \u2191/\u2193 or W/S to move \u00b7 space to fire \u00b7 q/Esc to quit',
     };
 
-    // ---------------------------------------------------------------
-    // Secret combo detection
-    // ---------------------------------------------------------------
-    const COMBO = ['ozgrav', 'ozgrav', 'phd', 'comp', 'comp', 'comp'];
-    let progress = 0;
-    let comboResetTimer = null;
     let terminalActive = false;
     let activeGame = null;
     let activeGameScreen = null;
     let activeGameName = null;
 
-    chips.forEach((chip) => {
-        chip.addEventListener('click', () => handleChipInput(chip));
-        chip.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleChipInput(chip);
-            }
-        });
-    });
-
-    function handleChipInput(chip) {
-        if (terminalActive) return;
-
-        // Tactile click feedback
-        chip.classList.remove('chip-pressed');
-        void chip.offsetWidth; // restart animation
-        chip.classList.add('chip-pressed');
-
-        const key = chip.getAttribute('data-chip');
-
-        clearTimeout(comboResetTimer);
-        comboResetTimer = setTimeout(() => { progress = 0; }, 3500);
-
-        if (key === COMBO[progress]) {
-            progress++;
-            if (progress === COMBO.length) {
-                progress = 0;
-                clearTimeout(comboResetTimer);
-                activateTerminal();
-            }
-        } else {
-            progress = key === COMBO[0] ? 1 : 0;
-        }
-    }
+    document.addEventListener('hero-combo:terminal', activateTerminal);
 
     // ---------------------------------------------------------------
     // Activate / deactivate the terminal
     // ---------------------------------------------------------------
     function activateTerminal() {
         if (terminalActive) return;
+        if (window.HeroCombos && window.HeroCombos.isOverlayActive()) return;
         terminalActive = true;
+        if (window.HeroCombos) window.HeroCombos.setOverlayActive(true);
 
         glassCard.classList.add('terminal-flash');
         setTimeout(() => glassCard.classList.remove('terminal-flash'), 550);
@@ -112,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function deactivateTerminal() {
         if (!terminalActive) return;
         terminalActive = false;
+        if (window.HeroCombos) window.HeroCombos.setOverlayActive(false);
 
         stopMatrix();
         clearBootTimers();
