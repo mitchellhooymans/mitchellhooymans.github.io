@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check depth based on known subdirectories
     // If we are in pages, simulations, tutorials (non-interactive), tools, or blog
     let rootPath = "./";
-    if (path.includes("/pages/") || path.includes("/simulations/") || path.includes("/tutorials/") || path.includes("/tools/") || path.includes("/blog/")) {
+    if (path.includes("/pages/") || path.includes("/simulations/") || path.includes("/tutorials/") || path.includes("/tools/") || path.includes("/blog/") || path.includes("/science/")) {
         rootPath = "../";
     }
 

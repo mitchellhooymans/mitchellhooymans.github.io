@@ -4,84 +4,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Science | Mitchell Hooymans</title>
+    <meta name="robots" content="noindex,nofollow">
+    <title>Science Lab | Mitchell Hooymans</title>
     <meta name="description"
-        content="Science projects and research write-ups by Mitchell Hooymans, coming soon.">
-    <link rel="canonical" href="https://mitchellhooymans.com/science/" />
+        content="Unlisted science-lab dashboards and research write-ups by Mitchell Hooymans.">
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mitchellhooymans.com/science/">
-    <meta property="og:title" content="Science | Mitchell Hooymans">
-    <meta property="og:description" content="Science projects and research write-ups, coming soon.">
-    <meta property="og:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://mitchellhooymans.com/science/">
-    <meta name="twitter:title" content="Science | Mitchell Hooymans">
-    <meta name="twitter:description" content="Science projects and research write-ups, coming soon.">
-    <meta name="twitter:image" content="https://mitchellhooymans.com/images/general/milkyway.jpg">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
     <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
     <link rel="manifest" href="../images/favicon/site.webmanifest">
-
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="../js/stars.js"></script>
+    <style>
+        .lab-hero {
+            min-height: 42vh;
+            padding-top: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lab-hero .page-hero-content {
+            text-align: left;
+            max-width: 720px;
+            margin: 0;
+        }
+
+        .lab-note {
+            margin-top: var(--space-5);
+            font-size: 0.85rem;
+            color: var(--color-gray-400);
+            font-family: var(--font-mono);
+        }
+
+        .lab-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Global Nebula Background -->
     <div class="global-nebula">
         <div class="nebula-glow"></div>
         <div class="nebula-glow"></div>
     </div>
 
-    <!-- Navigation -->
     <div id="navbar-placeholder"></div>
     <script src="../js/navbar.js"></script>
 
-    <!-- Page Header -->
-    <section class="hero" style="min-height: 60vh; padding-top: 120px; position: relative; overflow: hidden;">
+    <section class="lab-hero">
         <div class="container" style="position: relative; z-index: 1;">
             <div class="page-hero-content">
-                <span class="category-badge utility" style="margin-bottom: var(--space-4);">
-                    <i class="fas fa-flask"></i> Coming Soon
+                <span class="category-badge astrophysics" style="margin-bottom: var(--space-4);">
+                    <i class="fas fa-flask"></i> Unlisted
                 </span>
-                <h1 class="animate-fade-in-up delay-100">Science</h1>
-                <p class="hero-subtitle animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
-                    A home for ongoing science projects, write-ups, and mini-investigations, currently under
-                    construction.
+                <h1 class="animate-fade-in-up delay-100">Science Lab</h1>
+                <p class="hero-subtitle animate-fade-in-up delay-200" style="margin: 0;">
+                    Working research dashboards and mini-investigations. Not linked from the public site.
                 </p>
-                <p style="max-width: 600px; margin: var(--space-6) auto 0; color: var(--color-gray-500);">
-                    Check back soon, or explore
-                    <a href="../pages/research.html" style="color: var(--color-accent);">Research</a>
-                    or
-                    <a href="../pages/tools.html" style="color: var(--color-accent);">Tools</a>
-                    in the meantime.
+                <p class="lab-note animate-fade-in-up delay-200">
+                    guest@mitchellhooymans.com:~$ open science
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <div id="footer-placeholder"></div>
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <div class="grid" style="max-width: 560px;">
+                <div class="card reveal">
+                    <div class="card-body">
+                        <h3 class="card-title">BH Likelihood Residual Planes</h3>
+                        <div class="lab-card-meta">
+                            <span class="category-badge astrophysics">Globular clusters</span>
+                            <span class="category-badge utility">Interactive</span>
+                        </div>
+                        <p class="card-text">
+                            Residual-diagnostic planes and present-day structure/kinematics for the
+                            Baumgardt globular cluster sample. Switch figures, hover to highlight
+                            histogram bins, click through to the catalogue.
+                        </p>
+                        <a href="bh-likelihood.html" class="btn btn-primary sim-btn">
+                            <i class="fas fa-chart-area"></i>
+                            Open dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- JavaScript -->
+    <div id="footer-placeholder"></div>
     <script src="../js/footer.js"></script>
     <script src="../js/back-to-top.js"></script>
     <script src="../js/animations.js"></script>

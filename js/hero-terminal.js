@@ -382,10 +382,16 @@ document.addEventListener('DOMContentLoaded', () => {
         tutorials: 'pages/tutorials.html',
         resources: 'pages/resources.html',
         home: 'index.html',
+        science: 'science/',
+        lab: 'science/',
+        residuals: 'science/bh-likelihood.html',
+        'bh-likelihood': 'science/bh-likelihood.html',
+        bh: 'science/bh-likelihood.html',
     };
     const NAV_SHORTCUTS = new Set([
         'cv', 'resume', 'research', 'contact', 'blog', 'tools', 'simulations',
         'sim', 'talks', 'photography', 'photos', 'tutorials', 'resources', 'home',
+        'residuals', 'bh-likelihood', 'bh', 'lab',
     ]);
     const GAME_NAMES = new Set(['snake', 'invaders', 'spaceship']);
 
@@ -411,7 +417,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ls':
                 printLine('about/  cv/  research/  blog/  tools/  simulations/  talks/  photography/  contact/', '');
+                printLine('science/', 'accent');
                 printLine("Type 'open <name>' to navigate, e.g. 'open research'.", 'info');
+                printLine("Hidden lab: 'science' or 'open residuals'.", 'info');
                 break;
             case 'date':
                 printLine(new Date().toString(), '');
@@ -458,6 +466,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'mainframe':
                 triggerMainframe();
                 break;
+            case 'science':
+                printScienceLab();
+                break;
             case 'games':
                 printGamesList();
                 break;
@@ -500,6 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ['whoami', 'Who are you, really?'],
             ['ls', 'List site sections'],
             ['open <name>', 'Navigate to a section (cv, research, blog, tools, ...)'],
+            ['science', 'List hidden science-lab dashboards'],
             ['banner', 'Redisplay the ASCII banner'],
             ['history', 'Show command history'],
             ['matrix', 'Enter the matrix (type again to exit early)'],
@@ -530,6 +542,21 @@ document.addEventListener('DOMContentLoaded', () => {
         printLine('OzGrav member studying black hole dynamics in dense stellar environments and', '');
         printLine('their role as gravitational wave sources. Also dabbles in web dev & photography.', '');
         printLine("Type 'open about' for the full story.", 'info');
+    }
+
+    function printScienceLab() {
+        printLine('Science Lab \u2014 unpublished research dashboards.', 'accent');
+        printLine('These pages are not in the public nav or search index.', '');
+        const line = document.createElement('div');
+        line.className = 'term-line';
+        const cmdSpan = document.createElement('span');
+        cmdSpan.className = 'term-key';
+        cmdSpan.textContent = 'residuals'.padEnd(14, ' ');
+        line.appendChild(cmdSpan);
+        line.appendChild(document.createTextNode('BH likelihood residual planes (globular clusters)'));
+        terminalBody.appendChild(line);
+        printLine("Type 'open science' for the lab index, or 'open residuals' for the dashboard.", 'info');
+        scrollToBottom();
     }
 
     function printCoffee() {

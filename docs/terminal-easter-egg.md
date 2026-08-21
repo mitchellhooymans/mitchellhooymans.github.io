@@ -40,6 +40,7 @@ Credentials/logic: `js/hero-terminal.js` → `VALID_USERNAME`, `VALID_PASSWORD`,
 | `whoami` | Shows guest/root identity |
 | `ls` | Lists site sections |
 | `open <name>` | Navigates to a section (`cv`, `research`, `blog`, `tools`, ...) |
+| `science` | Lists hidden science-lab dashboards (`open science`, `open residuals`) |
 | `banner` | Redisplays the ASCII banner |
 | `history` | Command history |
 | `matrix` | Toggles matrix rain effect |
@@ -150,3 +151,4 @@ Neglect (fuel exhaustion, debris, care slips) can end the run. Esc or ✕ closes
 - High scores are per-browser (via `localStorage`), not synced across devices.
 - If you add a new game, register it in `TerminalGames` (in its own file under `games/`), add it to `GAME_NAMES` in `js/hero-terminal.js`, and add a line to `printGamesList()`.
 - If you add another chip combo, register it in `COMBOS` inside `js/hero-combos.js` and listen for `hero-combo:<name>`.
+- Science lab pages live in `science/` and are kept off the public nav, search index, and sitemap (`robots.txt` disallows `/science/`). Terminal entry points: `science`, `open science`, `open residuals`.

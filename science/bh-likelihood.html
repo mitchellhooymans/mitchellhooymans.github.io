@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>BH Likelihood Residual Planes | Science Lab</title>
+    <meta name="description"
+        content="Interactive residual-diagnostic planes for globular clusters, grouped by clustering method.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="shortcut icon" href="../images/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../images/favicon/site.webmanifest">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.plot.ly/plotly-3.7.0.min.js" charset="utf-8"></script>
+    <script src="bh-likelihood-data.js"></script>
+    <script src="bh-likelihood-structure-data.js"></script>
+    <script src="../js/stars.js"></script>
+
+    <style>
+        .dash-hero {
+            min-height: 0;
+            padding-top: 88px;
+            padding-bottom: 0.35rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-hero .container,
+        .dash-section .container {
+            max-width: 1480px;
+        }
+
+        .dash-hero .back-link {
+            margin-bottom: var(--space-2);
+        }
+
+        .dash-hero h1 {
+            font-size: clamp(1.45rem, 2vw, 1.9rem);
+            margin-bottom: var(--space-2);
+        }
+
+        .dash-hero p {
+            color: var(--color-gray-500);
+            max-width: 820px;
+            margin: 0;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .dash-stage {
+            display: flex;
+            flex-direction: column;
+            height: calc(100dvh - 218px);
+            min-height: 560px;
+            gap: var(--space-3);
+        }
+
+        .dash-kpis,
+        .dash-toolbar {
+            flex: 0 0 auto;
+        }
+
+        .plot-card {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dash-section {
+            padding-top: 0;
+            padding-bottom: var(--space-8);
+        }
+
+        .dash-kpis {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-2);
+            margin-bottom: var(--space-3);
+        }
+
+        @media (min-width: 900px) {
+            .dash-kpis {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .kpi-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            padding: 0.65rem 0.9rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--space-2);
+        }
+
+        .kpi-value {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--color-white);
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .kpi-value.accent {
+            color: var(--color-accent);
+        }
+
+        .kpi-value.mono {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+        }
+
+        .dash-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: var(--space-3) var(--space-5);
+            margin-bottom: var(--space-3);
+        }
+
+        .view-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4) var(--space-6);
+            align-items: flex-end;
+        }
+
+        .control-cluster {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .control-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+        }
+
+        .group-switch {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .group-switch .category-btn {
+            margin: 0;
+            font-size: 0.78rem;
+            padding: 0.35rem 0.7rem;
+        }
+
+        .dash-legend {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--color-gray-500);
+            font-family: var(--font-mono);
+        }
+
+        .legend-swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .control-cluster.is-hidden,
+        .kpi-card.is-hidden {
+            display: none;
+        }
+
+        .legend-mark {
+            width: 10px;
+            height: 10px;
+            flex-shrink: 0;
+        }
+
+        .legend-mark-circle {
+            border-radius: 50%;
+            background: var(--color-accent);
+            box-shadow: 0 0 8px var(--color-accent);
+        }
+
+        .legend-mark-diamond {
+            width: 8px;
+            height: 8px;
+            background: #e34948;
+            transform: rotate(45deg);
+        }
+
+        .legend-mark-star {
+            width: auto;
+            height: auto;
+            color: #c99a1e;
+            font-size: 0.85rem;
+            line-height: 1;
+        }
+
+        .plot-card {
+            position: relative;
+            background: rgba(9, 10, 15, 0.62);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-2xl);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .plot-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(ellipse 70% 45% at 50% 0%,
+                    rgba(56, 189, 248, 0.06) 0%,
+                    transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #gc-plot {
+            position: relative;
+            z-index: 1;
+            flex: 1 1 auto;
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .plot-hint {
+            position: absolute;
+            right: var(--space-4);
+            top: var(--space-3);
+            left: auto;
+            bottom: auto;
+            z-index: 2;
+            font-size: 0.72rem;
+            color: rgba(148, 163, 184, 0.7);
+            pointer-events: none;
+            font-family: var(--font-mono);
+        }
+
+        .dash-lower {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+        }
+
+        @media (min-width: 960px) {
+            .dash-lower {
+                grid-template-columns: 1.4fr 0.8fr;
+            }
+        }
+
+        .dash-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5) var(--space-6);
+        }
+
+        .dash-panel h2 {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--space-3);
+        }
+
+        .dash-panel p,
+        .dash-panel li {
+            font-size: 0.9rem;
+            color: var(--color-gray-500);
+            line-height: 1.65;
+        }
+
+        .dash-panel code {
+            font-family: var(--font-mono);
+            font-size: 0.82em;
+            color: var(--color-accent);
+        }
+
+        .dash-panel ul {
+            list-style: disc;
+            margin-left: 1.15rem;
+        }
+
+        .dash-panel li + li {
+            margin-top: 0.35rem;
+        }
+
+        .inspector-empty {
+            color: var(--color-gray-400);
+            font-style: italic;
+        }
+
+        .inspector-name {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            color: var(--color-white);
+            margin-bottom: var(--space-3);
+        }
+
+        .inspector-meta {
+            display: grid;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--color-gray-500);
+        }
+
+        .inspector-meta span {
+            color: var(--color-gray-300);
+        }
+
+        .baumgardt-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 959px) {
+            .dash-stage {
+                height: auto;
+                min-height: 0;
+            }
+
+            #gc-plot {
+                height: 780px;
+                flex: none;
+            }
+
+            .plot-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="global-nebula">
+        <div class="nebula-glow"></div>
+        <div class="nebula-glow"></div>
+    </div>
+
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+
+    <section class="dash-hero">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 5l-7 7 7 7" />
+                </svg>
+                Back to Science Lab
+            </a>
+            <span class="category-badge astrophysics">
+                <i class="fas fa-flask"></i> Science Lab
+            </span>
+            <h1 class="animate-fade-in-up">BH Likelihood Residual Planes</h1>
+            <p class="animate-fade-in-up delay-100">
+                Residual diagnostics and present-day structure for globular clusters
+                in the Baumgardt catalogue. Choose a figure, then a focus plane.
+            </p>
+        </div>
+    </section>
+
+    <section class="dash-section">
+        <div class="container">
+            <div class="dash-stage">
+            <div class="dash-kpis">
+                <div class="kpi-card">
+                    <div class="kpi-label">Clusters</div>
+                    <div class="kpi-value mono" id="kpi-n">—</div>
+                </div>
+                <div class="kpi-card" id="kpi-group-card">
+                    <div class="kpi-label" id="kpi-group-label">Grouping</div>
+                    <div class="kpi-value" id="kpi-group">K-Means</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Target</div>
+                    <div class="kpi-value" id="kpi-cluster">Hover a cluster</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Mass</div>
+                    <div class="kpi-value accent mono" id="kpi-mass">—</div>
+                </div>
+            </div>
+
+            <div class="dash-toolbar">
+                <div class="view-controls">
+                    <div class="control-cluster">
+                        <span class="control-label">Choose plot</span>
+                        <div class="group-switch" id="figure-switch" role="tablist" aria-label="Figure"></div>
+                    </div>
+                    <div class="control-cluster" id="grouping-cluster">
+                        <span class="control-label">Grouping</span>
+                        <div class="group-switch" id="group-switch" role="tablist" aria-label="Clustering method"></div>
+                    </div>
+                    <div class="control-cluster">
+                        <span class="control-label">Focus plane</span>
+                        <div class="group-switch" id="plane-switch" role="tablist" aria-label="Diagnostic plane"></div>
+                    </div>
+                </div>
+                <div class="dash-legend" id="dash-legend"></div>
+            </div>
+
+            <div class="plot-card">
+                <div id="gc-plot"></div>
+                <div class="plot-hint">hover → histogram bins &nbsp;·&nbsp; click → Baumgardt catalogue</div>
+            </div>
+            </div>
+
+            <div class="dash-lower">
+                <div class="dash-panel">
+                    <h2 id="methods-heading">Diagnostic planes</h2>
+                    <ul id="methods-list">
+                        <li><strong>Puffiness vs mass-loss excess</strong> — r<sub>c</sub> / r<sub>h,m</sub> against δ<sub>ML</sub> (dex).</li>
+                        <li><strong>Mass-loss excess vs vesc FP residual</strong> — δ<sub>ML</sub> against ε<sub>v</sub> (dex).</li>
+                        <li>Use <strong>Focus plane</strong> to view one residual diagnostic at a time. Marker colour encodes the active grouping. Histograms stay linked: hover a point to light its bins.</li>
+                    </ul>
+                </div>
+                <div class="dash-panel">
+                    <h2>Inspector</h2>
+                    <div id="inspector">
+                        <p class="inspector-empty">Hover a globular cluster on the focused residual plane.
+                            Click opens its entry in Baumgardt's GC database.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+    <script src="../js/footer.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/animations.js"></script>
+    <script>
+        new Footer().init('../');
+    </script>
+    <script>
+        (function () {
+            const residualSource = window.BH_LIKELIHOOD_FIGURE;
+            const structureSource = window.BH_LIKELIHOOD_STRUCTURE_FIGURE;
+            const plotEl = document.getElementById('gc-plot');
+            if (!residualSource || !structureSource || !plotEl || typeof Plotly === 'undefined') {
+                if (plotEl) plotEl.textContent = 'Figure data failed to load.';
+                return;
+            }
+
+            const HIST_NBINS = [14, 14, 14, 14, 14, 14, 14, 14];
+            const HIST_TITLES = [
+                'bh_candidate_score', 'bh_likelihood_score', 'log10(mass_msun)', 'concentration_c',
+                'log10(rc_over_rh)', 'log10(vesc_kms)', 'age_gyr', '[Fe/H]'
+            ];
+            const GREY = '#898781';
+            const AXIS_FONT = 'Inter, sans-serif';
+            const PLOT_OPTS = {
+                responsive: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            };
+
+            const groupingButtons = (residualSource.layout.updatemenus && residualSource.layout.updatemenus[0] &&
+                residualSource.layout.updatemenus[0].buttons) || [];
+            const groupings = groupingButtons.map((btn) => ({
+                label: btn.label,
+                visible: btn.args[0].visible,
+                title: (btn.args[1] && btn.args[1].title) || btn.label
+            }));
+
+            const FIGURES = [
+                {
+                    id: 'residual',
+                    label: 'Residual planes',
+                    source: residualSource,
+                    hasGrouping: true,
+                    hasColorbar: false,
+                    hasThreshold: false,
+                    scatterCount: 22,
+                    histIdx: [22, 23, 24, 25, 26, 27, 28, 29],
+                    kpiLabel: 'Grouping',
+                    planes: [
+                        { label: 'Puffiness vs \u03b4_ML', title: 'Puffiness vs mass-loss excess', xaxis: 'x' },
+                        { label: '\u03b4_ML vs \u03b5_v', title: 'Mass-loss excess vs vesc FP residual', xaxis: 'x2' }
+                    ],
+                    methodsHeading: 'Diagnostic planes',
+                    methodsHtml:
+                        '<li><strong>Puffiness vs mass-loss excess</strong> — r<sub>c</sub> / r<sub>h,m</sub> against \u03b4<sub>ML</sub> (dex).</li>' +
+                        '<li><strong>Mass-loss excess vs vesc FP residual</strong> — \u03b4<sub>ML</sub> against \u03b5<sub>v</sub> (dex).</li>' +
+                        '<li>Use <strong>Focus plane</strong> to view one residual diagnostic at a time. Marker colour encodes the active grouping. Histograms stay linked: hover a point to light its bins.</li>',
+                    inspectorEmpty: 'Hover a globular cluster on the focused residual plane. Click opens its entry in Baumgardt\'s GC database.'
+                },
+                {
+                    id: 'structure',
+                    label: 'Structure & kinematics',
+                    source: structureSource,
+                    hasGrouping: false,
+                    hasColorbar: true,
+                    hasThreshold: true,
+                    scatterCount: 6,
+                    histIdx: [6, 7, 8, 9, 10, 11, 12, 13],
+                    kpiLabel: 'Colour',
+                    kpiValue: 'BH likelihood',
+                    planes: [
+                        { label: 'Puffiness vs c', title: 'Core puffiness vs concentration', xaxis: 'x' },
+                        { label: 'vesc vs mass', title: 'Present-day escape velocity vs mass', xaxis: 'x2' }
+                    ],
+                    methodsHeading: 'Present-day structure',
+                    methodsHtml:
+                        '<li><strong>Core puffiness vs concentration</strong> — r<sub>c</sub> / r<sub>h,m</sub> against concentration c. The dashed line at c = 2.5 is the core-collapse threshold.</li>' +
+                        '<li><strong>Escape velocity vs mass</strong> — present-day v<sub>esc</sub> against cluster mass.</li>' +
+                        '<li>Marker colour is BH-likelihood score, not a clustering group. Diamonds are already modelled; stars are future targets. Histograms stay linked: hover a point to light its bins.</li>',
+                    inspectorEmpty: 'Hover a globular cluster on the focused plane. Colour encodes BH-likelihood score. Click opens its entry in Baumgardt\'s GC database.'
+                }
+            ];
+
+            let figureIndex = 0;
+            let activeIndex = 0;
+            let planeIndex = 0;
+            let lastCluster = null;
+            let stackedMode = isStacked();
+
+            const figureEl = document.getElementById('figure-switch');
+            const switchEl = document.getElementById('group-switch');
+            const planeEl = document.getElementById('plane-switch');
+            const groupingCluster = document.getElementById('grouping-cluster');
+            const kpiGroupLabel = document.getElementById('kpi-group-label');
+            const methodsHeading = document.getElementById('methods-heading');
+            const methodsList = document.getElementById('methods-list');
+
+            FIGURES.forEach((def, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'category-btn' + (i === 0 ? ' active' : '');
+                btn.textContent = def.label;
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+                btn.addEventListener('click', () => setFigure(i));
+                figureEl.appendChild(btn);
+            });
+
+            groupings.forEach((g, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'category-btn' + (i === 0 ? ' active' : '');
+                btn.textContent = g.label;
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+                btn.addEventListener('click', () => setGrouping(i));
+                switchEl.appendChild(btn);
+            });
+
+            renderPlaneSwitch();
+            updateFigureChrome();
+
+            const fig = prepareFigure();
+            Plotly.newPlot(plotEl, fig.data, fig.layout, PLOT_OPTS).then(function () {
+                greyHistograms();
+                refreshChrome();
+                bindPlotEvents();
+                Plotly.Plots.resize(plotEl);
+            });
+
+            if (typeof ResizeObserver !== 'undefined') {
+                const plotCard = plotEl.closest('.plot-card');
+                if (plotCard) {
+                    new ResizeObserver(() => {
+                        if (plotEl && plotEl.data) Plotly.Plots.resize(plotEl);
+                    }).observe(plotCard);
+                }
+            }
+
+            window.addEventListener('resize', () => {
+                if (!plotEl || !plotEl.data) return;
+                const nextStacked = isStacked();
+                if (nextStacked !== stackedMode) {
+                    stackedMode = nextStacked;
+                    Plotly.relayout(plotEl, geometryPatch(planeIndex, stackedMode));
+                }
+                Plotly.Plots.resize(plotEl);
+            });
+
+            function currentFigure() {
+                return FIGURES[figureIndex];
+            }
+
+            function currentPlanes() {
+                return currentFigure().planes;
+            }
+
+            function scatterIdx() {
+                return Array.from({ length: currentFigure().scatterCount }, (_, i) => i);
+            }
+
+            function isStacked() {
+                return window.innerWidth < 960;
+            }
+
+            function scatterDomain(stacked) {
+                const right = currentFigure().hasColorbar && !stacked ? 0.88 : 0.94;
+                return stacked
+                    ? { x: [0.0, 1.0], y: [0.55, 1.0] }
+                    : { x: [0.06, right], y: [0.50, 1.0] };
+            }
+
+            function histBox(stacked) {
+                if (stacked) {
+                    return { x0: 0.0, x1: 1.0, y0: 0.0, y1: 0.48, cols: 2, rows: 4, colGap: 0.05, rowGap: 0.065 };
+                }
+                return { x0: 0.0, x1: 1.0, y0: 0.02, y1: 0.37, cols: 4, rows: 2, colGap: 0.032, rowGap: 0.1 };
+            }
+
+            function histCell(i, stacked) {
+                const box = histBox(stacked);
+                const col = i % box.cols;
+                const row = Math.floor(i / box.cols);
+                const colW = (box.x1 - box.x0 - (box.cols - 1) * box.colGap) / box.cols;
+                const rowH = (box.y1 - box.y0 - (box.rows - 1) * box.rowGap) / box.rows;
+                const x0 = box.x0 + col * (colW + box.colGap);
+                const y1 = box.y1 - row * (rowH + box.rowGap);
+                return { x: [x0, x0 + colW], y: [y1 - rowH, y1], xMid: x0 + colW / 2, yTop: y1 };
+            }
+
+            function scatterVisibility() {
+                const def = currentFigure();
+                if (def.hasGrouping) {
+                    return groupings[activeIndex].visible.map((v, i) => !!(v && (i % 2 === planeIndex)));
+                }
+                return Array.from({ length: def.scatterCount }, (_, i) => i % 2 === planeIndex);
+            }
+
+            function applyScatterVisibility(data) {
+                const vis = scatterVisibility();
+                vis.forEach((v, i) => { data[i].visible = v; });
+            }
+
+            function applyColorbar(data, plane) {
+                const def = currentFigure();
+                const xaxis = currentPlanes()[plane].xaxis;
+                data.forEach((t) => {
+                    if (!t.marker) return;
+                    const isMain = t.name === 'MW globular clusters';
+                    t.marker.showscale = !!(def.hasColorbar && isMain && t.xaxis === xaxis);
+                    if (t.marker.showscale) {
+                        t.marker.colorbar = {
+                            title: {
+                                text: 'BH likelihood<br>score',
+                                font: { color: '#e2e8f0', family: AXIS_FONT, size: 11 }
+                            },
+                            tickfont: { color: '#94a3b8', family: AXIS_FONT, size: 10 },
+                            outlinewidth: 0,
+                            bgcolor: 'rgba(15,23,42,0.35)',
+                            len: 0.48,
+                            y: 1,
+                            yanchor: 'top'
+                        };
+                    }
+                });
+            }
+
+            function thresholdShape() {
+                return {
+                    type: 'line',
+                    x0: 2.5,
+                    x1: 2.5,
+                    xref: 'x',
+                    y0: 0,
+                    y1: 1,
+                    yref: 'y domain',
+                    line: { color: GREY, dash: 'dash', width: 1 }
+                };
+            }
+
+            function prepareFigure() {
+                const fig = JSON.parse(JSON.stringify(currentFigure().source));
+                applyDarkLayout(fig.layout);
+                applyScatterVisibility(fig.data);
+                applyColorbar(fig.data, planeIndex);
+                applyGeometry(fig.layout, planeIndex, stackedMode);
+                return fig;
+            }
+
+            function applyDarkLayout(layout) {
+                delete layout.width;
+                delete layout.height;
+                delete layout.template;
+                layout.autosize = true;
+                layout.updatemenus = [];
+                layout.showlegend = false;
+                layout.title = { text: '' };
+                layout.margin = {
+                    t: 44,
+                    r: currentFigure().hasColorbar ? 78 : 12,
+                    b: 36,
+                    l: 54,
+                    pad: 0
+                };
+                layout.paper_bgcolor = 'rgba(0,0,0,0)';
+                layout.plot_bgcolor = 'rgba(2, 6, 23, 0.28)';
+                layout.font = { color: '#e2e8f0', size: 11, family: AXIS_FONT };
+                layout.hoverlabel = {
+                    bgcolor: '#0f172a',
+                    bordercolor: '#38bdf8',
+                    font: { color: '#e2e8f0', family: AXIS_FONT, size: 12 }
+                };
+                layout.hovermode = 'closest';
+
+                Object.keys(layout).forEach((key) => {
+                    if (!/^xaxis/.test(key) && !/^yaxis/.test(key)) return;
+                    restyleAxis(layout[key]);
+                });
+            }
+
+            function applyGeometry(layout, plane, stacked) {
+                const scatter = scatterDomain(stacked);
+                const activeX = plane === 0 ? 'xaxis' : 'xaxis2';
+                const activeY = plane === 0 ? 'yaxis' : 'yaxis2';
+                const idleX = plane === 0 ? 'xaxis2' : 'xaxis';
+                const idleY = plane === 0 ? 'yaxis2' : 'yaxis';
+
+                layout[activeX].domain = scatter.x;
+                layout[activeY].domain = scatter.y;
+                layout[activeX].visible = true;
+                layout[activeY].visible = true;
+                layout[idleX].visible = false;
+                layout[idleY].visible = false;
+                layout[idleX].domain = [0, 0.01];
+                layout[idleY].domain = [0, 0.01];
+
+                for (let i = 0; i < 8; i++) {
+                    const cell = histCell(i, stacked);
+                    const n = i + 3;
+                    const xKey = 'xaxis' + n;
+                    const yKey = 'yaxis' + n;
+                    layout[xKey].domain = cell.x;
+                    layout[yKey].domain = cell.y;
+                    layout[xKey].title = { text: '' };
+                    layout[yKey].title = { text: '' };
+                }
+
+                layout.annotations = buildAnnotations(plane, stacked);
+                layout.shapes = currentFigure().hasThreshold && plane === 0 ? [thresholdShape()] : [];
+                layout.margin.r = currentFigure().hasColorbar ? 78 : 12;
+            }
+
+            function geometryPatch(plane, stacked) {
+                const scatter = scatterDomain(stacked);
+                const patch = {
+                    'xaxis.domain': plane === 0 ? scatter.x : [0, 0.01],
+                    'yaxis.domain': plane === 0 ? scatter.y : [0, 0.01],
+                    'xaxis.visible': plane === 0,
+                    'yaxis.visible': plane === 0,
+                    'xaxis2.domain': plane === 1 ? scatter.x : [0, 0.01],
+                    'yaxis2.domain': plane === 1 ? scatter.y : [0, 0.01],
+                    'xaxis2.visible': plane === 1,
+                    'yaxis2.visible': plane === 1,
+                    'margin.r': currentFigure().hasColorbar ? 78 : 12,
+                    annotations: buildAnnotations(plane, stacked),
+                    shapes: currentFigure().hasThreshold && plane === 0 ? [thresholdShape()] : []
+                };
+                for (let i = 0; i < 8; i++) {
+                    const cell = histCell(i, stacked);
+                    const n = i + 3;
+                    patch['xaxis' + n + '.domain'] = cell.x;
+                    patch['yaxis' + n + '.domain'] = cell.y;
+                }
+                return patch;
+            }
+
+            function buildAnnotations(plane, stacked) {
+                const scatter = scatterDomain(stacked);
+                const anns = [{
+                    text: currentPlanes()[plane].title,
+                    x: (scatter.x[0] + scatter.x[1]) / 2,
+                    y: scatter.y[1],
+                    xref: 'paper',
+                    yref: 'paper',
+                    xanchor: 'center',
+                    yanchor: 'bottom',
+                    showarrow: false,
+                    font: { size: 14, color: '#e2e8f0', family: AXIS_FONT }
+                }];
+                HIST_TITLES.forEach((title, i) => {
+                    const cell = histCell(i, stacked);
+                    anns.push({
+                        text: title,
+                        x: cell.xMid,
+                        y: cell.yTop,
+                        xref: 'paper',
+                        yref: 'paper',
+                        xanchor: 'center',
+                        yanchor: 'bottom',
+                        showarrow: false,
+                        font: { size: 11, color: '#cbd5e1', family: AXIS_FONT }
+                    });
+                });
+                if (currentFigure().hasThreshold && plane === 0) {
+                    anns.push({
+                        text: 'core-collapse threshold (c=2.5)',
+                        x: 2.5,
+                        y: 1,
+                        xref: 'x',
+                        yref: 'y domain',
+                        xanchor: 'left',
+                        yanchor: 'top',
+                        showarrow: false,
+                        font: { size: 10, color: GREY, family: AXIS_FONT }
+                    });
+                }
+                return anns;
+            }
+
+            function restyleAxis(ax) {
+                if (!ax || typeof ax !== 'object') return;
+                ax.gridcolor = 'rgba(148, 163, 184, 0.14)';
+                ax.zerolinecolor = 'rgba(148, 163, 184, 0.22)';
+                ax.linecolor = 'rgba(148, 163, 184, 0.3)';
+                ax.tickfont = Object.assign({}, ax.tickfont, { color: '#94a3b8', family: AXIS_FONT, size: 10 });
+                ax.automargin = false;
+                if (ax.title && typeof ax.title === 'object') {
+                    ax.title.font = Object.assign({}, ax.title.font, {
+                        color: '#cbd5e1',
+                        family: AXIS_FONT,
+                        size: 12
+                    });
+                }
+            }
+
+            function greyHistograms() {
+                const colorArrays = HIST_NBINS.map((n) => new Array(n).fill(GREY));
+                Plotly.restyle(plotEl, { 'marker.color': colorArrays }, currentFigure().histIdx);
+            }
+
+            function bindPlotEvents() {
+                plotEl.on('plotly_hover', function (evt) {
+                    const pt = evt.points && evt.points[0];
+                    if (!pt || !pt.customdata) return;
+                    highlightHistograms(pt.customdata);
+                    plotEl.style.cursor = 'pointer';
+                    lastCluster = clusterFromCustomdata(pt.customdata, pt.fullData && pt.fullData.name);
+                    renderInspector(lastCluster);
+                    updateKpis(lastCluster);
+                });
+
+                plotEl.on('plotly_unhover', function () {
+                    greyHistograms();
+                    plotEl.style.cursor = '';
+                });
+
+                plotEl.on('plotly_click', function (evt) {
+                    const pt = evt.points && evt.points[0];
+                    if (!pt || !pt.customdata) return;
+                    const cd = pt.customdata;
+                    lastCluster = clusterFromCustomdata(cd, pt.fullData && pt.fullData.name);
+                    renderInspector(lastCluster);
+                    updateKpis(lastCluster);
+                    const url = cd[cd.length - 1];
+                    if (url) window.open(url, '_blank');
+                });
+            }
+
+            function highlightHistograms(cd) {
+                const pointColor = cd[2];
+                const colorArrays = HIST_NBINS.map(function (n, i) {
+                    const arr = new Array(n).fill(GREY);
+                    const b = parseInt(cd[3 + i], 10);
+                    if (!isNaN(b) && b >= 0 && b < n) arr[b] = pointColor;
+                    return arr;
+                });
+                Plotly.restyle(plotEl, { 'marker.color': colorArrays }, currentFigure().histIdx);
+            }
+
+            function renderPlaneSwitch() {
+                planeEl.innerHTML = '';
+                currentPlanes().forEach((p, i) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'category-btn' + (i === planeIndex ? ' active' : '');
+                    btn.textContent = p.label;
+                    btn.setAttribute('role', 'tab');
+                    btn.setAttribute('aria-selected', i === planeIndex ? 'true' : 'false');
+                    btn.addEventListener('click', () => setPlane(i));
+                    planeEl.appendChild(btn);
+                });
+            }
+
+            function updateFigureChrome() {
+                const def = currentFigure();
+                groupingCluster.classList.toggle('is-hidden', !def.hasGrouping);
+                kpiGroupLabel.textContent = def.kpiLabel;
+                methodsHeading.textContent = def.methodsHeading;
+                methodsList.innerHTML = def.methodsHtml;
+                Array.from(figureEl.children).forEach((btn, i) => {
+                    btn.classList.toggle('active', i === figureIndex);
+                    btn.setAttribute('aria-selected', i === figureIndex ? 'true' : 'false');
+                });
+            }
+
+            function setFigure(index) {
+                if (index === figureIndex) return;
+                figureIndex = index;
+                lastCluster = null;
+                if (planeIndex >= currentPlanes().length) planeIndex = 0;
+                stackedMode = isStacked();
+                updateFigureChrome();
+                renderPlaneSwitch();
+                const next = prepareFigure();
+                Plotly.react(plotEl, next.data, next.layout, PLOT_OPTS).then(function () {
+                    greyHistograms();
+                    renderInspector(null);
+                    refreshChrome();
+                    Plotly.Plots.resize(plotEl);
+                });
+            }
+
+            function setGrouping(index) {
+                if (!currentFigure().hasGrouping || index === activeIndex) return;
+                activeIndex = index;
+                Array.from(switchEl.children).forEach((btn, i) => {
+                    btn.classList.toggle('active', i === index);
+                    btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
+                });
+                refreshView();
+            }
+
+            function setPlane(index) {
+                if (index === planeIndex) return;
+                planeIndex = index;
+                Array.from(planeEl.children).forEach((btn, i) => {
+                    btn.classList.toggle('active', i === index);
+                    btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
+                });
+                refreshView();
+            }
+
+            function refreshView() {
+                const vis = scatterVisibility();
+                const idx = scatterIdx();
+                const showscales = idx.map((i) => {
+                    const t = plotEl.data[i];
+                    return !!(currentFigure().hasColorbar && t && t.name === 'MW globular clusters' && vis[i]);
+                });
+                Plotly.restyle(plotEl, { visible: vis, 'marker.showscale': showscales }, idx).then(function () {
+                    return Plotly.relayout(plotEl, geometryPatch(planeIndex, stackedMode));
+                }).then(function () {
+                    greyHistograms();
+                    lastCluster = null;
+                    renderInspector(null);
+                    refreshChrome();
+                });
+            }
+
+            function visibleLegend() {
+                const def = currentFigure();
+                const xaxis = currentPlanes()[planeIndex].xaxis;
+                const items = [];
+                const seen = new Set();
+                (plotEl.data || []).forEach((t, i) => {
+                    if (i >= def.scatterCount || t.visible === false) return;
+                    if (t.xaxis !== xaxis) return;
+                    const name = t.name || 'series';
+                    if (seen.has(name)) return;
+                    seen.add(name);
+                    const markerColor = t.marker && t.marker.color;
+                    const outline = t.marker && t.marker.line && t.marker.line.color;
+                    const color = typeof markerColor === 'string' ? markerColor : (outline || GREY);
+                    items.push({
+                        name,
+                        color,
+                        n: (t.customdata || []).length,
+                        symbol: (t.marker && t.marker.symbol) || 'circle',
+                        grouped: def.hasGrouping
+                    });
+                });
+                return items;
+            }
+
+            function uniqueClusterCount() {
+                const def = currentFigure();
+                const xaxis = currentPlanes()[planeIndex].xaxis;
+                const names = new Set();
+                (plotEl.data || []).forEach((t, i) => {
+                    if (i >= def.scatterCount || t.visible === false) return;
+                    if (t.xaxis !== xaxis) return;
+                    (t.customdata || []).forEach((row) => names.add(row[0]));
+                });
+                return names.size;
+            }
+
+            function refreshChrome() {
+                const def = currentFigure();
+                document.getElementById('kpi-group').textContent = def.hasGrouping
+                    ? groupings[activeIndex].label
+                    : (def.kpiValue || '—');
+                document.getElementById('kpi-n').textContent = String(uniqueClusterCount());
+                updateKpis(lastCluster);
+
+                const legendEl = document.getElementById('dash-legend');
+                legendEl.innerHTML = '';
+                visibleLegend().forEach((item) => {
+                    const wrap = document.createElement('span');
+                    wrap.className = 'legend-item';
+                    const mark = document.createElement('span');
+                    if (item.grouped) {
+                        mark.className = 'legend-swatch';
+                        mark.style.background = item.color;
+                        mark.style.color = item.color;
+                    } else if (item.symbol === 'diamond') {
+                        mark.className = 'legend-mark legend-mark-diamond';
+                    } else if (item.symbol === 'star') {
+                        mark.className = 'legend-mark legend-mark-star';
+                        mark.textContent = '\u2605';
+                    } else {
+                        mark.className = 'legend-mark legend-mark-circle';
+                    }
+                    wrap.appendChild(mark);
+                    wrap.appendChild(document.createTextNode(item.name + '  n=' + item.n));
+                    legendEl.appendChild(wrap);
+                });
+            }
+
+            function clusterFromCustomdata(cd, seriesName) {
+                return {
+                    name: cd[0],
+                    mass: cd[1],
+                    color: cd[2],
+                    group: seriesName || '—',
+                    url: cd[cd.length - 1]
+                };
+            }
+
+            function formatMass(mass) {
+                if (mass == null || isNaN(mass)) return '—';
+                return Number(mass).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' M☉';
+            }
+
+            function updateKpis(cluster) {
+                document.getElementById('kpi-cluster').textContent = cluster ? cluster.name : 'Hover a cluster';
+                document.getElementById('kpi-mass').textContent = cluster ? formatMass(cluster.mass) : '—';
+            }
+
+            function renderInspector(cluster) {
+                const el = document.getElementById('inspector');
+                const def = currentFigure();
+                if (!cluster) {
+                    el.innerHTML = '<p class="inspector-empty">' + def.inspectorEmpty + '</p>';
+                    return;
+                }
+                const safeName = escapeHtml(cluster.name);
+                const seriesLabel = def.hasGrouping ? 'group' : 'series';
+                const safeGroup = escapeHtml(String(cluster.group));
+                const url = cluster.url ? String(cluster.url) : '';
+                el.innerHTML =
+                    '<div class="inspector-name">' + safeName + '</div>' +
+                    '<div class="inspector-meta">' +
+                    '<div>' + seriesLabel + ' <span>' + safeGroup + '</span></div>' +
+                    '<div>mass <span>' + escapeHtml(formatMass(cluster.mass)) + '</span></div>' +
+                    '</div>' +
+                    (url
+                        ? '<a class="btn btn-primary baumgardt-link" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
+                          '<i class="fas fa-external-link-alt"></i> Open in Baumgardt catalogue</a>'
+                        : '');
+            }
+
+            function escapeHtml(str) {
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function escapeAttr(str) {
+                return escapeHtml(str).replace(/'/g, '&#39;');
+            }
+        })();
+    </script>
+</body>
+
+</html>

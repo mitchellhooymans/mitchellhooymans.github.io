@@ -8,7 +8,7 @@ function initSearch() {
     // Determine root path similar to navbar.js
     const path = window.location.pathname;
     let rootPath = "./";
-    if (path.includes("/pages/") || path.includes("/simulations/") || path.includes("/tutorials/") || path.includes("/tools/") || path.includes("/blog/")) {
+    if (path.includes("/pages/") || path.includes("/simulations/") || path.includes("/tutorials/") || path.includes("/tools/") || path.includes("/blog/") || path.includes("/science/")) {
         rootPath = "../";
     }
 
