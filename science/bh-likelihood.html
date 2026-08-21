@@ -20,7 +20,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="../images/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="../images/favicon/site.webmanifest">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="../js/lab-auth.js"></script>
@@ -33,8 +32,8 @@
     <style>
         .dash-hero {
             min-height: 0;
-            padding-top: 88px;
-            padding-bottom: 0.35rem;
+            padding-top: 72px;
+            padding-bottom: 0;
             position: relative;
             overflow: hidden;
         }
@@ -45,28 +44,28 @@
         }
 
         .dash-hero .back-link {
-            margin-bottom: var(--space-2);
+            margin-bottom: 0.15rem;
         }
 
         .dash-hero h1 {
-            font-size: clamp(1.45rem, 2vw, 1.9rem);
-            margin-bottom: var(--space-2);
+            font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+            margin-bottom: 0.15rem;
         }
 
         .dash-hero p {
             color: var(--color-gray-500);
             max-width: 820px;
             margin: 0;
-            font-size: 0.85rem;
-            line-height: 1.45;
+            font-size: 0.8rem;
+            line-height: 1.4;
         }
 
         .dash-stage {
             display: flex;
             flex-direction: column;
-            height: calc(100dvh - 218px);
-            min-height: 560px;
-            gap: var(--space-3);
+            height: calc(100dvh - 156px);
+            min-height: 520px;
+            gap: var(--space-2);
         }
 
         .dash-kpis,
@@ -90,7 +89,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: var(--space-2);
-            margin-bottom: var(--space-3);
+            margin-bottom: 0;
         }
 
         @media (min-width: 900px) {
@@ -105,25 +104,25 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-lg);
-            padding: 0.65rem 0.9rem;
+            padding: 0.4rem 0.7rem;
             box-shadow: var(--shadow-md);
         }
 
         .kpi-label {
-            font-size: 0.68rem;
+            font-size: 0.62rem;
             font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             color: var(--color-gray-400);
-            margin-bottom: var(--space-2);
+            margin-bottom: 0.1rem;
         }
 
         .kpi-value {
             font-family: var(--font-heading);
-            font-size: 1.15rem;
+            font-size: 0.98rem;
             font-weight: 600;
             color: var(--color-white);
-            line-height: 1.3;
+            line-height: 1.25;
             word-break: break-word;
         }
 
@@ -133,23 +132,25 @@
 
         .kpi-value.mono {
             font-family: var(--font-mono);
-            font-size: 1.05rem;
+            font-size: 0.92rem;
         }
 
         .dash-toolbar {
             display: flex;
             flex-wrap: wrap;
             align-items: flex-end;
-            justify-content: space-between;
-            gap: var(--space-3) var(--space-5);
-            margin-bottom: var(--space-3);
+            gap: var(--space-3) var(--space-4);
+            margin-bottom: 0;
+            position: relative;
+            z-index: 8;
         }
 
         .view-controls {
             display: flex;
             flex-wrap: wrap;
-            gap: var(--space-4) var(--space-6);
+            gap: var(--space-3) var(--space-4);
             align-items: flex-end;
+            flex: 1 1 auto;
         }
 
         .control-cluster {
@@ -172,10 +173,41 @@
             gap: var(--space-2);
         }
 
-        .group-switch .category-btn {
-            margin: 0;
-            font-size: 0.78rem;
-            padding: 0.35rem 0.7rem;
+        .cluster-search-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        #cluster-search {
+            width: 220px;
+            max-width: 42vw;
+            box-sizing: border-box;
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 8px;
+            color: var(--color-white);
+            padding: 0.38rem 0.7rem;
+            font-size: 0.82rem;
+            font-family: var(--font-mono);
+        }
+
+        #cluster-search:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
+        }
+
+        .search-status {
+            min-height: 1em;
+            font-size: 0.68rem;
+            color: var(--color-gray-400);
+            font-family: var(--font-mono);
+            letter-spacing: 0.02em;
+        }
+
+        .search-status.is-empty {
+            color: #f87171;
         }
 
         .dash-legend {
@@ -183,6 +215,12 @@
             flex-wrap: wrap;
             align-items: center;
             gap: var(--space-3);
+            position: absolute;
+            left: var(--space-4);
+            top: 0.55rem;
+            z-index: 3;
+            max-width: calc(100% - 12rem);
+            pointer-events: none;
         }
 
         .legend-item {
@@ -290,10 +328,72 @@
             margin-top: var(--space-4);
         }
 
-        @media (min-width: 960px) {
-            .dash-lower {
-                grid-template-columns: 1.4fr 0.8fr;
+        .axis-pair {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        @media (min-width: 720px) {
+            .axis-pair {
+                grid-template-columns: 1fr 1fr;
             }
+        }
+
+        .axis-card {
+            background: rgba(2, 6, 23, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem 1rem;
+        }
+
+        .axis-card .axis-kicker {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 0.2rem;
+        }
+
+        .axis-card h3 {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            color: var(--color-white);
+            margin: 0 0 0.45rem;
+        }
+
+        .hist-glossary {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.35rem 1.25rem;
+            margin: 0;
+        }
+
+        @media (min-width: 720px) {
+            .hist-glossary {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .hist-glossary div {
+            font-size: 0.85rem;
+            color: var(--color-gray-500);
+            line-height: 1.5;
+        }
+
+        .hist-glossary dt {
+            display: inline;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--color-accent);
+            margin-right: 0.35rem;
+        }
+
+        .hist-glossary dd {
+            display: inline;
+            margin: 0;
         }
 
         .dash-panel {
@@ -301,7 +401,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-xl);
-            padding: var(--space-5) var(--space-6);
+            padding: var(--space-4) var(--space-5);
         }
 
         .dash-panel h2 {
@@ -311,6 +411,15 @@
             text-transform: uppercase;
             color: var(--color-gray-400);
             margin-bottom: var(--space-3);
+        }
+
+        .axis-subhead {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin: 1.15rem 0 0.55rem;
         }
 
         .dash-panel p,
@@ -406,14 +515,7 @@
                 style="background: none; border: 0; padding: 0; margin-left: 1rem; cursor: pointer; font: inherit; color: inherit;">
                 Sign out
             </button>
-            <span class="category-badge astrophysics">
-                <i class="fas fa-flask"></i> Science Lab
-            </span>
-            <h1 class="animate-fade-in-up">BH Likelihood Residual Planes</h1>
-            <p class="animate-fade-in-up delay-100">
-                Residual diagnostics and present-day structure for globular clusters
-                in the Baumgardt catalogue. Choose a figure, then a focus plane.
-            </p>
+            <h1 class="animate-fade-in-up">BH Likelihood</h1>
         </div>
     </section>
 
@@ -453,24 +555,30 @@
                         <span class="control-label">Focus plane</span>
                         <div class="group-switch" id="plane-switch" role="tablist" aria-label="Diagnostic plane"></div>
                     </div>
+                    <div class="control-cluster">
+                        <span class="control-label">Find cluster</span>
+                        <div class="cluster-search-wrap">
+                            <input id="cluster-search" list="cluster-name-list" type="search"
+                                placeholder="NGC 104, Pal 5…" autocomplete="off" spellcheck="false"
+                                aria-label="Search globular clusters">
+                            <datalist id="cluster-name-list"></datalist>
+                            <span id="search-status" class="search-status"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="dash-legend" id="dash-legend"></div>
             </div>
 
             <div class="plot-card">
                 <div id="gc-plot"></div>
-                <div class="plot-hint">hover → histogram bins &nbsp;·&nbsp; click → Baumgardt catalogue</div>
+                <div class="dash-legend" id="dash-legend"></div>
+                <div class="plot-hint">search isolates a cluster &nbsp;·&nbsp; hover → histogram bins &nbsp;·&nbsp; click → Baumgardt catalogue</div>
             </div>
             </div>
 
             <div class="dash-lower">
-                <div class="dash-panel">
-                    <h2 id="methods-heading">Diagnostic planes</h2>
-                    <ul id="methods-list">
-                        <li><strong>Puffiness vs mass-loss excess</strong> — r<sub>c</sub> / r<sub>h,m</sub> against δ<sub>ML</sub> (dex).</li>
-                        <li><strong>Mass-loss excess vs vesc FP residual</strong> — δ<sub>ML</sub> against ε<sub>v</sub> (dex).</li>
-                        <li>Use <strong>Focus plane</strong> to view one residual diagnostic at a time. Marker colour encodes the active grouping. Histograms stay linked: hover a point to light its bins.</li>
-                    </ul>
+                <div class="dash-panel axis-guide">
+                    <h2 id="axis-guide-heading">How to read this plane</h2>
+                    <div id="axis-guide-body"></div>
                 </div>
                 <div class="dash-panel">
                     <h2>Inspector</h2>
@@ -521,6 +629,19 @@
                 title: (btn.args[1] && btn.args[1].title) || btn.label
             }));
 
+            const HIST_GUIDE =
+                '<p style="margin-bottom:0.55rem">The eight histograms are the same in every figure. Hover a point to light its bin; grey bins are the full sample.</p>' +
+                '<dl class="hist-glossary">' +
+                '<div><dt>bh_candidate_score</dt><dd>Rank-like score for being a black-hole host candidate.</dd></div>' +
+                '<div><dt>bh_likelihood_score</dt><dd>Model BH-retention likelihood. This is the colour scale on the structure figure.</dd></div>' +
+                '<div><dt>log10(mass_msun)</dt><dd>Present-day cluster mass, log<sub>10</sub>(M<sub>☉</sub>).</dd></div>' +
+                '<div><dt>concentration_c</dt><dd>King concentration c ≈ log(r<sub>t</sub> / r<sub>c</sub>). Larger → more centrally concentrated.</dd></div>' +
+                '<div><dt>log10(rc_over_rh)</dt><dd>Log puffiness, log<sub>10</sub>(r<sub>c</sub> / r<sub>h,m</sub>). Same ratio as the puffiness scatter axis.</dd></div>' +
+                '<div><dt>log10(vesc_kms)</dt><dd>Present-day escape speed, log<sub>10</sub>(v<sub>esc</sub> / km s<sup>−1</sup>).</dd></div>' +
+                '<div><dt>age_gyr</dt><dd>Cluster age in Gyr.</dd></div>' +
+                '<div><dt>[Fe/H]</dt><dd>Metallicity. More negative is more metal-poor.</dd></div>' +
+                '</dl>';
+
             const FIGURES = [
                 {
                     id: 'residual',
@@ -533,14 +654,41 @@
                     histIdx: [22, 23, 24, 25, 26, 27, 28, 29],
                     kpiLabel: 'Grouping',
                     planes: [
-                        { label: 'Puffiness vs \u03b4_ML', title: 'Puffiness vs mass-loss excess', xaxis: 'x' },
-                        { label: '\u03b4_ML vs \u03b5_v', title: 'Mass-loss excess vs vesc FP residual', xaxis: 'x2' }
+                        {
+                            label: 'Puffiness vs \u03b4_ML',
+                            title: 'Puffiness vs mass-loss excess',
+                            xaxis: 'x',
+                            guideTitle: 'Puffiness vs mass-loss excess',
+                            guideHtml:
+                                '<p>This is a residual diagnostic, not a raw catalogue plot. Colour is the active grouping (K-Means, Hierarchical, DBSCAN, or dynamical class), not BH-likelihood.</p>' +
+                                '<div class="axis-pair">' +
+                                '<div class="axis-card"><div class="axis-kicker">X axis · log</div>' +
+                                '<h3>Puffiness, r<sub>c</sub> / r<sub>h,m</sub></h3>' +
+                                '<p>Core radius divided by half-mass radius. Larger values mean a puffy, low-density core; smaller values mean a compact core (toward core collapse). The axis is logarithmic, so equal steps are multiplicative.</p></div>' +
+                                '<div class="axis-card"><div class="axis-kicker">Y axis · dex</div>' +
+                                '<h3>Mass-loss excess, \u03b4<sub>ML</sub></h3>' +
+                                '<p>Log residual of mass loss relative to a fitted scaling. The unit is dex: 0 sits on the relation, +1 is ten times more mass lost than predicted, −1 is ten times less. Read vertical offset as “how much extra (or missing) mass loss after the fit”. </p></div>' +
+                                '</div>' +
+                                '<p>Clusters that retained a BH population tend to stay puffier at a given mass-loss residual; core-collapsed systems sit toward the left. Compare groups by whether they occupy different parts of this plane, not by a single colour meaning “more BHs”.</p>'
+                        },
+                        {
+                            label: '\u03b4_ML vs \u03b5_v',
+                            title: 'Mass-loss excess vs vesc FP residual',
+                            xaxis: 'x2',
+                            guideTitle: 'Mass-loss excess vs vesc fundamental-plane residual',
+                            guideHtml:
+                                '<p>Both axes are residuals in dex, so this plane asks whether mass-loss anomalies track escape-velocity anomalies. Colour is still the clustering assignment, not BH-likelihood.</p>' +
+                                '<div class="axis-pair">' +
+                                '<div class="axis-card"><div class="axis-kicker">X axis · dex</div>' +
+                                '<h3>vesc FP residual, \u03b5<sub>v</sub></h3>' +
+                                '<p>Log residual of present-day escape velocity from a fundamental-plane fit. 0 is on the plane; positive means the cluster is a faster-escaping (more tightly bound) outlier than the plane predicts, negative the opposite. Dex again means a factor of ten per unit.</p></div>' +
+                                '<div class="axis-card"><div class="axis-kicker">Y axis · dex</div>' +
+                                '<h3>Mass-loss excess, \u03b4<sub>ML</sub></h3>' +
+                                '<p>The same mass-loss residual as the other residual plane. Using it on both planes lets you see whether a group that is an outlier in puffiness is also an outlier in the vesc fundamental plane.</p></div>' +
+                                '</div>' +
+                                '<p>A trend along this plane means mass-loss and binding-energy residuals are coupled. A group that sits off the cloud in \u03b5<sub>v</sub> but not in \u03b4<sub>ML</sub> (or vice versa) is structurally distinct in only one residual family.</p>'
+                        }
                     ],
-                    methodsHeading: 'Diagnostic planes',
-                    methodsHtml:
-                        '<li><strong>Puffiness vs mass-loss excess</strong> — r<sub>c</sub> / r<sub>h,m</sub> against \u03b4<sub>ML</sub> (dex).</li>' +
-                        '<li><strong>Mass-loss excess vs vesc FP residual</strong> — \u03b4<sub>ML</sub> against \u03b5<sub>v</sub> (dex).</li>' +
-                        '<li>Use <strong>Focus plane</strong> to view one residual diagnostic at a time. Marker colour encodes the active grouping. Histograms stay linked: hover a point to light its bins.</li>',
                     inspectorEmpty: 'Hover a globular cluster on the focused residual plane. Click opens its entry in Baumgardt\'s GC database.'
                 },
                 {
@@ -555,14 +703,41 @@
                     kpiLabel: 'Colour',
                     kpiValue: 'BH likelihood',
                     planes: [
-                        { label: 'Puffiness vs c', title: 'Core puffiness vs concentration', xaxis: 'x' },
-                        { label: 'vesc vs mass', title: 'Present-day escape velocity vs mass', xaxis: 'x2' }
+                        {
+                            label: 'Puffiness vs c',
+                            title: 'Core puffiness vs concentration',
+                            xaxis: 'x',
+                            guideTitle: 'Core puffiness vs concentration',
+                            guideHtml:
+                                '<p>Present-day structure, coloured by BH-likelihood score (blue low \u2192 red high). Diamonds are already modelled; stars are future targets. There is no clustering group in this figure.</p>' +
+                                '<div class="axis-pair">' +
+                                '<div class="axis-card"><div class="axis-kicker">X axis</div>' +
+                                '<h3>Concentration, c</h3>' +
+                                '<p>King concentration, c ≈ log(r<sub>t</sub> / r<sub>c</sub>). Larger c means the tidal radius is much larger than the core — a more centrally concentrated cluster. The dashed line at <strong>c = 2.5</strong> is the conventional core-collapse threshold: points to the right are in the collapsed regime.</p></div>' +
+                                '<div class="axis-card"><div class="axis-kicker">Y axis · log</div>' +
+                                '<h3>Puffiness, r<sub>c</sub> / r<sub>h,m</sub></h3>' +
+                                '<p>Core radius over half-mass radius. High: extended core. Low: compact core. Core-collapsed clusters therefore sit toward the <em>lower right</em> (high c, small puffiness). Logarithmic, so vertical distance is a factor in core size, not a linear gap.</p></div>' +
+                                '</div>' +
+                                '<p>BH-favourable clusters often remain puffier (higher on this plot) and left of the collapse line. Colour is independent of symbol: a red diamond is a modelled cluster with high BH-likelihood, not a group label.</p>'
+                        },
+                        {
+                            label: 'vesc vs mass',
+                            title: 'Present-day escape velocity vs mass',
+                            xaxis: 'x2',
+                            guideTitle: 'Present-day escape velocity vs mass',
+                            guideHtml:
+                                '<p>Present-day kinematics against mass, still coloured by BH-likelihood. Both axes are logarithmic. Diamonds = already modelled; stars = future targets.</p>' +
+                                '<div class="axis-pair">' +
+                                '<div class="axis-card"><div class="axis-kicker">X axis · log</div>' +
+                                '<h3>Mass (M<sub>☉</sub>)</h3>' +
+                                '<p>Present-day cluster mass. Equal steps are factors of ten. The high-mass end is where a retained BH subsystem is energetically easier to hide in a deep potential.</p></div>' +
+                                '<div class="axis-card"><div class="axis-kicker">Y axis · log</div>' +
+                                '<h3>v<sub>esc</sub> (km s<sup>−1</sup>)</h3>' +
+                                '<p>Present-day central escape speed. Higher v<sub>esc</sub> makes it harder to eject black holes. A cluster above the mean mass–v<sub>esc</sub> locus is more tightly bound than its mass alone would suggest.</p></div>' +
+                                '</div>' +
+                                '<p>High BH-likelihood (redder) typically prefers the upper-right: massive and high escape speed. Colour still encodes the likelihood score, not a discrete class.</p>'
+                        }
                     ],
-                    methodsHeading: 'Present-day structure',
-                    methodsHtml:
-                        '<li><strong>Core puffiness vs concentration</strong> — r<sub>c</sub> / r<sub>h,m</sub> against concentration c. The dashed line at c = 2.5 is the core-collapse threshold.</li>' +
-                        '<li><strong>Escape velocity vs mass</strong> — present-day v<sub>esc</sub> against cluster mass.</li>' +
-                        '<li>Marker colour is BH-likelihood score, not a clustering group. Diamonds are already modelled; stars are future targets. Histograms stay linked: hover a point to light its bins.</li>',
                     inspectorEmpty: 'Hover a globular cluster on the focused plane. Colour encodes BH-likelihood score. Click opens its entry in Baumgardt\'s GC database.'
                 }
             ];
@@ -571,6 +746,10 @@
             let activeIndex = 0;
             let planeIndex = 0;
             let lastCluster = null;
+            let isolatedCluster = null;
+            let viewBusy = false;
+            let lockedScatterRanges = null;
+            let lockedScatterKey = '';
             let stackedMode = isStacked();
 
             const figureEl = document.getElementById('figure-switch');
@@ -578,8 +757,11 @@
             const planeEl = document.getElementById('plane-switch');
             const groupingCluster = document.getElementById('grouping-cluster');
             const kpiGroupLabel = document.getElementById('kpi-group-label');
-            const methodsHeading = document.getElementById('methods-heading');
-            const methodsList = document.getElementById('methods-list');
+            const axisGuideHeading = document.getElementById('axis-guide-heading');
+            const axisGuideBody = document.getElementById('axis-guide-body');
+            const searchInput = document.getElementById('cluster-search');
+            const searchStatus = document.getElementById('search-status');
+            const searchNameList = document.getElementById('cluster-name-list');
 
             FIGURES.forEach((def, i) => {
                 const btn = document.createElement('button');
@@ -606,11 +788,9 @@
             renderPlaneSwitch();
             updateFigureChrome();
 
-            const fig = prepareFigure();
-            Plotly.newPlot(plotEl, fig.data, fig.layout, PLOT_OPTS).then(function () {
-                greyHistograms();
-                refreshChrome();
-                bindPlotEvents();
+            fillClusterNames();
+            bindClusterSearch();
+            rebuildPlot({ fresh: true }).then(function () {
                 Plotly.Plots.resize(plotEl);
             });
 
@@ -618,17 +798,20 @@
                 const plotCard = plotEl.closest('.plot-card');
                 if (plotCard) {
                     new ResizeObserver(() => {
-                        if (plotEl && plotEl.data) Plotly.Plots.resize(plotEl);
+                        if (plotEl && plotEl.data && plotEl._fullLayout) {
+                            Plotly.Plots.resize(plotEl);
+                        }
                     }).observe(plotCard);
                 }
             }
 
             window.addEventListener('resize', () => {
-                if (!plotEl || !plotEl.data) return;
+                if (!plotEl || !plotEl.data || !plotEl._fullLayout) return;
                 const nextStacked = isStacked();
                 if (nextStacked !== stackedMode) {
                     stackedMode = nextStacked;
-                    Plotly.relayout(plotEl, geometryPatch(planeIndex, stackedMode));
+                    rebuildPlot();
+                    return;
                 }
                 Plotly.Plots.resize(plotEl);
             });
@@ -731,6 +914,98 @@
                 applyColorbar(fig.data, planeIndex);
                 applyGeometry(fig.layout, planeIndex, stackedMode);
                 return fig;
+            }
+
+            function paddedAxisRange(vals, axis) {
+                const isLog = !!(axis && axis.type === 'log');
+                let nums = vals.filter(function (v) {
+                    return typeof v === 'number' && isFinite(v) && (!isLog || v > 0);
+                });
+                if (!nums.length) return null;
+                let min = Math.min.apply(null, nums);
+                let max = Math.max.apply(null, nums);
+                if (isLog) {
+                    let logMin = Math.log10(min);
+                    let logMax = Math.log10(max);
+                    if (logMin === logMax) {
+                        logMin -= 0.3;
+                        logMax += 0.3;
+                    } else {
+                        const pad = (logMax - logMin) * 0.06;
+                        logMin -= pad;
+                        logMax += pad;
+                    }
+                    return [logMin, logMax];
+                }
+                if (min === max) {
+                    const d = Math.abs(min) * 0.05 || 0.1;
+                    min -= d;
+                    max += d;
+                } else {
+                    const pad = (max - min) * 0.06;
+                    min -= pad;
+                    max += pad;
+                }
+                return [min, max];
+            }
+
+            /* Freeze scatter axes to the full-sample view so Find cluster does not auto-zoom. */
+            function measureScatterRanges(data, layout) {
+                const buckets = {
+                    xaxis: [],
+                    yaxis: [],
+                    xaxis2: [],
+                    yaxis2: []
+                };
+                const def = currentFigure();
+                for (let ti = 0; ti < def.scatterCount; ti++) {
+                    const t = data[ti];
+                    if (!t || t.visible === false || t.visible === 'legendonly') continue;
+                    const plane1 = ti % 2 === 1 || t.xaxis === 'x2';
+                    const xKey = plane1 ? 'xaxis2' : 'xaxis';
+                    const yKey = plane1 ? 'yaxis2' : 'yaxis';
+                    const xs = decodeArray(t.x);
+                    const ys = decodeArray(t.y);
+                    const n = Math.min(xs.length, ys.length);
+                    for (let i = 0; i < n; i++) {
+                        if (typeof xs[i] === 'number' && isFinite(xs[i])) buckets[xKey].push(xs[i]);
+                        if (typeof ys[i] === 'number' && isFinite(ys[i])) buckets[yKey].push(ys[i]);
+                    }
+                }
+                return {
+                    xaxis: paddedAxisRange(buckets.xaxis, layout.xaxis),
+                    yaxis: paddedAxisRange(buckets.yaxis, layout.yaxis),
+                    xaxis2: paddedAxisRange(buckets.xaxis2, layout.xaxis2),
+                    yaxis2: paddedAxisRange(buckets.yaxis2, layout.yaxis2)
+                };
+            }
+
+            function applyScatterRanges(layout, ranges) {
+                ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function (key) {
+                    if (!layout[key] || !ranges[key]) return;
+                    layout[key].range = ranges[key].slice();
+                    layout[key].autorange = false;
+                });
+            }
+
+            function scatterRangeKey() {
+                return [figureIndex, planeIndex, activeIndex, stackedMode ? 1 : 0].join(':');
+            }
+
+            function captureScatterRangesFromPlot() {
+                const fl = plotEl._fullLayout;
+                if (!fl) return null;
+                const ranges = {};
+                let any = false;
+                ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function (key) {
+                    const ax = fl[key];
+                    if (ax && ax.range && ax.range.length === 2 &&
+                        isFinite(ax.range[0]) && isFinite(ax.range[1])) {
+                        ranges[key] = [ax.range[0], ax.range[1]];
+                        any = true;
+                    }
+                });
+                return any ? ranges : null;
             }
 
             function applyDarkLayout(layout) {
@@ -880,11 +1155,18 @@
             }
 
             function greyHistograms() {
+                if (!plotEl.data) return;
                 const colorArrays = HIST_NBINS.map((n) => new Array(n).fill(GREY));
                 Plotly.restyle(plotEl, { 'marker.color': colorArrays }, currentFigure().histIdx);
             }
 
             function bindPlotEvents() {
+                if (typeof plotEl.removeAllListeners === 'function') {
+                    plotEl.removeAllListeners('plotly_hover');
+                    plotEl.removeAllListeners('plotly_unhover');
+                    plotEl.removeAllListeners('plotly_click');
+                }
+
                 plotEl.on('plotly_hover', function (evt) {
                     const pt = evt.points && evt.points[0];
                     if (!pt || !pt.customdata) return;
@@ -896,8 +1178,11 @@
                 });
 
                 plotEl.on('plotly_unhover', function () {
-                    greyHistograms();
                     plotEl.style.cursor = '';
+                    try {
+                        if (isolatedCluster && isolatedCluster.cd) highlightHistograms(isolatedCluster.cd);
+                        else greyHistograms();
+                    } catch (err) { /* plot may be mid-rebuild */ }
                 });
 
                 plotEl.on('plotly_click', function (evt) {
@@ -913,6 +1198,7 @@
             }
 
             function highlightHistograms(cd) {
+                if (!plotEl.data || !cd) return;
                 const pointColor = cd[2];
                 const colorArrays = HIST_NBINS.map(function (n, i) {
                     const arr = new Array(n).fill(GREY);
@@ -921,6 +1207,241 @@
                     return arr;
                 });
                 Plotly.restyle(plotEl, { 'marker.color': colorArrays }, currentFigure().histIdx);
+            }
+
+            function normName(value) {
+                return String(value || '').toLowerCase().replace(/[\s_\-]/g, '');
+            }
+
+            function rowsOf(cd) {
+                if (!cd) return [];
+                if (Array.isArray(cd)) return cd;
+                if (typeof cd.length === 'number') {
+                    const out = [];
+                    for (let i = 0; i < cd.length; i++) out.push(cd[i]);
+                    return out;
+                }
+                return [];
+            }
+
+            /* Plotly exports often store x/y/marker.color as {dtype,bdata} base64 blobs. */
+            function decodeArray(arr) {
+                if (arr == null) return [];
+                if (Array.isArray(arr)) return arr.slice();
+                if (typeof arr === 'object' && arr.bdata != null && arr.dtype) {
+                    const bin = atob(arr.bdata);
+                    const bytes = new Uint8Array(bin.length);
+                    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                    const buf = bytes.buffer;
+                    let typed;
+                    switch (arr.dtype) {
+                        case 'f8': typed = new Float64Array(buf); break;
+                        case 'f4': typed = new Float32Array(buf); break;
+                        case 'i4': typed = new Int32Array(buf); break;
+                        case 'u4': typed = new Uint32Array(buf); break;
+                        case 'i2': typed = new Int16Array(buf); break;
+                        case 'u2': typed = new Uint16Array(buf); break;
+                        case 'i1': typed = new Int8Array(buf); break;
+                        case 'u1': typed = new Uint8Array(buf); break;
+                        default: return [];
+                    }
+                    return Array.from(typed);
+                }
+                if (typeof arr.length === 'number') {
+                    const out = new Array(arr.length);
+                    for (let i = 0; i < arr.length; i++) out[i] = arr[i];
+                    return out;
+                }
+                return [];
+            }
+
+            function takeArr(arr, keep) {
+                if (!arr) return arr;
+                return keep.map(function (i) { return arr[i]; });
+            }
+
+            function searchQuery() {
+                return searchInput ? normName(searchInput.value) : '';
+            }
+
+            function filterScatterTraces(data, q) {
+                isolatedCluster = null;
+                const def = currentFigure();
+                const vis = scatterVisibility();
+                const names = new Set();
+                let singleCd = null;
+                let singleSeries = '';
+
+                for (let ti = 0; ti < def.scatterCount; ti++) {
+                    const t = data[ti];
+                    if (!t) continue;
+                    const x = decodeArray(t.x);
+                    const y = decodeArray(t.y);
+                    const cd = rowsOf(t.customdata);
+                    const text = t.text != null ? decodeArray(t.text) : null;
+                    const hovertext = t.hovertext != null ? decodeArray(t.hovertext) : null;
+                    const marker = t.marker || (t.marker = {});
+                    const markerColorArr = (typeof marker.color !== 'string' && marker.color != null)
+                        ? decodeArray(marker.color)
+                        : null;
+                    const markerSizeArr = Array.isArray(marker.size) ? decodeArray(marker.size) : null;
+                    const markerOpacityArr = Array.isArray(marker.opacity) ? decodeArray(marker.opacity) : null;
+
+                    const keep = [];
+                    const n = Math.max(cd.length, x.length, y.length);
+                    if (!q) {
+                        for (let pi = 0; pi < n; pi++) keep.push(pi);
+                    } else {
+                        for (let pi = 0; pi < n; pi++) {
+                            const row = cd[pi];
+                            const name = row && row[0] != null ? String(row[0]) : '';
+                            if (name && normName(name).includes(q)) keep.push(pi);
+                        }
+                    }
+
+                    t.x = takeArr(x, keep);
+                    t.y = takeArr(y, keep);
+                    t.customdata = takeArr(cd, keep);
+                    if (text) t.text = takeArr(text, keep);
+                    if (hovertext) t.hovertext = takeArr(hovertext, keep);
+                    if (markerColorArr) marker.color = takeArr(markerColorArr, keep);
+                    if (markerSizeArr) {
+                        marker.size = takeArr(markerSizeArr, keep);
+                    } else if (typeof marker.size === 'number' && q && keep.length && keep.length <= 3) {
+                        marker.size = Math.max(marker.size, 14);
+                    }
+                    if (markerOpacityArr) marker.opacity = takeArr(markerOpacityArr, keep);
+
+                    t.visible = !!vis[ti];
+                    marker.showscale = !!(def.hasColorbar && t.name === 'MW globular clusters' && vis[ti]);
+
+                    if (vis[ti]) {
+                        keep.forEach(function (pi) {
+                            const row = cd[pi];
+                            if (!row || !row[0]) return;
+                            names.add(String(row[0]));
+                            singleCd = row;
+                            singleSeries = t.name || '';
+                        });
+                    }
+                }
+
+                if (q && names.size === 1 && singleCd) {
+                    isolatedCluster = clusterFromCustomdata(singleCd, singleSeries);
+                    isolatedCluster.cd = singleCd;
+                }
+                return names.size;
+            }
+
+            function setSearchStatus(q, n) {
+                if (!searchStatus) return;
+                searchStatus.classList.toggle('is-empty', !!(q && n === 0));
+                if (!q) searchStatus.textContent = '';
+                else if (n === 0) searchStatus.textContent = 'No match — clear to restore';
+                else if (n === 1 && isolatedCluster) searchStatus.textContent = 'Showing ' + isolatedCluster.name + ' only';
+                else searchStatus.textContent = 'Showing ' + n + ' matches';
+            }
+
+            function finishSearchChrome() {
+                if (isolatedCluster) {
+                    lastCluster = isolatedCluster;
+                    highlightHistograms(isolatedCluster.cd);
+                    renderInspector(isolatedCluster);
+                    updateKpis(isolatedCluster);
+                } else {
+                    lastCluster = null;
+                    greyHistograms();
+                    renderInspector(null);
+                    updateKpis(null);
+                }
+                refreshChrome();
+            }
+
+            function rebuildPlot(opts) {
+                opts = opts || {};
+                if (viewBusy) {
+                    rebuildPlot._pending = opts;
+                    return Promise.resolve();
+                }
+                viewBusy = true;
+                rebuildPlot._pending = null;
+                const q = searchQuery();
+                const fig = prepareFigure();
+                const key = scatterRangeKey();
+                const measured = measureScatterRanges(fig.data, fig.layout);
+                const n = filterScatterTraces(fig.data, q);
+                if (lockedScatterRanges && lockedScatterKey === key) {
+                    applyScatterRanges(fig.layout, lockedScatterRanges);
+                } else if (q) {
+                    applyScatterRanges(fig.layout, measured);
+                }
+                setSearchStatus(q, n);
+
+                const plotPromise = opts.fresh || !plotEl.data
+                    ? Plotly.newPlot(plotEl, fig.data, fig.layout, PLOT_OPTS)
+                    : Plotly.react(plotEl, fig.data, fig.layout, PLOT_OPTS);
+
+                return plotPromise.then(function () {
+                    bindPlotEvents();
+                    if (!q) {
+                        const captured = captureScatterRangesFromPlot();
+                        if (captured) {
+                            lockedScatterRanges = captured;
+                            lockedScatterKey = key;
+                        }
+                    } else if (!lockedScatterRanges || lockedScatterKey !== key) {
+                        lockedScatterRanges = measured;
+                        lockedScatterKey = key;
+                    }
+                    finishSearchChrome();
+                }).catch(function (err) {
+                    console.error('Plot rebuild failed', err);
+                }).then(function () {
+                    viewBusy = false;
+                    if (rebuildPlot._pending) {
+                        const next = rebuildPlot._pending;
+                        rebuildPlot._pending = null;
+                        return rebuildPlot(next);
+                    }
+                });
+            }
+
+            function fillClusterNames() {
+                if (!searchNameList) return;
+                const names = new Set();
+                FIGURES.forEach(function (def) {
+                    for (let ti = 0; ti < def.scatterCount; ti++) {
+                        rowsOf(def.source.data[ti] && def.source.data[ti].customdata).forEach(function (row) {
+                            if (row && row[0]) names.add(String(row[0]));
+                        });
+                    }
+                });
+                searchNameList.innerHTML = '';
+                Array.from(names).sort(function (a, b) { return a.localeCompare(b); }).forEach(function (name) {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    searchNameList.appendChild(opt);
+                });
+            }
+
+            function bindClusterSearch() {
+                if (!searchInput) return;
+                let debounce = null;
+                function run() {
+                    clearTimeout(debounce);
+                    debounce = setTimeout(function () {
+                        rebuildPlot();
+                    }, 80);
+                }
+                searchInput.addEventListener('input', run);
+                searchInput.addEventListener('change', run);
+                searchInput.addEventListener('keydown', function (evt) {
+                    if (evt.key === 'Escape') {
+                        searchInput.value = '';
+                        rebuildPlot();
+                        searchInput.blur();
+                    }
+                });
             }
 
             function renderPlaneSwitch() {
@@ -937,12 +1458,18 @@
                 });
             }
 
+            function renderAxisGuide() {
+                const plane = currentPlanes()[planeIndex];
+                axisGuideHeading.textContent = plane.guideTitle || plane.title || 'How to read this plane';
+                axisGuideBody.innerHTML = (plane.guideHtml || '') +
+                    '<div class="axis-subhead">Histograms</div>' + HIST_GUIDE;
+            }
+
             function updateFigureChrome() {
                 const def = currentFigure();
                 groupingCluster.classList.toggle('is-hidden', !def.hasGrouping);
                 kpiGroupLabel.textContent = def.kpiLabel;
-                methodsHeading.textContent = def.methodsHeading;
-                methodsList.innerHTML = def.methodsHtml;
+                renderAxisGuide();
                 Array.from(figureEl.children).forEach((btn, i) => {
                     btn.classList.toggle('active', i === figureIndex);
                     btn.setAttribute('aria-selected', i === figureIndex ? 'true' : 'false');
@@ -953,15 +1480,12 @@
                 if (index === figureIndex) return;
                 figureIndex = index;
                 lastCluster = null;
+                isolatedCluster = null;
                 if (planeIndex >= currentPlanes().length) planeIndex = 0;
                 stackedMode = isStacked();
                 updateFigureChrome();
                 renderPlaneSwitch();
-                const next = prepareFigure();
-                Plotly.react(plotEl, next.data, next.layout, PLOT_OPTS).then(function () {
-                    greyHistograms();
-                    renderInspector(null);
-                    refreshChrome();
+                rebuildPlot({ fresh: true, force: true }).then(function () {
                     Plotly.Plots.resize(plotEl);
                 });
             }
@@ -973,7 +1497,7 @@
                     btn.classList.toggle('active', i === index);
                     btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
                 });
-                refreshView();
+                rebuildPlot();
             }
 
             function setPlane(index) {
@@ -983,34 +1507,16 @@
                     btn.classList.toggle('active', i === index);
                     btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
                 });
-                refreshView();
-            }
-
-            function refreshView() {
-                const vis = scatterVisibility();
-                const idx = scatterIdx();
-                const showscales = idx.map((i) => {
-                    const t = plotEl.data[i];
-                    return !!(currentFigure().hasColorbar && t && t.name === 'MW globular clusters' && vis[i]);
-                });
-                Plotly.restyle(plotEl, { visible: vis, 'marker.showscale': showscales }, idx).then(function () {
-                    return Plotly.relayout(plotEl, geometryPatch(planeIndex, stackedMode));
-                }).then(function () {
-                    greyHistograms();
-                    lastCluster = null;
-                    renderInspector(null);
-                    refreshChrome();
-                });
+                rebuildPlot();
             }
 
             function visibleLegend() {
                 const def = currentFigure();
-                const xaxis = currentPlanes()[planeIndex].xaxis;
                 const items = [];
                 const seen = new Set();
                 (plotEl.data || []).forEach((t, i) => {
-                    if (i >= def.scatterCount || t.visible === false) return;
-                    if (t.xaxis !== xaxis) return;
+                    if (i >= def.scatterCount || t.visible === false || t.visible === 'legendonly') return;
+                    if (i % 2 !== planeIndex) return;
                     const name = t.name || 'series';
                     if (seen.has(name)) return;
                     seen.add(name);
@@ -1030,17 +1536,19 @@
 
             function uniqueClusterCount() {
                 const def = currentFigure();
-                const xaxis = currentPlanes()[planeIndex].xaxis;
                 const names = new Set();
                 (plotEl.data || []).forEach((t, i) => {
-                    if (i >= def.scatterCount || t.visible === false) return;
-                    if (t.xaxis !== xaxis) return;
-                    (t.customdata || []).forEach((row) => names.add(row[0]));
+                    if (i >= def.scatterCount || t.visible === false || t.visible === 'legendonly') return;
+                    if (i % 2 !== planeIndex) return;
+                    rowsOf(t.customdata).forEach((row) => {
+                        if (row && row[0]) names.add(row[0]);
+                    });
                 });
                 return names.size;
             }
 
             function refreshChrome() {
+                renderAxisGuide();
                 const def = currentFigure();
                 document.getElementById('kpi-group').textContent = def.hasGrouping
                     ? groupings[activeIndex].label
