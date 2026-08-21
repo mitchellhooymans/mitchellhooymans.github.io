@@ -23,6 +23,8 @@
     <link rel="manifest" href="../images/favicon/site.webmanifest">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <script src="../js/lab-auth.js"></script>
+    <script src="../js/lab-gate.js"></script>
     <script src="https://cdn.plot.ly/plotly-3.7.0.min.js" charset="utf-8"></script>
     <script src="bh-likelihood-data.js"></script>
     <script src="bh-likelihood-structure-data.js"></script>
@@ -400,6 +402,10 @@
                 </svg>
                 Back to Science Lab
             </a>
+            <button type="button" class="back-link" data-lab-logout
+                style="background: none; border: 0; padding: 0; margin-left: 1rem; cursor: pointer; font: inherit; color: inherit;">
+                Sign out
+            </button>
             <span class="category-badge astrophysics">
                 <i class="fas fa-flask"></i> Science Lab
             </span>

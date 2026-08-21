@@ -28,9 +28,9 @@ Type `login` at the prompt, then enter:
 - **Username:** `mitchellhooymans` (case-insensitive)
 - **Password:** `astrophysics1!` (case-sensitive)
 
-Any other credentials are rejected. On success you become root (`mitchellhooymans@mitchellhooymans.com:~#`) and unlock two extra commands: `secrets` and `mainframe`. Use `logout` to drop back to guest.
+Any other credentials are rejected. On success you become root (`mitchellhooymans@mitchellhooymans.com:~#`) and unlock private commands: `science`, `secrets`, and `mainframe`. Use `logout` to drop back to guest. The session is stored in `sessionStorage` for this tab only, so science pages opened from the same tab stay unlocked until you sign out or close the tab.
 
-Credentials/logic: `js/hero-terminal.js` → `VALID_USERNAME`, `VALID_PASSWORD`, `runAuthentication()`.
+Credentials/logic: `js/lab-auth.js` (hashed; not stored in plaintext). Terminal flow: `js/hero-terminal.js` → `runAuthentication()`. Science pages use `js/lab-gate.js` and will not render until the same login succeeds.
 
 ### Command list
 
@@ -40,7 +40,7 @@ Credentials/logic: `js/hero-terminal.js` → `VALID_USERNAME`, `VALID_PASSWORD`,
 | `whoami` | Shows guest/root identity |
 | `ls` | Lists site sections |
 | `open <name>` | Navigates to a section (`cv`, `research`, `blog`, `tools`, ...) |
-| `science` | Lists hidden science-lab dashboards (`open science`, `open residuals`) |
+| `science` | **Root-only.** Lists hidden science-lab dashboards (`open science`, `open residuals`) |
 | `banner` | Redisplays the ASCII banner |
 | `history` | Command history |
 | `matrix` | Toggles matrix rain effect |
@@ -49,8 +49,8 @@ Credentials/logic: `js/hero-terminal.js` → `VALID_USERNAME`, `VALID_PASSWORD`,
 | `sudo ...` | Easter-egg response (root-aware) |
 | `login` | Starts the login flow |
 | `logout` | Ends the root session |
-| `secrets` | Root-only classified facts |
-| `mainframe` | Root-only effect/sequence |
+| `secrets` | **Root-only.** Classified facts |
+| `mainframe` | **Root-only.** Effect/sequence |
 | `games` | Lists playable ASCII games + best scores |
 | `play <name>` | Play a game (snake, invaders, spaceship) |
 | `highscores` (aka `scores`, `leaderboard`) | Shows best score per game |
@@ -140,6 +140,8 @@ Neglect (fuel exhaustion, debris, care slips) can end the run. Esc or ✕ closes
 | `index.html` | Hero markup, stat chips (`data-chip`), terminal / blackboard / pet DOM, script includes |
 | `styles.css` | Terminal / blackboard / pet / game visual styling |
 | `js/hero-combos.js` | Shared chip combo detection + overlay lock (`HeroCombos`) |
+| `js/lab-auth.js` | Client-side login (hashed credentials + `sessionStorage`) |
+| `js/lab-gate.js` | Login overlay for `/science/` pages |
 | `js/hero-terminal.js` | Terminal boot, commands, login, games |
 | `js/hero-blackboard.js` | Chalkboard canvas drawing + guide shapes |
 | `js/hero-pet.js` | Stellar-evolution buddy + localStorage save |
@@ -147,8 +149,8 @@ Neglect (fuel exhaustion, debris, care slips) can end the run. Esc or ✕ closes
 
 ## Notes
 
-- Everything is client-side vanilla JS — no backend, no real auth. It's just for fun/immersion on my own site.
+- Everything is client-side vanilla JS — no backend. The lab login is a convenience gate (hashed credentials + `sessionStorage`), not real server auth. Anyone determined can still read the static files.
 - High scores are per-browser (via `localStorage`), not synced across devices.
 - If you add a new game, register it in `TerminalGames` (in its own file under `games/`), add it to `GAME_NAMES` in `js/hero-terminal.js`, and add a line to `printGamesList()`.
 - If you add another chip combo, register it in `COMBOS` inside `js/hero-combos.js` and listen for `hero-combo:<name>`.
-- Science lab pages live in `science/` and are kept off the public nav, search index, and sitemap (`robots.txt` disallows `/science/`). Terminal entry points: `science`, `open science`, `open residuals`.
+- Science lab pages live in `science/` and are kept off the public nav, search index, and sitemap (`robots.txt` disallows `/science/`). They also require the same client-side login as the terminal. Entry points after login: `science`, `open science`, `open residuals`.

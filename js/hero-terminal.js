@@ -177,7 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
             cumulative += line.delay;
             bootTimers.push(setTimeout(() => printLine(line.text, line.type), cumulative));
         });
-        bootTimers.push(setTimeout(() => focusInput(), cumulative + 150));
+        bootTimers.push(setTimeout(() => {
+            restoreSession(true);
+            focusInput();
+        }, cumulative + 150));
     }
 
     // ---------------------------------------------------------------
@@ -300,13 +303,34 @@ document.addEventListener('DOMContentLoaded', () => {
         promptEl.textContent = 'Username:';
     }
 
-    const VALID_USERNAME = 'mitchellhooymans';
-    const VALID_PASSWORD = 'astrophysics1!';
+    const VALID_USERNAME = (typeof LabAuth !== 'undefined' && LabAuth.USERNAME) || 'mitchellhooymans';
     let failedAttempts = 0;
 
-    function runAuthentication(username, password) {
+    function restoreSession(announce) {
+        if (typeof LabAuth === 'undefined' || !LabAuth.isAuthed()) return false;
+        loggedIn = true;
+        loggedInUser = LabAuth.USERNAME;
+        isRootUser = true;
+        resetPrompt();
+        if (announce) {
+            printLine('Session restored. Private lab access is active.', 'success');
+        }
+        return true;
+    }
+
+    async function runAuthentication(username, password) {
         printLine('Authenticating...', 'info');
-        const success = username.toLowerCase() === VALID_USERNAME && password === VALID_PASSWORD;
+        let success = false;
+        try {
+            if (typeof LabAuth === 'undefined') {
+                throw new Error('Auth module failed to load.');
+            }
+            success = await LabAuth.login(username, password);
+        } catch (err) {
+            printLine(err.message || 'Authentication failed.', 'error');
+            resetPrompt();
+            return;
+        }
 
         const steps = [
             { text: `Verifying credentials for "${username}"...`, delay: 500, type: '' },
@@ -346,8 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loggedInUser = VALID_USERNAME;
         isRootUser = true;
         failedAttempts = 0;
-        printLine('Welcome, root. You now have elevated access.', 'success');
-        printLine("New commands unlocked: 'secrets', 'mainframe', 'logout'.", 'accent');
+        printLine('Welcome, root. Elevated access is active.', 'success');
+        printLine("Unlocked: 'science', 'secrets', 'mainframe'. Type 'logout' to drop the session.", 'accent');
         resetPrompt();
     }
 
@@ -357,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         printLine(`Logging out ${loggedInUser}...`, 'info');
+        if (typeof LabAuth !== 'undefined') LabAuth.logout();
         loggedIn = false;
         loggedInUser = null;
         isRootUser = false;
@@ -417,9 +442,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'ls':
                 printLine('about/  cv/  research/  blog/  tools/  simulations/  talks/  photography/  contact/', '');
-                printLine('science/', 'accent');
+                if (loggedIn) {
+                    printLine('science/', 'accent');
+                    printLine("Private lab: 'science' or 'open residuals'.", 'info');
+                }
                 printLine("Type 'open <name>' to navigate, e.g. 'open research'.", 'info');
-                printLine("Hidden lab: 'science' or 'open residuals'.", 'info');
                 break;
             case 'date':
                 printLine(new Date().toString(), '');
@@ -467,6 +494,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 triggerMainframe();
                 break;
             case 'science':
+                if (!loggedIn) {
+                    printLine('command not found: science', 'error');
+                    printLine("Type 'help' for a list of commands.", 'info');
+                    break;
+                }
                 printScienceLab();
                 break;
             case 'games':
@@ -506,25 +538,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function printHelp() {
-        [
+        const rows = [
             ['about', 'A little about me'],
             ['whoami', 'Who are you, really?'],
             ['ls', 'List site sections'],
             ['open <name>', 'Navigate to a section (cv, research, blog, tools, ...)'],
-            ['science', 'List hidden science-lab dashboards'],
             ['banner', 'Redisplay the ASCII banner'],
             ['history', 'Show command history'],
             ['matrix', 'Enter the matrix (type again to exit early)'],
             ['blackhole', 'Simulate a gravitational collapse'],
             ['coffee', 'Brew a virtual coffee'],
             ['sudo ...', "Try it and see what happens"],
-            ['login', 'Authenticate for elevated access'],
             ['games', 'List playable in-terminal games'],
             ['play <name>', 'Play a game (snake, invaders, spaceship)'],
             ['highscores', 'Show your best scores (add "reset" to clear)'],
             ['clear', 'Clear the terminal'],
             ['exit', 'Return to the normal hero'],
-        ].forEach(([cmd, desc]) => {
+        ];
+        if (loggedIn) {
+            rows.splice(4, 0,
+                ['science', 'List private science-lab dashboards']
+            );
+            rows.splice(-1, 0,
+                ['secrets', 'Classified facts'],
+                ['mainframe', 'Ping the OzGrav mainframe'],
+                ['logout', 'End elevated session']
+            );
+        } else {
+            rows.splice(-1, 0, ['login', 'Authenticate for elevated access']);
+        }
+        rows.forEach(([cmd, desc]) => {
             const line = document.createElement('div');
             line.className = 'term-line';
             const cmdSpan = document.createElement('span');
@@ -613,10 +656,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800));
     }
 
+    const PRIVATE_DESTINATIONS = new Set(['science', 'lab', 'residuals', 'bh-likelihood', 'bh']);
+
     function handleOpen(target) {
         target = (target || '').toLowerCase();
         if (!target) {
             printLine("Usage: open <destination>  (try 'ls' first)", 'warn');
+            return;
+        }
+        if (PRIVATE_DESTINATIONS.has(target) && !loggedIn) {
+            printLine(`No such destination: "${target}". Type 'ls' to see available sections.`, 'error');
             return;
         }
         if (PAGE_MAP[target]) {

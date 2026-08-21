@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="../js/stars.js"></script>
+    <script src="../js/lab-auth.js"></script>
+    <script src="../js/lab-gate.js"></script>
     <style>
         .lab-hero {
             min-height: 42vh;
@@ -74,7 +76,13 @@
                     Working research dashboards and mini-investigations. Not linked from the public site.
                 </p>
                 <p class="lab-note animate-fade-in-up delay-200">
-                    guest@mitchellhooymans.com:~$ open science
+                    mitchellhooymans@mitchellhooymans.com:~# open science
+                </p>
+                <p class="lab-note" style="margin-top: var(--space-3);">
+                    <button type="button" class="back-link" data-lab-logout
+                        style="background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: inherit;">
+                        Sign out
+                    </button>
                 </p>
             </div>
         </div>
