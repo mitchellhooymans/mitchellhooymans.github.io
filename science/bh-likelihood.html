@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow">
-    <title>BH Likelihood Residual Planes | Science Lab</title>
+    <title>Globular Cluster Dashboard | Science Lab</title>
     <meta name="description"
-        content="Interactive residual-diagnostic planes for globular clusters, grouped by clustering method.">
+        content="Interactive plots of Milky Way globular cluster dynamical age, residual planes, structure and kinematics.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,469 +27,122 @@
     <script src="https://cdn.plot.ly/plotly-3.7.0.min.js" charset="utf-8"></script>
     <script src="bh-likelihood-data.js"></script>
     <script src="bh-likelihood-structure-data.js"></script>
+    <script src="gc-dynamical-age-data.js"></script>
     <script src="../js/stars.js"></script>
 
     <style>
-        .dash-hero {
-            min-height: 0;
-            padding-top: 72px;
-            padding-bottom: 0;
-            position: relative;
-            overflow: hidden;
-        }
+        .dash-hero { min-height: 0; padding-top: 104px; padding-bottom: 0; position: relative; overflow: hidden; }
+        .dash-hero .container, .dash-section .container { max-width: 1360px; }
+        .hero-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1.25rem; margin-bottom: 0.65rem; }
+        .hero-row .back-link { margin: 0; }
+        .dash-hero h1 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); margin: 0 0 0.3rem; letter-spacing: -0.01em; }
+        .dash-hero p { color: var(--color-gray-500); max-width: 680px; margin: 0; font-size: 0.95rem; line-height: 1.5; }
+        .dash-section { padding-top: var(--space-5); padding-bottom: var(--space-12); }
 
-        .dash-hero .container,
-        .dash-section .container {
-            max-width: 1480px;
-        }
+        /* ---- main card ---- */
+        .shell { background: rgba(9, 12, 22, 0.74); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 22px; overflow: hidden;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+        .shell-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding: 0.95rem 1.2rem; }
+        .shell-options { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.75rem; padding: 0.65rem 1.2rem;
+            background: rgba(2, 6, 23, 0.32); border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .shell-options:not(:has(.control-cluster:not(.is-hidden))) { display: none; }
+        .shell-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; padding: 0.8rem 1.2rem 0; }
 
-        .dash-hero .back-link {
-            margin-bottom: 0.15rem;
-        }
+        /* ---- segmented controls ---- */
+        .control-cluster { display: flex; align-items: center; gap: 0.65rem; }
+        .control-cluster.is-hidden, .kpi-card.is-hidden { display: none; }
+        .control-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-gray-400); white-space: nowrap; }
+        .group-switch.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; background: rgba(2, 6, 23, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px; }
+        .seg .category-btn { border: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none;
+            padding: 0.4rem 0.95rem; font-size: 0.8rem; font-weight: 500; color: var(--color-gray-500); border-radius: 999px; line-height: 1.2; }
+        .seg .category-btn:hover { background: rgba(255, 255, 255, 0.07); color: #fff; border: 0; }
+        .seg .category-btn.active { background: var(--color-accent); color: #07111f; font-weight: 600; box-shadow: 0 2px 12px rgba(56, 189, 248, 0.35); }
+        .seg-lg .category-btn { padding: 0.55rem 1.25rem; font-size: 0.9rem; }
 
-        .dash-hero h1 {
-            font-size: clamp(1.25rem, 1.8vw, 1.6rem);
-            margin-bottom: 0.15rem;
-        }
+        .colour-select { appearance: none; -webkit-appearance: none; cursor: pointer; font: inherit; font-size: 0.82rem; font-weight: 500;
+            color: var(--color-white); background: rgba(2, 6, 23, 0.65) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2394a3b8' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 0.9rem center;
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 999px; padding: 0.45rem 2.2rem 0.45rem 1rem; }
+        .colour-select:hover, .colour-select:focus { outline: none; border-color: var(--color-accent); }
+        .colour-select option { background: #0f172a; color: #e2e8f0; }
+        .search-wrap { position: relative; display: flex; align-items: center; gap: 0.6rem; }
+        .search-wrap > i { position: absolute; left: 0.8rem; font-size: 0.75rem; color: var(--color-gray-400); pointer-events: none; }
+        #cluster-search { width: 230px; max-width: 60vw; box-sizing: border-box; background: rgba(2, 6, 23, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 999px; color: var(--color-white);
+            padding: 0.5rem 0.9rem 0.5rem 2.1rem; font-size: 0.82rem; font-family: var(--font-primary); }
+        #cluster-search::placeholder { color: var(--color-gray-400); }
+        #cluster-search:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16); }
+        .search-status { font-size: 0.72rem; color: var(--color-gray-500); font-family: var(--font-mono); white-space: nowrap; }
+        .search-status:empty { display: none; }
+        .search-status.is-empty { color: #f87171; }
 
-        .dash-hero p {
-            color: var(--color-gray-500);
-            max-width: 820px;
-            margin: 0;
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
+        .age-row { display: flex; align-items: center; gap: 0.7rem; }
+        .age-row input[type=range] { width: 180px; accent-color: var(--color-accent); }
+        .age-val { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-white); min-width: 4.2em; }
 
-        .dash-stage {
-            display: flex;
-            flex-direction: column;
-            height: calc(100dvh - 156px);
-            min-height: 520px;
-            gap: var(--space-2);
-        }
+        /* ---- legend + readout ---- */
+        .dash-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1.1rem; position: static; max-width: none; pointer-events: none; }
+        .legend-item { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--color-gray-500); font-family: var(--font-primary); }
+        .legend-item .n { color: var(--color-gray-400); font-family: var(--font-mono); font-size: 0.72rem; }
+        .legend-swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+        .legend-mark { width: 10px; height: 10px; flex-shrink: 0; }
+        .legend-mark-circle { border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 8px var(--color-accent); }
+        .legend-mark-diamond { width: 8px; height: 8px; background: #e34948; transform: rotate(45deg); }
+        .legend-mark-star { width: auto; height: auto; color: #c99a1e; font-size: 0.85rem; line-height: 1; }
+        .readout { display: flex; flex-wrap: wrap; gap: 0.3rem 1.4rem; }
+        .ro { display: inline-flex; align-items: baseline; gap: 0.45rem; font-size: 0.8rem; }
+        .ro-k { font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-gray-400); }
+        .ro-v { color: var(--color-white); font-weight: 500; }
+        .ro-v.accent { color: var(--color-accent); font-family: var(--font-mono); }
 
-        .dash-kpis,
-        .dash-toolbar {
-            flex: 0 0 auto;
-        }
+        #gc-plot { position: relative; width: 100%; height: clamp(640px, 90dvh, 900px); }
+        #gc-plot.no-hists { height: clamp(500px, 74dvh, 760px); }
+        @media (max-width: 959px) { #gc-plot { height: 900px; } #gc-plot.no-hists { height: 560px; } }
 
-        .plot-card {
-            flex: 1 1 auto;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-        }
+        /* ---- info panels ---- */
+        .dash-lower { display: grid; grid-template-columns: 1fr; gap: 1.1rem; margin-top: 1.1rem; align-items: start; }
+        @media (min-width: 980px) { .dash-lower { grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); } .inspector-panel { position: sticky; top: 96px; } }
+        .dash-panel { background: rgba(9, 12, 22, 0.74); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 1.25rem 1.4rem 1.4rem; }
+        .panel-kicker { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 0.25rem; }
+        .dash-panel h2 { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 600; color: var(--color-white); margin: 0 0 0.85rem; text-transform: none; letter-spacing: 0; }
+        .dash-panel p, .dash-panel li { font-size: 0.9rem; color: var(--color-gray-500); line-height: 1.65; }
+        .dash-panel p + p { margin-top: 0.7rem; }
+        .dash-panel strong { color: var(--color-gray-700); font-weight: 600; }
 
-        .dash-section {
-            padding-top: 0;
-            padding-bottom: var(--space-8);
-        }
+        .axis-pair { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin: 0.2rem 0 1rem; }
+        @media (min-width: 720px) { .axis-pair { grid-template-columns: 1fr 1fr; } }
+        .axis-card { background: rgba(2, 6, 23, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-left: 3px solid var(--color-accent);
+            border-radius: 12px; padding: 0.85rem 1rem; }
+        .axis-card .axis-kicker { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 0.2rem; }
+        .axis-card h3 { font-family: var(--font-heading); font-size: 1rem; color: var(--color-white); margin: 0 0 0.4rem; }
+        .axis-card p { font-size: 0.84rem; line-height: 1.6; margin: 0; }
 
-        .dash-kpis {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-2);
-            margin-bottom: 0;
-        }
+        .hist-details { margin-top: 1.1rem; border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: 0.85rem; }
+        .hist-details summary { cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--color-gray-600); list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+        .hist-details summary::-webkit-details-marker { display: none; }
+        .hist-details summary::before { content: '\25B8'; color: var(--color-accent); transition: transform 0.15s; }
+        .hist-details[open] summary::before { transform: rotate(90deg); }
+        .hist-details > p { margin: 0.7rem 0 0.7rem; font-size: 0.84rem; }
+        .hist-glossary { display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin: 0.6rem 0 0; }
+        @media (min-width: 720px) { .hist-glossary { grid-template-columns: 1fr 1fr; } }
+        .hist-glossary div { background: rgba(2, 6, 23, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 0.55rem 0.75rem; font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.5; }
+        .hist-glossary dt { display: block; font-family: var(--font-mono); font-size: 0.74rem; color: var(--color-accent); margin-bottom: 0.15rem; }
+        .hist-glossary dd { display: block; margin: 0; }
 
-        @media (min-width: 900px) {
-            .dash-kpis {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        .kpi-card {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-lg);
-            padding: 0.4rem 0.7rem;
-            box-shadow: var(--shadow-md);
-        }
-
-        .kpi-label {
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--color-gray-400);
-            margin-bottom: 0.1rem;
-        }
-
-        .kpi-value {
-            font-family: var(--font-heading);
-            font-size: 0.98rem;
-            font-weight: 600;
-            color: var(--color-white);
-            line-height: 1.25;
-            word-break: break-word;
-        }
-
-        .kpi-value.accent {
-            color: var(--color-accent);
-        }
-
-        .kpi-value.mono {
-            font-family: var(--font-mono);
-            font-size: 0.92rem;
-        }
-
-        .dash-toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: var(--space-3) var(--space-4);
-            margin-bottom: 0;
-            position: relative;
-            z-index: 8;
-        }
-
-        .view-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-3) var(--space-4);
-            align-items: flex-end;
-            flex: 1 1 auto;
-        }
-
-        .control-cluster {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-        }
-
-        .control-label {
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--color-gray-400);
-        }
-
-        .group-switch {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-        }
-
-        .cluster-search-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        #cluster-search {
-            width: 220px;
-            max-width: 42vw;
-            box-sizing: border-box;
-            background: rgba(2, 6, 23, 0.7);
-            border: 1px solid rgba(148, 163, 184, 0.28);
-            border-radius: 8px;
-            color: var(--color-white);
-            padding: 0.38rem 0.7rem;
-            font-size: 0.82rem;
-            font-family: var(--font-mono);
-        }
-
-        #cluster-search:focus {
-            outline: none;
-            border-color: var(--color-accent);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
-        }
-
-        .search-status {
-            min-height: 1em;
-            font-size: 0.68rem;
-            color: var(--color-gray-400);
-            font-family: var(--font-mono);
-            letter-spacing: 0.02em;
-        }
-
-        .search-status.is-empty {
-            color: #f87171;
-        }
-
-        .dash-legend {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: var(--space-3);
-            position: absolute;
-            left: var(--space-4);
-            top: 0.55rem;
-            z-index: 3;
-            max-width: calc(100% - 12rem);
-            pointer-events: none;
-        }
-
-        .legend-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: var(--color-gray-500);
-            font-family: var(--font-mono);
-        }
-
-        .legend-swatch {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            box-shadow: 0 0 8px currentColor;
-        }
-
-        .control-cluster.is-hidden,
-        .kpi-card.is-hidden {
-            display: none;
-        }
-
-        .legend-mark {
-            width: 10px;
-            height: 10px;
-            flex-shrink: 0;
-        }
-
-        .legend-mark-circle {
-            border-radius: 50%;
-            background: var(--color-accent);
-            box-shadow: 0 0 8px var(--color-accent);
-        }
-
-        .legend-mark-diamond {
-            width: 8px;
-            height: 8px;
-            background: #e34948;
-            transform: rotate(45deg);
-        }
-
-        .legend-mark-star {
-            width: auto;
-            height: auto;
-            color: #c99a1e;
-            font-size: 0.85rem;
-            line-height: 1;
-        }
-
-        .plot-card {
-            position: relative;
-            background: rgba(9, 10, 15, 0.62);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-2xl);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow:
-                0 25px 50px -12px rgba(0, 0, 0, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        }
-
-        .plot-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: radial-gradient(ellipse 70% 45% at 50% 0%,
-                    rgba(56, 189, 248, 0.06) 0%,
-                    transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        #gc-plot {
-            position: relative;
-            z-index: 1;
-            flex: 1 1 auto;
-            width: 100%;
-            height: 100%;
-            min-height: 0;
-        }
-
-        .plot-hint {
-            position: absolute;
-            right: var(--space-4);
-            top: var(--space-3);
-            left: auto;
-            bottom: auto;
-            z-index: 2;
-            font-size: 0.72rem;
-            color: rgba(148, 163, 184, 0.7);
-            pointer-events: none;
-            font-family: var(--font-mono);
-        }
-
-        .dash-lower {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-4);
-            margin-top: var(--space-4);
-        }
-
-        .axis-pair {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-4);
-            margin-bottom: var(--space-4);
-        }
-
-        @media (min-width: 720px) {
-            .axis-pair {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .axis-card {
-            background: rgba(2, 6, 23, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: var(--radius-lg);
-            padding: 0.85rem 1rem;
-        }
-
-        .axis-card .axis-kicker {
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--color-accent);
-            margin-bottom: 0.2rem;
-        }
-
-        .axis-card h3 {
-            font-family: var(--font-heading);
-            font-size: 1rem;
-            color: var(--color-white);
-            margin: 0 0 0.45rem;
-        }
-
-        .hist-glossary {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.35rem 1.25rem;
-            margin: 0;
-        }
-
-        @media (min-width: 720px) {
-            .hist-glossary {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .hist-glossary div {
-            font-size: 0.85rem;
-            color: var(--color-gray-500);
-            line-height: 1.5;
-        }
-
-        .hist-glossary dt {
-            display: inline;
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            color: var(--color-accent);
-            margin-right: 0.35rem;
-        }
-
-        .hist-glossary dd {
-            display: inline;
-            margin: 0;
-        }
-
-        .dash-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-xl);
-            padding: var(--space-4) var(--space-5);
-        }
-
-        .dash-panel h2 {
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--color-gray-400);
-            margin-bottom: var(--space-3);
-        }
-
-        .axis-subhead {
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--color-gray-400);
-            margin: 1.15rem 0 0.55rem;
-        }
-
-        .dash-panel p,
-        .dash-panel li {
-            font-size: 0.9rem;
-            color: var(--color-gray-500);
-            line-height: 1.65;
-        }
-
-        .dash-panel code {
-            font-family: var(--font-mono);
-            font-size: 0.82em;
-            color: var(--color-accent);
-        }
-
-        .dash-panel ul {
-            list-style: disc;
-            margin-left: 1.15rem;
-        }
-
-        .dash-panel li + li {
-            margin-top: 0.35rem;
-        }
-
-        .inspector-empty {
-            color: var(--color-gray-400);
-            font-style: italic;
-        }
-
-        .inspector-name {
-            font-family: var(--font-heading);
-            font-size: 1.35rem;
-            color: var(--color-white);
-            margin-bottom: var(--space-3);
-        }
-
-        .inspector-meta {
-            display: grid;
-            gap: var(--space-2);
-            margin-bottom: var(--space-4);
-            font-family: var(--font-mono);
-            font-size: 0.82rem;
-            color: var(--color-gray-500);
-        }
-
-        .inspector-meta span {
-            color: var(--color-gray-300);
-        }
-
-        .baumgardt-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        @media (max-width: 959px) {
-            .dash-stage {
-                height: auto;
-                min-height: 0;
-            }
-
-            #gc-plot {
-                height: 780px;
-                flex: none;
-            }
-
-            .plot-hint {
-                display: none;
-            }
-        }
+        /* ---- inspector ---- */
+        .inspector-empty { color: var(--color-gray-400); font-size: 0.88rem; line-height: 1.6; }
+        .insp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin-bottom: 0.9rem; }
+        .insp-name { font-family: var(--font-heading); font-size: 1.6rem; line-height: 1.1; color: var(--color-white); }
+        .insp-badge { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.22rem 0.65rem; border-radius: 999px;
+            background: rgba(56, 189, 248, 0.14); color: var(--color-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .insp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-bottom: 1.1rem; }
+        .insp-tile { background: rgba(2, 6, 23, 0.45); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 0.6rem 0.8rem; }
+        .insp-tile.wide { grid-column: 1 / -1; }
+        .insp-k { display: block; font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-gray-400); margin-bottom: 0.15rem; }
+        .insp-v { display: block; font-family: var(--font-mono); font-size: 0.92rem; color: var(--color-white); }
+        .baumgardt-link { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; }
     </style>
 </head>
 
@@ -504,87 +157,96 @@
 
     <section class="dash-hero">
         <div class="container">
-            <a href="index.html" class="back-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 5l-7 7 7 7" />
-                </svg>
-                Back to Science Lab
-            </a>
-            <button type="button" class="back-link" data-lab-logout
-                style="background: none; border: 0; padding: 0; margin-left: 1rem; cursor: pointer; font: inherit; color: inherit;">
-                Sign out
-            </button>
-            <h1 class="animate-fade-in-up">BH Likelihood</h1>
+            <div class="hero-row">
+                <a href="index.html" class="back-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg>
+                    Back to Science Lab
+                </a>
+                <button type="button" class="back-link" data-lab-logout
+                    style="background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: inherit;">
+                    Sign out
+                </button>
+            </div>
+            <h1 class="animate-fade-in-up">Globular Cluster Dashboard</h1>
+            <p>Interactive plots for the Baumgardt Milky Way globular cluster sample. Pick a plot, then hover, search or click through to the catalogue.</p>
         </div>
     </section>
 
     <section class="dash-section">
         <div class="container">
-            <div class="dash-stage">
-            <div class="dash-kpis">
-                <div class="kpi-card">
-                    <div class="kpi-label">Clusters</div>
-                    <div class="kpi-value mono" id="kpi-n">—</div>
-                </div>
-                <div class="kpi-card" id="kpi-group-card">
-                    <div class="kpi-label" id="kpi-group-label">Grouping</div>
-                    <div class="kpi-value" id="kpi-group">K-Means</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Target</div>
-                    <div class="kpi-value" id="kpi-cluster">Hover a cluster</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Mass</div>
-                    <div class="kpi-value accent mono" id="kpi-mass">—</div>
-                </div>
-            </div>
-
-            <div class="dash-toolbar">
-                <div class="view-controls">
-                    <div class="control-cluster">
-                        <span class="control-label">Choose plot</span>
-                        <div class="group-switch" id="figure-switch" role="tablist" aria-label="Figure"></div>
+            <div class="shell">
+                <div class="shell-bar">
+                    <div class="group-switch seg seg-lg" id="figure-switch" role="tablist" aria-label="Plot"></div>
+                    <div class="search-wrap">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <input id="cluster-search" list="cluster-name-list" type="search" placeholder="Find a cluster…"
+                            autocomplete="off" spellcheck="false" aria-label="Search globular clusters">
+                        <datalist id="cluster-name-list"></datalist>
+                        <span id="search-status" class="search-status"></span>
                     </div>
+                </div>
+
+                <div class="shell-options">
                     <div class="control-cluster" id="grouping-cluster">
                         <span class="control-label">Grouping</span>
-                        <div class="group-switch" id="group-switch" role="tablist" aria-label="Clustering method"></div>
+                        <div class="group-switch seg" id="group-switch" role="tablist" aria-label="Clustering method"></div>
                     </div>
-                    <div class="control-cluster">
-                        <span class="control-label">Focus plane</span>
-                        <div class="group-switch" id="plane-switch" role="tablist" aria-label="Diagnostic plane"></div>
+                    <div class="control-cluster" id="plane-cluster">
+                        <span class="control-label">Plane</span>
+                        <div class="group-switch seg" id="plane-switch" role="tablist" aria-label="Diagnostic plane"></div>
                     </div>
-                    <div class="control-cluster">
-                        <span class="control-label">Find cluster</span>
-                        <div class="cluster-search-wrap">
-                            <input id="cluster-search" list="cluster-name-list" type="search"
-                                placeholder="NGC 104, Pal 5…" autocomplete="off" spellcheck="false"
-                                aria-label="Search globular clusters">
-                            <datalist id="cluster-name-list"></datalist>
-                            <span id="search-status" class="search-status"></span>
+                    <div class="control-cluster is-hidden" id="colour-cluster">
+                        <span class="control-label">Colour by</span>
+                        <select id="colour-select" class="colour-select" aria-label="Colour variable"></select>
+                    </div>
+                    <div class="control-cluster is-hidden" id="age-cluster">
+                        <span class="control-label">Cluster age</span>
+                        <div class="age-row">
+                            <input id="age-slider" type="range" min="1" max="14" step="0.5" value="12" aria-label="Assumed cluster age in Gyr">
+                            <span class="age-val" id="age-val">12 Gyr</span>
+                        </div>
+                    </div>
+                    <div class="control-cluster" id="hist-cluster">
+                        <span class="control-label">Histograms</span>
+                        <div class="group-switch seg">
+                            <button type="button" class="category-btn" id="hist-btn" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+                    <div class="control-cluster is-hidden" id="tags-cluster">
+                        <span class="control-label">Labels</span>
+                        <div class="group-switch seg">
+                            <button type="button" class="category-btn active" id="tags-btn" aria-pressed="true">Name tags</button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="plot-card">
+                <div class="shell-meta">
+                    <div class="dash-legend" id="dash-legend"></div>
+                    <div class="readout">
+                        <span class="ro"><span class="ro-k">Clusters</span><span class="ro-v" id="kpi-n">—</span></span>
+                        <span class="ro"><span class="ro-k" id="kpi-group-label">Grouping</span><span class="ro-v" id="kpi-group">K-Means</span></span>
+                        <span class="ro"><span class="ro-k">Target</span><span class="ro-v" id="kpi-cluster">Hover a cluster</span></span>
+                        <span class="ro"><span class="ro-k">Mass</span><span class="ro-v accent" id="kpi-mass">—</span></span>
+                    </div>
+                </div>
+
                 <div id="gc-plot"></div>
-                <div class="dash-legend" id="dash-legend"></div>
-                <div class="plot-hint">search isolates a cluster &nbsp;·&nbsp; hover → histogram bins &nbsp;·&nbsp; click → Baumgardt catalogue</div>
-            </div>
             </div>
 
             <div class="dash-lower">
                 <div class="dash-panel axis-guide">
+                    <div class="panel-kicker">Guide</div>
                     <h2 id="axis-guide-heading">How to read this plane</h2>
                     <div id="axis-guide-body"></div>
                 </div>
-                <div class="dash-panel">
-                    <h2>Inspector</h2>
+                <div class="dash-panel inspector-panel">
+                    <div class="panel-kicker">Inspector</div>
+                    <h2>Selected cluster</h2>
                     <div id="inspector">
-                        <p class="inspector-empty">Hover a globular cluster on the focused residual plane.
-                            Click opens its entry in Baumgardt's GC database.</p>
+                        <p class="inspector-empty">Hover a globular cluster on the plot. Click selects a cluster; click it again to open its entry in Baumgardt's GC database.</p>
                     </div>
                 </div>
             </div>
@@ -642,6 +304,216 @@
                 '<div><dt>[Fe/H]</dt><dd>Metallicity. More negative is more metal-poor.</dd></div>' +
                 '</dl>';
 
+            const DYN = window.GC_DYNAMICAL_AGE || {};
+            const DYN_HISTS = window.GC_DYNAMICAL_HISTS || {};
+            let ageGyr = 12;
+            let showHists = false;
+            let colourBy = 'mass';
+            let showTags = true;
+            const MASS_LO = Math.log10(5e2);
+            const MASS_HI = Math.log10(5e6);
+            /* mass ramp, log 5e2..5e6: deep blue -> teal -> pale mint (legible on the dark plot) */
+            const MASS_RAMP = [[47, 95, 168], [58, 166, 160], [232, 248, 236]];
+            const MASS_SCALE = MASS_RAMP.map((c, i) => [i / 2, 'rgb(' + c.join(',') + ')']);
+            function rampAt(x) {
+                x = Math.min(1, Math.max(0, x));
+                const k = x < 0.5 ? 0 : 1;
+                const u = x < 0.5 ? x * 2 : (x - 0.5) * 2;
+                const a = MASS_RAMP[k], b = MASS_RAMP[k + 1];
+                return 'rgb(' + a.map((v, i) => Math.round(v + (b[i] - v) * u)).join(',') + ')';
+            }
+
+            /* Per-cluster colour variables, read from the structure figure's own traces. */
+            const VALUES = {};
+            function computeValues() {
+                if (Object.keys(VALUES).length) return;
+                const src = structureSource;
+                const fehCentres = decodeArray(src.data[13].x);
+                const candCentres = decodeArray(src.data[6].x);
+                const feh = {}, bhl = {}, bhc = {};
+                [0, 2, 4].forEach((i) => {
+                    const scores = decodeArray(src.data[i].marker.color);
+                    rowsOf(src.data[i].customdata).forEach((row, k) => {
+                        const b = parseInt(row[10], 10);
+                        feh[row[0]] = (b >= 0 && b < fehCentres.length) ? fehCentres[b] : null;
+                        const c = parseInt(row[3], 10);
+                        bhc[row[0]] = (c >= 0 && c < candCentres.length) ? candCentres[c] : null;
+                        bhl[row[0]] = typeof scores[k] === 'number' ? scores[k] : null;
+                    });
+                });
+                Object.keys(DYN).forEach((n) => {
+                    VALUES[n] = {
+                        mass: DYN[n].mass, conc: DYN[n].conc, vesc: DYN[n].vesc,
+                        feh: feh[n] != null ? feh[n] : null,
+                        bhl: bhl[n] != null ? bhl[n] : null,
+                        bhc: bhc[n] != null ? bhc[n] : null
+                    };
+                });
+            }
+            const sub = (n) => '10<sup>' + n + '</sup>';
+            const COLOUR_OPTIONS = [
+                { id: 'mass', field: 'mass', label: 'Mass', title: 'Present-day<br>mass (M\u2609)', get: (v) => Math.log10(v.mass),
+                  lo: MASS_LO, hi: MASS_HI, tickvals: [3, 4, 5, 6], ticktext: [sub(3), sub(4), sub(5), sub(6)] },
+                { id: 'conc', field: 'conc', label: 'Concentration', title: 'Concentration<br>c', get: (v) => v.conc },
+                { id: 'vesc', field: 'vesc', label: 'Escape velocity', title: 'v<sub>esc</sub><br>(km s<sup>\u22121</sup>)', get: (v) => Math.log10(v.vesc),
+                  ticks: [2, 5, 10, 20, 50, 100].map((x) => [Math.log10(x), String(x)]) },
+                { id: 'feh', field: 'feh', label: '[Fe/H]', title: '[Fe/H]<br>(binned)', get: (v) => v.feh },
+                { id: 'bhl', field: 'bhl', label: 'BH likelihood', title: 'BH likelihood<br>score', get: (v) => v.bhl },
+                { id: 'bhc', field: 'bhc', label: 'BH candidate score', title: 'BH candidate<br>score (binned)', get: (v) => v.bhc }
+            ];
+            function colourOption() { return COLOUR_OPTIONS.find((o) => o.id === colourBy) || COLOUR_OPTIONS[0]; }
+            /* Colour range: fixed for mass, 2nd-98th percentile of the sample for the rest. */
+            function colourRange(opt) {
+                if (opt.lo != null) return [opt.lo, opt.hi];
+                const vals = Object.keys(VALUES).map((n) => opt.get(VALUES[n])).filter((x) => typeof x === 'number' && isFinite(x)).sort((a, b) => a - b);
+                if (!vals.length) return [0, 1];
+                return [vals[Math.floor(vals.length * 0.02)], vals[Math.min(vals.length - 1, Math.floor(vals.length * 0.98))]];
+            }
+            function massColour(m) {
+                return rampAt((Math.log10(m) - MASS_LO) / (MASS_HI - MASS_LO));
+            }
+            const DYN_SERIES = [
+                { key: 'other', name: 'MW globular clusters', size: 9, ring: 'rgba(226,232,240,0.45)', width: 0.8, tags: false },
+                { key: 'main', name: 'Full kick grid', size: 12, ring: '#8fb0f0', width: 2.6, tags: true },
+                { key: 'extra', name: 'Additional clusters', size: 12, ring: '#f0858a', width: 2.6, tags: true }
+            ];
+
+            /* Pick a text position per labelled point that avoids other labels and markers,
+               working in approximate plot pixels (the plot area is roughly 900 x 290). */
+            function pickTextPositions(items, allDots) {
+                const PW = 900, PH = 290, LH = 16, R = 8;
+                const rng = FIGURES.find((f) => f.id === 'dynamical').fixedRanges;
+                const px = (v) => (Math.log10(v) - rng.xaxis[0]) / (rng.xaxis[1] - rng.xaxis[0]) * PW;
+                const py = (v) => (rng.yaxis[1] - Math.log10(v)) / (rng.yaxis[1] - rng.yaxis[0]) * PH;
+                const dots = (allDots || items).map((it) => ({ x: px(it.x), y: py(it.y) }));
+                const placed = [];
+                const out = {};
+                const spots = [
+                    ['top center', (c, w) => ({ x: c.x - w / 2, y: c.y - R - LH })],
+                    ['bottom center', (c, w) => ({ x: c.x - w / 2, y: c.y + R })],
+                    ['middle right', (c) => ({ x: c.x + R + 2, y: c.y - LH / 2 })],
+                    ['middle left', (c, w) => ({ x: c.x - R - 2 - w, y: c.y - LH / 2 })],
+                    ['top right', (c) => ({ x: c.x + R * 0.6, y: c.y - R * 0.6 - LH })],
+                    ['top left', (c, w) => ({ x: c.x - R * 0.6 - w, y: c.y - R * 0.6 - LH })],
+                    ['bottom right', (c) => ({ x: c.x + R * 0.6, y: c.y + R * 0.6 })],
+                    ['bottom left', (c, w) => ({ x: c.x - R * 0.6 - w, y: c.y + R * 0.6 })]
+                ];
+                const overlap = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
+                    Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+                items.forEach((it) => {
+                    const c = { x: px(it.x), y: py(it.y) };
+                    const w = it.name.length * 7.6 + 4;
+                    let best = null;
+                    spots.forEach(([pos, f]) => {
+                        const o = f(c, w);
+                        const rc = { x: o.x, y: o.y, w, h: LH };
+                        let s = 0;
+                        placed.forEach((q) => { s += overlap(rc, q) * 3; });
+                        dots.forEach((d) => {
+                            if (d.x > rc.x - 3 && d.x < rc.x + w + 3 && d.y > rc.y - 3 && d.y < rc.y + LH + 3 &&
+                                !(d.x === c.x && d.y === c.y)) s += 120;
+                        });
+                        if (rc.x < 0 || rc.x + w > PW || rc.y < 0 || rc.y + LH > PH) s += 300;
+                        if (!best || s < best.s) best = { s, pos, rc };
+                    });
+                    placed.push(best.rc);
+                    out[it.name] = best.pos;
+                });
+                return out;
+            }
+
+            /* Dynamical-age figure: reuses the structure figure's histograms and per-cluster bins,
+               but plots r_c/r_h,m against (assumed age)/t_rh, coloured by mass. */
+            function buildDynamicalFigure(q) {
+                const src = structureSource;
+                const fig = JSON.parse(JSON.stringify(src));
+                computeValues();
+                const opt = colourOption();
+                const [cLo, cHi] = colourRange(opt);
+                const rows = new Map();
+                [0, 2, 4].forEach((i) => rowsOf(src.data[i].customdata).forEach((row) => rows.set(row[0], row)));
+                const bars = fig.data.slice(6);
+                /* mass, concentration, r_c/r_h,m and v_esc histograms are recomputed from the regenerated data */
+                Object.keys(DYN_HISTS).forEach((k) => {
+                    const h = DYN_HISTS[k];
+                    if (!bars[k]) return;
+                    bars[k].x = h.x;
+                    bars[k].y = h.y;
+                    bars[k].width = h.width;
+                });
+                const namesIn = (key) => Object.keys(DYN).filter((n) => DYN[n].g === key).sort((a, b) => a.localeCompare(b));
+                const scatter = [];
+                const tagItems = [];
+                DYN_SERIES.forEach((s) => {
+                    if (!s.tags || !showTags) return;
+                    namesIn(s.key)
+                        .forEach((n) => tagItems.push({ name: n, x: ageGyr / DYN[n].trh, y: DYN[n].rc / DYN[n].rh }));
+                });
+                const allDots = Object.keys(DYN)
+                    .map((n) => ({ name: n, x: ageGyr / DYN[n].trh, y: DYN[n].rc / DYN[n].rh }));
+                const tagPos = tagItems.length ? pickTextPositions(tagItems, allDots) : {};
+                DYN_SERIES.forEach((s) => {
+                    const names = namesIn(s.key);
+                    const raw = names.map((n) => { const v = opt.get(VALUES[n] || {}); return (typeof v === 'number' && isFinite(v)) ? v : null; });
+                    const natural = names.map((n) => {
+                        const v = VALUES[n] || {};
+                        return v[opt.field];
+                    });
+                    const cd = names.map((n, k) => {
+                        const row = rows.has(n) ? rows.get(n).slice() : [n, DYN[n].mass, '', -1, -1, -1, -1, -1, -1, -1, -1, ''];
+                        row[1] = DYN[n].mass;
+                        for (let j = 0; j < 4; j++) row[5 + j] = DYN[n].b[j];
+                        row[row.length - 1] = DYN[n].url;
+                        row[2] = raw[k] == null ? '#6b7280' : rampAt((raw[k] - cLo) / (cHi - cLo));
+                        row.splice(row.length - 1, 0, DYN[n].trh, natural[k]);
+                        return row;
+                    });
+                    const labelOthers = !s.tags && q && showTags && names.filter((n) => normName(n).includes(q)).length <= 3;
+                    const withText = (s.tags && showTags) || labelOthers;
+                    const base = {
+                        type: 'scatter',
+                        name: s.name,
+                        showlegend: false,
+                        mode: withText ? 'markers+text' : 'markers',
+                        hovertemplate: '<b>%{customdata[0]}</b><br>t/t<sub>rh</sub> = %{x:.3g}<br>r<sub>c</sub>/r<sub>h,m</sub> = %{y:.3f}' +
+                            '<br>t<sub>rh</sub> = %{customdata[11]:.3g} Gyr<br>mass = %{customdata[1]:,.0f} Msun' +
+                            (opt.id === 'mass' ? '' : '<br>' + opt.label + ' = %{customdata[12]:.3g}') +
+                            '<br><i>click to open on Baumgardt\'s GC database</i><extra></extra>',
+                        textfont: { size: 13, color: s.tags ? s.ring : '#e2e8f0', family: AXIS_FONT },
+                        cliponaxis: false
+                    };
+                    scatter.push(Object.assign({}, base, {
+                        xaxis: 'x', yaxis: 'y',
+                        x: names.map((n) => ageGyr / DYN[n].trh),
+                        y: names.map((n) => DYN[n].rc / DYN[n].rh),
+                        text: names,
+                        textposition: names.map((n) => tagPos[n] || 'top center'),
+                        customdata: cd,
+                        marker: {
+                            size: s.size,
+                            symbol: 'circle',
+                            color: raw.map((x) => (x == null ? cLo : x)),
+                            opacity: raw.map((x) => (x == null ? 0.25 : 1)),
+                            colorscale: MASS_SCALE,
+                            cmin: cLo,
+                            cmax: cHi,
+                            showscale: false,
+                            line: { color: s.ring, width: s.width }
+                        }
+                    }));
+                    scatter.push(Object.assign({}, base, {
+                        xaxis: 'x2', yaxis: 'y2', x: [], y: [], text: [], customdata: [], visible: false,
+                        marker: { size: s.size, color: [], line: { color: s.ring, width: s.width } }
+                    }));
+                });
+                fig.data = scatter.concat(bars);
+                fig.layout.xaxis = Object.assign({}, fig.layout.xaxis, {
+                    type: 'log', exponentformat: 'power', showexponent: 'all', dtick: 1,
+                    title: { text: 't / t<sub>rh</sub>  (assumed cluster age \u00f7 half-mass relaxation time)' }
+                });
+                return fig;
+            }
+
             const FIGURES = [
                 {
                     id: 'residual',
@@ -655,7 +527,7 @@
                     kpiLabel: 'Grouping',
                     planes: [
                         {
-                            label: 'Puffiness vs \u03b4_ML',
+                            label: 'Puffiness vs \u03b4<sub>ML</sub>',
                             title: 'Puffiness vs mass-loss excess',
                             xaxis: 'x',
                             guideTitle: 'Puffiness vs mass-loss excess',
@@ -672,7 +544,7 @@
                                 '<p>Clusters that retained a BH population tend to stay puffier at a given mass-loss residual; core-collapsed systems sit toward the left. Compare groups by whether they occupy different parts of this plane, not by a single colour meaning “more BHs”.</p>'
                         },
                         {
-                            label: '\u03b4_ML vs \u03b5_v',
+                            label: '\u03b4<sub>ML</sub> vs \u03b5<sub>v</sub>',
                             title: 'Mass-loss excess vs vesc FP residual',
                             xaxis: 'x2',
                             guideTitle: 'Mass-loss excess vs vesc fundamental-plane residual',
@@ -689,7 +561,7 @@
                                 '<p>A trend along this plane means mass-loss and binding-energy residuals are coupled. A group that sits off the cloud in \u03b5<sub>v</sub> but not in \u03b4<sub>ML</sub> (or vice versa) is structurally distinct in only one residual family.</p>'
                         }
                     ],
-                    inspectorEmpty: 'Hover a globular cluster on the focused residual plane. Click opens its entry in Baumgardt\'s GC database.'
+                    inspectorEmpty: 'Hover a globular cluster on the focused residual plane. Click selects a cluster; click it again to open its Baumgardt catalogue entry.'
                 },
                 {
                     id: 'structure',
@@ -738,15 +610,71 @@
                                 '<p>High BH-likelihood (redder) typically prefers the upper-right: massive and high escape speed. Colour still encodes the likelihood score, not a discrete class.</p>'
                         }
                     ],
-                    inspectorEmpty: 'Hover a globular cluster on the focused plane. Colour encodes BH-likelihood score. Click opens its entry in Baumgardt\'s GC database.'
+                    inspectorEmpty: 'Hover a globular cluster on the focused plane. Colour encodes BH-likelihood score. Click selects a cluster; click it again to open its Baumgardt catalogue entry.'
+                },
+                {
+                    id: 'dynamical',
+                    label: 'Dynamical age',
+                    source: structureSource,
+                    build: buildDynamicalFigure,
+                    hasGrouping: false,
+                    hasColorbar: true,
+                    hasThreshold: true,
+                    hasAge: true,
+                    hasTags: true,
+                    threshold: { x: 1, text: 't = t<sub>rh</sub>' },
+                    hasColourBy: true,
+                    colorbar: () => {
+                        const opt = colourOption();
+                        const [lo, hi] = colourRange(opt);
+                        let tv = opt.tickvals, tt = opt.ticktext;
+                        if (opt.ticks) {
+                            const keep = opt.ticks.filter((x) => x[0] >= lo && x[0] <= hi);
+                            tv = keep.map((x) => x[0]);
+                            tt = keep.map((x) => x[1]);
+                        }
+                        return { title: opt.title, tickvals: tv, ticktext: tt };
+                    },
+                    fixedRanges: {
+                        xaxis: [Math.log10(0.02), Math.log10(600)],
+                        yaxis: [Math.log10(0.007), Math.log10(1)]
+                    },
+                    scatterCount: 6,
+                    histIdx: [6, 7, 8, 9, 10, 11, 12, 13],
+                    kpiLabel: 'Colour',
+                    kpiValue: 'Mass',
+                    kpiValueFn: () => colourOption().label,
+                    planes: [
+                        {
+                            label: 'Puffiness vs t/t<sub>rh</sub>',
+                            title: 'How dynamically old are Milky Way globular clusters?',
+                            xaxis: 'x',
+                            guideTitle: 'Puffiness vs age in relaxation times',
+                            guideHtml:
+                                '<p>Core-to-half-mass radius ratio against assumed age in half-mass relaxation times, coloured by mass by default (switch with <em>Colour by</em>: concentration, escape velocity, [Fe/H], BH likelihood or BH candidate score; [Fe/H] and the candidate score are binned, and clusters without a value are shown faded). Ringed clusters are those in the black hole natal kick study: blue = full kick grid, red = additional clusters. Use the age slider to slide every cluster along the x axis; the name-tag toggle hides labels but keeps the rings.</p>' +
+                                '<div class="axis-pair">' +
+                                '<div class="axis-card"><div class="axis-kicker">X axis \u00b7 log</div>' +
+                                '<h3>t / t<sub>rh</sub></h3>' +
+                                '<p>The one assumed age divided by each cluster\u2019s present-day half-mass relaxation time. Right of the dashed line (t = t<sub>rh</sub>) a cluster has had time to relax at least once. True ages vary by ~0.1 dex but t<sub>rh</sub> by ~2 dex, so the spread is dominated by t<sub>rh</sub>.</p></div>' +
+                                '<div class="axis-card"><div class="axis-kicker">Y axis \u00b7 log</div>' +
+                                '<h3>Puffiness, r<sub>c</sub> / r<sub>h,m</sub></h3>' +
+                                '<p>Core radius over the 3D half-mass radius. Small values are centrally concentrated (collapsed-core-like); large values are puffy.</p></div>' +
+                                '</div>' +
+                                '<p>Data: this plot (mass, r<sub>c</sub>, r<sub>h,m</sub>, t<sub>rh</sub>, v<sub>esc</sub>, concentration and the matching histograms) uses the updated Baumgardt et al. <em>newdata</em> tables, 171 clusters, and the catalogue links open the same pages. [Fe/H] and the other histograms (BH scores, age, [Fe/H]) are still those of the original figure. The Residual and Structure plots use the earlier tables.</p>'
+                        }
+                    ],
+                    inspectorEmpty: 'Hover a globular cluster. Colour follows the selected Colour by variable. Click selects a cluster; click it again to open its Baumgardt catalogue entry.'
                 }
             ];
 
-            let figureIndex = 0;
+            /* Dynamical age is the default (first) plot */
+            FIGURES.sort((a, b) => (b.id === 'dynamical') - (a.id === 'dynamical'));
+            let figureIndex = Math.max(0, FIGURES.findIndex((f) => '#' + f.id === location.hash));
             let activeIndex = 0;
             let planeIndex = 0;
             let lastCluster = null;
             let isolatedCluster = null;
+            let selectedCluster = null;
             let viewBusy = false;
             let lockedScatterRanges = null;
             let lockedScatterKey = '';
@@ -785,6 +713,44 @@
                 switchEl.appendChild(btn);
             });
 
+            const colourSelect = document.getElementById('colour-select');
+            COLOUR_OPTIONS.forEach((o) => {
+                const opt = document.createElement('option');
+                opt.value = o.id;
+                opt.textContent = o.label;
+                colourSelect.appendChild(opt);
+            });
+            colourSelect.value = colourBy;
+            colourSelect.addEventListener('change', () => {
+                colourBy = colourSelect.value;
+                rebuildPlot();
+            });
+            const histBtn = document.getElementById('hist-btn');
+            histBtn.addEventListener('click', () => {
+                showHists = !showHists;
+                histBtn.classList.toggle('active', showHists);
+                histBtn.textContent = showHists ? 'Hide' : 'Show';
+                histBtn.setAttribute('aria-pressed', showHists ? 'true' : 'false');
+                plotEl.classList.toggle('no-hists', !showHists);
+                rebuildPlot({ fresh: true }).then(function () { Plotly.Plots.resize(plotEl); });
+            });
+            plotEl.classList.add('no-hists');
+            const ageSlider = document.getElementById('age-slider');
+            const tagsBtn = document.getElementById('tags-btn');
+            let ageDebounce = null;
+            ageSlider.addEventListener('input', () => {
+                ageGyr = +ageSlider.value;
+                document.getElementById('age-val').textContent = ageGyr + ' Gyr';
+                clearTimeout(ageDebounce);
+                ageDebounce = setTimeout(() => rebuildPlot(), 40);
+            });
+            tagsBtn.addEventListener('click', () => {
+                showTags = !showTags;
+                tagsBtn.classList.toggle('active', showTags);
+                tagsBtn.setAttribute('aria-pressed', showTags ? 'true' : 'false');
+                rebuildPlot();
+            });
+
             renderPlaneSwitch();
             updateFigureChrome();
 
@@ -804,6 +770,13 @@
                     }).observe(plotCard);
                 }
             }
+
+            document.addEventListener('keydown', (evt) => {
+                if (evt.key === 'Escape' && selectedCluster && document.activeElement !== searchInput) {
+                    selectedCluster = null;
+                    rebuildPlot();
+                }
+            });
 
             window.addEventListener('resize', () => {
                 if (!plotEl || !plotEl.data || !plotEl._fullLayout) return;
@@ -834,6 +807,7 @@
 
             function scatterDomain(stacked) {
                 const right = currentFigure().hasColorbar && !stacked ? 0.88 : 0.94;
+                if (!showHists) return stacked ? { x: [0.0, 1.0], y: [0.0, 1.0] } : { x: [0.06, right], y: [0.0, 1.0] };
                 return stacked
                     ? { x: [0.0, 1.0], y: [0.55, 1.0] }
                     : { x: [0.06, right], y: [0.50, 1.0] };
@@ -878,27 +852,36 @@
                     const isMain = t.name === 'MW globular clusters';
                     t.marker.showscale = !!(def.hasColorbar && isMain && t.xaxis === xaxis);
                     if (t.marker.showscale) {
+                        const cb = typeof def.colorbar === 'function' ? def.colorbar() : (def.colorbar || {});
+                        const scat = scatterDomain(stackedMode);
                         t.marker.colorbar = {
+                            tickvals: cb.tickvals,
+                            ticktext: cb.ticktext,
                             title: {
-                                text: 'BH likelihood<br>score',
-                                font: { color: '#e2e8f0', family: AXIS_FONT, size: 11 }
+                                text: cb.title || 'BH likelihood<br>score',
+                                font: { color: '#e2e8f0', family: AXIS_FONT, size: 12 }
                             },
-                            tickfont: { color: '#94a3b8', family: AXIS_FONT, size: 10 },
+                            tickfont: { color: '#94a3b8', family: AXIS_FONT, size: 11 },
                             outlinewidth: 0,
-                            bgcolor: 'rgba(15,23,42,0.35)',
-                            len: 0.48,
-                            y: 1,
-                            yanchor: 'top'
+                            thickness: 12,
+                            ticklen: 0,
+                            xpad: 12,
+                            bgcolor: 'rgba(0,0,0,0)',
+                            lenmode: 'fraction',
+                            len: scat.y[1] - scat.y[0],
+                            y: scat.y[0],
+                            yanchor: 'bottom'
                         };
                     }
                 });
             }
 
             function thresholdShape() {
+                const tx = (currentFigure().threshold || { x: 2.5 }).x;
                 return {
                     type: 'line',
-                    x0: 2.5,
-                    x1: 2.5,
+                    x0: tx,
+                    x1: tx,
                     xref: 'x',
                     y0: 0,
                     y1: 1,
@@ -907,12 +890,14 @@
                 };
             }
 
-            function prepareFigure() {
-                const fig = JSON.parse(JSON.stringify(currentFigure().source));
+            function prepareFigure(q) {
+                const def = currentFigure();
+                const fig = def.build ? def.build(q) : JSON.parse(JSON.stringify(def.source));
                 applyDarkLayout(fig.layout);
                 applyScatterVisibility(fig.data);
                 applyColorbar(fig.data, planeIndex);
                 applyGeometry(fig.layout, planeIndex, stackedMode);
+                if (!showHists) def.histIdx.forEach((i) => { if (fig.data[i]) fig.data[i].visible = false; });
                 return fig;
             }
 
@@ -1017,9 +1002,9 @@
                 layout.showlegend = false;
                 layout.title = { text: '' };
                 layout.margin = {
-                    t: 44,
+                    t: 14,
                     r: currentFigure().hasColorbar ? 78 : 12,
-                    b: 36,
+                    b: showHists ? 36 : 56,
                     l: 54,
                     pad: 0
                 };
@@ -1060,10 +1045,12 @@
                     const n = i + 3;
                     const xKey = 'xaxis' + n;
                     const yKey = 'yaxis' + n;
-                    layout[xKey].domain = cell.x;
-                    layout[yKey].domain = cell.y;
+                    layout[xKey].domain = showHists ? cell.x : [0, 0.01];
+                    layout[yKey].domain = showHists ? cell.y : [0, 0.01];
                     layout[xKey].title = { text: '' };
                     layout[yKey].title = { text: '' };
+                    layout[xKey].visible = showHists;
+                    layout[yKey].visible = showHists;
                 }
 
                 layout.annotations = buildAnnotations(plane, stacked);
@@ -1097,18 +1084,8 @@
 
             function buildAnnotations(plane, stacked) {
                 const scatter = scatterDomain(stacked);
-                const anns = [{
-                    text: currentPlanes()[plane].title,
-                    x: (scatter.x[0] + scatter.x[1]) / 2,
-                    y: scatter.y[1],
-                    xref: 'paper',
-                    yref: 'paper',
-                    xanchor: 'center',
-                    yanchor: 'bottom',
-                    showarrow: false,
-                    font: { size: 14, color: '#e2e8f0', family: AXIS_FONT }
-                }];
-                HIST_TITLES.forEach((title, i) => {
+                const anns = [];
+                if (showHists) HIST_TITLES.forEach((title, i) => {
                     const cell = histCell(i, stacked);
                     anns.push({
                         text: title,
@@ -1119,23 +1096,29 @@
                         xanchor: 'center',
                         yanchor: 'bottom',
                         showarrow: false,
-                        font: { size: 11, color: '#cbd5e1', family: AXIS_FONT }
+                        font: { size: 12, color: '#cbd5e1', family: AXIS_FONT }
                     });
                 });
                 if (currentFigure().hasThreshold && plane === 0) {
+                    const th = currentFigure().threshold || { x: 2.5, text: 'core-collapse threshold (c=2.5)' };
                     anns.push({
-                        text: 'core-collapse threshold (c=2.5)',
-                        x: 2.5,
+                        text: th.text,
+                        x: th.x,
                         y: 1,
                         xref: 'x',
                         yref: 'y domain',
                         xanchor: 'left',
                         yanchor: 'top',
                         showarrow: false,
-                        font: { size: 10, color: GREY, family: AXIS_FONT }
+                        font: { size: 11, color: '#94a3b8', family: AXIS_FONT }
                     });
                 }
                 return anns;
+            }
+
+            /* r_c -> r<sub>c</sub>, \u03b4_ML -> \u03b4<sub>ML</sub>, etc. so axis titles match the rest of the page */
+            function prettyTitle(s) {
+                return s.replace(/r_h,m/g, 'r<sub>h,m</sub>').replace(/([A-Za-z\u03b4\u03b5])_([A-Za-z]+)/g, '$1<sub>$2</sub>');
             }
 
             function restyleAxis(ax) {
@@ -1143,19 +1126,20 @@
                 ax.gridcolor = 'rgba(148, 163, 184, 0.14)';
                 ax.zerolinecolor = 'rgba(148, 163, 184, 0.22)';
                 ax.linecolor = 'rgba(148, 163, 184, 0.3)';
-                ax.tickfont = Object.assign({}, ax.tickfont, { color: '#94a3b8', family: AXIS_FONT, size: 10 });
+                ax.tickfont = Object.assign({}, ax.tickfont, { color: '#94a3b8', family: AXIS_FONT, size: 11 });
                 ax.automargin = false;
                 if (ax.title && typeof ax.title === 'object') {
                     ax.title.font = Object.assign({}, ax.title.font, {
                         color: '#cbd5e1',
                         family: AXIS_FONT,
-                        size: 12
+                        size: 13
                     });
+                    if (typeof ax.title.text === 'string') ax.title.text = prettyTitle(ax.title.text);
                 }
             }
 
             function greyHistograms() {
-                if (!plotEl.data) return;
+                if (!plotEl.data || !showHists) return;
                 const colorArrays = HIST_NBINS.map((n) => new Array(n).fill(GREY));
                 Plotly.restyle(plotEl, { 'marker.color': colorArrays }, currentFigure().histIdx);
             }
@@ -1180,8 +1164,15 @@
                 plotEl.on('plotly_unhover', function () {
                     plotEl.style.cursor = '';
                     try {
-                        if (isolatedCluster && isolatedCluster.cd) highlightHistograms(isolatedCluster.cd);
-                        else greyHistograms();
+                        const focus = focusCluster();
+                        if (focus && focus.cd) {
+                            highlightHistograms(focus.cd);
+                            lastCluster = focus;
+                            renderInspector(focus);
+                            updateKpis(focus);
+                        } else {
+                            greyHistograms();
+                        }
                     } catch (err) { /* plot may be mid-rebuild */ }
                 });
 
@@ -1189,16 +1180,47 @@
                     const pt = evt.points && evt.points[0];
                     if (!pt || !pt.customdata) return;
                     const cd = pt.customdata;
-                    lastCluster = clusterFromCustomdata(cd, pt.fullData && pt.fullData.name);
-                    renderInspector(lastCluster);
-                    updateKpis(lastCluster);
-                    const url = cd[cd.length - 1];
-                    if (url) window.open(url, '_blank');
+                    const cluster = clusterFromCustomdata(cd, pt.fullData && pt.fullData.name);
+                    cluster.cd = cd;
+                    if (selectedCluster && selectedCluster.name === cluster.name) {
+                        /* second click on the selected cluster: open the catalogue */
+                        const url = cd[cd.length - 1];
+                        if (url) window.open(url, '_blank');
+                        return;
+                    }
+                    /* first click: select */
+                    selectedCluster = cluster;
+                    lastCluster = cluster;
+                    renderInspector(cluster);
+                    updateKpis(cluster);
+                    highlightHistograms(cd);
+                    rebuildPlot();
                 });
             }
 
+            function focusCluster() {
+                return isolatedCluster || selectedCluster;
+            }
+
+            /* Keep the selected cluster visibly larger across rebuilds (search, age slider, plane switch). */
+            function applySelection(data) {
+                if (!selectedCluster) return;
+                const vis = scatterVisibility();
+                for (let ti = 0; ti < currentFigure().scatterCount; ti++) {
+                    if (!vis[ti] || !data[ti]) continue;
+                    const rows = rowsOf(data[ti].customdata);
+                    const idx = rows.findIndex((row) => row && row[0] === selectedCluster.name);
+                    if (idx < 0) continue;
+                    const size = data[ti].marker && data[ti].marker.size;
+                    const base = Array.isArray(size) ? size[idx] : (typeof size === 'number' ? size : 9);
+                    data[ti].selectedpoints = [idx];
+                    data[ti].selected = { marker: { size: base + 8 } };
+                    data[ti].unselected = { marker: { opacity: 1 } };
+                }
+            }
+
             function highlightHistograms(cd) {
-                if (!plotEl.data || !cd) return;
+                if (!plotEl.data || !cd || !showHists) return;
                 const pointColor = cd[2];
                 const colorArrays = HIST_NBINS.map(function (n, i) {
                     const arr = new Array(n).fill(GREY);
@@ -1343,11 +1365,12 @@
             }
 
             function finishSearchChrome() {
-                if (isolatedCluster) {
-                    lastCluster = isolatedCluster;
-                    highlightHistograms(isolatedCluster.cd);
-                    renderInspector(isolatedCluster);
-                    updateKpis(isolatedCluster);
+                const focus = focusCluster();
+                if (focus) {
+                    lastCluster = focus;
+                    highlightHistograms(focus.cd);
+                    renderInspector(focus);
+                    updateKpis(focus);
                 } else {
                     lastCluster = null;
                     greyHistograms();
@@ -1366,15 +1389,17 @@
                 viewBusy = true;
                 rebuildPlot._pending = null;
                 const q = searchQuery();
-                const fig = prepareFigure();
+                const fig = prepareFigure(q);
                 const key = scatterRangeKey();
                 const measured = measureScatterRanges(fig.data, fig.layout);
                 const n = filterScatterTraces(fig.data, q);
+                applySelection(fig.data);
                 if (lockedScatterRanges && lockedScatterKey === key) {
                     applyScatterRanges(fig.layout, lockedScatterRanges);
                 } else if (q) {
                     applyScatterRanges(fig.layout, measured);
                 }
+                if (currentFigure().fixedRanges) applyScatterRanges(fig.layout, currentFigure().fixedRanges);
                 setSearchStatus(q, n);
 
                 const plotPromise = opts.fresh || !plotEl.data
@@ -1416,6 +1441,7 @@
                         });
                     }
                 });
+                Object.keys(window.GC_DYNAMICAL_AGE || {}).forEach(function (n) { names.add(n); });
                 searchNameList.innerHTML = '';
                 Array.from(names).sort(function (a, b) { return a.localeCompare(b); }).forEach(function (name) {
                     const opt = document.createElement('option');
@@ -1450,7 +1476,7 @@
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'category-btn' + (i === planeIndex ? ' active' : '');
-                    btn.textContent = p.label;
+                    btn.innerHTML = p.label;
                     btn.setAttribute('role', 'tab');
                     btn.setAttribute('aria-selected', i === planeIndex ? 'true' : 'false');
                     btn.addEventListener('click', () => setPlane(i));
@@ -1462,12 +1488,16 @@
                 const plane = currentPlanes()[planeIndex];
                 axisGuideHeading.textContent = plane.guideTitle || plane.title || 'How to read this plane';
                 axisGuideBody.innerHTML = (plane.guideHtml || '') +
-                    '<div class="axis-subhead">Histograms</div>' + HIST_GUIDE;
+                    '<details class="hist-details"><summary>About the histograms</summary>' + HIST_GUIDE + '</details>';
             }
 
             function updateFigureChrome() {
                 const def = currentFigure();
                 groupingCluster.classList.toggle('is-hidden', !def.hasGrouping);
+                document.getElementById('plane-cluster').classList.toggle('is-hidden', def.planes.length < 2);
+                document.getElementById('colour-cluster').classList.toggle('is-hidden', !def.hasColourBy);
+                document.getElementById('age-cluster').classList.toggle('is-hidden', !def.hasAge);
+                document.getElementById('tags-cluster').classList.toggle('is-hidden', !def.hasTags);
                 kpiGroupLabel.textContent = def.kpiLabel;
                 renderAxisGuide();
                 Array.from(figureEl.children).forEach((btn, i) => {
@@ -1481,10 +1511,12 @@
                 figureIndex = index;
                 lastCluster = null;
                 isolatedCluster = null;
+                selectedCluster = null;
                 if (planeIndex >= currentPlanes().length) planeIndex = 0;
                 stackedMode = isStacked();
                 updateFigureChrome();
                 renderPlaneSwitch();
+                try { history.replaceState(null, '', index === 0 ? location.pathname + location.search : '#' + currentFigure().id); } catch (err) { /* ignore */ }
                 rebuildPlot({ fresh: true, force: true }).then(function () {
                     Plotly.Plots.resize(plotEl);
                 });
@@ -1528,6 +1560,7 @@
                         color,
                         n: (t.customdata || []).length,
                         symbol: (t.marker && t.marker.symbol) || 'circle',
+                        ringed: !!(def.hasAge && t.marker && t.marker.line && t.marker.line.width > 1),
                         grouped: def.hasGrouping
                     });
                 });
@@ -1552,7 +1585,7 @@
                 const def = currentFigure();
                 document.getElementById('kpi-group').textContent = def.hasGrouping
                     ? groupings[activeIndex].label
-                    : (def.kpiValue || '—');
+                    : (def.kpiValueFn ? def.kpiValueFn() : (def.kpiValue || '—'));
                 document.getElementById('kpi-n').textContent = String(uniqueClusterCount());
                 updateKpis(lastCluster);
 
@@ -1566,6 +1599,11 @@
                         mark.className = 'legend-swatch';
                         mark.style.background = item.color;
                         mark.style.color = item.color;
+                    } else if (item.ringed) {
+                        mark.className = 'legend-mark legend-mark-circle';
+                        mark.style.background = 'transparent';
+                        mark.style.boxShadow = 'none';
+                        mark.style.border = '2px solid ' + item.color;
                     } else if (item.symbol === 'diamond') {
                         mark.className = 'legend-mark legend-mark-diamond';
                     } else if (item.symbol === 'star') {
@@ -1575,7 +1613,11 @@
                         mark.className = 'legend-mark legend-mark-circle';
                     }
                     wrap.appendChild(mark);
-                    wrap.appendChild(document.createTextNode(item.name + '  n=' + item.n));
+                    wrap.appendChild(document.createTextNode(item.name + ' '));
+                    const cnt = document.createElement('span');
+                    cnt.className = 'n';
+                    cnt.textContent = item.n;
+                    wrap.appendChild(cnt);
                     legendEl.appendChild(wrap);
                 });
             }
@@ -1607,15 +1649,23 @@
                     el.innerHTML = '<p class="inspector-empty">' + def.inspectorEmpty + '</p>';
                     return;
                 }
-                const safeName = escapeHtml(cluster.name);
-                const seriesLabel = def.hasGrouping ? 'group' : 'series';
-                const safeGroup = escapeHtml(String(cluster.group));
+                const tile = (k, v, wide) => '<div class="insp-tile' + (wide ? ' wide' : '') + '"><span class="insp-k">' + k +
+                    '</span><span class="insp-v">' + v + '</span></div>';
+                const d = def.hasAge && DYN[cluster.name] ? DYN[cluster.name] : null;
                 const url = cluster.url ? String(cluster.url) : '';
                 el.innerHTML =
-                    '<div class="inspector-name">' + safeName + '</div>' +
-                    '<div class="inspector-meta">' +
-                    '<div>' + seriesLabel + ' <span>' + safeGroup + '</span></div>' +
-                    '<div>mass <span>' + escapeHtml(formatMass(cluster.mass)) + '</span></div>' +
+                    '<div class="insp-head"><div class="insp-name">' + escapeHtml(cluster.name) + '</div>' +
+                    '<span class="insp-badge">' + escapeHtml(String(cluster.group)) + '</span></div>' +
+                    '<div class="insp-grid">' +
+                    tile('Mass', escapeHtml(formatMass(cluster.mass)), !d) +
+                    (d ? tile('r<sub>c</sub> / r<sub>h,m</sub>', (d.rc / d.rh).toPrecision(3)) : '') +
+                    (d ? tile('t<sub>rh</sub>', d.trh.toPrecision(3) + ' Gyr') : '') +
+                    (d ? tile('t / t<sub>rh</sub>', (ageGyr / d.trh).toPrecision(3) + ' <span style="color:var(--color-gray-400)">@ ' + ageGyr + ' Gyr</span>') : '') +
+                    (d && VALUES[cluster.name] ? tile('Concentration c', VALUES[cluster.name].conc.toPrecision(3)) : '') +
+                    (d && VALUES[cluster.name] ? tile('v<sub>esc</sub>', VALUES[cluster.name].vesc.toPrecision(3) + ' km s<sup>\u22121</sup>') : '') +
+                    (d && VALUES[cluster.name] ? tile('BH likelihood', VALUES[cluster.name].bhl == null ? 'n/a' : VALUES[cluster.name].bhl.toFixed(2)) : '') +
+                    (d && VALUES[cluster.name] ? tile('BH candidate', VALUES[cluster.name].bhc == null ? 'n/a' : VALUES[cluster.name].bhc.toFixed(2) + ' <span style="color:var(--color-gray-400)">binned</span>') : '') +
+                    (d && VALUES[cluster.name] ? tile('[Fe/H]', VALUES[cluster.name].feh == null ? 'n/a' : VALUES[cluster.name].feh.toFixed(2) + ' <span style="color:var(--color-gray-400)">binned</span>', true) : '') +
                     '</div>' +
                     (url
                         ? '<a class="btn btn-primary baumgardt-link" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
